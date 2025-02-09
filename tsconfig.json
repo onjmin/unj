@@ -1,0 +1,13 @@
+{
+	"compilerOptions": {
+		"target": "ES2019",
+		"module": "node16",
+		"outDir": "dist/server",
+		"esModuleInterop": true,
+		"strict": true,
+		"resolveJsonModule": true,
+		"skipLibCheck": true,
+		"forceConsistentCasingInFileNames": true
+	},
+	"include": ["src/**/*.ts", "src/client/**/*.svelte"]
+}

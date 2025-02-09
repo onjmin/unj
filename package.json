@@ -1,0 +1,39 @@
+{
+	"name": "unj",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"clean": "rimraf dist",
+		"build:client": "vite build",
+		"build:server": "esbuild src/server/index.ts --bundle --platform=node --format=cjs --outfile=dist/server.cjs",
+		"obfuscate": "javascript-obfuscator dist --output dist --config obfuscate.json",
+		"dev": "pnpm run clean && cross-env DEV_MODE=true pnpm run build:client && cross-env DEV_MODE=true tsx src/server/index.ts",
+		"prod": "pnpm run clean && cross-env DEV_MODE=false pnpm run build:client && pnpm run build:server && pnpm run obfuscate && cross-env DEV_MODE=false node dist/server.cjs"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "AGPL-3.0",
+	"volta": {
+		"node": "22.13.1",
+		"pnpm": "9.15.5"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "1.9.4",
+		"javascript-obfuscator": "^4.1.1",
+		"rimraf": "^6.0.1",
+		"ts-node": "^10.9.2",
+		"tsx": "^4.19.2",
+		"typescript": "^5.7.3"
+	},
+	"dependencies": {
+		"@sveltejs/vite-plugin-svelte": "^5.0.3",
+		"@types/express": "^5.0.0",
+		"cross-env": "^7.0.3",
+		"esbuild": "^0.24.2",
+		"express": "^4.21.2",
+		"svelte": "^5.19.9",
+		"vite": "^6.1.0"
+	},
+	"type": "module"
+}
