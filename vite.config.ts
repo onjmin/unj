@@ -10,16 +10,6 @@ export default defineConfig({
 	build: {
 		outDir: "../../dist/client",
 		sourcemap: DEV_MODE ? "inline" : "hidden",
-		rollupOptions: {
-			external: ["svelte"],
-			output: {
-				globals: {
-					svelte: "Svelte",
-				},
-			},
-		},
-	},
-	resolve: {
-		dedupe: ["svelte"],
+		emptyOutDir: true,
 	},
 });
