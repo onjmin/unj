@@ -1,11 +1,10 @@
 {
 	"compilerOptions": {
 		"target": "ES2019",
-		"module": "node16",
+		"module": "ES2022",
 		"outDir": "dist/server",
 		"esModuleInterop": true,
 		"strict": true,
-		"resolveJsonModule": true,
 		"skipLibCheck": true,
 		"forceConsistentCasingInFileNames": true
 	},
