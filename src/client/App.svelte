@@ -1,22 +1,25 @@
 <script lang="ts">
-  import { UNJ_API_SECRET_PEPPER } from "./mylib/env";
+  import { calcUnjApiToken } from "./mylib/anti-debug.js";
 
-  let count = 0;
+  let count = "test";
 
-  const increment = () => {
-    count += 1;
+  const increment = async () => {
+    const token = calcUnjApiToken();
+    const res = await fetch("/api/hash", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ token }),
+    });
+    const data = await res.json();
+    count = JSON.stringify(data);
   };
 </script>
 
 <main>
   <h1>Counter App with Svelte + Express</h1>
   <p>Count: {count}</p>
-  <button on:click={increment}>Increment</button>
-</main>
-
-<main>
-  <h1>Counter App with Svelte + Express</h1>
-  <p>Count: {UNJ_API_SECRET_PEPPER}</p>
   <button on:click={increment}>Increment</button>
 </main>
 

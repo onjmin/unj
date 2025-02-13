@@ -2,9 +2,6 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 export const DEV_MODE = process.env.DEV_MODE === "true";
-export const UNJ_API_URL = process.env.UNJ_API_URL ?? "http://localhost:3000";
-export const UNJ_API_SECRET_PEPPER = process.env.UNJ_API_SECRET_PEPPER ?? "";
-
 export let ROOT_PATH = "";
 if (DEV_MODE) {
 	const __filename = fileURLToPath(import.meta.url);
@@ -13,3 +10,6 @@ if (DEV_MODE) {
 } else {
 	ROOT_PATH = path.resolve(__dirname, "..");
 }
+
+export const UNJ_API_URL =
+	process.env.VITE_UNJ_API_URL ?? "http://localhost:3000";

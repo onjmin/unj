@@ -20,6 +20,7 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "1.9.4",
+		"dotenv": "^16.4.7",
 		"javascript-obfuscator": "^4.1.1",
 		"rimraf": "^6.0.1",
 		"ts-node": "^10.9.2",
@@ -32,6 +33,7 @@
 		"cross-env": "^7.0.3",
 		"esbuild": "^0.24.2",
 		"express": "^4.21.2",
+		"js-sha256": "^0.11.0",
 		"svelte": "^5.19.9",
 		"vite": "^6.1.0"
 	},
