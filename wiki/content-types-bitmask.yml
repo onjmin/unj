@@ -1,0 +1,12 @@
+1: text
+2: url
+4: url_of_image(Imgur)
+8: url_of_gif(Imgur)
+16: url_of_video(YouTube||Nicovideo||Vimeo)
+32: url_of_audio(SoundCloud||Spotify)
+64: url_of_sns(Twitter||Facebook||Instagram)
+128: url_of_gps(GoogleMap)
+256: url_of_code(gist-it||paiza.io)
+512: AA(ASCII_Art)
+1024: AAA(ASCII_Art_Animation)
+2048: tanzaku

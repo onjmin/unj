@@ -6,10 +6,10 @@
 	"scripts": {
 		"clean": "rimraf dist",
 		"build:client": "vite build",
-		"build:server": "esbuild src/server/index.ts --bundle --platform=node --format=cjs --outfile=dist/server.cjs",
+		"build:server": "esbuild src/server/index.ts --bundle --platform=node --format=cjs --outfile=dist/server.js",
 		"obfuscate": "javascript-obfuscator dist --output dist --config obfuscate.json",
 		"dev": "pnpm run clean && cross-env DEV_MODE=true pnpm run build:client && cross-env DEV_MODE=true tsx src/server/index.ts",
-		"prod": "pnpm run clean && cross-env DEV_MODE=false pnpm run build:client && pnpm run build:server && pnpm run obfuscate && cross-env DEV_MODE=false node dist/server.cjs"
+		"prod": "pnpm run clean && pnpm run build:client && pnpm run build:server && pnpm run obfuscate && tsx rename.ts && node dist/server.cjs"
 	},
 	"keywords": [],
 	"author": "",
@@ -33,6 +33,7 @@
 		"cross-env": "^7.0.3",
 		"esbuild": "^0.24.2",
 		"express": "^4.21.2",
+		"hashids": "^2.3.0",
 		"js-sha256": "^0.11.0",
 		"svelte": "^5.19.9",
 		"vite": "^6.1.0"

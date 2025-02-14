@@ -1,3 +1,4 @@
+import Hashids from "hashids";
 import { sha256 } from "js-sha256";
 
 const UNJ_API_SECRET_PEPPER = process.env.VITE_UNJ_API_SECRET_PEPPER ?? "";
@@ -9,5 +10,55 @@ const user_a = "user_a";
  * うんｊAPI投稿用トークンを計算する
  */
 export const calcUnjApiToken = () => {
-	return sha256(`${UNJ_API_SECRET_PEPPER}${delimiter}${user_a}`);
+	return sha256([UNJ_API_SECRET_PEPPER, user_a].join(delimiter));
+};
+
+const HASHIDS_SECRET_PEPPER = process.env.HASHIDS_SECRET_PEPPER ?? "";
+const USER_ID_LENGTH = Number(process.env.USER_ID_LENGTH);
+const THREAD_ID_LENGTH = Number(process.env.THREAD_ID_LENGTH);
+
+/**
+ * フロントエンドに晒せるユーザーIDを生成する
+ */
+export const encodeUserId = (userId: string): string => {
+	const basedTime = String(Math.floor(Date.now() / 1000 / 60 / 60 / 24));
+	const hashids = new Hashids(
+		[HASHIDS_SECRET_PEPPER, basedTime, userId].join(delimiter),
+		USER_ID_LENGTH,
+	);
+	return hashids.encode(userId);
+};
+
+/**
+ * フロントエンド上のユーザーIDを復号する
+ */
+export const decodeUserId = (userId: string): string => {
+	const basedTime = String(Math.floor(Date.now() / 1000 / 60 / 60 / 24));
+	const hashids = new Hashids(
+		[HASHIDS_SECRET_PEPPER, basedTime, userId].join(delimiter),
+		USER_ID_LENGTH,
+	);
+	return String(hashids.decode(userId)[0]);
+};
+
+/**
+ * フロントエンドに晒せるスレッドIDを生成する
+ */
+export const encodeThreadId = (threadId: string): string => {
+	const hashids = new Hashids(
+		[HASHIDS_SECRET_PEPPER, threadId].join(delimiter),
+		THREAD_ID_LENGTH,
+	);
+	return hashids.encode(threadId);
+};
+
+/**
+ * フロントエンド上のスレッドIDを復号する
+ */
+export const decodeThreadId = (threadId: string): string => {
+	const hashids = new Hashids(
+		[HASHIDS_SECRET_PEPPER, threadId].join(delimiter),
+		THREAD_ID_LENGTH,
+	);
+	return String(hashids.decode(threadId)[0]);
 };
