@@ -11,5 +11,6 @@ const user_a = "user_a";
  * うんｊAPI投稿用トークンを計算する
  */
 const calcUnjApiToken = (): string => {
-	return sha256([VITE_UNJ_API_SECRET_PEPPER, user_a].join(delimiter));
+	const token = sha256([VITE_UNJ_API_SECRET_PEPPER, user_a].join(delimiter));
+	return token.slice(0, 8); // 衝突の心配が低いので8文字に削減
 };

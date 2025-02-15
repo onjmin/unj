@@ -6,14 +6,17 @@ const delimiter = "###";
 
 const VITE_UNJ_STORAGE_KEY_SECRET_PEPPER =
 	import.meta.env.VITE_UNJ_STORAGE_KEY_SECRET_PEPPER ?? "";
+const VITE_UNJ_STORAGE_VALUE_SECRET_PEPPER =
+	import.meta.env.VITE_UNJ_STORAGE_VALUE_SECRET_PEPPER ?? "";
 
 /**
  * IndexedDBの安全なキーを計算する
  */
 const calcUnjStorageKey = (key: string): string => {
-	return sha256(
+	const token = sha256(
 		[VITE_UNJ_STORAGE_KEY_SECRET_PEPPER, key].join(delimiter),
-	).slice(0, 8); // 衝突の心配が低いので8文字に削減
+	);
+	return token.slice(0, 8); // 衝突の心配が低いので8文字に削減
 };
 
 /**
@@ -35,13 +38,18 @@ const tableName = "salad-bowl";
 export const dangerousSave = async (
 	key: string,
 	value: string,
-): Promise<undefined> => {
-	const db = await openDB(dbName, 1, {
-		upgrade(db) {
-			db.createObjectStore(tableName);
-		},
-	});
-	await db.put(tableName, value, calcUnjStorageKey(key));
+): Promise<boolean> => {
+	try {
+		const db = await openDB(dbName, 1, {
+			upgrade(db) {
+				db.createObjectStore(tableName);
+			},
+		});
+		await db.put(tableName, value, calcUnjStorageKey(key));
+		return true;
+	} catch (err) {
+		return false;
+	}
 };
 
 /**
@@ -50,22 +58,60 @@ export const dangerousSave = async (
  * 生の値を返すため危険。
  * 大容量のデータの場合に使う。
  */
-export const dangerousLoad = async (key: string): Promise<string> => {
-	const db = await openDB(dbName, 1);
-	const result = await db.get(tableName, calcUnjStorageKey(key));
-	return String(result);
+export const dangerousLoad = async (key: string): Promise<string | null> => {
+	try {
+		const db = await openDB(dbName, 1);
+		const result = await db.get(tableName, calcUnjStorageKey(key));
+		return String(result);
+	} catch (err) {
+		return null;
+	}
 };
+
+const HASHIDS_UNIT = 4; // 62^4=14,776,336なので、CodePoint(0x10FFFF)の範囲では衝突しない
 
 /**
  * IndexedDBに保存する
  */
-export const save = async (key: string, value: string): Promise<undefined> => {
-	dangerousSave(key, value);
+export const save = async (key: string, value: string): Promise<boolean> => {
+	const hashids = new Hashids(
+		VITE_UNJ_STORAGE_VALUE_SECRET_PEPPER,
+		HASHIDS_UNIT,
+	);
+	const encoded = [...value]
+		.map((v) => String(v.codePointAt(0))) // 危険なキャストだが、組み込み関数なので信用する
+		.map((v) => hashids.encode(v))
+		.join("");
+	return dangerousSave(key, encoded);
 };
+
+const regexpHashids =
+	/abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890/; // hashidsの文字セット
 
 /**
  * IndexedDBから取得する
  */
-export const load = async (key: string): Promise<string> => {
-	return dangerousLoad(key);
+export const load = async (key: string): Promise<string | null> => {
+	const encoded = await dangerousLoad(key);
+	if (encoded === null) {
+		return null;
+	}
+	if (encoded.length % HASHIDS_UNIT !== 0) {
+		return null;
+	}
+	if (!regexpHashids.test(encoded)) {
+		return null;
+	}
+	const hashids = new Hashids(
+		VITE_UNJ_STORAGE_VALUE_SECRET_PEPPER,
+		HASHIDS_UNIT,
+	);
+	const encodedArray = Array.from(encoded).flatMap((_, i, arr) =>
+		i % HASHIDS_UNIT === 0 ? [arr.slice(i, i + HASHIDS_UNIT).join("")] : [],
+	);
+	const decoded = encodedArray
+		.map((v) => hashids.decode(v))
+		.map((v) => String.fromCodePoint(Number(v)))
+		.join("");
+	return decoded;
 };
