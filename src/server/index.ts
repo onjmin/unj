@@ -3,7 +3,7 @@ import http from "node:http";
 import path from "node:path";
 import express from "express";
 import { Server } from "socket.io";
-import { calcUnjApiToken } from "./mylib/anti-debug.js";
+// import { calcUnjApiToken } from "./mylib/anti-debug.js";
 import { ROOT_PATH } from "./mylib/env.js";
 
 const app = express();
@@ -25,11 +25,11 @@ app.get("/", (req, res) => {
 });
 
 // 適当なAPI
-app.post("/api/hash", (req, res) => {
-	const token = req.body.token;
-	const token2 = calcUnjApiToken();
-	res.json({ token, token2, message: token === token2 ? "OK" : "NG" });
-});
+// app.post("/api/hash", (req, res) => {
+// 	const token = req.body.token;
+// 	const token2 = calcUnjApiToken();
+// 	res.json({ token, token2, message: token === token2 ? "OK" : "NG" });
+// });
 
 // socket.io
 io.on("connection", (socket) => {

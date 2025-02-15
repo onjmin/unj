@@ -1,5 +1,5 @@
 import Hashids from "hashids";
-import { openDB } from "idb";
+import { get, set } from "idb-keyval";
 import { sha256 } from "js-sha256";
 
 const delimiter = "###";
@@ -38,19 +38,7 @@ const tableName = "salad-bowl";
 export const dangerousSave = async (
 	key: string,
 	value: string,
-): Promise<boolean> => {
-	try {
-		const db = await openDB(dbName, 1, {
-			upgrade(db) {
-				db.createObjectStore(tableName);
-			},
-		});
-		await db.put(tableName, value, calcUnjStorageKey(key));
-		return true;
-	} catch (err) {
-		return false;
-	}
-};
+): Promise<void> => set(calcUnjStorageKey(key), value);
 
 /**
  * IndexedDBから取得する
@@ -58,22 +46,15 @@ export const dangerousSave = async (
  * 生の値を返すため危険。
  * 大容量のデータの場合に使う。
  */
-export const dangerousLoad = async (key: string): Promise<string | null> => {
-	try {
-		const db = await openDB(dbName, 1);
-		const result = await db.get(tableName, calcUnjStorageKey(key));
-		return String(result);
-	} catch (err) {
-		return null;
-	}
-};
+export const dangerousLoad = (key: string) =>
+	get(calcUnjStorageKey(key)).then(String);
 
 const HASHIDS_UNIT = 4; // 62^4=14,776,336なので、CodePoint(0x10FFFF)の範囲では衝突しない
 
 /**
  * IndexedDBに保存する
  */
-export const save = async (key: string, value: string): Promise<boolean> => {
+export const save = async (key: string, value: string): Promise<void> => {
 	const hashids = new Hashids(
 		VITE_UNJ_STORAGE_VALUE_SECRET_PEPPER,
 		HASHIDS_UNIT,
@@ -82,7 +63,7 @@ export const save = async (key: string, value: string): Promise<boolean> => {
 		.map((v) => String(v.codePointAt(0))) // 危険なキャストだが、組み込み関数なので信用する
 		.map((v) => hashids.encode(v))
 		.join("");
-	return dangerousSave(key, encoded);
+	dangerousSave(key, encoded);
 };
 
 const regexpHashids =

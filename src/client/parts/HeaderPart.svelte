@@ -3,14 +3,14 @@
   import Button, { Label } from "@smui/button";
   import Dialog, { Title, Content, Actions } from "@smui/dialog";
   import TopAppBar, { Row, Section } from "@smui/top-app-bar";
+  import { dangerousLoad, dangerousSave } from "../mylib/storage.js";
   import TermsPart from "./TermsPart.svelte";
 
-  let openAttention = $state(false);
-  openAttention = true; // TODO
+  let { openAttention = false } = $props();
   let openTerms = $state(false);
   let openTermsWarn = $state(false);
 
-  const closeHandler = (e: CustomEvent<{ action: string }>) => {
+  const closeHandler = async (e: CustomEvent<{ action: string }>) => {
     switch (e.detail.action) {
       case "close":
         openAttention = true;
@@ -19,19 +19,12 @@
         openTermsWarn = true;
         break;
       case "accept":
+        await dangerousSave("isAlreadyAgreedTerms", "yes");
+        dangerousLoad("isAlreadyAgreedTerms").then((v) => {
+          openAttention = "yes" !== (v ?? "");
+        });
         break;
     }
-  };
-
-  let isAlreadyAgreedTerms = $state(false);
-
-  $effect(() => {
-    isAlreadyAgreedTerms = localStorage.getItem("key") === "ok";
-  });
-
-  const saveToLocalStorage = (isAgreed: boolean) => {
-    localStorage.setItem("myKey", isAgreed ? "ok" : "ng");
-    isAlreadyAgreedTerms = localStorage.getItem("key") === "ok";
   };
 </script>
 
