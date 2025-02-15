@@ -1,6 +1,6 @@
 1: text
 2: url
-4: url_of_image(Imgur)
+4: url_of_image(Imgur|アル)
 8: url_of_gif(Imgur)
 16: url_of_video(YouTube||Nicovideo||Vimeo)
 32: url_of_audio(SoundCloud||Spotify)

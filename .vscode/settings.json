@@ -4,6 +4,10 @@
 	"[svelte]": {
 		"editor.defaultFormatter": "svelte.svelte-vscode"
 	},
+	"[html]": {
+		"editor.formatOnSave": true,
+		"editor.defaultFormatter": null
+	},
 	"editor.codeActionsOnSave": {
 		"quickfix.biome": "explicit",
 		"source.organizeImports.biome": "explicit"

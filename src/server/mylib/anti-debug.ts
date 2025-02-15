@@ -1,17 +1,18 @@
+import { differenceInDays } from "date-fns";
 import Hashids from "hashids";
 import { sha256 } from "js-sha256";
 
-const UNJ_API_SECRET_PEPPER = process.env.VITE_UNJ_API_SECRET_PEPPER ?? "";
 const delimiter = "###";
+
+const VITE_UNJ_API_SECRET_PEPPER = process.env.VITE_UNJ_API_SECRET_PEPPER ?? "";
 
 const user_a = "user_a";
 
 /**
  * うんｊAPI投稿用トークンを計算する
  */
-export const calcUnjApiToken = () => {
-	return sha256([UNJ_API_SECRET_PEPPER, user_a].join(delimiter));
-};
+export const calcUnjApiToken = (): string =>
+	sha256([VITE_UNJ_API_SECRET_PEPPER, user_a].join(delimiter));
 
 const HASHIDS_SECRET_PEPPER = process.env.HASHIDS_SECRET_PEPPER ?? "";
 const USER_ID_LENGTH = Number(process.env.USER_ID_LENGTH);
@@ -21,7 +22,7 @@ const THREAD_ID_LENGTH = Number(process.env.THREAD_ID_LENGTH);
  * フロントエンドに晒せるユーザーIDを生成する
  */
 export const encodeUserId = (userId: string): string => {
-	const basedTime = String(Math.floor(Date.now() / 1000 / 60 / 60 / 24));
+	const basedTime = differenceInDays(new Date(), new Date(0));
 	const hashids = new Hashids(
 		[HASHIDS_SECRET_PEPPER, basedTime, userId].join(delimiter),
 		USER_ID_LENGTH,
@@ -33,7 +34,7 @@ export const encodeUserId = (userId: string): string => {
  * フロントエンド上のユーザーIDを復号する
  */
 export const decodeUserId = (userId: string): string => {
-	const basedTime = String(Math.floor(Date.now() / 1000 / 60 / 60 / 24));
+	const basedTime = differenceInDays(new Date(), new Date(0));
 	const hashids = new Hashids(
 		[HASHIDS_SECRET_PEPPER, basedTime, userId].join(delimiter),
 		USER_ID_LENGTH,

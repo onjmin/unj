@@ -11,5 +11,5 @@ if (DEV_MODE) {
 	ROOT_PATH = path.resolve(__dirname, "..");
 }
 
-export const UNJ_API_URL =
+export const VITE_UNJ_API_URL =
 	process.env.VITE_UNJ_API_URL ?? "http://localhost:3000";

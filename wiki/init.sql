@@ -4,14 +4,26 @@
 CREATE TABLE users (
     id SMALLSERIAL PRIMARY KEY, -- フロントエンドに生のIDを公開せず8桁のhashidsを使う。毎日見た目は変わる。
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 個人情報を使うとき更新日時でDESCソートする
     token TEXT NOT NULL UNIQUE, -- 別端末で引き継ぎ可能なトークン
+    --- ビジネスロジック
     name TEXT NOT NULL, -- ハンドルネーム
     icon SMALLINT NOT NULL DEFAULT 0, -- アイコンID, 0: 未設定
     ninja_pokemon SMALLINT NOT NULL DEFAULT 0, -- 忍法帖ポケモンのID ■忍【LV38,ピカチュウ,9S】◆KOSOVO//9k
     ninja_score SMALLINT NOT NULL DEFAULT 0, -- 忍法帖スコア
-    carma_score SMALLINT NOT NULL DEFAULT 0, -- 悪業スコア
+    carma_score SMALLINT NOT NULL DEFAULT 0 -- 悪業スコア
 );
+
+/*
+    ユーザーIDに紐づくIPアドレスのテーブル
+
+    threads.banned_users_utf8maskでBANされているかの判定に使われる。
+*/
+CREATE TABLE user_ip_traces {
+    user_id SMALLINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    ip inet NOT NULL,
+    PRIMARY KEY (user_id, ip) -- ユーザーID + IPを複合主キーにする
+}
 
 -- xxx_bitmask: 通常のビットマスク
 -- xxx_utf8mask: "utf8mask_{{user_id + 0x80}}_"形式のビットマスク
@@ -19,7 +31,7 @@ CREATE TABLE users (
 /*
     スレッドのテーブル
 
-    レスされると連動して threads.updated_at と threads.res_count が更新される。
+    レスに連動して threads.updated_at と threads.res_count が更新される。
 */
 CREATE TABLE threads (
     id SMALLSERIAL PRIMARY KEY, -- フロントエンドに生のIDを公開せず10桁のhashidsを使う
@@ -37,8 +49,8 @@ CREATE TABLE threads (
     age_res_id SMALLINT, -- !age機能で表示するレスのID
     identity_bitmask SMALLINT DEFAULT 1, -- 身元の開示範囲
     content_types_bitmask SMALLINT DEFAULT 1, -- 投稿可能なコンテンツの種類
-    banned_users_utf8mask TEXT, -- BANされたユーザーリスト
-    subbed_users_utf8mask TEXT, -- 副主ユーザーリスト
+    banned_users_utf8mask TEXT, -- BANされたユーザーリスト（同じtoken または 同じipは書き込み不可）
+    subbed_users_utf8mask TEXT, -- 副主ユーザーリスト（同じtoken であれば行使可能）
     good_count SMALLINT NOT NULL DEFAULT 0, -- ｲｲ!(・∀・)
     bad_count SMALLINT NOT NULL DEFAULT 0, -- (・Ａ・)ｲｸﾅｲ!
     lol_count SMALLINT NOT NULL DEFAULT 0 -- 草ボタン
@@ -58,8 +70,8 @@ CREATE TABLE res (
     user_name TEXT NOT NULL,
     user_icon SMALLINT NOT NULL DEFAULT 0,
     content TEXT,
+    content_url TEXT,
     content_type SMALLINT NOT NULL DEFAULT 1, -- 1: text, 2: image, 4: gif
-    embed_url TEXT,
     PRIMARY KEY (thread_id, id) -- スレッドID + レス番号を複合主キーにする
 );
 
@@ -71,6 +83,6 @@ CREATE TABLE res (
 */
 CREATE TABLE aa_cache (
     sha256 VARCHAR(64) PRIMARY KEY, -- 暗号方式は固定でないとキャッシュの意味がない
-    stored_type SMALLINT NOT NULL DEFAULT 0 -- res.contentに格納する。0: str2img/Imgur, 1: Amazon S3(?)
+    stored_type SMALLINT NOT NULL DEFAULT 0, -- res.contentに格納する。0: str2img/Imgur, 1: Amazon S3(?)
     stored_url TEXT NOT NULL, -- 保管先のURL
 );
