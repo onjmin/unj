@@ -3,7 +3,7 @@
   import Button, { Label } from "@smui/button";
   import Dialog, { Title, Content, Actions } from "@smui/dialog";
   import TopAppBar, { Row, Section } from "@smui/top-app-bar";
-  import { dangerousLoad, dangerousSave } from "../mylib/storage.js";
+  import { load, save } from "../mylib/storage.js";
   import TermsPart from "./TermsPart.svelte";
 
   let { openAttention = false } = $props();
@@ -19,8 +19,8 @@
         openTermsWarn = true;
         break;
       case "accept":
-        await dangerousSave("isAlreadyAgreedTerms", "yes");
-        dangerousLoad("isAlreadyAgreedTerms").then((v) => {
+        await save("isAlreadyAgreedTerms", "yes");
+        load("isAlreadyAgreedTerms").then((v) => {
           openAttention = "yes" !== (v ?? "");
         });
         break;

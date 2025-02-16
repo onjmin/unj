@@ -4,7 +4,7 @@ import path from "node:path";
 import express from "express";
 import { Server } from "socket.io";
 // import { calcUnjApiToken } from "./mylib/anti-debug.js";
-import { ROOT_PATH } from "./mylib/env.js";
+import { DEV_MODE, ROOT_PATH, STG_MODE } from "./mylib/env.js";
 
 const app = express();
 const server = http.createServer(app);
@@ -12,17 +12,25 @@ const io = new Server(server, {
 	cors: { origin: "*" }, // CORS の設定（適宜変更）
 });
 
-// JSON形式のリクエストに対応
-app.use(express.json());
+if (DEV_MODE || STG_MODE) {
+	// JSON形式のリクエストに対応
+	app.use(express.json());
 
-// 静的ファイルの配信
-app.use("/static", express.static(path.resolve(ROOT_PATH, "static")));
-app.use(express.static(path.resolve(ROOT_PATH, "dist", "client")));
+	// 静的ファイルの配信
+	app.use("/static", express.static(path.resolve(ROOT_PATH, "static")));
+	app.use(express.static(path.resolve(ROOT_PATH, "dist", "client")));
 
-// フロントエンドのエントリポイント
-app.get("/", (req, res) => {
-	res.sendFile(path.resolve(ROOT_PATH, "dist", "client", "index.html"));
-});
+	// フロントエンドのエントリポイント
+	app.get("/", (req, res) => {
+		res.sendFile(path.resolve(ROOT_PATH, "dist", "client", "index.html"));
+	});
+
+	app.use((req, res) => {
+		res
+			.status(404)
+			.sendFile(path.resolve(ROOT_PATH, "dist", "client", "404.html"));
+	});
+}
 
 // 適当なAPI
 // app.post("/api/hash", (req, res) => {

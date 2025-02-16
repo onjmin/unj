@@ -1,6 +1,7 @@
 import Hashids from "hashids";
 import { get, set } from "idb-keyval";
 import { sha256 } from "js-sha256";
+import { DEV_MODE } from "./env.js";
 
 const delimiter = "###";
 
@@ -13,6 +14,9 @@ const VITE_UNJ_STORAGE_VALUE_SECRET_PEPPER =
  * IndexedDBの安全なキーを計算する
  */
 const calcUnjStorageKey = (key: string): string => {
+	if (DEV_MODE) {
+		return key;
+	}
 	const token = sha256(
 		[VITE_UNJ_STORAGE_KEY_SECRET_PEPPER, key].join(delimiter),
 	);
@@ -55,6 +59,9 @@ const HASHIDS_UNIT = 4; // 62^4=14,776,336なので、CodePoint(0x10FFFF)の範�
  * IndexedDBに保存する
  */
 export const save = async (key: string, value: string): Promise<void> => {
+	if (DEV_MODE) {
+		return dangerousSave(key, value);
+	}
 	const hashids = new Hashids(
 		VITE_UNJ_STORAGE_VALUE_SECRET_PEPPER,
 		HASHIDS_UNIT,
@@ -73,6 +80,9 @@ const regexpHashids =
  * IndexedDBから取得する
  */
 export const load = async (key: string): Promise<string | null> => {
+	if (DEV_MODE) {
+		return dangerousLoad(key);
+	}
 	const encoded = await dangerousLoad(key);
 	if (encoded === null) {
 		return null;

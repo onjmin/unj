@@ -1,7 +1,7 @@
 import { mount } from "svelte";
-import App from "./App.svelte";
+import _404 from "./404.svelte";
 
-const app = mount(App, {
+const app = mount(_404, {
 	target: document.getElementById("app") as HTMLElement,
 });
 
