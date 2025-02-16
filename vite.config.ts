@@ -8,7 +8,10 @@ export default defineConfig({
 	plugins: [svelte()],
 	root: "src/client",
 	envDir: "../../",
-	mode: DEV_MODE ? "development" : "production",
+	// mode: DEV_MODE ? "development" : "production", // vite buildだと無視される
+	define: {
+		"import.meta.env.DEV_MODE": DEV_MODE,
+	},
 	build: {
 		outDir: "../../dist/client",
 		sourcemap: DEV_MODE ? "inline" : false,

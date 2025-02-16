@@ -9,6 +9,8 @@ const VITE_UNJ_STORAGE_KEY_SECRET_PEPPER =
 	import.meta.env.VITE_UNJ_STORAGE_KEY_SECRET_PEPPER ?? "";
 const VITE_UNJ_STORAGE_VALUE_SECRET_PEPPER =
 	import.meta.env.VITE_UNJ_STORAGE_VALUE_SECRET_PEPPER ?? "";
+const VITE_UNJ_STORAGE_VALUE_CHECKSUM_SECRET_PEPPER =
+	import.meta.env.VITE_UNJ_STORAGE_VALUE_CHECKSUM_SECRET_PEPPER ?? "";
 
 /**
  * IndexedDBの安全なキーを計算する
@@ -24,6 +26,43 @@ const calcUnjStorageKey = (key: string): string => {
 };
 
 /**
+ * IndexedDBの値の安全なチェックサムを計算する
+ *
+ * IndexedDBの符号化の安全性を高めるため。
+ * ユーザーにとって総当たりの試行が容易なのでチェックサムにしては多めに取る。
+ * 桁数の判定がし易いように最終的な文字長は4の倍数+3とする。
+ */
+const calcUnjStorageValueCheckSum = (encoded: string): string => {
+	const token = sha256(
+		[VITE_UNJ_STORAGE_VALUE_CHECKSUM_SECRET_PEPPER, encoded].join(delimiter),
+	);
+	return token.slice(0, CHECKSUM_LENGTH);
+};
+
+const CHECKSUM_LENGTH = 3; // 桁数を判定し易くするために最終的な文字長は4の倍数+3
+const HASHIDS_UNIT = 4; // 62^4=14,776,336なので、CodePoint(0x10FFFF)の範囲では衝突しない
+const regexpHashids =
+	/[^abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890]/; // hashidsの文字セット以外が入る場合
+
+/**
+ * IndexedDBが人為的に改ざんされていないか簡単なテスト。
+ *
+ * そもそも保存する形式が誤っていた場合も検出したいため。
+ */
+const isSecureValue = (str: string) => {
+	if (
+		str.length < HASHIDS_UNIT + CHECKSUM_LENGTH ||
+		str.length % HASHIDS_UNIT !== CHECKSUM_LENGTH
+	) {
+		return false;
+	}
+	if (regexpHashids.test(str)) {
+		return false;
+	}
+	return true;
+};
+
+/**
  * IndexedDBの本来の使い方ならSQL風の設計をしてパフォーマンスチューニングできそうだが、
  * あえて間違ったlocalStorage風の使い方で実装している。
  *
@@ -34,7 +73,7 @@ const dbName = "unj-database";
 const tableName = "salad-bowl";
 
 /**
- * IndexedDBに保存する
+ * IndexedDBに平文で保存する
  *
  * 生の値を保存するため危険。
  * 大容量のデータの場合に使う。
@@ -45,15 +84,13 @@ export const dangerousSave = async (
 ): Promise<void> => set(calcUnjStorageKey(key), value);
 
 /**
- * IndexedDBから取得する
+ * IndexedDBから平文で取得する
  *
  * 生の値を返すため危険。
  * 大容量のデータの場合に使う。
  */
 export const dangerousLoad = (key: string) =>
 	get(calcUnjStorageKey(key)).then(String);
-
-const HASHIDS_UNIT = 4; // 62^4=14,776,336なので、CodePoint(0x10FFFF)の範囲では衝突しない
 
 /**
  * IndexedDBに保存する
@@ -70,11 +107,12 @@ export const save = async (key: string, value: string): Promise<void> => {
 		.map((v) => String(v.codePointAt(0))) // 危険なキャストだが、組み込み関数なので信用する
 		.map((v) => hashids.encode(v))
 		.join("");
-	dangerousSave(key, encoded);
+	const secureValue = encoded + calcUnjStorageValueCheckSum(encoded);
+	if (!isSecureValue(secureValue)) {
+		return;
+	}
+	dangerousSave(key, secureValue);
 };
-
-const regexpHashids =
-	/abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890/; // hashidsの文字セット
 
 /**
  * IndexedDBから取得する
@@ -83,16 +121,17 @@ export const load = async (key: string): Promise<string | null> => {
 	if (DEV_MODE) {
 		return dangerousLoad(key);
 	}
-	const encoded = await dangerousLoad(key);
-	if (encoded === null) {
+	const secureValue = await dangerousLoad(key);
+	if (!isSecureValue(secureValue)) {
 		return null;
 	}
-	if (encoded.length % HASHIDS_UNIT !== 0) {
+	// チェックサム
+	const checksum = secureValue.slice(-CHECKSUM_LENGTH);
+	const encoded = secureValue.slice(0, -CHECKSUM_LENGTH);
+	if (calcUnjStorageValueCheckSum(encoded) !== checksum) {
 		return null;
 	}
-	if (!regexpHashids.test(encoded)) {
-		return null;
-	}
+	// 複号
 	const hashids = new Hashids(
 		VITE_UNJ_STORAGE_VALUE_SECRET_PEPPER,
 		HASHIDS_UNIT,
