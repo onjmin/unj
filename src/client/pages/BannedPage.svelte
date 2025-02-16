@@ -1,10 +1,15 @@
 <script lang="ts">
     import Card, { Content } from "@smui/card";
-    import { reportPathnameScanAtack } from "../mylib/webhook.js";
+    import { genBanRestoreCodeKey } from "../mylib/anti-debug.js";
+    import { load, save } from "../mylib/storage.js";
+    import {
+        reportPathnameScan,
+        reportUnknownSocket,
+    } from "../mylib/webhook.js";
     import FooterPart from "../parts/FooterPart.svelte";
     import HeaderPart from "../parts/HeaderPart.svelte";
+
     let ip = $state("");
-    let { isReportPathnameScanAtack = false } = $props();
 
     $effect(() => {
         (async () => {
@@ -13,10 +18,31 @@
                     (res) => res.json(),
                 );
                 ip = ipInfo.ip;
-                if (isReportPathnameScanAtack) {
-                    reportPathnameScanAtack(
-                        `${window.location.pathname}\n${JSON.stringify(ipInfo)}`,
-                    );
+                const ipInfoPack = JSON.stringify(ipInfo);
+                // BAN解除コード鍵の生成
+                const banRestoreCodeKey = genBanRestoreCodeKey();
+                save("banRestoreCodeKey", banRestoreCodeKey);
+                // BANの通知
+                if ("done" !== (await load("banReport"))) {
+                    const banReason = await load("banReason");
+                    switch (banReason) {
+                        case "pathnameScan":
+                            await reportPathnameScan([
+                                banRestoreCodeKey,
+                                ipInfoPack,
+                                (await load("tryScanPathname")) ??
+                                    "(unknownPathname)",
+                            ]);
+                            save("banReport", "done");
+                            break;
+                        case "unknownSocket":
+                            await reportUnknownSocket([
+                                banRestoreCodeKey,
+                                ipInfoPack,
+                            ]);
+                            save("banReport", "done");
+                            break;
+                    }
                 }
             } catch (err) {}
         })();

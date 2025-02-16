@@ -22,7 +22,7 @@
 
   let openAttention = $state(false);
   const tryEnter = async () =>
-    load("isAlreadyAgreedTerms").then((v) => {
+    load("termsAgreement").then((v) => {
       openAttention = "yes" !== (v ?? "");
     });
 </script>

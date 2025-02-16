@@ -45,7 +45,7 @@ const regexpHashids =
 	/[^abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890]/; // hashidsの文字セット以外が入る場合
 
 /**
- * IndexedDBが人為的に改ざんされていないか簡単なテスト。
+ * IndexedDBが人為的に改ざんされていないか簡単なテスト
  *
  * そもそも保存する形式が誤っていた場合も検出したいため。
  */
@@ -63,14 +63,13 @@ const isSecureValue = (str: string) => {
 };
 
 /**
- * IndexedDBの本来の使い方ならSQL風の設計をしてパフォーマンスチューニングできそうだが、
- * あえて間違ったlocalStorage風の使い方で実装している。
+ * IndexedDBから平文で取得する
  *
- * SafariのlocalStorageは7日間で消えるため、IndexedDBを採用した。
+ * 生の値を返すため危険。
+ * 大容量のデータの場合に使う。
  */
-
-const dbName = "unj-database";
-const tableName = "salad-bowl";
+export const dangerousLoad = (key: string) =>
+	get(calcUnjStorageKey(key)).then(String);
 
 /**
  * IndexedDBに平文で保存する
@@ -82,37 +81,6 @@ export const dangerousSave = async (
 	key: string,
 	value: string,
 ): Promise<void> => set(calcUnjStorageKey(key), value);
-
-/**
- * IndexedDBから平文で取得する
- *
- * 生の値を返すため危険。
- * 大容量のデータの場合に使う。
- */
-export const dangerousLoad = (key: string) =>
-	get(calcUnjStorageKey(key)).then(String);
-
-/**
- * IndexedDBに保存する
- */
-export const save = async (key: string, value: string): Promise<void> => {
-	if (DEV_MODE) {
-		return dangerousSave(key, value);
-	}
-	const hashids = new Hashids(
-		VITE_UNJ_STORAGE_VALUE_SECRET_PEPPER,
-		HASHIDS_UNIT,
-	);
-	const encoded = [...value]
-		.map((v) => String(v.codePointAt(0))) // 危険なキャストだが、組み込み関数なので信用する
-		.map((v) => hashids.encode(v))
-		.join("");
-	const secureValue = encoded + calcUnjStorageValueCheckSum(encoded);
-	if (!isSecureValue(secureValue)) {
-		return;
-	}
-	dangerousSave(key, secureValue);
-};
 
 /**
  * IndexedDBから取得する
@@ -144,4 +112,26 @@ export const load = async (key: string): Promise<string | null> => {
 		.map((v) => String.fromCodePoint(Number(v)))
 		.join("");
 	return decoded;
+};
+
+/**
+ * IndexedDBに保存する
+ */
+export const save = async (key: string, value: string): Promise<void> => {
+	if (DEV_MODE) {
+		return dangerousSave(key, value);
+	}
+	const hashids = new Hashids(
+		VITE_UNJ_STORAGE_VALUE_SECRET_PEPPER,
+		HASHIDS_UNIT,
+	);
+	const encoded = [...value]
+		.map((v) => String(v.codePointAt(0))) // 危険なキャストだが、組み込み関数なので信用する
+		.map((v) => hashids.encode(v))
+		.join("");
+	const secureValue = encoded + calcUnjStorageValueCheckSum(encoded);
+	if (!isSecureValue(secureValue)) {
+		return;
+	}
+	dangerousSave(key, secureValue);
 };

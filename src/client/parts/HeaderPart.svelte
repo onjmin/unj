@@ -3,6 +3,7 @@
   import Button, { Label } from "@smui/button";
   import Dialog, { Title, Content, Actions } from "@smui/dialog";
   import TopAppBar, { Row, Section } from "@smui/top-app-bar";
+  import { Link } from "svelte-routing";
   import { load, save } from "../mylib/storage.js";
   import TermsPart from "./TermsPart.svelte";
 
@@ -19,8 +20,8 @@
         openTermsWarn = true;
         break;
       case "accept":
-        await save("isAlreadyAgreedTerms", "yes");
-        load("isAlreadyAgreedTerms").then((v) => {
+        await save("termsAgreement", "yes");
+        load("termsAgreement").then((v) => {
           openAttention = "yes" !== (v ?? "");
         });
         break;
@@ -32,7 +33,12 @@
   <TopAppBar variant="static">
     <Row>
       <Section>
-        <Title>うんｊ</Title>
+        <Link
+          to="/"
+          style="text-decoration: none; color: inherit; cursor: pointer;"
+        >
+          <Title>うんｊ</Title>
+        </Link>
       </Section>
     </Row>
   </TopAppBar>
