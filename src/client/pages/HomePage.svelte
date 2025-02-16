@@ -2,6 +2,7 @@
   import Button from "@smui/button";
   import Card, { Content } from "@smui/card";
   import { load } from "../mylib/storage.js";
+  import FooterPart from "../parts/FooterPart.svelte";
   import HeaderPart from "../parts/HeaderPart.svelte";
 
   const onjKeyWords = [
@@ -42,6 +43,4 @@
   </Card>
 </main>
 
-<footer style="text-align:center;color:rgba(255,255,255,.2);">
-  著作権AGPL：うんｊはまとめ自由/開示義務有
-</footer>
+<FooterPart />

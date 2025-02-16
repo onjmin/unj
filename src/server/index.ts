@@ -26,9 +26,7 @@ if (DEV_MODE || STG_MODE) {
 	});
 
 	app.use((req, res) => {
-		res
-			.status(404)
-			.sendFile(path.resolve(ROOT_PATH, "dist", "client", "404.html"));
+		res.sendFile(path.resolve(ROOT_PATH, "dist", "client", "404.html"));
 	});
 }
 

@@ -5,6 +5,7 @@
   import HeadlinePage from "./pages/HeadlinePage.svelte";
   import HistoryPage from "./pages/HistoryPage.svelte";
   import HomePage from "./pages/HomePage.svelte";
+  import NotFoundPage from "./pages/NotFoundPage.svelte";
   import ThreadPage from "./pages/ThreadPage.svelte";
 </script>
 
@@ -26,5 +27,8 @@
   </Route>
   <Route path="/banner">
     <BannerExhibitionPage />
+  </Route>
+  <Route path="/*">
+    <NotFoundPage />
   </Route>
 </Router>
