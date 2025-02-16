@@ -10,11 +10,12 @@
 </script>
 
 <Router>
+  <Route path="/*">
+    <NotFoundPage />
+  </Route>
+
   <Route path="/">
     <HomePage />
-  </Route>
-  <Route path="/akukin">
-    <BannedPage />
   </Route>
   <Route path="/headline">
     <HeadlinePage />
@@ -28,7 +29,62 @@
   <Route path="/banner">
     <BannerExhibitionPage />
   </Route>
-  <Route path="/*">
-    <NotFoundPage />
+
+  <!-- 直リンでは辿り着けない -->
+  <Route path="/akukin">
+    <BannedPage />
+  </Route>
+
+  <!-- 直リン攻撃対策 -->
+  <Route path="/admin">
+    <BannedPage isReportPathnameScanAtack={true} />
+  </Route>
+  <Route path="/login">
+    <BannedPage isReportPathnameScanAtack={true} />
+  </Route>
+  <Route path="/wp-admin">
+    <BannedPage isReportPathnameScanAtack={true} />
+  </Route>
+  <Route path="/wp-login">
+    <BannedPage isReportPathnameScanAtack={true} />
+  </Route>
+  <Route path="/wp-json/wp/v2/users">
+    <BannedPage isReportPathnameScanAtack={true} />
+  </Route>
+  <Route path="/administrator">
+    <BannedPage isReportPathnameScanAtack={true} />
+  </Route>
+  <Route path="/joomla/administrator">
+    <BannedPage isReportPathnameScanAtack={true} />
+  </Route>
+  <Route path="/user/login">
+    <BannedPage isReportPathnameScanAtack={true} />
+  </Route>
+  <Route path="/drupal/node">
+    <BannedPage isReportPathnameScanAtack={true} />
+  </Route>
+  <Route path="/typo3">
+    <BannedPage isReportPathnameScanAtack={true} />
+  </Route>
+  <Route path="/vendor">
+    <BannedPage isReportPathnameScanAtack={true} />
+  </Route>
+  <Route path="/public">
+    <BannedPage isReportPathnameScanAtack={true} />
+  </Route>
+  <Route path="/dashboard">
+    <BannedPage isReportPathnameScanAtack={true} />
+  </Route>
+  <Route path="/controlpanel">
+    <BannedPage isReportPathnameScanAtack={true} />
+  </Route>
+  <Route path="/cms">
+    <BannedPage isReportPathnameScanAtack={true} />
+  </Route>
+  <Route path="/cpanel">
+    <BannedPage isReportPathnameScanAtack={true} />
+  </Route>
+  <Route path="/auth">
+    <BannedPage isReportPathnameScanAtack={true} />
   </Route>
 </Router>

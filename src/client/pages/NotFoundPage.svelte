@@ -2,14 +2,11 @@
     import Card, { Content } from "@smui/card";
     import { navigate } from "svelte-routing";
     import FooterPart from "../parts/FooterPart.svelte";
-
-    const goHome = () => {
-        window.location.href = "/";
-    };
+    import HeaderPart from "../parts/HeaderPart.svelte";
 
     $effect(() => {
         setTimeout(() => {
-            navigate("/");
+            navigate("/", { replace: true });
         }, 5000);
     });
 
@@ -25,6 +22,8 @@
         arr[Math.floor(Math.random() * arr.length)];
     const randomIllust = randArray(illusts);
 </script>
+
+<HeaderPart />
 
 <main>
     <Card style="text-align:center;background-color:transparent;">

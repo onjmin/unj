@@ -1,1 +1,71 @@
-<script lang="ts"></script>
+<script lang="ts">
+    import Card, { Content } from "@smui/card";
+    import { reportPathnameScanAtack } from "../mylib/webhook.js";
+    import FooterPart from "../parts/FooterPart.svelte";
+    import HeaderPart from "../parts/HeaderPart.svelte";
+    let ip = $state("");
+    let { isReportPathnameScanAtack = false } = $props();
+
+    $effect(() => {
+        (async () => {
+            try {
+                const ipInfo = await fetch("https://ipinfo.io?callback").then(
+                    (res) => res.json(),
+                );
+                ip = ipInfo.ip;
+                if (isReportPathnameScanAtack) {
+                    reportPathnameScanAtack(
+                        `${window.location.pathname}\n${JSON.stringify(ipInfo)}`,
+                    );
+                }
+            } catch (err) {}
+        })();
+    });
+</script>
+
+<HeaderPart />
+
+{#snippet mail()}
+    <a href="mailto:onjmin931@gmail.com?subject=[abuse]{ip}">メール</a>
+{/snippet}
+
+<main>
+    <Card style="text-align:center;background-color:transparent;">
+        <Content>
+            <h1>うんｊから大切なお知らせ</h1>
+            <h3 style="color:pink">{ip}</h3>
+            <h2>アク禁されますた(´・ω・｀)</h2>
+            <p>どうやらアクセス禁止になってしまったみたいです。。。！！</p>
+            <p>身に覚えはあるでしょうか？？</p>
+            <p>
+                もしかしたら間違えてアクセスブロックされている場合もあります。
+            </p>
+            <p>
+                そのときは、{@render mail()}か<a href="https://x.com/onjmin_"
+                    >Twitter</a
+                >でブロック解除の依頼をしてください。
+            </p>
+            <p>
+                もうアタックとかしないから、もう一回使いたい！って方もお気軽にメールしてください。
+            </p>
+            <p>うんｊは、いつでも待ってます。</p>
+            <p>
+                また楽しく使える気分になったら、いつでも{@render mail()}してくださいね。
+            </p>
+            <p>
+                ※重要：メールの[abuse]のタイトルは変えないでね。アク禁解除に必要な情報が含まれます。
+            </p>
+            <pre>
+                <i>
+誰でもそうやけど、反省する人は、きっと成功するな。
+本当に正しく反省する。そうすると次に何をすべきか、
+何をしたらいかんかということがきちんとわかるからな。
+それで成長していくわけや、人間として...
+松下幸之助   日本の実業家。
+                </i>
+                </pre>
+        </Content>
+    </Card>
+</main>
+
+<FooterPart />
