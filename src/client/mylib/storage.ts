@@ -42,7 +42,7 @@ const calcUnjStorageValueCheckSum = (encoded: string): string => {
 const CHECKSUM_LENGTH = 3; // 桁数を判定し易くするために最終的な文字長は4の倍数+3
 const HASHIDS_UNIT = 4; // 62^4=14,776,336なので、CodePoint(0x10FFFF)の範囲では衝突しない
 const regexpHashids =
-	/[^abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890]/; // hashidsの文字セット以外が入る場合
+	/[^abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890]/; // hashidsの文字セット範囲外の正規表現
 
 /**
  * IndexedDBが人為的に改ざんされていないか簡単なテスト

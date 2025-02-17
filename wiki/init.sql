@@ -31,7 +31,7 @@ CREATE TABLE user_ip_traces {
 /*
     スレッドのテーブル
 
-    レスに連動して threads.updated_at と threads.res_count が更新される。
+    レスに連動して threads.latest_res_at と threads.res_count が更新される。
 */
 CREATE TABLE threads (
     id SMALLSERIAL PRIMARY KEY, -- フロントエンドに生のIDを公開せず10桁のhashidsを使う

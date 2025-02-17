@@ -1,5 +1,6 @@
 <script lang="ts">
   import { Route, Router } from "svelte-routing";
+  import BanCodeVerifyPage from "./pages/BanCodeVerifyPage.svelte";
   import BannedPage from "./pages/BannedPage.svelte";
   import BannerExhibitionPage from "./pages/BannerExhibitionPage.svelte";
   import Guard from "./pages/Guard.svelte";
@@ -13,30 +14,43 @@
 <Guard>
   <Router>
     <Route path="/*">
-      <NotFoundPage />
+      <Guard>
+        <NotFoundPage />
+      </Guard>
     </Route>
 
     <Route path="/">
-      <HomePage />
+      <Guard>
+        <HomePage />
+      </Guard>
     </Route>
     <Route path="/headline">
-      <HeadlinePage />
+      <Guard>
+        <HeadlinePage />
+      </Guard>
     </Route>
     <Route path="/thread/:threadId">
-      <ThreadPage />
+      <Guard>
+        <ThreadPage />
+      </Guard>
     </Route>
     <Route path="/history">
-      <HistoryPage />
+      <Guard>
+        <HistoryPage />
+      </Guard>
     </Route>
     <Route path="/banner">
-      <BannerExhibitionPage />
+      <Guard>
+        <BannerExhibitionPage />
+      </Guard>
     </Route>
 
     <!-- 直リンでは辿り着けない -->
     <Route path="/akukin">
       <BannedPage />
     </Route>
-
-    <!-- 直リン攻撃対策 -->
+    <Route path="/akukin/kaijo">
+      <BanCodeVerifyPage />
+    </Route>
   </Router>
 </Guard>

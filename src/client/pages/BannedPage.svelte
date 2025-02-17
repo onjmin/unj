@@ -1,6 +1,6 @@
 <script lang="ts">
     import Card, { Content } from "@smui/card";
-    import { genBanRestoreCodeKey } from "../mylib/anti-debug.js";
+    import { genBanVerifyCode } from "../mylib/anti-debug.js";
     import { load, save } from "../mylib/storage.js";
     import {
         reportPathnameScan,
@@ -14,22 +14,34 @@
     $effect(() => {
         (async () => {
             try {
-                const ipInfo = await fetch("https://ipinfo.io?callback").then(
-                    (res) => res.json(),
-                );
-                ip = ipInfo.ip;
-                const ipInfoPack = JSON.stringify(ipInfo);
-                // BAN解除コード鍵の生成
-                const banRestoreCodeKey = genBanRestoreCodeKey();
-                save("banRestoreCodeKey", banRestoreCodeKey);
+                let ipInfoJson = await load("ipInfoJson");
+                if (ipInfoJson === null || ipInfoJson === "clear") {
+                    const ipInfo = await fetch(
+                        "https://ipinfo.io?callback",
+                    ).then((res) => res.json());
+                    ip = ipInfo.ip;
+                    ipInfoJson = JSON.stringify(ipInfo);
+                    save("ipInfoJson", ipInfoJson);
+                } else {
+                    try {
+                        const ipInfo = JSON.parse(ipInfoJson);
+                        ip = ipInfo.ip;
+                    } catch (err) {
+                        save("ipInfoJson", "clear");
+                        return; // 確実に改ざんされているので、以降の処理は無意味。
+                    }
+                }
+                // BAN解除コードの生成
+                const banVerifyCode = genBanVerifyCode(new Date(), "");
+                save("banVerifyCode", banVerifyCode);
                 // BANの通知
                 if ("done" !== (await load("banReport"))) {
                     const banReason = await load("banReason");
                     switch (banReason) {
                         case "pathnameScan":
                             await reportPathnameScan([
-                                banRestoreCodeKey,
-                                ipInfoPack,
+                                banVerifyCode,
+                                ipInfoJson,
                                 (await load("tryScanPathname")) ??
                                     "(unknownPathname)",
                             ]);
@@ -37,8 +49,8 @@
                             break;
                         case "unknownSocket":
                             await reportUnknownSocket([
-                                banRestoreCodeKey,
-                                ipInfoPack,
+                                banVerifyCode,
+                                ipInfoJson,
                             ]);
                             save("banReport", "done");
                             break;
@@ -59,7 +71,7 @@
     <Card style="text-align:center;background-color:transparent;">
         <Content>
             <h1>うんｊから大切なお知らせ</h1>
-            <h3 style="color:pink">{ip}</h3>
+            <h3 style="color:pink;min-height:2em;">{ip}</h3>
             <h2>アク禁されますた(´・ω・｀)</h2>
             <p>どうやらアクセス禁止になってしまったみたいです。。。！！</p>
             <p>身に覚えはあるでしょうか？？</p>

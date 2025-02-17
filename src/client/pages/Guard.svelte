@@ -26,16 +26,18 @@
         "/wp-login",
     ]);
 
+    const akukinPages = new Set(["/akukin", "/akukin/kaijo"]);
+
     const checkBanStatus = async () => {
         const banValue = await load("banStatus");
         banned = banValue === "ban";
         ready = true;
         // もし BAN状態 なら、どのページにいても BAN状態 ページにリダイレクト
-        if (banned && window.location.pathname !== "/akukin") {
+        if (banned && !akukinPages.has(window.location.pathname)) {
             navigate("/akukin", { replace: true });
         }
         // BAN状態 でないのに /akukin にアクセスした場合はホーム（"/"）へ戻す
-        else if (!banned && window.location.pathname === "/akukin") {
+        else if (!banned && akukinPages.has(window.location.pathname)) {
             navigate("/", { replace: true });
         }
         // 直リン攻撃を検出してBANする
@@ -53,10 +55,6 @@
     $effect(() => {
         checkBanStatus();
     });
-    // ページ遷移のたびにBAN状態をチェック
-    // $ {
-    //     checkBanStatus()
-    // }
 </script>
 
 {#if ready}

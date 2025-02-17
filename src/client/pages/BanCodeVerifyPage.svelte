@@ -1,0 +1,225 @@
+<script lang="ts">
+    import Button, { Label } from "@smui/button";
+    import Card, { Content } from "@smui/card";
+    import Checkbox from "@smui/checkbox";
+    import CircularProgress from "@smui/circular-progress";
+    import Dialog, { Title, Actions } from "@smui/dialog";
+    import FormField from "@smui/form-field";
+    import LayoutGrid, { Cell } from "@smui/layout-grid";
+    import List, { Item, Graphic, Meta } from "@smui/list";
+    import Radio from "@smui/radio";
+    import SegmentedButton, { Segment } from "@smui/segmented-button";
+    import Select, { Option } from "@smui/select";
+    import Switch from "@smui/switch";
+    import Textfield from "@smui/textfield";
+    import { ja } from "date-fns/locale"; // locale={ja}
+    import { DateInput } from "date-picker-svelte";
+    import { navigate } from "svelte-routing";
+    import { genBanVerifyCode } from "../mylib/anti-debug.js";
+    import { load, save } from "../mylib/storage.js";
+    import FooterPart from "../parts/FooterPart.svelte";
+    import HeaderPart from "../parts/HeaderPart.svelte";
+
+    const handleSubmit = async () => {
+        loading = true;
+        await new Promise((resolve) =>
+            setTimeout(
+                resolve,
+                (2783 + 114514 / 334 ** Math.random()) & (9800 + 3777),
+            ),
+        );
+        if (
+            genBanVerifyCode(
+                bannedDate,
+                (await load("banVerifyCode")) ?? "",
+            ) === banVerifyCode
+        ) {
+            await Promise.all([
+                save("ipInfoJson", "clear"),
+                save("banVerifyCode", "DIGITAL-TATTOO"),
+                save("banReport", "DIGITAL-TATTOO"),
+            ]);
+            navigate("/", { replace: true });
+        } else {
+            open = true;
+        }
+        loading = false;
+    };
+
+    let loading = $state(false);
+    let open = $state(false);
+    let banVerifyCode = $state("");
+    let bannedDate = $state(new Date());
+    let segmentedList = ["CBC", "CFB", "OFB", "CTR", "GCM "];
+    let segmentedSelected = $state("CFB");
+    let selectList = ["128bit", "192bit", "256bit"];
+    let selectValue = $state("192bit");
+    let radioList = ["PKCS#7", "ANSI X.923", "ISO 10126", "No Padding"];
+    let radioSelected = $state("No Padding");
+    let checkList = ["初期化ベクトル (IV) を設定する", "ソルトを使用する"];
+    let checkSelectedArray = $state([]);
+    let checkboxChecked = $state(false);
+    let switchChecked = $state(false);
+    let valueTypeFiles: FileList | null = $state(null);
+</script>
+
+<HeaderPart />
+
+<main>
+    <Card style="text-align:center;background-color:transparent;">
+        <Content>
+            <h1>BAN解除コード入力画面</h1>
+            <p>この画面から解除コードが入力できます😃</p>
+            <p>総当たりしても無駄ですよ🤭</p>
+            <LayoutGrid>
+                <Cell span={12}>
+                    <Label>暗号利用モード</Label>
+                    <SegmentedButton
+                        singleSelect
+                        segments={segmentedList}
+                        bind:selected={segmentedSelected}
+                    >
+                        {#snippet segment(segment)}
+                            <!-- Note: the `segment` property is required! -->
+                            <Segment {segment}>
+                                <Label>{segment}</Label>
+                            </Segment>
+                        {/snippet}
+                    </SegmentedButton>
+                </Cell>
+            </LayoutGrid>
+            <LayoutGrid>
+                <Cell>
+                    <Label>BAN日時の入力</Label>
+                    <DateInput
+                        closeOnSelection={true}
+                        browseWithoutSelecting={true}
+                        format="yyyy-MM-dd"
+                        placeholder="BANされた日付"
+                        bind:value={bannedDate}
+                    ></DateInput>
+                </Cell>
+                <Cell>
+                    <Label>password_hash()関数の引数</Label>
+                    <List checkList>
+                        {#each checkList as str}
+                            <Item>
+                                <Label>{str}</Label>
+                                <Meta>
+                                    <Checkbox
+                                        bind:group={checkSelectedArray}
+                                        value={str}
+                                    />
+                                </Meta>
+                            </Item>
+                        {/each}
+                    </List>
+                </Cell>
+                <Cell>
+                    <Select bind:value={selectValue} label="ASEの鍵長">
+                        {#each selectList as str}
+                            <Option value={str}>{str}</Option>
+                        {/each}
+                    </Select>
+                </Cell>
+                <Cell>
+                    <Textfield
+                        label="BAN解除コード"
+                        bind:value={banVerifyCode}
+                    />
+                </Cell>
+                <Cell>
+                    <Label>パディング方式</Label>
+                    <List radioList>
+                        {#each radioList as str}
+                            <Item>
+                                <Graphic>
+                                    <Radio
+                                        bind:group={radioSelected}
+                                        value={str}
+                                    />
+                                </Graphic>
+                                <Label>{str}</Label>
+                            </Item>
+                        {/each}
+                    </List>
+                </Cell>
+                <Cell>
+                    <FormField>
+                        <Checkbox bind:checked={checkboxChecked} />
+                        {#snippet label()}
+                            宣誓、もう荒らしません
+                        {/snippet}
+                    </FormField>
+                </Cell>
+            </LayoutGrid>
+            <LayoutGrid>
+                <Cell span={12}>
+                    <Button
+                        onclick={handleSubmit}
+                        variant="raised"
+                        disabled={loading}>送信</Button
+                    >
+                </Cell>
+            </LayoutGrid>
+            <LayoutGrid>
+                <Cell span={12}>
+                    <FormField>
+                        <Switch bind:checked={switchChecked} />
+                        {#snippet label()}
+                            デバッグモード
+                        {/snippet}
+                    </FormField>
+                </Cell>
+                {#if switchChecked}
+                    <Cell span={12}>
+                        <div>
+                            <Textfield
+                                bind:files={valueTypeFiles}
+                                label="【管理者用】BAN解除ファイル"
+                                type="file"
+                            />
+                        </div>
+                    </Cell>
+                {/if}
+            </LayoutGrid>
+        </Content>
+    </Card>
+</main>
+
+<FooterPart />
+
+<Dialog
+    bind:open
+    aria-labelledby="simple-title"
+    aria-describedby="simple-content"
+>
+    <Title id="simple-title">BAN解除に失敗しました</Title>
+    <Content id="simple-content">時間を置いて再度お試しください</Content>
+    <Actions>
+        <Button>
+            <Label>OK</Label>
+        </Button>
+    </Actions>
+</Dialog>
+
+{#if loading}
+    <div class="loading-overlay" style="display: flex; justify-content: center">
+        <CircularProgress style="height: 32px; width: 32px;" indeterminate />
+    </div>
+{/if}
+
+<style>
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(255, 255, 255, 0.8);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+    }
+</style>
