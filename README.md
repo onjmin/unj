@@ -5,15 +5,15 @@
 - TypeScript
 - JavaScript obfuscator
 - フロントエンド
+  - Vite
   - Svelte
   - svelte-material-ui@8.0.0-beta.3
-  - sass
-  - Vite
 - バックエンド
-  - Express
   - esbuild
+  - Express
+  - Socket.IO
 - 自動テスト
-  - Playwright
+  - Vitest（予定）
 
 ## 本番ファイルのデプロイ先
 - フロントエンド
