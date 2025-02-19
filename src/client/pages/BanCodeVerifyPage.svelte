@@ -32,12 +32,15 @@
             genBanVerifyCode(
                 bannedDate,
                 (await load("banVerifyCode")) ?? "",
-            ) === banVerifyCode
+            ) === banVerifyCode.trim()
         ) {
             await Promise.all([
-                save("ipInfoJson", "clear"),
-                save("banVerifyCode", "DIGITAL-TATTOO"),
-                save("banReport", "DIGITAL-TATTOO"),
+                save("banStatus", null),
+                save("banReason", null),
+                save("traversalTarget", null),
+                save("ipInfoJson", null),
+                save("banVerifyCode", null),
+                save("banReport", null),
             ]);
             navigate("/", { replace: true });
         } else {
@@ -50,7 +53,7 @@
     let open = $state(false);
     let banVerifyCode = $state("");
     let bannedDate = $state(new Date());
-    let segmentedList = ["CBC", "CFB", "OFB", "CTR", "GCM "];
+    let segmentedList = ["CBC", "CFB", "OFB", "CTR", "GCM"];
     let segmentedSelected = $state("CFB");
     let selectList = ["128bit", "192bit", "256bit"];
     let selectValue = $state("192bit");
@@ -79,8 +82,7 @@
                         segments={segmentedList}
                         bind:selected={segmentedSelected}
                     >
-                        {#snippet segment(segment)}
-                            <!-- Note: the `segment` property is required! -->
+                        {#snippet segment(segment: string)}
                             <Segment {segment}>
                                 <Label>{segment}</Label>
                             </Segment>

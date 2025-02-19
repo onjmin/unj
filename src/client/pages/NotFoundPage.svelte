@@ -7,6 +7,7 @@
     $effect(() => {
         setTimeout(() => {
             navigate("/", { replace: true });
+            console.log(114);
         }, 5000);
     });
 

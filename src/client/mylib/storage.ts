@@ -1,5 +1,5 @@
 import Hashids from "hashids";
-import { get, set } from "idb-keyval";
+import { del, get, set } from "idb-keyval";
 import { sha256 } from "js-sha256";
 import { DEV_MODE } from "./env.js";
 
@@ -15,7 +15,7 @@ const VITE_UNJ_STORAGE_VALUE_CHECKSUM_SECRET_PEPPER =
 /**
  * IndexedDBの安全なキーを計算する
  */
-const calcUnjStorageKey = (key: string): string => {
+const calcSecureKey = (key: string): string => {
 	if (DEV_MODE) {
 		return key;
 	}
@@ -68,8 +68,13 @@ const isSecureValue = (str: string) => {
  * 生の値を返すため危険。
  * 大容量のデータの場合に使う。
  */
-export const dangerousLoad = (key: string) =>
-	get(calcUnjStorageKey(key)).then(String);
+export const dangerousLoad = (key: string): Promise<string | null> =>
+	get(calcSecureKey(key)).then((v) => {
+		if (v === undefined) {
+			return null;
+		}
+		return v;
+	});
 
 /**
  * IndexedDBに平文で保存する
@@ -79,8 +84,14 @@ export const dangerousLoad = (key: string) =>
  */
 export const dangerousSave = async (
 	key: string,
-	value: string,
-): Promise<void> => set(calcUnjStorageKey(key), value);
+	value: string | null,
+): Promise<void> => {
+	if (value === null) {
+		del(calcSecureKey(key));
+	} else {
+		set(calcSecureKey(key), value);
+	}
+};
 
 /**
  * IndexedDBから取得する
@@ -90,7 +101,7 @@ export const load = async (key: string): Promise<string | null> => {
 		return dangerousLoad(key);
 	}
 	const secureValue = await dangerousLoad(key);
-	if (!isSecureValue(secureValue)) {
+	if (secureValue === null || !isSecureValue(secureValue)) {
 		return null;
 	}
 	// チェックサム
@@ -117,8 +128,11 @@ export const load = async (key: string): Promise<string | null> => {
 /**
  * IndexedDBに保存する
  */
-export const save = async (key: string, value: string): Promise<void> => {
-	if (DEV_MODE) {
+export const save = async (
+	key: string,
+	value: string | null,
+): Promise<void> => {
+	if (DEV_MODE || value === null) {
 		return dangerousSave(key, value);
 	}
 	const hashids = new Hashids(

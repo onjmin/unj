@@ -37,5 +37,5 @@ export const genBanVerifyCode = (date: Date, key: string) => {
 	const token = sha256(
 		[VITE_UNJ_BAN_VERIFY_CODE_PEPPER, basedTime, basedKey].join(delimiter),
 	);
-	return token.slice(0, 8); // 衝突の心配が低いので8文字に削減
+	return token.slice(0, 32); // 一定の強度にするために32文字に削減
 };

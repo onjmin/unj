@@ -2,62 +2,61 @@
     import Card, { Content } from "@smui/card";
     import { genBanVerifyCode } from "../mylib/anti-debug.js";
     import { load, save } from "../mylib/storage.js";
-    import {
-        reportPathnameScan,
-        reportUnknownSocket,
-    } from "../mylib/webhook.js";
+    import { reportTraversal, reportUnknownIP } from "../mylib/webhook.js";
     import FooterPart from "../parts/FooterPart.svelte";
     import HeaderPart from "../parts/HeaderPart.svelte";
 
     let ip = $state("");
 
-    $effect(() => {
-        (async () => {
-            try {
-                let ipInfoJson = await load("ipInfoJson");
-                if (ipInfoJson === null || ipInfoJson === "clear") {
-                    const ipInfo = await fetch(
-                        "https://ipinfo.io?callback",
-                    ).then((res) => res.json());
+    const main = async () => {
+        try {
+            let ipInfoJson = await load("ipInfoJson");
+            if (ipInfoJson === null) {
+                const ipInfo = await fetch("https://ipinfo.io?callback").then(
+                    (res) => res.json(),
+                );
+                ip = ipInfo.ip;
+                ipInfoJson = JSON.stringify(ipInfo);
+                save("ipInfoJson", ipInfoJson);
+            } else {
+                try {
+                    const ipInfo = JSON.parse(ipInfoJson);
                     ip = ipInfo.ip;
-                    ipInfoJson = JSON.stringify(ipInfo);
-                    save("ipInfoJson", ipInfoJson);
-                } else {
-                    try {
-                        const ipInfo = JSON.parse(ipInfoJson);
-                        ip = ipInfo.ip;
-                    } catch (err) {
-                        save("ipInfoJson", "clear");
-                        return; // 確実に改ざんされているので、以降の処理は無意味。
-                    }
+                } catch (err) {
+                    save("ipInfoJson", null);
+                    return; // 確実に改ざんされているので、以降の処理は無意味。
                 }
-                // BAN解除コードの生成
-                const banVerifyCode = genBanVerifyCode(new Date(), "");
-                save("banVerifyCode", banVerifyCode);
-                // BANの通知
-                if ("done" !== (await load("banReport"))) {
-                    const banReason = await load("banReason");
-                    switch (banReason) {
-                        case "pathnameScan":
-                            await reportPathnameScan([
-                                banVerifyCode,
-                                ipInfoJson,
-                                (await load("tryScanPathname")) ??
-                                    "(unknownPathname)",
-                            ]);
-                            save("banReport", "done");
-                            break;
-                        case "unknownSocket":
-                            await reportUnknownSocket([
-                                banVerifyCode,
-                                ipInfoJson,
-                            ]);
-                            save("banReport", "done");
-                            break;
-                    }
+            }
+            // BAN解除コードの生成
+            const banVerifyCode = genBanVerifyCode(new Date(), "");
+            save("banVerifyCode", banVerifyCode);
+            // BANの通知
+            if ("done" !== (await load("banReport"))) {
+                const banReason = await load("banReason");
+                switch (banReason) {
+                    case "traversal":
+                        await reportTraversal([
+                            banVerifyCode,
+                            ipInfoJson,
+                            (await load("traversalTarget")) ?? "(unknown)",
+                        ]);
+                        save("banReport", "done");
+                        break;
+                    case "unknownIP":
+                        await reportUnknownIP([
+                            banVerifyCode,
+                            ipInfoJson,
+                            window.navigator.userAgent,
+                        ]);
+                        save("banReport", "done");
+                        break;
                 }
-            } catch (err) {}
-        })();
+            }
+        } catch (err) {}
+    };
+
+    $effect(() => {
+        main();
     });
 </script>
 
