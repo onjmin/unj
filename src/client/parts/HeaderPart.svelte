@@ -1,15 +1,21 @@
 <script lang="ts">
-  import Banner, { Icon, CloseReason } from "@smui/banner";
+  import Banner, { Icon } from "@smui/banner";
   import Button, { Label } from "@smui/button";
+  import Checkbox from "@smui/checkbox";
   import Dialog, { Title, Content, Actions } from "@smui/dialog";
+  import FormField from "@smui/form-field";
   import TopAppBar, { Row, Section } from "@smui/top-app-bar";
   import { Link } from "svelte-routing";
+  import { visible } from "../mylib/dom.js";
   import { load, save } from "../mylib/storage.js";
   import TermsPart from "./TermsPart.svelte";
 
   let { openAttention = false } = $props();
   let openTerms = $state(false);
   let openTermsWarn = $state(false);
+
+  let isAlreadyScrollEnd = $state(false);
+  let termsChecked = $state(false);
 
   const closeHandler = async (e: CustomEvent<{ action: string }>) => {
     switch (e.detail.action) {
@@ -89,9 +95,24 @@
     onSMUIDialogClosed={closeHandler}
   >
     <Title id="fullscreen-title">うんｊ利用規約</Title>
-    <Content id="fullscreen-content"><TermsPart /></Content>
-    <Actions>
-      <Button action="accept">
+    <Content id="fullscreen-content">
+      <TermsPart />
+      <div
+        use:visible={(visible) => {
+          if (visible && !isAlreadyScrollEnd) {
+            isAlreadyScrollEnd = true;
+          }
+        }}
+      ></div>
+    </Content>
+    <Actions style="display: flex; align-items: center; gap: 1rem;">
+      <FormField style="margin-right: auto;">
+        <Checkbox bind:checked={termsChecked} disabled={!isAlreadyScrollEnd} />
+        {#snippet label()}
+          はい、全文を読んで理解しました。
+        {/snippet}
+      </FormField>
+      <Button action="accept" disabled={!termsChecked}>
         <Label>同意する</Label>
       </Button>
       <Button action="reject">

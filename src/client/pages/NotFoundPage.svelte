@@ -33,7 +33,7 @@
             <p>The requested URL was not found on this server.</p>
             <p>ページは（ナイ！）</p>
             <img
-                alt="randomIllust"
+                alt="random-illust"
                 src={randomIllust}
                 style="display: block; max-height: 20vh; margin: 1em auto;"
             />
