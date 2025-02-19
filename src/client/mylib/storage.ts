@@ -5,12 +5,12 @@ import { DEV_MODE } from "./env.js";
 
 const delimiter = "###";
 
-const VITE_UNJ_STORAGE_KEY_SECRET_PEPPER =
-	import.meta.env.VITE_UNJ_STORAGE_KEY_SECRET_PEPPER ?? "";
-const VITE_UNJ_STORAGE_VALUE_SECRET_PEPPER =
-	import.meta.env.VITE_UNJ_STORAGE_VALUE_SECRET_PEPPER ?? "";
-const VITE_UNJ_STORAGE_VALUE_CHECKSUM_SECRET_PEPPER =
-	import.meta.env.VITE_UNJ_STORAGE_VALUE_CHECKSUM_SECRET_PEPPER ?? "";
+const VITE_UNJ_IDB_KEY_SECRET_PEPPER =
+	import.meta.env.VITE_UNJ_IDB_KEY_SECRET_PEPPER ?? "";
+const VITE_UNJ_IDB_VALUE_SECRET_PEPPER =
+	import.meta.env.VITE_UNJ_IDB_VALUE_SECRET_PEPPER ?? "";
+const VITE_UNJ_IDB_VALUE_CHECKSUM_SECRET_PEPPER =
+	import.meta.env.VITE_UNJ_IDB_VALUE_CHECKSUM_SECRET_PEPPER ?? "";
 
 /**
  * IndexedDBの安全なキーを計算する
@@ -19,9 +19,7 @@ const calcSecureKey = (key: string): string => {
 	if (DEV_MODE) {
 		return key;
 	}
-	const token = sha256(
-		[VITE_UNJ_STORAGE_KEY_SECRET_PEPPER, key].join(delimiter),
-	);
+	const token = sha256([VITE_UNJ_IDB_KEY_SECRET_PEPPER, key].join(delimiter));
 	return token.slice(0, 8); // 衝突の心配が低いので8文字に削減
 };
 
@@ -34,7 +32,7 @@ const calcSecureKey = (key: string): string => {
  */
 const calcUnjStorageValueCheckSum = (encoded: string): string => {
 	const token = sha256(
-		[VITE_UNJ_STORAGE_VALUE_CHECKSUM_SECRET_PEPPER, encoded].join(delimiter),
+		[VITE_UNJ_IDB_VALUE_CHECKSUM_SECRET_PEPPER, encoded].join(delimiter),
 	);
 	return token.slice(0, CHECKSUM_LENGTH);
 };
@@ -111,10 +109,7 @@ export const load = async (key: string): Promise<string | null> => {
 		return null;
 	}
 	// 複号
-	const hashids = new Hashids(
-		VITE_UNJ_STORAGE_VALUE_SECRET_PEPPER,
-		HASHIDS_UNIT,
-	);
+	const hashids = new Hashids(VITE_UNJ_IDB_VALUE_SECRET_PEPPER, HASHIDS_UNIT);
 	const encodedArray = Array.from(encoded).flatMap((_, i, arr) =>
 		i % HASHIDS_UNIT === 0 ? [arr.slice(i, i + HASHIDS_UNIT).join("")] : [],
 	);
@@ -135,10 +130,7 @@ export const save = async (
 	if (DEV_MODE || value === null) {
 		return dangerousSave(key, value);
 	}
-	const hashids = new Hashids(
-		VITE_UNJ_STORAGE_VALUE_SECRET_PEPPER,
-		HASHIDS_UNIT,
-	);
+	const hashids = new Hashids(VITE_UNJ_IDB_VALUE_SECRET_PEPPER, HASHIDS_UNIT);
 	const encoded = [...value]
 		.map((v) => String(v.codePointAt(0))) // 危険なキャストだが、組み込み関数なので信用する
 		.map((v) => hashids.encode(v))
