@@ -3,7 +3,6 @@
 		"biomejs.biome",
 		"usernamehw.errorlens",
 		"mhutchie.git-graph",
-		"svelte.svelte-vscode",
-		"ms-playwright.playwright"
+		"svelte.svelte-vscode"
 	]
 }

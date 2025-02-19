@@ -14,6 +14,7 @@
   import ThreadPage from "./pages/ThreadPage.svelte";
   import UpdatePage from "./pages/UpdatePage.svelte";
   import BannedCheck from "./plugs/BannedCheck.svelte";
+  import LinksPage from "./plugs/LinksPage.svelte";
   import TraversalCheck from "./plugs/TraversalCheck.svelte";
   import UnbannedCheck from "./plugs/UnbannedCheck.svelte";
 </script>
@@ -89,6 +90,12 @@
   <Route path="/banner">
     <BannedCheck>
       <BannerExhibitionPage />
+    </BannedCheck>
+  </Route>
+  <!-- リンク集 -->
+  <Route path="/links">
+    <BannedCheck>
+      <LinksPage />
     </BannedCheck>
   </Route>
 

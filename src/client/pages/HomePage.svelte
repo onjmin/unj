@@ -43,7 +43,7 @@
       <img
         alt="random-illust"
         src={randomIllust}
-        style="display: block; max-height: 50vh; margin: 1em auto;"
+        style="display: block; max-height: 50vh; min-height: 50vh; margin: 1em auto;"
       />
       <p>
         「{randomOnjKeyWord1}」から「{randomOnjKeyWord2}」までを手広くカバーする匿名掲示板

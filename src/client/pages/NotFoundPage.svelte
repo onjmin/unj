@@ -35,7 +35,7 @@
             <img
                 alt="random-illust"
                 src={randomIllust}
-                style="display: block; max-height: 20vh; margin: 1em auto;"
+                style="display: block; max-height: 20vh; min-height: 20vh; : 1em auto;"
             />
             <p>
                 「すご」「これガチでいけるんちゃうか？」「あくしろ　楽しみすぎる」
