@@ -31,7 +31,7 @@
       var(--mdc-theme-text-hint-on-background, rgba(0, 0, 0, 0.1));
     transition: transform 0.3s ease;
     max-width: 100vw;
-    min-width: 20vw;
+    width: 256px;
     right: 0;
     transform: translateX(0);
     background-color: black;

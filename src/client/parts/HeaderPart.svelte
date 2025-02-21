@@ -4,6 +4,7 @@
   import { DEV_MODE, STG_MODE } from "../mylib/env.js";
   import LeftMenuPart from "./LeftMenuPart.svelte";
   import RightMenuPart from "./RightMenuPart.svelte";
+  import StylePart from "./StylePart.svelte";
 
   let { children = null, title = "", menu = true, bookmark = false } = $props();
   if (DEV_MODE) {
@@ -51,6 +52,8 @@
     }
   </style>
 </svelte:head>
+
+<StylePart />
 
 <header class="unj-header-part">
   <TopAppBar variant="static">
