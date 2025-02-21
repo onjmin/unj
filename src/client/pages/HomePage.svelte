@@ -46,11 +46,7 @@
 
 <MainPart menu={false}>
   <h1>運営と運命を共にする、うんち実況（セーラージュピター）</h1>
-  <img
-    alt="random-illust"
-    src={randomIllust}
-    style="display: block; margin: 1em auto; max-height: 50vh; min-height: 50vh;"
-  />
+  <img class="img-home" alt="img-home" src={randomIllust} />
   <p>
     「{randomOnjKeyWord1}」から「{randomOnjKeyWord2}」までを手広くカバーする匿名掲示板
   </p>
@@ -60,3 +56,14 @@
 </MainPart>
 
 <FooterPart />
+
+<style>
+  .img-home {
+    display: block;
+    margin: 1em auto;
+    max-width: 50vw;
+    max-height: 50vh;
+    width: auto;
+    height: auto;
+  }
+</style>

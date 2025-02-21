@@ -29,13 +29,20 @@
 <MainPart menu={false}>
     <p>The requested URL was not found on this server.</p>
     <p>ページは（ナイ！）</p>
-    <img
-        alt="random-illust"
-        src={randomIllust}
-        style="display: block; margin: 1em auto; max-height: 20vh; min-height: 20vh;"
-    />
+    <img class="img404" alt="img404" src={randomIllust} />
     <p>「すご」「これガチでいけるんちゃうか？」「あくしろ　楽しみすぎる」</p>
     <p>これ、なんだったの？</p>
 </MainPart>
 
 <FooterPart />
+
+<style>
+    .img404 {
+        display: block;
+        margin: 1em auto;
+        max-width: 50vw;
+        max-height: 50vh;
+        width: auto;
+        height: auto;
+    }
+</style>
