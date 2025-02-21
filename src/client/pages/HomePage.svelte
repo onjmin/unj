@@ -1,9 +1,12 @@
 <script lang="ts">
   import Button from "@smui/button";
-  import Card, { Content } from "@smui/card";
+  import { navigate } from "svelte-routing";
+  import { base } from "../mylib/env.js";
   import { load } from "../mylib/storage.js";
   import FooterPart from "../parts/FooterPart.svelte";
   import HeaderPart from "../parts/HeaderPart.svelte";
+  import MainPart from "../parts/MainPart.svelte";
+  import TermsConfirmPart from "../parts/TermsConfirmPart.svelte";
 
   const onjKeyWords = [
     "束音ロゼ",
@@ -20,11 +23,15 @@
     onjKeyWords.filter((v) => v !== randomOnjKeyWord1),
   );
 
-  let openAttention = $state(false);
-  const tryEnter = async () =>
-    load("termsAgreement").then((v) => {
-      openAttention = "yes" !== (v ?? "");
-    });
+  let openConfirm = $state(false);
+  const tryEnter = async () => {
+    if ("yes" === (await load("termsAgreement"))) {
+      openConfirm = false;
+      navigate(base("/headline"));
+    } else {
+      openConfirm = true;
+    }
+  };
 
   const illusts = [
     "https://i.imgur.com/q4fuN3p.gif", // ポケモンの街風ドット絵
@@ -34,25 +41,22 @@
   const randomIllust = randArray(illusts);
 </script>
 
-<HeaderPart {openAttention} />
+<HeaderPart menu={false} title="うんｊ掲示板へようこそ" />
+<TermsConfirmPart {openConfirm} />
 
-<main>
-  <Card style="text-align:center;background-color:transparent;">
-    <Content>
-      <h1>運営と運命を共にする、うんち実況（セーラージュピター）</h1>
-      <img
-        alt="random-illust"
-        src={randomIllust}
-        style="display: block; max-height: 50vh; min-height: 50vh; margin: 1em auto;"
-      />
-      <p>
-        「{randomOnjKeyWord1}」から「{randomOnjKeyWord2}」までを手広くカバーする匿名掲示板
-      </p>
-      <p>『うんｊ』へようこそ！</p>
-      <Button onclick={tryEnter} variant="raised">入る</Button>
-      <p>しばらくしても、自動的に移動しません。</p>
-    </Content>
-  </Card>
-</main>
+<MainPart menu={false}>
+  <h1>運営と運命を共にする、うんち実況（セーラージュピター）</h1>
+  <img
+    alt="random-illust"
+    src={randomIllust}
+    style="display: block; margin: 1em auto; max-height: 50vh; min-height: 50vh;"
+  />
+  <p>
+    「{randomOnjKeyWord1}」から「{randomOnjKeyWord2}」までを手広くカバーする匿名掲示板
+  </p>
+  <p>『うんｊ』へようこそ！</p>
+  <Button onclick={tryEnter} variant="raised">入る</Button>
+  <p>しばらくしても、自動的に移動しません。</p>
+</MainPart>
 
 <FooterPart />

@@ -1,5 +1,6 @@
 <script lang="ts">
     import { navigate } from "svelte-routing";
+    import { base } from "../mylib/env.js";
     import { load } from "../mylib/storage.js";
 
     let { children } = $props();
@@ -7,7 +8,7 @@
 
     const main = async () => {
         if ("ban" === (await load("banStatus"))) {
-            navigate("/akukin", { replace: true });
+            navigate(base("/akukin"), { replace: true });
         } else {
             ready = true;
         }

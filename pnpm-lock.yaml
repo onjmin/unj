@@ -57,6 +57,9 @@ importers:
       '@biomejs/biome':
         specifier: 1.9.4
         version: 1.9.4
+      '@smui-extra/accordion':
+        specifier: 8.0.0-beta.3
+        version: 8.0.0-beta.3
       '@smui/banner':
         specifier: 8.0.0-beta.3
         version: 8.0.0-beta.3
@@ -72,10 +75,19 @@ importers:
       '@smui/circular-progress':
         specifier: 8.0.0-beta.3
         version: 8.0.0-beta.3
+      '@smui/data-table':
+        specifier: 8.0.0-beta.3
+        version: 8.0.0-beta.3
       '@smui/dialog':
         specifier: 8.0.0-beta.3
         version: 8.0.0-beta.3
+      '@smui/drawer':
+        specifier: 8.0.0-beta.3
+        version: 8.0.0-beta.3
       '@smui/form-field':
+        specifier: 8.0.0-beta.3
+        version: 8.0.0-beta.3
+      '@smui/icon-button':
         specifier: 8.0.0-beta.3
         version: 8.0.0-beta.3
       '@smui/layout-grid':

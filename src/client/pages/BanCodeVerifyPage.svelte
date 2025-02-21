@@ -1,9 +1,8 @@
 <script lang="ts">
     import Button, { Label } from "@smui/button";
-    import Card, { Content } from "@smui/card";
     import Checkbox from "@smui/checkbox";
     import CircularProgress from "@smui/circular-progress";
-    import Dialog, { Title, Actions } from "@smui/dialog";
+    import Dialog, { Title, Actions, Content } from "@smui/dialog";
     import FormField from "@smui/form-field";
     import LayoutGrid, { Cell } from "@smui/layout-grid";
     import List, { Item, Graphic, Meta } from "@smui/list";
@@ -12,13 +11,14 @@
     import Select, { Option } from "@smui/select";
     import Switch from "@smui/switch";
     import Textfield from "@smui/textfield";
-    import { ja } from "date-fns/locale"; // locale={ja}
     import { DateInput } from "date-picker-svelte";
     import { navigate } from "svelte-routing";
     import { genBanVerifyCode } from "../mylib/anti-debug.js";
+    import { base } from "../mylib/env.js";
     import { load, save } from "../mylib/storage.js";
     import FooterPart from "../parts/FooterPart.svelte";
     import HeaderPart from "../parts/HeaderPart.svelte";
+    import MainPart from "../parts/MainPart.svelte";
 
     const handleSubmit = async () => {
         loading = true;
@@ -42,7 +42,7 @@
                 save("banVerifyCode", null),
                 save("banReport", null),
             ]);
-            navigate("/", { replace: true });
+            navigate(base("/"), { replace: true });
         } else {
             open = true;
         }
@@ -66,128 +66,115 @@
     let valueTypeFiles: FileList | null = $state(null);
 </script>
 
-<HeaderPart />
+<HeaderPart menu={false} title="BAN解除コード入力画面" />
 
-<main>
-    <Card style="text-align:center;background-color:transparent;">
-        <Content>
-            <h1>BAN解除コード入力画面</h1>
-            <p>この画面から解除コードが入力できます😃</p>
-            <p>総当たりしても無駄ですよ🤭</p>
-            <LayoutGrid>
-                <Cell span={12}>
-                    <Label>暗号利用モード</Label>
-                    <SegmentedButton
-                        singleSelect
-                        segments={segmentedList}
-                        bind:selected={segmentedSelected}
-                    >
-                        {#snippet segment(segment: string)}
-                            <Segment {segment}>
-                                <Label>{segment}</Label>
-                            </Segment>
-                        {/snippet}
-                    </SegmentedButton>
-                </Cell>
-            </LayoutGrid>
-            <LayoutGrid>
-                <Cell>
-                    <Label>BAN日時の入力</Label>
-                    <DateInput
-                        closeOnSelection={true}
-                        browseWithoutSelecting={true}
-                        format="yyyy-MM-dd"
-                        placeholder="BANされた日付"
-                        bind:value={bannedDate}
-                    ></DateInput>
-                </Cell>
-                <Cell>
-                    <Label>password_hash()関数の引数</Label>
-                    <List checkList>
-                        {#each checkList as str}
-                            <Item>
-                                <Label>{str}</Label>
-                                <Meta>
-                                    <Checkbox
-                                        bind:group={checkSelectedArray}
-                                        value={str}
-                                    />
-                                </Meta>
-                            </Item>
-                        {/each}
-                    </List>
-                </Cell>
-                <Cell>
-                    <Select bind:value={selectValue} label="ASEの鍵長">
-                        {#each selectList as str}
-                            <Option value={str}>{str}</Option>
-                        {/each}
-                    </Select>
-                </Cell>
-                <Cell>
-                    <Textfield
-                        label="BAN解除コード"
-                        bind:value={banVerifyCode}
-                    />
-                </Cell>
-                <Cell>
-                    <Label>パディング方式</Label>
-                    <List radioList>
-                        {#each radioList as str}
-                            <Item>
-                                <Graphic>
-                                    <Radio
-                                        bind:group={radioSelected}
-                                        value={str}
-                                    />
-                                </Graphic>
-                                <Label>{str}</Label>
-                            </Item>
-                        {/each}
-                    </List>
-                </Cell>
-                <Cell>
-                    <FormField>
-                        <Checkbox bind:checked={checkboxChecked} />
-                        {#snippet label()}
-                            宣誓、もう荒らしません
-                        {/snippet}
-                    </FormField>
-                </Cell>
-            </LayoutGrid>
-            <LayoutGrid>
-                <Cell span={12}>
-                    <Button
-                        onclick={handleSubmit}
-                        variant="raised"
-                        disabled={loading}>送信</Button
-                    >
-                </Cell>
-            </LayoutGrid>
-            <LayoutGrid>
-                <Cell span={12}>
-                    <FormField>
-                        <Switch bind:checked={switchChecked} />
-                        {#snippet label()}
-                            デバッグモード
-                        {/snippet}
-                    </FormField>
-                </Cell>
-                {#if switchChecked}
-                    <Cell span={12}>
-                        <div>
-                            <Textfield
-                                bind:files={valueTypeFiles}
-                                label="【管理者用】BAN解除ファイル"
-                                type="file"
+<MainPart menu={false}>
+    <p>この画面から解除コードが入力できます😃</p>
+    <p>総当たりしても無駄ですよ🤭</p>
+    <LayoutGrid>
+        <Cell span={12}>
+            <Label>暗号利用モード</Label>
+            <SegmentedButton
+                singleSelect
+                segments={segmentedList}
+                bind:selected={segmentedSelected}
+            >
+                {#snippet segment(segment: string)}
+                    <Segment {segment}>
+                        <Label>{segment}</Label>
+                    </Segment>
+                {/snippet}
+            </SegmentedButton>
+        </Cell>
+    </LayoutGrid>
+    <LayoutGrid>
+        <Cell>
+            <Label>BAN日時の入力</Label>
+            <DateInput
+                closeOnSelection={true}
+                browseWithoutSelecting={true}
+                format="yyyy-MM-dd"
+                placeholder="BANされた日付"
+                bind:value={bannedDate}
+            ></DateInput>
+        </Cell>
+        <Cell>
+            <Label>password_hash()関数の引数</Label>
+            <List checkList>
+                {#each checkList as str}
+                    <Item>
+                        <Label>{str}</Label>
+                        <Meta>
+                            <Checkbox
+                                bind:group={checkSelectedArray}
+                                value={str}
                             />
-                        </div>
-                    </Cell>
-                {/if}
-            </LayoutGrid>
-        </Content>
-    </Card>
-</main>
+                        </Meta>
+                    </Item>
+                {/each}
+            </List>
+        </Cell>
+        <Cell>
+            <Select bind:value={selectValue} label="ASEの鍵長">
+                {#each selectList as str}
+                    <Option value={str}>{str}</Option>
+                {/each}
+            </Select>
+        </Cell>
+        <Cell>
+            <Textfield label="BAN解除コード" bind:value={banVerifyCode} />
+        </Cell>
+        <Cell>
+            <Label>パディング方式</Label>
+            <List radioList>
+                {#each radioList as str}
+                    <Item>
+                        <Graphic>
+                            <Radio bind:group={radioSelected} value={str} />
+                        </Graphic>
+                        <Label>{str}</Label>
+                    </Item>
+                {/each}
+            </List>
+        </Cell>
+        <Cell>
+            <FormField>
+                <Checkbox bind:checked={checkboxChecked} />
+                {#snippet label()}
+                    宣誓、もう荒らしません
+                {/snippet}
+            </FormField>
+        </Cell>
+    </LayoutGrid>
+    <LayoutGrid>
+        <Cell span={12}>
+            <Button onclick={handleSubmit} variant="raised" disabled={loading}
+                >送信</Button
+            >
+        </Cell>
+    </LayoutGrid>
+    <LayoutGrid>
+        <Cell span={12}>
+            <FormField>
+                <Switch bind:checked={switchChecked} />
+                {#snippet label()}
+                    デバッグモード
+                {/snippet}
+            </FormField>
+        </Cell>
+        {#if switchChecked}
+            <Cell span={12}>
+                <div>
+                    <Textfield
+                        bind:files={valueTypeFiles}
+                        label="【管理者用】BAN解除ファイル"
+                        type="file"
+                    />
+                </div>
+            </Cell>
+        {/if}
+    </LayoutGrid>
+</MainPart>
 
 <FooterPart />
 

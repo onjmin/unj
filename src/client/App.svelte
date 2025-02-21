@@ -1,5 +1,6 @@
 <script lang="ts">
   import { Route, Router } from "svelte-routing";
+  import { base } from "./mylib/env.js";
   import BanCodeVerifyPage from "./pages/BanCodeVerifyPage.svelte";
   import BannedPage from "./pages/BannedPage.svelte";
   import BannerExhibitionPage from "./pages/BannerExhibitionPage.svelte";
@@ -9,18 +10,35 @@
   import HeadlinePage from "./pages/HeadlinePage.svelte";
   import HistoryPage from "./pages/HistoryPage.svelte";
   import HomePage from "./pages/HomePage.svelte";
+  import LinksPage from "./pages/LinksPage.svelte";
   import NewPage from "./pages/NewPage.svelte";
   import NotFoundPage from "./pages/NotFoundPage.svelte";
+  import TermsPage from "./pages/TermsPage.svelte";
   import ThreadPage from "./pages/ThreadPage.svelte";
   import UpdatePage from "./pages/UpdatePage.svelte";
   import BannedCheck from "./plugs/BannedCheck.svelte";
-  import LinksPage from "./plugs/LinksPage.svelte";
   import TraversalCheck from "./plugs/TraversalCheck.svelte";
   import UnbannedCheck from "./plugs/UnbannedCheck.svelte";
+
+  const NotFoundPagePath = base("/*");
+  const HomePagePath = base("/");
+  const HeadlinePagePath = base("/headline");
+  const ThreadPagePath = base("/thread/:threadId");
+  const NewPagePath = base("/new");
+  const HistoryPagePath = base("/history");
+  const BookmarkPagePath = base("/bookmark");
+  const ConfigPagePath = base("/config");
+  const TermsPagePath = base("/terms");
+  const ContactPagePath = base("/contact");
+  const UpdatePagePath = base("/update");
+  const BannerExhibitionPagePath = base("/banner");
+  const LinksPagePath = base("/links");
+  const AkukinPagePath = base("/akukin");
+  const AkukinKaijoPagePath = base("/akukin/kaijo");
 </script>
 
 <Router>
-  <Route path="/*">
+  <Route path={NotFoundPagePath}>
     <BannedCheck>
       <TraversalCheck>
         <NotFoundPage />
@@ -29,83 +47,87 @@
   </Route>
 
   <!-- エントリページ -->
-  <Route path="/">
+  <Route path={HomePagePath}>
     <BannedCheck>
       <HomePage />
     </BannedCheck>
   </Route>
   <!-- ヘッドライン -->
-  <Route path="/headline">
+  <Route path={HeadlinePagePath}>
     <BannedCheck>
       <HeadlinePage />
     </BannedCheck>
   </Route>
   <!-- スレッド -->
-  <Route path="/thread/:threadId">
+  <Route path={ThreadPagePath}>
     <BannedCheck>
       <ThreadPage />
     </BannedCheck>
   </Route>
 
-  <!-- 右のハンバーガーボタンから遷移可能 -->
   <!-- スレ立て -->
-  <Route path="/new">
+  <Route path={NewPagePath}>
     <BannedCheck>
       <NewPage />
     </BannedCheck>
   </Route>
-  <!-- 履歴 -->
-  <Route path="/history">
+  <!-- 閲覧履歴 -->
+  <Route path={HistoryPagePath}>
     <BannedCheck>
       <HistoryPage />
     </BannedCheck>
   </Route>
-  <!-- 後で見る -->
-  <Route path="/bookmark">
+  <!-- #後で見る -->
+  <Route path={BookmarkPagePath}>
     <BannedCheck>
       <BookmarkPage />
     </BannedCheck>
   </Route>
-  <!-- ユーザー設定 -->
-  <Route path="/config">
+  <!-- 個人設定 -->
+  <Route path={ConfigPagePath}>
     <BannedCheck>
       <ConfigPage />
     </BannedCheck>
   </Route>
 
-  <!-- 左のハンバーガーボタンから遷移可能 -->
-  <!-- 新機能のお知らせ -->
-  <Route path="/update">
+  <!-- 利用規約 -->
+  <Route path={TermsPagePath}>
     <BannedCheck>
-      <UpdatePage />
+      <TermsPage />
     </BannedCheck>
   </Route>
-  <!-- 問い合わせ -->
-  <Route path="/contact">
+  <!-- お問い合わせ -->
+  <Route path={ContactPagePath}>
     <BannedCheck>
       <ContactPage />
     </BannedCheck>
   </Route>
+  <!-- 新機能のお知らせ -->
+  <Route path={UpdatePagePath}>
+    <BannedCheck>
+      <UpdatePage />
+    </BannedCheck>
+  </Route>
   <!-- バナー展示場 -->
-  <Route path="/banner">
+  <Route path={BannerExhibitionPagePath}>
     <BannedCheck>
       <BannerExhibitionPage />
     </BannedCheck>
   </Route>
   <!-- リンク集 -->
-  <Route path="/links">
+  <Route path={LinksPagePath}>
     <BannedCheck>
       <LinksPage />
     </BannedCheck>
   </Route>
 
   <!-- 直リンでは辿り着けない -->
-  <Route path="/akukin">
+  <Route path={AkukinPagePath}>
     <UnbannedCheck>
       <BannedPage />
     </UnbannedCheck>
   </Route>
-  <Route path="/akukin/kaijo">
+  <Route path={AkukinKaijoPagePath}>
     <UnbannedCheck>
       <BanCodeVerifyPage />
     </UnbannedCheck>

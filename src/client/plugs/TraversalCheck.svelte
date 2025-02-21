@@ -1,6 +1,7 @@
 <script lang="ts">
     import { navigate } from "svelte-routing";
     import { flaky } from "../mylib/anti-debug.js";
+    import { base, pathname } from "../mylib/env.js";
     import { save } from "../mylib/storage.js";
 
     let { children } = $props();
@@ -33,15 +34,15 @@
     ]);
 
     const main = async () => {
-        if (honeypot.has(window.location.pathname)) {
+        if (honeypot.has(pathname())) {
             if (
                 !flaky(async () => {
                     await Promise.all([
                         save("banStatus", "ban"),
                         save("banReason", "traversal"),
-                        save("traversalTarget", window.location.pathname),
+                        save("traversalTarget", window.location.href),
                     ]);
-                    navigate("/akukin", { replace: true });
+                    navigate(base("/akukin"), { replace: true });
                 })
             ) {
                 ready = true;

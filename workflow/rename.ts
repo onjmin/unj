@@ -4,9 +4,9 @@ import { fileURLToPath } from "node:url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const distDir = path.resolve(__dirname, "dist");
-const sourcePath = path.join(distDir, "server.js");
-const destPath = path.join(distDir, "server.cjs");
+const dir = path.resolve(__dirname, "..", "dist");
+const sourcePath = path.join(dir, "server.js");
+const destPath = path.join(dir, "server.cjs");
 
 try {
 	await rename(sourcePath, destPath);

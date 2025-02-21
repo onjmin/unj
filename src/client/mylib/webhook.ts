@@ -1,6 +1,18 @@
 import { format } from "date-fns";
 import { ja } from "date-fns/locale";
 
+const VITE_DISCORD_WEBHOOK_URL_OF_CONTACT_AGPL3 = import.meta.env
+	.VITE_DISCORD_WEBHOOK_URL_OF_CONTACT_AGPL3;
+const VITE_DISCORD_WEBHOOK_URL_OF_CONTACT_POLICE = import.meta.env
+	.VITE_DISCORD_WEBHOOK_URL_OF_CONTACT_POLICE;
+const VITE_DISCORD_WEBHOOK_URL_OF_CONTACT_KAIZEN = import.meta.env
+	.VITE_DISCORD_WEBHOOK_URL_OF_CONTACT_KAIZEN;
+const VITE_DISCORD_WEBHOOK_URL_OF_CONTACT_NEW_FEATURE = import.meta.env
+	.VITE_DISCORD_WEBHOOK_URL_OF_CONTACT_NEW_FEATURE;
+const VITE_DISCORD_WEBHOOK_URL_OF_CONTACT_HELP = import.meta.env
+	.VITE_DISCORD_WEBHOOK_URL_OF_CONTACT_HELP;
+const VITE_DISCORD_WEBHOOK_URL_OF_USER_REPORT = import.meta.env
+	.VITE_DISCORD_WEBHOOK_URL_OF_USER_REPORT;
 const VITE_DISCORD_WEBHOOK_URL_OF_REPORT_TRAVERSAL = import.meta.env
 	.VITE_DISCORD_WEBHOOK_URL_OF_REPORT_TRAVERSAL;
 const VITE_DISCORD_WEBHOOK_URL_OF_REPORT_UNKNOWN_IP = import.meta.env
@@ -24,6 +36,42 @@ const sendDiscordWebhook = (url: string, array: Array<string>) =>
 			].join("\n"),
 		}),
 	});
+
+/**
+ * AGPL3に関するお問い合わせ
+ */
+export const contactAGPL3 = (array: Array<string>) =>
+	sendDiscordWebhook(VITE_DISCORD_WEBHOOK_URL_OF_CONTACT_AGPL3, array);
+
+/**
+ * 警察からのお問い合わせ
+ */
+export const contactPolice = (array: Array<string>) =>
+	sendDiscordWebhook(VITE_DISCORD_WEBHOOK_URL_OF_CONTACT_POLICE, array);
+
+/**
+ * 改善に関するお問い合わせ
+ */
+export const contactKaizen = (array: Array<string>) =>
+	sendDiscordWebhook(VITE_DISCORD_WEBHOOK_URL_OF_CONTACT_KAIZEN, array);
+
+/**
+ * 新機能に関するお問い合わせ
+ */
+export const contactNewFeature = (array: Array<string>) =>
+	sendDiscordWebhook(VITE_DISCORD_WEBHOOK_URL_OF_CONTACT_NEW_FEATURE, array);
+
+/**
+ * ヘルプに関するお問い合わせ
+ */
+export const contactHelp = (array: Array<string>) =>
+	sendDiscordWebhook(VITE_DISCORD_WEBHOOK_URL_OF_CONTACT_HELP, array);
+
+/**
+ * ユーザーによる通報
+ */
+export const userReport = (array: Array<string>) =>
+	sendDiscordWebhook(VITE_DISCORD_WEBHOOK_URL_OF_USER_REPORT, array);
 
 /**
  * トラバーサル検出時に送信する

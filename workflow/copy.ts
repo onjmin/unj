@@ -4,9 +4,9 @@ import { fileURLToPath } from "node:url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const distDir = path.resolve(__dirname, "src", "client");
-const sourcePath = path.join(distDir, "index.html");
-const destPath = path.join(distDir, "404.html");
+const dir = path.resolve(__dirname, "..", "src", "client");
+const sourcePath = path.join(dir, "index.html");
+const destPath = path.join(dir, "404.html");
 
 try {
 	await copyFile(sourcePath, destPath);

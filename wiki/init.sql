@@ -41,13 +41,12 @@ CREATE TABLE threads (
     latest_res_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 最終レスの日時（初期値はスレ立てた日時で自明なため）
     user_id SMALLINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     ref_thread_id SMALLINT NOT NULL DEFAULT 0, -- 前スレのID（0の場合は前スレ無し）
-    is_live BOOLEAN DEFAULT FALSE, -- 実況スレのフラグ
-    is_threadjack BOOLEAN DEFAULT FALSE, -- スレッドジャック機能のフラグ
     title TEXT NOT NULL DEFAULT '',
     ps TEXT NOT NULL DEFAULT '', -- !add機能で>>1の末尾に追記する内容
     res_count SMALLINT NOT NULL DEFAULT 1, -- count()よりも軽量。レス投稿後に発行されるIDが真の値。
     res_limit SMALLINT NOT NULL DEFAULT 1000, -- レスの上限。次スレ誘導のためにスレ主と副主は+5まで投稿可能。
     age_res_id SMALLINT NOT NULL DEFAULT 0, -- !age機能で表示するレスのID（0の場合はage無し）
+    thread_type SMALLINT DEFAULT 0, -- スレッドの種類（実況スレ、地震スレ、安価スレ、スレタイで振り分けられる。または、SSスレ、運営用スレ、語尾が変わる特殊なスレなど）
     cc_type SMALLINT DEFAULT 0, -- 写しの取り方
     content_types_bitmask SMALLINT DEFAULT 1, -- 投稿可能なコンテンツの種類
     banned_users_utf8mask TEXT NOT NULL DEFAULT '', -- BANされたユーザーリスト（同じtoken または 同じipは書き込み不可）
