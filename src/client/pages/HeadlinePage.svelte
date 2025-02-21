@@ -100,16 +100,16 @@
                                             .slice(-4)}</Cell
                                     >
                                     <Cell numeric
-                                        >{(Math.random() * 10 - 5) | 0}</Cell
+                                        >{(Math.random() * 10) | 0}</Cell
                                     >
                                     <Cell numeric
-                                        >{(Math.random() * 200 - 5) | 0}</Cell
+                                        >{(Math.random() * 100) | 0}</Cell
                                     >
                                     <Cell numeric
-                                        >{(Math.random() * 10 - 5) | 0}</Cell
+                                        >{(Math.random() * 10) | 0}</Cell
                                     >
                                     <Cell numeric
-                                        >{(Math.random() * 20 - 5) | 0}</Cell
+                                        >{(Math.random() * 20) | 0}</Cell
                                     >
                                     <Cell numeric
                                         >{(Math.random() * 3) | 0}</Cell
