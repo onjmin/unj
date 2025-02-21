@@ -55,46 +55,50 @@
 <header class="unj-header-part">
   <TopAppBar variant="static">
     <Row>
-      <Section align="start" toolbar style="{menu || 'visibility:hidden'};">
-        <IconButton
-          class="material-icons"
-          onclick={() => {
-            if (isEnabledRightMenu && isMobile && openRight) {
-              openRight = false;
-            }
-            openLeft = !openLeft;
-          }}>menu</IconButton
-        >
-      </Section>
-      <Section align="start" toolbar style="visibility:hidden;">
-        <IconButton class="material-icons"></IconButton>
-      </Section>
+      {#if menu}
+        <Section align="start" toolbar style="{menu || 'visibility:hidden'};">
+          <IconButton
+            class="material-icons"
+            onclick={() => {
+              if (isEnabledRightMenu && isMobile && openRight) {
+                openRight = false;
+              }
+              openLeft = !openLeft;
+            }}>menu</IconButton
+          >
+        </Section>
+        <Section align="start" toolbar style="visibility:hidden;">
+          <IconButton class="material-icons"></IconButton>
+        </Section>
+      {/if}
       <Section>
         <Title style="width: 100vw; text-align: center;">{title}</Title>
       </Section>
-      <Section align="end" toolbar style="{bookmark || 'visibility:hidden'};">
-        <IconButton
-          class="material-icons"
-          onclick={() => {
-            isAlreadyBookmark = !isAlreadyBookmark;
-          }}>{isAlreadyBookmark ? "bookmark" : "bookmark_border"}</IconButton
+      {#if menu}
+        <Section align="end" toolbar style="{bookmark || 'visibility:hidden'};">
+          <IconButton
+            class="material-icons"
+            onclick={() => {
+              isAlreadyBookmark = !isAlreadyBookmark;
+            }}>{isAlreadyBookmark ? "bookmark" : "bookmark_border"}</IconButton
+          >
+        </Section>
+        <Section
+          align="end"
+          toolbar
+          style="{(menu && isEnabledRightMenu) || 'visibility:hidden'};"
         >
-      </Section>
-      <Section
-        align="end"
-        toolbar
-        style="{(menu && isEnabledRightMenu) || 'visibility:hidden'};"
-      >
-        <IconButton
-          class="material-icons"
-          onclick={() => {
-            if (isEnabledRightMenu && isMobile && openLeft) {
-              openLeft = false;
-            }
-            openRight = !openRight;
-          }}>menu</IconButton
-        >
-      </Section>
+          <IconButton
+            class="material-icons"
+            onclick={() => {
+              if (isEnabledRightMenu && isMobile && openLeft) {
+                openLeft = false;
+              }
+              openRight = !openRight;
+            }}>menu</IconButton
+          >
+        </Section>
+      {/if}
     </Row>
   </TopAppBar>
 </header>
