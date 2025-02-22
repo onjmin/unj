@@ -5,8 +5,8 @@ CREATE TABLE users (
     id SMALLSERIAL PRIMARY KEY, -- フロントエンドに生のIDを公開せず8桁のhashidsを使う。毎日見た目は変わる。
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    latest_res_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 最終レスの日時（初期値はNULLにする必要性がないため）
-    latest_make_thread_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 最終スレ立ての日時（初期値はNULLにする必要性がないため）
+    latest_res_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 最終レスの日時（投稿規制用）
+    latest_make_thread_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 最終スレ立ての日時（投稿規制用）
     token TEXT NOT NULL UNIQUE, -- 別端末で引き継ぎ可能なトークン
     name TEXT NOT NULL DEFAULT '', -- ハンドルネーム
     icon SMALLINT NOT NULL DEFAULT 0, -- アイコンID, 0: 未設定
@@ -22,6 +22,7 @@ CREATE TABLE users (
 CREATE TABLE user_ip_traces {
     user_id SMALLINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     ip inet NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 古いIP記録は破棄する予定
     PRIMARY KEY (user_id, ip) -- ユーザーID + IPを複合主キーにする
 }
 
@@ -38,7 +39,7 @@ CREATE TABLE threads (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     deleted_at TIMESTAMP, -- 論理削除の予定日時（ゴミ箱機能用）
-    latest_res_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 最終レスの日時（初期値はスレ立てた日時で自明なため）
+    latest_res_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 最終レスの日時
     user_id SMALLINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     ref_thread_id SMALLINT NOT NULL DEFAULT 0, -- 前スレのID（0の場合は前スレ無し）
     title TEXT NOT NULL DEFAULT '',
