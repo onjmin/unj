@@ -43,13 +43,6 @@
 - 自動テスト
   - Vitest（予定）
 
-## 本番環境ビルドのデプロイ先
-- フロントエンド
-  - GitHub Pages
-  - Cloudflare Pages
-- バックエンド
-  - Glitch
-
 ## UIのこだわり
 - 軽快さ
   - SPA特有の高速描画
@@ -101,3 +94,10 @@
 - 開発環境ビルドと検証環境ビルドは`http://localhost:3000/`から動作確認可能。
 - 本番環境ビルドを動作確認するなら`src\server\index.ts`を改造する必要あり（※動作確認する前提のコマンドではない）
 - 環境変数は`.env.example`のデフォルト値から変えなくても動くはず…
+
+## 本番環境ビルドのデプロイ先
+- フロントエンド
+  - GitHub Pages
+  - Cloudflare Pages
+- バックエンド
+  - Glitch
