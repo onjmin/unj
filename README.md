@@ -43,7 +43,7 @@
 - 自動テスト
   - Vitest（予定）
 
-## 本番ファイルのデプロイ先
+## 本番環境ビルドのデプロイ先
 - フロントエンド
   - GitHub Pages
   - Cloudflare Pages
