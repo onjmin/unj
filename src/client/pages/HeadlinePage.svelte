@@ -1,7 +1,7 @@
 <script lang="ts">
     import Accordion, { Panel, Header, Content } from "@smui-extra/accordion";
     import DataTable, { Head, Body, Row, Cell } from "@smui/data-table";
-    import IconButton from "@smui/icon-button";
+    import IconButton, { Icon } from "@smui/icon-button";
     import { navigate } from "svelte-routing";
     import { base } from "../mylib/env.js";
     import FooterPart from "../parts/FooterPart.svelte";
@@ -42,16 +42,16 @@
     ];
 
     const genMockTime = (() => {
-        let time = 0;
+        let time = 1;
         return () => {
-            time += 200 * Math.random() + 20;
+            time *= 1.2 + Math.random();
             if (time < 60) {
-                return `${time}秒前`;
+                return `${time | 0}秒前`;
             }
             if (time < 60 * 60) {
                 return `${(time / 60) | 0}分前`;
             }
-            if (time < 60 * 60 * 60) {
+            if (time < 60 * 60 * 24) {
                 return `${(time / 60 / 60) | 0}時間前`;
             }
             return `${(time / 60 / 60 / 24) | 0}日前`;
@@ -64,24 +64,32 @@
 <HeaderPart title="ヘッドライン" />
 
 <MainPart>
-    <div class="accordion-container">
+    <div class="unj-headline-accordion-container">
         <Accordion>
-            {#each mock as [n, s], i}
+            {#each mock as [res_count, title]}
                 <Panel>
                     <Header>
-                        {n}レス
+                        <span class="res-time">{genMockTime()}</span>
+                        <span class="res-count">{res_count}レス</span>
                         {#snippet description()}
-                            {s}
+                            {title}
+                        {/snippet}
+                        {#snippet icon()}
+                            <Icon class="material-icons"
+                                >{Math.random() > 0.8
+                                    ? "remove_red_eye"
+                                    : ""}</Icon
+                            >
                         {/snippet}
                     </Header>
                     <Content style="text-align: center;">
+                        <div>{title}</div>
                         <DataTable
                             table$aria-label="People list"
                             style="max-width: 100%;"
                         >
                             <Head>
                                 <Row>
-                                    <Cell>新着レス</Cell>
                                     <Cell>スレ主ID</Cell>
                                     <Cell>人数</Cell>
                                     <Cell>勢い</Cell>
@@ -93,7 +101,6 @@
                             </Head>
                             <Body>
                                 <Row>
-                                    <Cell>{genMockTime()}</Cell>
                                     <Cell
                                         >{Math.random()
                                             .toString(36)
@@ -117,23 +124,26 @@
                                 </Row>
                             </Body>
                         </DataTable>
-                        <IconButton class="material-icons"
-                            >person_off</IconButton
-                        >
-                        <IconButton
-                            class="material-icons"
-                            onclick={() => {
-                                isAlreadyBookmark = !isAlreadyBookmark;
-                            }}
-                            >{isAlreadyBookmark
-                                ? "bookmark"
-                                : "bookmark_border"}</IconButton
-                        >
-                        <IconButton
-                            class="material-icons"
-                            onclick={() => navigate(base("/thread/9ncljxv68b"))}
-                            >open_in_new</IconButton
-                        >
+                        <span class="thread-detail-ui">
+                            <IconButton class="material-icons"
+                                >person_off</IconButton
+                            >
+                            <IconButton
+                                class="material-icons"
+                                onclick={() => {
+                                    isAlreadyBookmark = !isAlreadyBookmark;
+                                }}
+                                >{isAlreadyBookmark
+                                    ? "bookmark"
+                                    : "bookmark_border"}</IconButton
+                            >
+                            <IconButton
+                                class="material-icons"
+                                onclick={() =>
+                                    navigate(base("/thread/9ncljxv68b"))}
+                                >open_in_new</IconButton
+                            >
+                        </span>
                     </Content>
                 </Panel>
             {/each}
@@ -144,7 +154,34 @@
 <FooterPart />
 
 <style>
-    .accordion-container {
+    .unj-headline-accordion-container {
         text-align: left;
+    }
+
+    /* @smui-extra/accordionのデフォルトのスタイルを改変 */
+    :global(
+            .unj-headline-accordion-container
+                .smui-accordion
+                .smui-accordion__panel
+                > .smui-accordion__header
+                .smui-accordion__header__title.smui-accordion__header__title--with-description
+        ) {
+        max-width: 128px;
+    }
+
+    /* TODO: 左寄せしたい */
+    .res-time {
+        text-align: left;
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.8rem;
+    }
+
+    /* TODO: 右寄せしたい */
+    .res-count {
+        text-align: right;
+    }
+
+    .thread-detail-ui {
+        display: inline-block;
     }
 </style>

@@ -19,12 +19,22 @@
   let openRight = $state(false);
   const isEnabledRightMenu = children !== null;
 
+  let prevWidth = $state(window.innerWidth);
   const onResize = () => {
-    isMobile = window.innerWidth < 768;
-    const isWideScreen = !isMobile;
-    openLeft = isWideScreen;
-    if (isEnabledRightMenu) {
-      openRight = isWideScreen;
+    const width = window.innerWidth;
+    isMobile = width < 768;
+    if (width > prevWidth) {
+      // ウィンドウを広げた場合
+      if (!isMobile) {
+        openLeft = true;
+        openRight = isEnabledRightMenu;
+      }
+    } else {
+      // ウィンドウを狭くした場合
+      if (isMobile) {
+        openLeft = false;
+        openRight = false;
+      }
     }
   };
 
