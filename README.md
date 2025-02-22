@@ -23,10 +23,12 @@
 - それぞれのライセンス条件を確認し、適切に取り扱ってください。
 
 ## 採用技術
-- Volta
-- pnpm
-- TypeScript
-- JavaScript obfuscator
+- 開発言語
+  - TypeScript
+- 開発環境
+  - Volta
+  - pnpm
+  - Biome
 - フロントエンド
   - Vite
   - Svelte
@@ -35,6 +37,9 @@
   - esbuild
   - Express
   - Socket.IO
+- フロントエンドとバックエンド共通
+  - Valibot
+  - JavaScript obfuscator
 - 自動テスト
   - Vitest（予定）
 
