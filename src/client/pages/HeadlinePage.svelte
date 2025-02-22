@@ -69,8 +69,10 @@
             {#each mock as [res_count, title]}
                 <Panel>
                     <Header>
-                        <span class="res-time">{genMockTime()}</span>
-                        <span class="res-count">{res_count}レス</span>
+                        <div class="time-and-count-container">
+                            <span class="res-time">{genMockTime()}</span>
+                            <span class="res-count">{res_count}レス</span>
+                        </div>
                         {#snippet description()}
                             {title}
                         {/snippet}
@@ -169,16 +171,15 @@
         max-width: 128px;
     }
 
-    /* TODO: 左寄せしたい */
-    .res-time {
-        text-align: left;
-        color: rgba(255, 255, 255, 0.6);
-        font-size: 0.8rem;
+    .time-and-count-container {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
     }
 
-    /* TODO: 右寄せしたい */
-    .res-count {
-        text-align: right;
+    .res-time {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.8rem;
     }
 
     .thread-detail-ui {
