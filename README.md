@@ -78,7 +78,9 @@
   - token引き継ぎ機能
 
   ## 環境構築
+  1. [Voltaをインストール](https://docs.volta.sh/guide/getting-started)
   1. このリポジトリをローカル環境にクローン
+  1. [pnpmをインストール](https://pnpm.io/ja/installation)
   1. このREADME.mdがある階層をvscodeで開く
   1. 拡張機能タブから推奨事項をインストールする
   1. `.env.example`を複製して`.env`にリネーム
