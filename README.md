@@ -77,7 +77,7 @@
 - その他
   - token引き継ぎ機能
 
-  ## 環境構築
+## 環境構築
   1. [Voltaをインストール](https://docs.volta.sh/guide/getting-started)
   1. このリポジトリをローカル環境にクローン
   1. [pnpmをインストール](https://pnpm.io/ja/installation)
