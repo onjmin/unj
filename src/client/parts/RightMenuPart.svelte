@@ -37,7 +37,6 @@
     background-color: black;
   }
   .drawer-container-right.hidden {
-    right: 0;
     transform: translateX(100%);
   }
 </style>

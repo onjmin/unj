@@ -21,9 +21,10 @@
 
   const onResize = () => {
     isMobile = window.innerWidth < 768;
-    openLeft = !isMobile;
+    const isWideScreen = !isMobile;
+    openLeft = isWideScreen;
     if (isEnabledRightMenu) {
-      openRight = openLeft;
+      openRight = isWideScreen;
     }
   };
 
