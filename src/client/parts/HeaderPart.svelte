@@ -14,10 +14,10 @@
     title = `STG - ${title}`;
   }
 
-  let isMobile = $state(false);
-  let openLeft = $state(false);
-  let openRight = $state(false);
   const isEnabledRightMenu = children !== null;
+  let isMobile = $state(false);
+  let openLeft = $state(true);
+  let openRight = $state(true);
 
   let prevWidth = $state(window.innerWidth);
   const onResize = () => {
@@ -27,7 +27,7 @@
       // ウィンドウを広げた場合
       if (!isMobile) {
         openLeft = true;
-        openRight = isEnabledRightMenu;
+        openRight = true;
       }
     } else {
       // ウィンドウを狭くした場合
@@ -36,6 +36,7 @@
         openRight = false;
       }
     }
+    prevWidth = width;
   };
 
   const main = () => {
@@ -70,11 +71,11 @@
   <TopAppBar variant="static">
     <Row>
       {#if menu}
-        <Section align="start" toolbar style="{menu || 'visibility:hidden'};">
+        <Section align="start" toolbar>
           <IconButton
             class="material-icons"
             onclick={() => {
-              if (isEnabledRightMenu && isMobile && openRight) {
+              if (isMobile) {
                 openRight = false;
               }
               openLeft = !openLeft;
@@ -100,12 +101,12 @@
         <Section
           align="end"
           toolbar
-          style="{(menu && isEnabledRightMenu) || 'visibility:hidden'};"
+          style="{isEnabledRightMenu || 'visibility:hidden'};"
         >
           <IconButton
             class="material-icons"
             onclick={() => {
-              if (isEnabledRightMenu && isMobile && openLeft) {
+              if (isMobile) {
                 openLeft = false;
               }
               openRight = !openRight;
@@ -119,12 +120,11 @@
 
 {#if menu}
   <LeftMenuPart open={openLeft} />
-{/if}
-
-{#if children !== null}
-  <RightMenuPart open={openRight}>
-    {@render children?.()}
-  </RightMenuPart>
+  {#if children !== null}
+    <RightMenuPart open={openRight && isEnabledRightMenu}>
+      {@render children?.()}
+    </RightMenuPart>
+  {/if}
 {/if}
 
 <style>

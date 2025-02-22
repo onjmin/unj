@@ -74,13 +74,13 @@
                             <span class="res-count">{res_count}レス</span>
                         </div>
                         {#snippet description()}
-                            {title}
+                            <span class="thread-title">{title}</span>
                         {/snippet}
                         {#snippet icon()}
-                            <Icon class="material-icons"
-                                >{Math.random() > 0.8
-                                    ? "remove_red_eye"
-                                    : ""}</Icon
+                            <Icon
+                                class="material-icons"
+                                style={Math.random() > 0.8 ||
+                                    "visibility:hidden"}>remove_red_eye</Icon
                             >
                         {/snippet}
                     </Header>
@@ -168,7 +168,7 @@
                 > .smui-accordion__header
                 .smui-accordion__header__title.smui-accordion__header__title--with-description
         ) {
-        max-width: 128px;
+        max-width: 96px;
     }
 
     .time-and-count-container {
@@ -179,6 +179,14 @@
 
     .res-time {
         color: rgba(255, 255, 255, 0.6);
+        font-size: 0.6rem;
+    }
+
+    .res-count {
+        font-size: 0.7rem;
+    }
+
+    .thread-title {
         font-size: 0.8rem;
     }
 
