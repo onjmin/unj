@@ -84,8 +84,8 @@
   1. `.env.example`を複製して`.env`にリネーム
   1. このREADME.mdがある階層で`pnpm i`
   1. よく使うコマンド
-    - `pnpm run dev`: 開発環境ビルド（バックエンドはtsxで直接実行）
-    - `pnpm run stg`: 検証環境ビルド（idb難読化+ソース難読化+nodeで実行）
+    - `pnpm run dev`: 開発環境ビルド（バックエンドはtsxで直接実行される）
+    - `pnpm run stg`: 検証環境ビルド（idb難読化+ソース難読化+nodeで実行される）
     - `pnpm run prod`: 本番環境ビルド（ルーティング以外は検証環境ビルドと同じはず…）
     - `pnpm run sync`: ビルド成果物を親の別のディレクトリに複製する
 
