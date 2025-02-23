@@ -1,12 +1,18 @@
 <script lang="ts">
-    import { contactHelp } from "../mylib/webhook.js";
-
     // pages共通 //
     import FooterPart from "../parts/FooterPart.svelte";
     import HeaderPart from "../parts/HeaderPart.svelte";
     import MainPart from "../parts/MainPart.svelte";
     ///////////////
 
+    import Textfield from "@smui/Textfield";
+    import Button from "@smui/button";
+    import LayoutGrid, { Cell } from "@smui/layout-grid";
+    import SegmentedButton, { Segment, Label } from "@smui/segmented-button";
+    import Select, { Option } from "@smui/select";
+    import * as v from "valibot";
+    import { validate1 } from "../mylib/validation.js";
+    import { contactHelp } from "../mylib/webhook.js";
     import AGPL3Part from "../parts/contact/AGPL3Part.svelte";
     import HelpPart from "../parts/contact/HelpPart.svelte";
     import KaizenPart from "../parts/contact/KaizenPart.svelte";
@@ -17,15 +23,10 @@
     let KaizenPartInstance: KaizenPart | null = $state(null);
     let PolicePartInstance: PolicePart | null = $state(null);
 
-    import Textfield from "@smui/Textfield";
-    import Button from "@smui/button";
-    import LayoutGrid, { Cell } from "@smui/layout-grid";
-    import SegmentedButton, { Segment, Label } from "@smui/segmented-button";
-    import Select, { Option } from "@smui/select";
-
     let contactTypeList = ["ヘルプ", "改善要望", "AGPL3", "開示請求"];
     let contactType = $state("ヘルプ");
-    let replyMail = $state("");
+    let replyEmail = $state("");
+    let enabledSubmit = $state(false);
 
     let deadline = $state("");
     const deadlineOptions = [
@@ -34,15 +35,16 @@
         "短（即日対応希望）",
     ];
 
+    const emailSchema = v.pipe(v.string(), v.email());
+
     const handleSubmit = async () => {
-        // TODO: 共通項目のバリデーション
+        const err = validate1(emailSchema, replyEmail);
+        if (err) {
+            return alert("不正なメールアドレスです。"); // TODO: リッチに直す
+        }
         switch (contactType) {
             case "ヘルプ": {
                 if (HelpPartInstance === null) {
-                    break;
-                }
-                if (!HelpPartInstance.validate()) {
-                    // TODO: validate関数の中で入力ミスを表示する
                     break;
                 }
                 const str = HelpPartInstance.toStr();
@@ -51,14 +53,11 @@
                 } catch (err) {
                     // TODO: 送信に失敗した表示
                 }
+                // TODO: 送信完了時専用の表示
                 break;
             }
             case "改善要望": {
                 if (KaizenPartInstance === null) {
-                    break;
-                }
-                if (!KaizenPartInstance.validate()) {
-                    // TODO: validate関数の中で入力ミスを表示する
                     break;
                 }
                 const str = KaizenPartInstance.toStr();
@@ -73,10 +72,6 @@
                 if (AGPL3PartInstance === null) {
                     break;
                 }
-                if (!AGPL3PartInstance.validate()) {
-                    // TODO: validate関数の中で入力ミスを表示する
-                    break;
-                }
                 const str = AGPL3PartInstance.toStr();
                 try {
                     // await contactAGPL3([]);
@@ -87,10 +82,6 @@
             }
             case "開示請求": {
                 if (PolicePartInstance === null) {
-                    break;
-                }
-                if (!PolicePartInstance.validate()) {
-                    // TODO: validate関数の中で入力ミスを表示する
                     break;
                 }
                 const str = PolicePartInstance.toStr();
@@ -129,22 +120,26 @@
         </Cell>
     </LayoutGrid>
     <div class="form-container">
-        <Textfield label="連絡先メールアドレス" bind:value={replyMail} />
+        <Textfield label="連絡先メールアドレス" bind:value={replyEmail} />
         {#if contactType === "ヘルプ"}
-            <HelpPart bind:this={HelpPartInstance} />
+            <HelpPart bind:this={HelpPartInstance} bind:enabledSubmit />
         {:else if contactType === "改善要望"}
-            <KaizenPart bind:this={KaizenPartInstance} />
+            <KaizenPart bind:this={KaizenPartInstance} bind:enabledSubmit />
         {:else if contactType === "AGPL3"}
-            <AGPL3Part bind:this={AGPL3PartInstance} />
+            <AGPL3Part bind:this={AGPL3PartInstance} bind:enabledSubmit />
         {:else if contactType === "開示請求"}
-            <PolicePart bind:this={PolicePartInstance} />
+            <PolicePart bind:this={PolicePartInstance} bind:enabledSubmit />
         {/if}
         <Select bind:value={deadline} label="納期">
             {#each deadlineOptions as str}
                 <Option value={str}>{str}</Option>
             {/each}
         </Select>
-        <Button onclick={handleSubmit} variant="raised">送信</Button>
+        <Button
+            onclick={handleSubmit}
+            variant="raised"
+            disabled={!enabledSubmit}>送信</Button
+        >
     </div>
 </MainPart>
 

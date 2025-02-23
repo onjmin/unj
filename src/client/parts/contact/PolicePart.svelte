@@ -3,6 +3,7 @@
   import Textfield from "@smui/Textfield";
   import Checkbox from "@smui/checkbox";
   import FormField from "@smui/form-field";
+  import CharacterCounter from "@smui/textfield/character-counter";
   import { VITE_ADMIN_EMAIL } from "../../mylib/env.js";
 
   let { enabledSubmit = $bindable(false) } = $props();
@@ -22,8 +23,20 @@
   let check1 = $state(false);
   let check2 = $state(false);
 
-  export const validate = () => {
-    return true;
+  const check = () => {
+    enabledSubmit =
+      requesterName !== "" &&
+      requesterAgency !== "" &&
+      requesterPosition !== "" &&
+      contactPhone !== "" &&
+      requestType !== "" &&
+      targetUserId !== "" &&
+      targetContent !== "" &&
+      requestPeriodStart !== "" &&
+      requestPeriodEnd !== "" &&
+      legalBasis !== "" &&
+      check1 &&
+      check2;
   };
 
   export const toStr = () => {
@@ -31,10 +44,31 @@
   };
 </script>
 
-<Textfield label="連絡先電話番号" bind:value={contactPhone} type="tel" />
-<Textfield label="請求者氏名" bind:value={requesterName} />
-<Textfield label="所属機関" bind:value={requesterAgency} />
-<Textfield label="職位" bind:value={requesterPosition} />
+<Textfield
+  label="連絡先電話番号"
+  bind:value={contactPhone}
+  type="tel"
+  input$maxlength={16}
+>
+  {#snippet helper()}
+    <CharacterCounter />
+  {/snippet}
+</Textfield>
+<Textfield label="請求者氏名" bind:value={requesterName} input$maxlength={16}>
+  {#snippet helper()}
+    <CharacterCounter />
+  {/snippet}
+</Textfield>
+<Textfield label="所属機関" bind:value={requesterAgency} input$maxlength={32}>
+  {#snippet helper()}
+    <CharacterCounter />
+  {/snippet}
+</Textfield>
+<Textfield label="職位" bind:value={requesterPosition} input$maxlength={32}>
+  {#snippet helper()}
+    <CharacterCounter />
+  {/snippet}
+</Textfield>
 
 <Autocomplete
   combobox
@@ -43,8 +77,25 @@
   label="開示請求の種類"
 />
 
-<Textfield label="対象ユーザーID" bind:value={targetUserId} />
-<Textfield textarea label="対象の書き込み内容" bind:value={targetContent} />
+<Textfield
+  label="対象ユーザーID"
+  bind:value={targetUserId}
+  input$maxlength={16}
+>
+  {#snippet helper()}
+    <CharacterCounter />
+  {/snippet}
+</Textfield>
+<Textfield
+  textarea
+  label="開示対象となる書き込み内容"
+  bind:value={targetContent}
+  input$maxlength={256}
+>
+  {#snippet helper()}
+    <CharacterCounter />
+  {/snippet}
+</Textfield>
 
 <Textfield
   label="対象期間（開始）"
@@ -60,17 +111,25 @@
   label="請求の法的根拠"
 />
 
-<Textfield label="事件番号（任意）" bind:value={caseNumber} />
+<Textfield
+  label="事件番号（任意）"
+  bind:value={caseNumber}
+  input$maxlength={64}
+>
+  {#snippet helper()}
+    <CharacterCounter />
+  {/snippet}
+</Textfield>
 
 <FormField>
-  <Checkbox bind:checked={check1} />
+  <Checkbox bind:checked={check1} onchange={check} />
   {#snippet label()}
     本請求は正当な権限のもとで行われていることを確認しました
   {/snippet}
 </FormField>
 
 <FormField>
-  <Checkbox bind:checked={check2} />
+  <Checkbox bind:checked={check2} onchange={check} />
   {#snippet label()}
     開示された情報は法的手続きを遵守し適切に管理されることを誓約します
   {/snippet}

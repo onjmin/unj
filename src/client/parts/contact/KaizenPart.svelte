@@ -1,24 +1,32 @@
 <script lang="ts">
   import Autocomplete from "@smui-extra/autocomplete";
   import Textfield from "@smui/Textfield";
+  import CharacterCounter from "@smui/textfield/character-counter";
 
-  let target = $state("");
+  let { enabledSubmit = $bindable(false) } = $props();
+
+  let feature = $state("");
   let overview = $state("");
   let detail = $state("");
 
-  export const validate = () => {
-    return true;
+  const check = () => {
+    enabledSubmit = feature !== "" && overview !== "" && detail !== "";
   };
 
   export const toStr = () => {
-    return "";
+    return [
+      `対象機能：${feature}`,
+      `要約：${overview}`,
+      `詳細：${detail}`,
+    ].join("\n");
   };
 </script>
 
 <Autocomplete
   combobox
   label="改善してほしい機能"
-  bind:value={target}
+  bind:value={feature}
+  onchange={check}
   options={[
     "スレ立て",
     "ヘッドライン",
@@ -33,5 +41,25 @@
   ]}
 />
 
-<Textfield label="改善案の説明（1行で）" bind:value={overview} />
-<Textfield textarea label="改善案の詳細（3行で）" bind:value={detail} />
+<Textfield
+  label="改善案の説明（一言で）"
+  bind:value={overview}
+  input$maxlength={32}
+  onchange={check}
+>
+  {#snippet helper()}
+    <CharacterCounter />
+  {/snippet}
+</Textfield>
+
+<Textfield
+  textarea
+  label="改善案の詳細（3行で）"
+  bind:value={detail}
+  input$maxlength={128}
+  onchange={check}
+>
+  {#snippet helper()}
+    <CharacterCounter />
+  {/snippet}
+</Textfield>
