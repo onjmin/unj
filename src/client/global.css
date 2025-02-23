@@ -4,19 +4,44 @@
  * + Web標準のUIに対して全ページ共通で同じ装飾をしたいとき
  */
 
-/* レイアウト用の定数 */
-:root {
-	--top-margin: 64px;
-	--bottom-margin: 64px;
-	--any-margin: 24px;
+/* 全ページ共通のフレーム */
+body {
+	margin: 0;
+}
+#app {
+	display: flex;
+	flex-direction: column;
+	height: 100svh;
+}
+.unj-header-part {
+	z-index: 64;
+}
+.unj-main-part {
+	flex: 1;
+	overflow-y: auto;
+	margin: 0 auto;
+	max-width: 100svw;
+	min-width: 60svw;
+}
+.unj-main-part > * {
+	text-align: center;
+	background-color: transparent;
+	box-shadow: none;
+}
+.unj-main-part.menu {
+	justify-content: center;
+}
+.unj-footer-part {
+	text-align: center;
+	color: rgba(255, 255, 255, 0.2);
 }
 
 /* レスポンシブな画像表示 */
 .unj-img {
 	display: block;
 	margin: 1em auto;
-	max-width: 50vw;
-	max-height: 50vh;
+	max-width: 50svw;
+	max-height: 50svh;
 	width: auto;
 	height: auto;
 }

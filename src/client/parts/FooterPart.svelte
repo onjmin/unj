@@ -10,11 +10,3 @@
     rel="noopener noreferrer">著作権コピーレフト</a
   >：うんｊはまとめ自由
 </footer>
-
-<style>
-  .unj-footer-part {
-    height: var(--bottom-margin);
-    text-align: center;
-    color: rgba(255, 255, 255, 0.2);
-  }
-</style>

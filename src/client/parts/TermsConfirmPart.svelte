@@ -4,7 +4,9 @@
   import Checkbox from "@smui/checkbox";
   import Dialog, { Title, Content, Actions } from "@smui/dialog";
   import FormField from "@smui/form-field";
+  import { navigate } from "svelte-routing";
   import { visible } from "../mylib/dom.js";
+  import { base } from "../mylib/env.js";
   import { load, save } from "../mylib/storage.js";
   import TermsPart from "./TermsPart.svelte";
 
@@ -26,6 +28,7 @@
         await save("termsAgreement", "yes");
         if ("yes" === (await load("termsAgreement"))) {
           openConfirm = false;
+          navigate(base("/headline"));
         } else {
           openConfirm = true;
         }

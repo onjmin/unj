@@ -21,10 +21,5 @@
 <style>
     :global(.unj-terms pre) {
         text-align: left;
-        overflow: scroll;
-        height: calc(
-            100vh - var(--top-margin) - var(--bottom-margin) - var(--any-margin) *
-                4
-        );
     }
 </style>

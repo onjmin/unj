@@ -7,6 +7,7 @@
         Separator,
         Subheader,
     } from "@smui/list";
+    import TopAppBar, { Row } from "@smui/top-app-bar";
     import { navigate } from "svelte-routing";
     import { base, pathname } from "../mylib/env.js";
 
@@ -15,6 +16,7 @@
 
 <div class="drawer-container-left">
     <Drawer variant="modal" fixed bind:open>
+        <TopAppBar variant="static" fixed><Row /></TopAppBar>
         <Header>
             <Title>メインメニュー</Title>
             <Subtitle>うんｊのサイトマップです。</Subtitle>
@@ -123,10 +125,10 @@
     .drawer-container-left {
         opacity: 0.9;
         position: fixed;
-        top: calc(var(--top-margin) + var(--any-margin) / 3);
+        z-index: 16;
+        top: 0;
         bottom: 0;
         overflow-y: auto;
-        z-index: 16;
         border: 1px solid
             var(--mdc-theme-text-hint-on-background, rgba(0, 0, 0, 0.1));
     }

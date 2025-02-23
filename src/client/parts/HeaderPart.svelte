@@ -58,7 +58,7 @@
 </svelte:head>
 
 <header class="unj-header-part">
-  <TopAppBar variant="static">
+  <TopAppBar variant="static" fixed>
     <Row>
       {#if menu}
         <Section align="start" toolbar>
@@ -77,7 +77,7 @@
         </Section>
       {/if}
       <Section>
-        <Title style="width: 100vw; text-align: center;">{title}</Title>
+        <Title style="width: 100svw; text-align: center;">{title}</Title>
       </Section>
       {#if menu}
         <Section align="end" toolbar style="{bookmark || 'visibility:hidden'};">
@@ -116,9 +116,3 @@
     </RightMenuPart>
   {/if}
 {/if}
-
-<style>
-  .unj-header-part {
-    height: var(--top-margin);
-  }
-</style>
