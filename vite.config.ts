@@ -7,6 +7,7 @@ import {
 	PROD_MODE,
 	STG_MODE,
 } from "./src/server/mylib/env.js";
+import { logError, logWarning } from "./src/server/mylib/log.js";
 
 const define = {
 	"import.meta.env.BASE_URL": JSON.stringify(BASE_URL),
@@ -15,6 +16,22 @@ const define = {
 	"import.meta.env.PROD_MODE": PROD_MODE,
 };
 console.log(define);
+
+if (DEV_MODE && STG_MODE) {
+	logError("環境変数がおかしい。");
+	console.log(JSON.stringify(process.env, null, 2));
+	throw 114514;
+}
+if (BASE_URL !== "/") {
+	if (DEV_MODE) {
+		logWarning("そのBASE_URLは開発ビルドで合ってる？");
+	} else if (STG_MODE) {
+		logWarning("そのBASE_URLは検証ビルドで合ってる？");
+	}
+}
+if (BASE_URL === "/" && PROD_MODE) {
+	logWarning("そのBASE_URLは本番ビルドで合ってる？");
+}
 
 export default defineConfig({
 	plugins: [svelte()],

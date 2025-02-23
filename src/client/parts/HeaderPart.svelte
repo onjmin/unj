@@ -4,7 +4,6 @@
   import { DEV_MODE, STG_MODE } from "../mylib/env.js";
   import LeftMenuPart from "./LeftMenuPart.svelte";
   import RightMenuPart from "./RightMenuPart.svelte";
-  import StylePart from "./StylePart.svelte";
 
   let { children = null, title = "", menu = true, bookmark = false } = $props();
   if (DEV_MODE) {
@@ -56,16 +55,7 @@
   <title>{title}</title>
   <!-- TODO:通知時にアイコンを切り替える -->
   <!-- <link rel="icon" href="static/favicons/favicon.ico" /> -->
-  <style>
-    :root {
-      --top-margin: 64px;
-      --bottom-margin: 64px;
-      --any-margin: 24px;
-    }
-  </style>
 </svelte:head>
-
-<StylePart />
 
 <header class="unj-header-part">
   <TopAppBar variant="static">

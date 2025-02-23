@@ -19,6 +19,7 @@
   import BannedCheck from "./plugs/BannedCheck.svelte";
   import TraversalCheck from "./plugs/TraversalCheck.svelte";
   import UnbannedCheck from "./plugs/UnbannedCheck.svelte";
+  import "./global.css";
 
   const NotFoundPagePath = base("/*");
   const HomePagePath = base("/");

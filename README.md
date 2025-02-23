@@ -77,25 +77,25 @@
 
 ## 環境構築
 1. [Voltaをインストール](https://docs.volta.sh/guide/getting-started)
-1. このリポジトリをローカル環境にクローン
+1. このリポジトリをローカルにクローン
 1. [pnpmをインストール](https://pnpm.io/ja/installation)
 1. このREADME.mdがある階層をvscodeで開く
 1. 拡張機能タブから推奨事項をインストールする
 1. `.env.example`を複製して`.env`にリネーム
 1. このREADME.mdがある階層で`pnpm i`
 1. よく使うコマンド
-  - `pnpm run dev`: 開発環境ビルド（バックエンドはtsxで直接実行される）
-  - `pnpm run stg`: 検証環境ビルド（idb難読化+ソース難読化+nodeで実行される）
-  - `pnpm run prod`: 本番環境ビルド（ルーティング以外は検証環境ビルドと同じはず…）
+  - `pnpm run dev`: 開発ビルド（バックエンドはtsxで直接実行される）
+  - `pnpm run stg`: 検証ビルド（idb難読化+ソース難読化+nodeで実行される）
+  - `pnpm run prod`: 本番ビルド（ルーティング以外は検証ビルドと同じはず…）
   - `pnpm run sync`: ビルド成果物を親の別のディレクトリに複製する
 
 ---
 
-- 開発環境ビルドと検証環境ビルドは`http://localhost:3000/`から動作確認可能。
-- 本番環境ビルドを動作確認するなら`src\server\index.ts`を改造する必要あり（※動作確認する前提のコマンドではない）
+- 開発ビルドと検証ビルドは`http://localhost:3000/`から動作確認可能。
+- 本番ビルドを動作確認するなら`src\server\index.ts`を改造する必要あり（※動作確認する前提のコマンドではない）
 - 環境変数は`.env.example`のデフォルト値から変えなくても動くはず…
 
-## 本番環境ビルドのデプロイ先
+## 本番ビルドのデプロイ先
 - フロントエンド
   - GitHub Pages
   - Cloudflare Pages

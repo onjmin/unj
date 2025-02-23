@@ -22,7 +22,6 @@
         <Content>
             <List>
                 <Item
-                    href="javascript:void(0)"
                     onclick={() => navigate(base("/new"))}
                     activated={pathname() === "/new"}
                 >
@@ -32,7 +31,6 @@
                     <Text>スレ立て</Text>
                 </Item>
                 <Item
-                    href="javascript:void(0)"
                     onclick={() => navigate(base("/headline"))}
                     activated={pathname() === "/headline"}
                 >
@@ -42,7 +40,6 @@
                     <Text>ヘッドライン</Text>
                 </Item>
                 <Item
-                    href="javascript:void(0)"
                     onclick={() => navigate(base("/history"))}
                     activated={pathname() === "/history"}
                 >
@@ -52,7 +49,6 @@
                     <Text>閲覧履歴</Text>
                 </Item>
                 <Item
-                    href="javascript:void(0)"
                     onclick={() => navigate(base("/bookmark"))}
                     activated={pathname() === "/bookmark"}
                 >
@@ -62,7 +58,6 @@
                     <Text>#後で見る</Text>
                 </Item>
                 <Item
-                    href="javascript:void(0)"
                     onclick={() => navigate(base("/config"))}
                     activated={pathname() === "/config"}
                 >
@@ -75,7 +70,6 @@
                 <Separator />
                 <Subheader tag="h6">サイト情報</Subheader>
                 <Item
-                    href="javascript:void(0)"
                     onclick={() => navigate(base("/terms"))}
                     activated={pathname() === "/terms"}
                 >
@@ -85,7 +79,6 @@
                     <Text>利用規約</Text>
                 </Item>
                 <Item
-                    href="javascript:void(0)"
                     onclick={() => navigate(base("/contact"))}
                     activated={pathname() === "/contact"}
                 >
@@ -95,7 +88,6 @@
                     <Text>お問い合わせ</Text>
                 </Item>
                 <Item
-                    href="javascript:void(0)"
                     onclick={() => navigate(base("/update"))}
                     activated={pathname() === "/update"}
                 >
@@ -105,7 +97,6 @@
                     <Text>新機能のお知らせ</Text>
                 </Item>
                 <Item
-                    href="javascript:void(0)"
                     onclick={() => navigate(base("/banner"))}
                     activated={pathname() === "/banner"}
                 >
@@ -115,7 +106,6 @@
                     <Text>バナー展示場</Text>
                 </Item>
                 <Item
-                    href="javascript:void(0)"
                     onclick={() => navigate(base("/links"))}
                     activated={pathname() === "/links"}
                 >
