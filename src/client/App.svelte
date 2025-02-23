@@ -2,9 +2,9 @@
   import "./global.css";
   import { Route, Router } from "svelte-routing";
   import { base } from "./mylib/env.js";
+  import ArtPage from "./pages/ArtPage.svelte";
   import BanCodeVerifyPage from "./pages/BanCodeVerifyPage.svelte";
   import BannedPage from "./pages/BannedPage.svelte";
-  import BannerExhibitionPage from "./pages/BannerExhibitionPage.svelte";
   import BookmarkPage from "./pages/BookmarkPage.svelte";
   import ConfigPage from "./pages/ConfigPage.svelte";
   import ContactPage from "./pages/ContactPage.svelte";
@@ -32,7 +32,7 @@
   const TermsPagePath = base("/terms");
   const ContactPagePath = base("/contact");
   const UpdatePagePath = base("/update");
-  const BannerExhibitionPagePath = base("/banner");
+  const ArtPagePath = base("/art");
   const LinksPagePath = base("/links");
   const AkukinPagePath = base("/akukin");
   const AkukinKaijoPagePath = base("/akukin/kaijo");
@@ -110,9 +110,9 @@
     </BannedCheck>
   </Route>
   <!-- バナー展示場 -->
-  <Route path={BannerExhibitionPagePath}>
+  <Route path={ArtPagePath}>
     <BannedCheck>
-      <BannerExhibitionPage />
+      <ArtPage />
     </BannedCheck>
   </Route>
   <!-- リンク集 -->

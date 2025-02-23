@@ -11,6 +11,16 @@
 	--any-margin: 24px;
 }
 
+/* レスポンシブな画像表示 */
+.unj-img {
+	display: block;
+	margin: 1em auto;
+	max-width: 50vw;
+	max-height: 50vh;
+	width: auto;
+	height: auto;
+}
+
 /* スクロールバーの装飾 */
 ::-webkit-scrollbar {
 	width: 8px;

@@ -1,4 +1,10 @@
 <script lang="ts">
+    // pages共通 //
+    import FooterPart from "../parts/FooterPart.svelte";
+    import HeaderPart from "../parts/HeaderPart.svelte";
+    import MainPart from "../parts/MainPart.svelte";
+    ///////////////
+
     import Button, { Label } from "@smui/button";
     import Checkbox from "@smui/checkbox";
     import CircularProgress from "@smui/circular-progress";
@@ -16,9 +22,6 @@
     import { genBanVerifyCode } from "../mylib/anti-debug.js";
     import { base } from "../mylib/env.js";
     import { load, save } from "../mylib/storage.js";
-    import FooterPart from "../parts/FooterPart.svelte";
-    import HeaderPart from "../parts/HeaderPart.svelte";
-    import MainPart from "../parts/MainPart.svelte";
 
     const handleSubmit = async () => {
         loading = true;

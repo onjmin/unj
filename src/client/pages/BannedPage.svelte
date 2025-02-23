@@ -1,10 +1,13 @@
 <script lang="ts">
-    import { genBanVerifyCode } from "../mylib/anti-debug.js";
-    import { load, save } from "../mylib/storage.js";
-    import { reportTraversal, reportUnknownIP } from "../mylib/webhook.js";
+    // pages共通 //
     import FooterPart from "../parts/FooterPart.svelte";
     import HeaderPart from "../parts/HeaderPart.svelte";
     import MainPart from "../parts/MainPart.svelte";
+    ///////////////
+
+    import { genBanVerifyCode } from "../mylib/anti-debug.js";
+    import { load, save } from "../mylib/storage.js";
+    import { reportTraversal, reportUnknownIP } from "../mylib/webhook.js";
 
     let ip = $state("");
 

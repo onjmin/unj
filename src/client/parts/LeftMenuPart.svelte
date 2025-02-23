@@ -97,13 +97,13 @@
                     <Text>新機能のお知らせ</Text>
                 </Item>
                 <Item
-                    onclick={() => navigate(base("/banner"))}
-                    activated={pathname() === "/banner"}
+                    onclick={() => navigate(base("/art"))}
+                    activated={pathname() === "/art"}
                 >
                     <Graphic class="material-icons" aria-hidden="true"
                         >view_carousel</Graphic
                     >
-                    <Text>バナー展示場</Text>
+                    <Text>TOP絵集</Text>
                 </Item>
                 <Item
                     onclick={() => navigate(base("/links"))}

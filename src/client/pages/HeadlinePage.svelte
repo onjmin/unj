@@ -1,12 +1,15 @@
 <script lang="ts">
+    // pages共通 //
+    import FooterPart from "../parts/FooterPart.svelte";
+    import HeaderPart from "../parts/HeaderPart.svelte";
+    import MainPart from "../parts/MainPart.svelte";
+    ///////////////
+
     import Accordion, { Panel, Header, Content } from "@smui-extra/accordion";
     import DataTable, { Head, Body, Row, Cell } from "@smui/data-table";
     import IconButton, { Icon } from "@smui/icon-button";
     import { navigate } from "svelte-routing";
     import { base } from "../mylib/env.js";
-    import FooterPart from "../parts/FooterPart.svelte";
-    import HeaderPart from "../parts/HeaderPart.svelte";
-    import MainPart from "../parts/MainPart.svelte";
 
     const mock = [
         [42, "今日の絵チャ、自由画法で爆笑必至！"],

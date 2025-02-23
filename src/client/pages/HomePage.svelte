@@ -1,11 +1,15 @@
 <script lang="ts">
+  // pages共通 //
+  import FooterPart from "../parts/FooterPart.svelte";
+  import HeaderPart from "../parts/HeaderPart.svelte";
+  import MainPart from "../parts/MainPart.svelte";
+  ///////////////
+
   import Button from "@smui/button";
   import { navigate } from "svelte-routing";
   import { base } from "../mylib/env.js";
   import { load } from "../mylib/storage.js";
-  import FooterPart from "../parts/FooterPart.svelte";
-  import HeaderPart from "../parts/HeaderPart.svelte";
-  import MainPart from "../parts/MainPart.svelte";
+  import { randArray, topIllusts } from "../mylib/top-illust.js";
   import TermsConfirmPart from "../parts/TermsConfirmPart.svelte";
 
   const onjKeyWords = [
@@ -16,8 +20,6 @@
     "絵チャ",
     "OSV",
   ];
-  const randArray = (arr: string[]) =>
-    arr[Math.floor(Math.random() * arr.length)];
   const randomOnjKeyWord1 = randArray(onjKeyWords);
   const randomOnjKeyWord2 = randArray(
     onjKeyWords.filter((v) => v !== randomOnjKeyWord1),
@@ -33,12 +35,7 @@
     }
   };
 
-  const illusts = [
-    "https://i.imgur.com/q4fuN3p.gif", // ポケモンの街風ドット絵
-    "https://magma.com/shared/X1VUEp3aQw5ntceEn_0Sgj", // クリスマスパーティ
-    "https://magma.com/shared/1nWjAI4USme1xjoKl2-eLj", // ホワイトクリスマス雪景色
-  ];
-  const randomIllust = randArray(illusts);
+  const randomIllust = randArray(topIllusts.map((v) => v.src));
 </script>
 
 <HeaderPart menu={false} title="うんｊ掲示板へようこそ" />
@@ -46,7 +43,7 @@
 
 <MainPart menu={false}>
   <h1>運営と運命を共にする、うんち実況（セーラージュピター）</h1>
-  <img class="img-home" alt="img-home" src={randomIllust} />
+  <img class="unj-img" alt="TOP絵" src={randomIllust} />
   <p>
     「{randomOnjKeyWord1}」から「{randomOnjKeyWord2}」までを手広くカバーする匿名掲示板
   </p>
@@ -56,14 +53,3 @@
 </MainPart>
 
 <FooterPart />
-
-<style>
-  .img-home {
-    display: block;
-    margin: 1em auto;
-    max-width: 50vw;
-    max-height: 50vh;
-    width: auto;
-    height: auto;
-  }
-</style>
