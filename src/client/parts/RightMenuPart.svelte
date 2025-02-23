@@ -22,6 +22,7 @@
 
 <style>
   .drawer-container-right {
+    opacity: 0.9;
     position: fixed;
     top: calc(var(--top-margin) + var(--any-margin) / 3);
     bottom: 0;

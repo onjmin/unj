@@ -177,7 +177,6 @@
     .time-and-count-container {
         display: flex;
         justify-content: space-between;
-        width: 100%;
     }
 
     .res-time {
@@ -190,7 +189,8 @@
     }
 
     .thread-title {
-        font-size: 0.8rem;
+        font-size: 0.7rem;
+        vertical-align: bottom;
     }
 
     .thread-detail-ui {
