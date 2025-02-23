@@ -6,6 +6,11 @@ export const PROD_MODE = import.meta.env.PROD_MODE;
 export const VITE_ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL;
 export const VITE_ADMIN_TWITTER = import.meta.env.VITE_ADMIN_TWITTER;
 
+// 本番ビルドが盗まれて別のホスティングに置かれた場合のせめてもの抵抗
+if (window.location.href === window.location.href.replace(BASE_URL, "")) {
+	window.location.href = "about:blank";
+}
+
 /**
  * デプロイ先に応じたwindow.location.pathname
  */
