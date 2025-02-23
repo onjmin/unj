@@ -56,13 +56,13 @@
     let open = $state(false);
     let banVerifyCode = $state("");
     let bannedDate = $state(new Date());
-    let segmentedList = ["CBC", "CFB", "OFB", "CTR", "GCM"];
+    const segmentedList = ["CBC", "CFB", "OFB", "CTR", "GCM"];
     let segmentedSelected = $state("CFB");
-    let selectList = ["128bit", "192bit", "256bit"];
+    const selectOptions = ["128bit", "192bit", "256bit"];
     let selectValue = $state("192bit");
-    let radioList = ["PKCS#7", "ANSI X.923", "ISO 10126", "No Padding"];
+    const radioList = ["PKCS#7", "ANSI X.923", "ISO 10126", "No Padding"];
     let radioSelected = $state("No Padding");
-    let checkList = ["初期化ベクトル (IV) を設定する", "ソルトを使用する"];
+    const checkList = ["初期化ベクトル (IV) を設定する", "ソルトを使用する"];
     let checkSelectedArray = $state([]);
     let checkboxChecked = $state(false);
     let switchChecked = $state(false);
@@ -119,7 +119,7 @@
         </Cell>
         <Cell>
             <Select bind:value={selectValue} label="ASEの鍵長">
-                {#each selectList as str}
+                {#each selectOptions as str}
                     <Option value={str}>{str}</Option>
                 {/each}
             </Select>

@@ -38,6 +38,18 @@ const sendDiscordWebhook = (url: string, array: Array<string>) =>
 	});
 
 /**
+ * ヘルプ
+ */
+export const contactHelp = (array: Array<string>) =>
+	sendDiscordWebhook(VITE_DISCORD_WEBHOOK_URL_OF_CONTACT_HELP, array);
+
+/**
+ * 改善要望
+ */
+export const contactKaizen = (array: Array<string>) =>
+	sendDiscordWebhook(VITE_DISCORD_WEBHOOK_URL_OF_CONTACT_KAIZEN, array);
+
+/**
  * AGPL3に関するお問い合わせ
  */
 export const contactAGPL3 = (array: Array<string>) =>
@@ -48,24 +60,6 @@ export const contactAGPL3 = (array: Array<string>) =>
  */
 export const contactPolice = (array: Array<string>) =>
 	sendDiscordWebhook(VITE_DISCORD_WEBHOOK_URL_OF_CONTACT_POLICE, array);
-
-/**
- * 改善に関するお問い合わせ
- */
-export const contactKaizen = (array: Array<string>) =>
-	sendDiscordWebhook(VITE_DISCORD_WEBHOOK_URL_OF_CONTACT_KAIZEN, array);
-
-/**
- * 新機能に関するお問い合わせ
- */
-export const contactNewFeature = (array: Array<string>) =>
-	sendDiscordWebhook(VITE_DISCORD_WEBHOOK_URL_OF_CONTACT_NEW_FEATURE, array);
-
-/**
- * ヘルプに関するお問い合わせ
- */
-export const contactHelp = (array: Array<string>) =>
-	sendDiscordWebhook(VITE_DISCORD_WEBHOOK_URL_OF_CONTACT_HELP, array);
 
 /**
  * ユーザーによる通報

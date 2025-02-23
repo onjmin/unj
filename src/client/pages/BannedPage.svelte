@@ -6,6 +6,7 @@
     ///////////////
 
     import { genBanVerifyCode } from "../mylib/anti-debug.js";
+    import { VITE_ADMIN_EMAIL, VITE_ADMIN_TWITTER } from "../mylib/env.js";
     import { load, save } from "../mylib/storage.js";
     import { reportTraversal, reportUnknownIP } from "../mylib/webhook.js";
 
@@ -66,7 +67,7 @@
 <HeaderPart menu={false} title="うんｊから大切なお知らせ" />
 
 {#snippet mail()}
-    <a href="mailto:onjmin931@gmail.com?subject=[abuse]{ip}">メール</a>
+    <a href="mailto:{VITE_ADMIN_EMAIL}?subject=[abuse]{ip}">メール</a>
 {/snippet}
 
 <MainPart menu={false}>
@@ -76,7 +77,7 @@
     <p>身に覚えはあるでしょうか？？</p>
     <p>もしかしたら間違えてアクセスブロックされている場合もあります。</p>
     <p>
-        そのときは、{@render mail()}か<a href="https://x.com/onjmin_">Twitter</a
+        そのときは、{@render mail()}か<a href={VITE_ADMIN_TWITTER}>Twitter</a
         >でブロック解除の依頼をしてください。
     </p>
     <p>

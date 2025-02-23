@@ -69,7 +69,7 @@
   - date-fns: 日付フォーマット
 - アンチ荒らし機構
   - 難読化（最高設定）
-  - 確率的なBAN（VITE_UNJ_API_FLAKY_RATE）
+  - 確率的なBAN（VITE_UNJ_FLAKY_RATE）
   - テキスト（入力可能文字種をホワイトリストで制限）
   - 画像のNSFW判定
 - その他

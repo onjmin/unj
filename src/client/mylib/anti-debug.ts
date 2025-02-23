@@ -16,9 +16,9 @@ const calcUnjApiToken = (): string => {
 	return token.slice(0, 8); // 衝突の心配が低いので8文字に削減
 };
 
-const VITE_UNJ_API_FLAKY_RATE = Number(import.meta.env.VITE_UNJ_API_FLAKY_RATE);
+const VITE_UNJ_FLAKY_RATE = Number(import.meta.env.VITE_UNJ_FLAKY_RATE);
 export const flaky = (func: () => void): boolean => {
-	if (Math.random() > VITE_UNJ_API_FLAKY_RATE) {
+	if (Math.random() > VITE_UNJ_FLAKY_RATE) {
 		func();
 		return true;
 	}

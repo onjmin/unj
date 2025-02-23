@@ -3,6 +3,9 @@ export const DEV_MODE = import.meta.env.DEV_MODE;
 export const STG_MODE = import.meta.env.STG_MODE;
 export const PROD_MODE = import.meta.env.PROD_MODE;
 
+export const VITE_ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL;
+export const VITE_ADMIN_TWITTER = import.meta.env.VITE_ADMIN_TWITTER;
+
 /**
  * デプロイ先に応じたwindow.location.pathname
  */
