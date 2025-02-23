@@ -1,4 +1,5 @@
 <script lang="ts">
+  import "./global.css";
   import { Route, Router } from "svelte-routing";
   import { base } from "./mylib/env.js";
   import BanCodeVerifyPage from "./pages/BanCodeVerifyPage.svelte";
@@ -19,7 +20,6 @@
   import BannedCheck from "./plugs/BannedCheck.svelte";
   import TraversalCheck from "./plugs/TraversalCheck.svelte";
   import UnbannedCheck from "./plugs/UnbannedCheck.svelte";
-  import "./global.css";
 
   const NotFoundPagePath = base("/*");
   const HomePagePath = base("/");
