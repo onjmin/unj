@@ -13,9 +13,11 @@
   export const toStr = () => `ユーザ名：${username}`;
 </script>
 
-<p>AGPL3.0の条件に従い、難読化前の元ソースコードを提供します。</p>
 <p>
-  Privateリポジトリのアクセス権を付与するので、GitHubのユーザ名を送ってください。
+  本プロジェクトでは、AGPL3.0の条件に基づき、難読化前のソースコードをご提供いたします。
+</p>
+<p>
+  また、プライベートリポジトリへのアクセス権を付与いたしますので、GitHubのユーザー名をご連絡ください。
 </p>
 <Textfield
   label="GitHubのユーザ名"
@@ -27,5 +29,4 @@
     <CharacterCounter />
   {/snippet}
 </Textfield>
-
-<p>Contributeも歓迎します。</p>
+<p>なお、コントリビュートも歓迎いたします。</p>

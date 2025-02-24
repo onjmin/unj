@@ -8,8 +8,10 @@
     import Textfield from "@smui/Textfield";
     import Button from "@smui/button";
     import LayoutGrid, { Cell } from "@smui/layout-grid";
-    import SegmentedButton, { Segment, Label } from "@smui/segmented-button";
     import Select, { Option } from "@smui/select";
+    import Tab, { Icon, Label } from "@smui/tab";
+    import TabBar from "@smui/tab-bar";
+    import CharacterCounter from "@smui/textfield/character-counter";
     import * as v from "valibot";
     import { validate1 } from "../mylib/validation.js";
     import { contactHelp } from "../mylib/webhook.js";
@@ -23,8 +25,26 @@
     let KaizenPartInstance: KaizenPart | null = $state(null);
     let PolicePartInstance: PolicePart | null = $state(null);
 
-    let contactTypeList = ["ヘルプ", "改善要望", "AGPL3", "開示請求"];
-    let contactType = $state("ヘルプ");
+    const tabs = [
+        {
+            icon: "help",
+            label: "ヘルプ",
+        },
+        {
+            icon: "question_answer",
+            label: "改善要望",
+        },
+        {
+            icon: "account_circle",
+            label: "AGPL3",
+        },
+        {
+            icon: "gavel",
+            label: "開示請求",
+        },
+    ];
+    let active = $state(tabs[0]);
+
     let replyEmail = $state("");
     let enabledSubmit = $state(false);
 
@@ -42,7 +62,7 @@
         if (err) {
             return alert("不正なメールアドレスです。"); // TODO: リッチに直す
         }
-        switch (contactType) {
+        switch (active.label) {
             case "ヘルプ": {
                 if (HelpPartInstance === null) {
                     break;
@@ -101,40 +121,51 @@
 <HeaderPart title="お問い合わせ" />
 
 <MainPart>
-    <p>このページからのお問い合わせは早めに反応されます。</p>
-    <p>※誠に勝手ながら、1日1回までの送信に制限させて頂いています。</p>
+    <p>当ページからのお問い合わせには、迅速に対応いたします。</p>
+    <p>
+        なお、誠に勝手ながら、お問い合わせの送信は1日1回までに制限させていただいております。
+    </p>
     <LayoutGrid>
         <Cell span={12}>
-            <Label>お問い合わせの種類</Label>
-            <SegmentedButton
-                singleSelect
-                segments={contactTypeList}
-                bind:selected={contactType}
-            >
-                {#snippet segment(segment: string)}
-                    <Segment {segment}>
-                        <Label>{segment}</Label>
-                    </Segment>
-                {/snippet}
-            </SegmentedButton>
+            <div>
+                <TabBar {tabs} key={(tab) => tab.label} bind:active>
+                    {#snippet tab(tab)}
+                        <Tab {tab}>
+                            <Icon class="material-icons">{tab.icon}</Icon>
+                            <Label>{tab.label}</Label>
+                        </Tab>
+                    {/snippet}
+                </TabBar>
+            </div>
         </Cell>
     </LayoutGrid>
     <div class="form-container">
-        <Textfield label="連絡先メールアドレス" bind:value={replyEmail} />
-        {#if contactType === "ヘルプ"}
+        <Textfield
+            label="連絡先メールアドレス"
+            bind:value={replyEmail}
+            input$maxlength={254}
+        >
+            {#snippet helper()}
+                <CharacterCounter />
+            {/snippet}
+        </Textfield>
+
+        {#if active.label === "ヘルプ"}
             <HelpPart bind:this={HelpPartInstance} bind:enabledSubmit />
-        {:else if contactType === "改善要望"}
+        {:else if active.label === "改善要望"}
             <KaizenPart bind:this={KaizenPartInstance} bind:enabledSubmit />
-        {:else if contactType === "AGPL3"}
+        {:else if active.label === "AGPL3"}
             <AGPL3Part bind:this={AGPL3PartInstance} bind:enabledSubmit />
-        {:else if contactType === "開示請求"}
+        {:else if active.label === "開示請求"}
             <PolicePart bind:this={PolicePartInstance} bind:enabledSubmit />
         {/if}
+
         <Select bind:value={deadline} label="納期">
             {#each deadlineOptions as str}
                 <Option value={str}>{str}</Option>
             {/each}
         </Select>
+
         <Button
             onclick={handleSubmit}
             variant="raised"

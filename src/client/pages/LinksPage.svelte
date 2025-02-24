@@ -9,7 +9,7 @@
 <HeaderPart title="リンク集" />
 
 <MainPart>
-    <p>UNDER CONSTRUCTION</p>
+    <p>みんなで遊べるブラウザゲーム</p>
 </MainPart>
 
 <FooterPart />
