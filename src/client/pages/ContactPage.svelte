@@ -14,14 +14,16 @@
     import CharacterCounter from "@smui/textfield/character-counter";
     import * as v from "valibot";
     import { validate1 } from "../mylib/validation.js";
-    import { contactHelp } from "../mylib/webhook.js";
+    import {
+        contactAGPL3,
+        contactKaizen,
+        contactPolice,
+    } from "../mylib/webhook.js";
     import AGPL3Part from "../parts/contact/AGPL3Part.svelte";
-    import HelpPart from "../parts/contact/HelpPart.svelte";
     import KaizenPart from "../parts/contact/KaizenPart.svelte";
     import PolicePart from "../parts/contact/PolicePart.svelte";
 
     let AGPL3PartInstance: AGPL3Part | null = $state(null);
-    let HelpPartInstance: HelpPart | null = $state(null);
     let KaizenPartInstance: KaizenPart | null = $state(null);
     let PolicePartInstance: PolicePart | null = $state(null);
 
@@ -30,10 +32,6 @@
         label: string;
     };
     const contactTypes = [
-        {
-            icon: "help",
-            label: "ヘルプ",
-        },
         {
             icon: "question_answer",
             label: "改善要望",
@@ -71,26 +69,13 @@
             return alert("不正なメールアドレスです。"); // TODO: リッチに直す
         }
         switch (active.label) {
-            case "ヘルプ": {
-                if (HelpPartInstance === null) {
-                    break;
-                }
-                const str = HelpPartInstance.toStr();
-                try {
-                    // await contactHelp([]);
-                } catch (err) {
-                    // TODO: 送信に失敗した表示
-                }
-                // TODO: 送信完了時専用の表示
-                break;
-            }
             case "改善要望": {
                 if (KaizenPartInstance === null) {
                     break;
                 }
-                const str = KaizenPartInstance.toStr();
+                const input = KaizenPartInstance.getInputArray();
                 try {
-                    // await contactKaizen([]);
+                    await contactKaizen([deadline, replyEmail, ...input]);
                 } catch (err) {
                     // TODO: 送信に失敗した表示
                 }
@@ -100,9 +85,9 @@
                 if (AGPL3PartInstance === null) {
                     break;
                 }
-                const str = AGPL3PartInstance.toStr();
+                const input = AGPL3PartInstance.getInputArray();
                 try {
-                    // await contactAGPL3([]);
+                    await contactAGPL3([deadline, replyEmail, ...input]);
                 } catch (err) {
                     // TODO: 送信に失敗した表示
                 }
@@ -112,9 +97,9 @@
                 if (PolicePartInstance === null) {
                     break;
                 }
-                const str = PolicePartInstance.toStr();
+                const input = PolicePartInstance.getInputArray();
                 try {
-                    // await contactPolice([]);
+                    await contactPolice([deadline, replyEmail, ...input]);
                 } catch (err) {
                     // TODO: 送信に失敗した表示
                 }
@@ -162,9 +147,7 @@
             {/snippet}
         </Textfield>
 
-        {#if active.label === "ヘルプ"}
-            <HelpPart bind:this={HelpPartInstance} bind:fill />
-        {:else if active.label === "改善要望"}
+        {#if active.label === "改善要望"}
             <KaizenPart bind:this={KaizenPartInstance} bind:fill />
         {:else if active.label === "AGPL3"}
             <AGPL3Part bind:this={AGPL3PartInstance} bind:fill />

@@ -5,12 +5,14 @@
   let { fill = $bindable(false) } = $props();
 
   let username = $state("");
+  let sanitizedUsername = $state("");
 
   $effect(() => {
     fill = username !== "";
+    sanitizedUsername = username.replace(/[^a-zA-Z0-9\-]/g, "");
   });
 
-  export const toStr = () => `ユーザ名：${username}`;
+  export const getInputArray = () => [`ユーザ名：${username}`];
 </script>
 
 <p>
@@ -24,4 +26,24 @@
     <CharacterCounter />
   {/snippet}
 </Textfield>
+<div class="github-profile-embed">
+  {#if sanitizedUsername !== ""}
+    <img
+      src="https://github.com/{sanitizedUsername}.png"
+      alt="{sanitizedUsername}'s Avatar"
+      width="100"
+      style="border-radius: 50%; margin-right: 10px;"
+    />
+    <img
+      src="https://github-readme-stats.vercel.app/api?username={sanitizedUsername}&show_icons=true&theme=dark"
+      alt="GitHub Stats"
+    />
+  {/if}
+</div>
 <p>なお、コントリビュートも歓迎いたします。</p>
+
+<style>
+  .github-profile-embed img {
+    max-width: 90svw;
+  }
+</style>

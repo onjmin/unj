@@ -13,13 +13,11 @@
     fill = feature !== "" && overview !== "" && detail !== "";
   });
 
-  export const toStr = () => {
-    return [
-      `対象機能：${feature}`,
-      `要約：${overview}`,
-      `詳細：${detail}`,
-    ].join("\n");
-  };
+  export const getInputArray = () => [
+    `対象機能：${feature}`,
+    `要約：${overview}`,
+    `詳細：${detail}`,
+  ];
 </script>
 
 <Autocomplete

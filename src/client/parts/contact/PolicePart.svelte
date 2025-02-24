@@ -38,9 +38,19 @@
       check2;
   });
 
-  export const toStr = () => {
-    return "";
-  };
+  export const getInputArray = () => [
+    `電話番号：${contactPhone}`,
+    `氏名：${requesterName}`,
+    `所属：${requesterAgency}`,
+    `職位：${requesterPosition}`,
+    `種類：${requestType}`,
+    `ID：${targetUserId}`,
+    `事由：${targetContent}`,
+    `開始：${requestPeriodStart}`,
+    `終了：${requestPeriodEnd}`,
+    `根拠：${legalBasis}`,
+    `事件番号：${caseNumber}`,
+  ];
 </script>
 
 <Textfield
