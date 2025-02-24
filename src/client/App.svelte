@@ -26,6 +26,7 @@
   const HeadlinePagePath = base("/headline");
   const ThreadPagePath = base("/thread/:threadId");
   const NewPagePath = base("/new");
+  const RefNewPagePath = base("/new/:refThreadId");
   const HistoryPagePath = base("/history");
   const BookmarkPagePath = base("/bookmark");
   const ConfigPagePath = base("/config");
@@ -68,6 +69,11 @@
 
   <!-- スレ立て -->
   <Route path={NewPagePath}>
+    <BannedCheck>
+      <NewPage />
+    </BannedCheck>
+  </Route>
+  <Route path={RefNewPagePath}>
     <BannedCheck>
       <NewPage />
     </BannedCheck>
