@@ -10,6 +10,7 @@
     import LayoutGrid, { Cell } from "@smui/layout-grid";
     import Paper, { Title, Content } from "@smui/paper";
     import Select, { Option } from "@smui/select";
+    import Snackbar, { Actions } from "@smui/snackbar";
     import Tab, { Icon, Label } from "@smui/tab";
     import TabBar from "@smui/tab-bar";
     import CharacterCounter from "@smui/textfield/character-counter";
@@ -66,63 +67,60 @@
     });
 
     const emailSchema = v.pipe(v.string(), v.email());
+    let snackbar: Snackbar;
+    let snackbarText = $state("");
 
     const handleSubmit = async () => {
+        snackbar.close();
         if (isSuspend) {
-            return alert("受付停止中です。");
+            snackbarText = "受付停止中です。";
+            snackbar.open();
+            return;
         }
         const err = validate1(emailSchema, replyEmail);
         if (err) {
-            return alert("不正なメールアドレスです。"); // TODO: リッチに直す
+            snackbarText = "不正なメールアドレスです。";
+            snackbar.open();
+            return;
         }
+        const header = [`納期：${deadline}`, `メアド：${replyEmail}`];
         let success = false;
-        switch (active.label) {
-            case "改善要望": {
-                if (KaizenPartInstance === null) {
+        try {
+            switch (active.label) {
+                case "改善要望":
+                    if (KaizenPartInstance !== null) {
+                        const input = KaizenPartInstance.getInputArray();
+                        await contactKaizen([...header, ...input]);
+                        success = true;
+                    }
                     break;
-                }
-                const input = KaizenPartInstance.getInputArray();
-                try {
-                    await contactKaizen([deadline, replyEmail, ...input]);
-                } catch (err) {
-                    // TODO: 送信に失敗した表示
-                }
-                success = true;
-                break;
-            }
-            case "AGPL3": {
-                if (AGPL3PartInstance === null) {
+                case "AGPL3":
+                    if (AGPL3PartInstance !== null) {
+                        const input = AGPL3PartInstance.getInputArray();
+                        await contactAGPL3([...header, ...input]);
+                        success = true;
+                    }
                     break;
-                }
-                const input = AGPL3PartInstance.getInputArray();
-                try {
-                    await contactAGPL3([deadline, replyEmail, ...input]);
-                } catch (err) {
-                    // TODO: 送信に失敗した表示
-                }
-                success = true;
-                break;
-            }
-            case "開示請求": {
-                if (PolicePartInstance === null) {
+                case "開示請求":
+                    if (PolicePartInstance !== null) {
+                        const input = PolicePartInstance.getInputArray();
+                        await contactPolice([...header, ...input]);
+                        success = true;
+                    }
                     break;
-                }
-                const input = PolicePartInstance.getInputArray();
-                try {
-                    await contactPolice([deadline, replyEmail, ...input]);
-                } catch (err) {
-                    // TODO: 送信に失敗した表示
-                }
-                success = true;
-                break;
             }
-        }
+        } catch (err) {}
         if (success) {
             save("contactedAt", `${+new Date()}`);
+            snackbarText = "送信しました。";
+            isSuspend = true;
+        } else {
+            snackbarText = "送信に失敗しました。";
         }
+        snackbar.open();
     };
 
-    let isSuspend = $state(false);
+    let isSuspend = $state(true);
     let resumeDate = $state("");
 
     const main = async () => {
@@ -130,14 +128,14 @@
         if (contactedAt === null) {
             isSuspend = false;
         } else {
-            const pastDate = new Date(contactedAt);
+            const pastDate = new Date(Number(contactedAt));
             const now = new Date();
-            isSuspend = differenceInHours(now, pastDate) < 24;
             resumeDate = format(
                 addHours(pastDate, 24),
                 "yyyy年MM月dd日 HH時mm分ss秒",
                 { locale: ja },
             );
+            isSuspend = differenceInHours(now, pastDate) < 24;
         }
     };
 
@@ -150,6 +148,10 @@
 
 <HeaderPart title="お問い合わせ" />
 
+<Snackbar bind:this={snackbar}>
+    <Label>{snackbarText}</Label>
+</Snackbar>
+
 <MainPart>
     <p>当ページからのお問い合わせには、迅速に対応いたします。</p>
     <p>
@@ -158,7 +160,9 @@
     {#if isSuspend}
         <Paper color="primary" variant="outlined">
             <Title>受付停止中です。</Title>
-            <Content>{resumeDate}に受付を再開いたします。</Content>
+            {#if resumeDate}
+                <Content>{resumeDate}に受付を再開いたします。</Content>
+            {/if}
         </Paper>
     {/if}
     <LayoutGrid>
