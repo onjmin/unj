@@ -5,22 +5,18 @@
 - お前らのコントリビュート待ってるぜ！
   - （※本番に取り込まれる前に必ずモデレーターのコードレビューが入ります）
 
-## 本プロジェクトのライセンス適用範囲について
+## ライセンス適用範囲
+- **AGPL-3.0 License**  
+  プロジェクト全体は AGPL-3.0 です。詳細は `LICENSE` をご覧ください。
 
-本プロジェクトのライセンスは以下の通りです：
+- **Apache License 2.0**  
+  一部ファイル（例: `static/themes/metro-dark.css`）は Apache 2.0 です。詳細は `LICENSE-APACHE` をご覧ください。
 
-1. **AGPL-3.0 License (`LICENSE` ファイル)**
-   - 本プロジェクト全体は **GNU Affero General Public License (AGPL-3.0)** のもとでライセンスされています。
-   - AGPL-3.0 の詳細については、`LICENSE` をご確認ください。
+- **SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007**  
+  `static/Selawik_Release` 内のファイルは SIL OFL 1.1 です。詳細は `LICENSE-OFL` をご覧ください。
 
-2. **Apache License 2.0 (`LICENSE-APACHE` ファイル)**
-   - 一部のファイル（例: `static/themes/metro-dark.css`）は **Apache License 2.0** で提供されています。
-   - Apache License 2.0 の詳細については、`LICENSE-APACHE` をご確認ください。
-
-### 重要な注意事項
-- 本プロジェクトを利用・改変・配布する際は、**AGPL-3.0 の条件に従う必要があります**。
-- ただし、Apache License のファイル（例: `static/themes/metro-dark.css`）については、**Apache License 2.0 の条件に従って使用できます**。
-- それぞれのライセンス条件を確認し、適切に取り扱ってください。
+### 注意事項
+各ライセンスの条件に従ってご利用ください。各ライセンスの全文は、該当するファイルと共に提供されています。
 
 ## 採用技術
 - 開発言語
