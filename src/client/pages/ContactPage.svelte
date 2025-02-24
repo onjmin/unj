@@ -8,11 +8,15 @@
     import Textfield from "@smui/Textfield";
     import Button from "@smui/button";
     import LayoutGrid, { Cell } from "@smui/layout-grid";
+    import Paper, { Title, Content } from "@smui/paper";
     import Select, { Option } from "@smui/select";
     import Tab, { Icon, Label } from "@smui/tab";
     import TabBar from "@smui/tab-bar";
     import CharacterCounter from "@smui/textfield/character-counter";
+    import { addHours, differenceInHours, format } from "date-fns";
+    import { ja } from "date-fns/locale";
     import * as v from "valibot";
+    import { load, save } from "../mylib/storage.js";
     import { validate1 } from "../mylib/validation.js";
     import {
         contactAGPL3,
@@ -58,16 +62,20 @@
 
     let enabledSubmit = $state(false);
     $effect(() => {
-        enabledSubmit = replyEmail !== "" && fill && !!deadline;
+        enabledSubmit = replyEmail !== "" && fill && !!deadline && !isSuspend;
     });
 
     const emailSchema = v.pipe(v.string(), v.email());
 
     const handleSubmit = async () => {
+        if (isSuspend) {
+            return alert("受付停止中です。");
+        }
         const err = validate1(emailSchema, replyEmail);
         if (err) {
             return alert("不正なメールアドレスです。"); // TODO: リッチに直す
         }
+        let success = false;
         switch (active.label) {
             case "改善要望": {
                 if (KaizenPartInstance === null) {
@@ -79,6 +87,7 @@
                 } catch (err) {
                     // TODO: 送信に失敗した表示
                 }
+                success = true;
                 break;
             }
             case "AGPL3": {
@@ -91,6 +100,7 @@
                 } catch (err) {
                     // TODO: 送信に失敗した表示
                 }
+                success = true;
                 break;
             }
             case "開示請求": {
@@ -103,10 +113,37 @@
                 } catch (err) {
                     // TODO: 送信に失敗した表示
                 }
+                success = true;
                 break;
             }
         }
+        if (success) {
+            save("contactedAt", `${+new Date()}`);
+        }
     };
+
+    let isSuspend = $state(false);
+    let resumeDate = $state("");
+
+    const main = async () => {
+        const contactedAt = await load("contactedAt");
+        if (contactedAt === null) {
+            isSuspend = false;
+        } else {
+            const pastDate = new Date(contactedAt);
+            const now = new Date();
+            isSuspend = differenceInHours(now, pastDate) < 24;
+            resumeDate = format(
+                addHours(pastDate, 24),
+                "yyyy年MM月dd日 HH時mm分ss秒",
+                { locale: ja },
+            );
+        }
+    };
+
+    $effect(() => {
+        main();
+    });
 </script>
 
 <!-- 問い合わせが殺到するので「よくある質問」も欲しい -->
@@ -118,6 +155,12 @@
     <p>
         なお、誠に勝手ながら、お問い合わせの送信は1日1回までに制限させていただいております。
     </p>
+    {#if isSuspend}
+        <Paper color="primary" variant="outlined">
+            <Title>受付停止中です。</Title>
+            <Content>{resumeDate}に受付を再開いたします。</Content>
+        </Paper>
+    {/if}
     <LayoutGrid>
         <Cell span={12}>
             <div>
