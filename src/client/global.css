@@ -19,7 +19,7 @@ body {
 .unj-main-part {
 	flex: 1;
 	overflow-y: auto;
-	scrollbar-gutter: stable;
+	scrollbar-gutter: stable both-edges;
 	margin: 0 auto;
 	max-width: 100svw;
 	min-width: 60svw;

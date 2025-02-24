@@ -6,7 +6,7 @@
   import CharacterCounter from "@smui/textfield/character-counter";
   import { VITE_ADMIN_EMAIL } from "../../mylib/env.js";
 
-  let { enabledSubmit = $bindable(false) } = $props();
+  let { fill = $bindable(false) } = $props();
 
   let requesterName = $state("");
   let requesterAgency = $state("");
@@ -19,12 +19,11 @@
   let requestPeriodEnd = $state("");
   let legalBasis = $state("");
   let caseNumber = $state("");
-
   let check1 = $state(false);
   let check2 = $state(false);
 
-  const check = () => {
-    enabledSubmit =
+  $effect(() => {
+    fill =
       requesterName !== "" &&
       requesterAgency !== "" &&
       requesterPosition !== "" &&
@@ -37,7 +36,7 @@
       legalBasis !== "" &&
       check1 &&
       check2;
-  };
+  });
 
   export const toStr = () => {
     return "";
@@ -122,14 +121,14 @@
 </Textfield>
 
 <FormField>
-  <Checkbox bind:checked={check1} onchange={check} />
+  <Checkbox bind:checked={check1} />
   {#snippet label()}
     本請求は正当な権限のもとで行われていることを確認しました
   {/snippet}
 </FormField>
 
 <FormField>
-  <Checkbox bind:checked={check2} onchange={check} />
+  <Checkbox bind:checked={check2} />
   {#snippet label()}
     開示された情報は法的手続きを遵守し適切に管理されることを誓約します
   {/snippet}
@@ -139,6 +138,6 @@
   <a href="mailto:{VITE_ADMIN_EMAIL}?subject=[legal]件名">メール</a>
 {/snippet}
 
-{#if enabledSubmit}
+{#if fill}
   <p>念のため{@render mail()}も送ってください。</p>
 {/if}

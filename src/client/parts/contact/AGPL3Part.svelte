@@ -2,13 +2,13 @@
   import Textfield from "@smui/Textfield";
   import CharacterCounter from "@smui/textfield/character-counter";
 
-  let { enabledSubmit = $bindable(false) } = $props();
+  let { fill = $bindable(false) } = $props();
 
   let username = $state("");
 
-  const check = () => {
-    enabledSubmit = username !== "";
-  };
+  $effect(() => {
+    fill = username !== "";
+  });
 
   export const toStr = () => `ユーザ名：${username}`;
 </script>
@@ -19,12 +19,7 @@
 <p>
   また、プライベートリポジトリへのアクセス権を付与いたしますので、GitHubのユーザー名をご連絡ください。
 </p>
-<Textfield
-  label="GitHubのユーザ名"
-  bind:value={username}
-  input$maxlength={39}
-  onchange={check}
->
+<Textfield label="GitHubのユーザ名" bind:value={username} input$maxlength={39}>
   {#snippet helper()}
     <CharacterCounter />
   {/snippet}

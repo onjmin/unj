@@ -25,7 +25,11 @@
     let KaizenPartInstance: KaizenPart | null = $state(null);
     let PolicePartInstance: PolicePart | null = $state(null);
 
-    const tabs = [
+    type ContactType = {
+        icon: string;
+        label: string;
+    };
+    const contactTypes = [
         {
             icon: "help",
             label: "ヘルプ",
@@ -43,17 +47,21 @@
             label: "開示請求",
         },
     ];
-    let active = $state(tabs[0]);
+    let active = $state(contactTypes[0]);
 
     let replyEmail = $state("");
-    let enabledSubmit = $state(false);
-
+    let fill = $state(false);
     let deadline = $state("");
     const deadlineOptions = [
         "長（いつでもいいよ）",
         "中（今週中に）",
         "短（即日対応希望）",
     ];
+
+    let enabledSubmit = $state(false);
+    $effect(() => {
+        enabledSubmit = replyEmail !== "" && fill && !!deadline;
+    });
 
     const emailSchema = v.pipe(v.string(), v.email());
 
@@ -128,8 +136,12 @@
     <LayoutGrid>
         <Cell span={12}>
             <div>
-                <TabBar {tabs} key={(tab) => tab.label} bind:active>
-                    {#snippet tab(tab)}
+                <TabBar
+                    tabs={contactTypes}
+                    key={(tab: ContactType) => tab.label}
+                    bind:active
+                >
+                    {#snippet tab(tab: ContactType)}
                         <Tab {tab}>
                             <Icon class="material-icons">{tab.icon}</Icon>
                             <Label>{tab.label}</Label>
@@ -151,13 +163,13 @@
         </Textfield>
 
         {#if active.label === "ヘルプ"}
-            <HelpPart bind:this={HelpPartInstance} bind:enabledSubmit />
+            <HelpPart bind:this={HelpPartInstance} bind:fill />
         {:else if active.label === "改善要望"}
-            <KaizenPart bind:this={KaizenPartInstance} bind:enabledSubmit />
+            <KaizenPart bind:this={KaizenPartInstance} bind:fill />
         {:else if active.label === "AGPL3"}
-            <AGPL3Part bind:this={AGPL3PartInstance} bind:enabledSubmit />
+            <AGPL3Part bind:this={AGPL3PartInstance} bind:fill />
         {:else if active.label === "開示請求"}
-            <PolicePart bind:this={PolicePartInstance} bind:enabledSubmit />
+            <PolicePart bind:this={PolicePartInstance} bind:fill />
         {/if}
 
         <Select bind:value={deadline} label="納期">

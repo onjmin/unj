@@ -3,15 +3,15 @@
   import Textfield from "@smui/Textfield";
   import CharacterCounter from "@smui/textfield/character-counter";
 
-  let { enabledSubmit = $bindable(false) } = $props();
+  let { fill = $bindable(false) } = $props();
 
   let feature = $state("");
   let overview = $state("");
   let detail = $state("");
 
-  const check = () => {
-    enabledSubmit = feature !== "" && overview !== "" && detail !== "";
-  };
+  $effect(() => {
+    fill = feature !== "" && overview !== "" && detail !== "";
+  });
 
   export const toStr = () => {
     return [
@@ -26,7 +26,6 @@
   combobox
   label="改善してほしい機能"
   bind:value={feature}
-  onchange={check}
   options={[
     "スレ立て",
     "ヘッドライン",
@@ -45,7 +44,6 @@
   label="改善案の説明（一言で）"
   bind:value={overview}
   input$maxlength={32}
-  onchange={check}
 >
   {#snippet helper()}
     <CharacterCounter />
@@ -57,7 +55,6 @@
   label="改善案の詳細（3行で）"
   bind:value={detail}
   input$maxlength={128}
-  onchange={check}
 >
   {#snippet helper()}
     <CharacterCounter />
