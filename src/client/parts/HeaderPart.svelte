@@ -2,6 +2,7 @@
   import IconButton from "@smui/icon-button";
   import TopAppBar, { Title, Row, Section } from "@smui/top-app-bar";
   import { DEV_MODE, STG_MODE } from "../mylib/env.js";
+  import { isMobile, pathname } from "../mylib/env.js";
   import LeftMenuPart from "./LeftMenuPart.svelte";
   import RightMenuPart from "./RightMenuPart.svelte";
 
@@ -14,39 +15,8 @@
   }
 
   const isEnabledRightMenu = children !== null;
-  let isMobile = $state(false);
-  let openLeft = $state(true);
-  let openRight = $state(true);
-
-  let prevWidth = $state(window.innerWidth);
-  const onResize = () => {
-    const width = window.innerWidth;
-    isMobile = width < 768;
-    if (width > prevWidth) {
-      // ウィンドウを広げた場合
-      if (!isMobile) {
-        openLeft = true;
-        openRight = true;
-      }
-    } else {
-      // ウィンドウを狭くした場合
-      if (isMobile) {
-        openLeft = false;
-        openRight = false;
-      }
-    }
-    prevWidth = width;
-  };
-
-  const main = () => {
-    onResize();
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
-  };
-
-  $effect(() => {
-    return main();
-  });
+  let openLeft = $state(!isMobile() || pathname().slice(1).indexOf("/") === -1);
+  let openRight = $state(!isMobile());
 
   let isAlreadyBookmark = $state(false); // TODO
 </script>
@@ -58,14 +28,14 @@
 </svelte:head>
 
 <header class="unj-header-part">
-  <TopAppBar variant="static" fixed>
+  <TopAppBar variant="static">
     <Row>
       {#if menu}
         <Section align="start" toolbar>
           <IconButton
             class="material-icons"
             onclick={() => {
-              if (isMobile) {
+              if (isMobile()) {
                 openRight = false;
               }
               openLeft = !openLeft;
@@ -96,7 +66,7 @@
           <IconButton
             class="material-icons"
             onclick={() => {
-              if (isMobile) {
+              if (isMobile()) {
                 openLeft = false;
               }
               openRight = !openRight;
