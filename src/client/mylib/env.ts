@@ -35,8 +35,3 @@ const url = PROD_MODE ? new URL(BASE_URL) : window.location;
  */
 export const base = (to: string) =>
 	PROD_MODE ? `${url.pathname}${to.slice(1)}` : to;
-
-/**
- * ブレイクポイント
- */
-export const isMobile = () => window.innerWidth < 768;

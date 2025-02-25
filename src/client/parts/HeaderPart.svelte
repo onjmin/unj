@@ -1,12 +1,12 @@
 <script lang="ts">
   import IconButton from "@smui/icon-button";
   import TopAppBar, { Title, Row, Section } from "@smui/top-app-bar";
-  import { DEV_MODE, STG_MODE } from "../mylib/env.js";
-  import { isMobile, pathname } from "../mylib/env.js";
+  import { DEV_MODE, STG_MODE, pathname } from "../mylib/env.js";
   import LeftMenuPart from "./LeftMenuPart.svelte";
   import RightMenuPart from "./RightMenuPart.svelte";
 
   let { children = null, title = "", menu = true, bookmark = false } = $props();
+
   if (DEV_MODE) {
     title = `DEV - ${title}`;
   }
@@ -14,9 +14,25 @@
     title = `STG - ${title}`;
   }
 
+  const calcIsMobile = () => window.innerWidth < 768;
+
   const isEnabledRightMenu = children !== null;
-  let openLeft = $state(!isMobile() || pathname().slice(1).indexOf("/") === -1);
-  let openRight = $state(!isMobile());
+  let openLeft = $state(false);
+  let openRight = $state(false);
+  let isMobile = $state(false);
+
+  const onResize = () => {
+    isMobile = calcIsMobile();
+    const isPC = !isMobile;
+    openLeft = isPC || pathname().slice(1).indexOf("/") === -1;
+    openRight = isPC;
+  };
+
+  $effect(() => {
+    onResize();
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  });
 
   let isAlreadyBookmark = $state(false); // TODO
 </script>
@@ -35,7 +51,7 @@
           <IconButton
             class="material-icons"
             onclick={() => {
-              if (isMobile()) {
+              if (isMobile) {
                 openRight = false;
               }
               openLeft = !openLeft;
@@ -66,7 +82,7 @@
           <IconButton
             class="material-icons"
             onclick={() => {
-              if (isMobile()) {
+              if (isMobile) {
                 openLeft = false;
               }
               openRight = !openRight;
@@ -85,4 +101,14 @@
       {@render children?.()}
     </RightMenuPart>
   {/if}
+  <button
+    type="button"
+    class="unj-main-overlay {isMobile && (openLeft || openRight)
+      ? ''
+      : 'hidden'}"
+    onclick={() => {
+      openLeft = false;
+      openRight = false;
+    }}>うんｊ</button
+  >
 {/if}
