@@ -3,6 +3,8 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 export const BASE_URL = process.env.BASE_URL || "/";
+export const GLITCH_PORT = process.env.GLITCH_PORT || "4545";
+
 export const DEV_MODE = process.env.DEV_MODE === "true";
 export const STG_MODE = process.env.STG_MODE === "true";
 export const PROD_MODE = !DEV_MODE && !STG_MODE;

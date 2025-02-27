@@ -4,6 +4,7 @@ import { defineConfig } from "vite";
 import {
 	BASE_URL,
 	DEV_MODE,
+	GLITCH_PORT,
 	PROD_MODE,
 	STG_MODE,
 } from "./src/server/mylib/env.js";
@@ -11,6 +12,7 @@ import { logError, logWarning } from "./src/server/mylib/log.js";
 
 const define = {
 	"import.meta.env.BASE_URL": JSON.stringify(BASE_URL),
+	"import.meta.env.GLITCH_PORT": GLITCH_PORT,
 	"import.meta.env.DEV_MODE": DEV_MODE,
 	"import.meta.env.STG_MODE": STG_MODE,
 	"import.meta.env.PROD_MODE": PROD_MODE,

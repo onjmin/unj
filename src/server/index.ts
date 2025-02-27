@@ -15,6 +15,7 @@ import {
 } from "../common/validation/schema.js";
 import {
 	DEV_MODE,
+	GLITCH_PORT,
 	ROOT_PATH,
 	STG_MODE,
 	UNJ_ADMIN_API_KEY,
@@ -44,7 +45,7 @@ if (DEV_MODE || STG_MODE) {
 	});
 }
 
-// サービスを止めずに規制するためのAPI
+// サービスを止めずに投稿規制するためのAPI
 app.post("/api/admin", (req, res) => {
 	const token = sha256(req.body.token);
 	const token2 = sha256(String(UNJ_ADMIN_API_KEY));
@@ -117,8 +118,7 @@ io.on("connection", (socket) => {
 	});
 });
 
-// Glitch の場合は `process.env.PORT` を使用する
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || GLITCH_PORT;
 server.listen(PORT, () => {
 	console.log(`サーバー起動: ポート ${PORT}`);
 });

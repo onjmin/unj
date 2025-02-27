@@ -3,8 +3,9 @@ import { sha256 } from "js-sha256";
 
 const delimiter = "###";
 
-const PIPEDREAM_API_SECRET_PEPPER =
-	import.meta.env.PIPEDREAM_API_SECRET_PEPPER ?? "";
+const PIPEDREAM_API_SECRET_PEPPER = String(
+	import.meta.env.PIPEDREAM_API_SECRET_PEPPER,
+);
 const PIPEDREAM_API_SECRET_INTERVAL = Number(
 	import.meta.env.VITE_PIPEDREAM_API_SECRET_INTERVAL,
 );

@@ -3,8 +3,9 @@ import { sha256 } from "js-sha256";
 
 const delimiter = "###";
 
-const VITE_UNJ_API_SECRET_PEPPER =
-	import.meta.env.VITE_UNJ_API_SECRET_PEPPER ?? "";
+const VITE_UNJ_API_SECRET_PEPPER = String(
+	import.meta.env.VITE_UNJ_API_SECRET_PEPPER,
+);
 
 const user_a = "user_a";
 
@@ -25,8 +26,9 @@ export const flaky = (func: () => void): boolean => {
 	return false;
 };
 
-const VITE_UNJ_BAN_VERIFY_CODE_PEPPER =
-	import.meta.env.VITE_UNJ_BAN_VERIFY_CODE_PEPPER ?? "";
+const VITE_UNJ_BAN_VERIFY_CODE_PEPPER = String(
+	import.meta.env.VITE_UNJ_BAN_VERIFY_CODE_PEPPER,
+);
 
 /**
  * BAN解除コードの生成

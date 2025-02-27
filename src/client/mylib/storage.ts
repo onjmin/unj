@@ -5,12 +5,15 @@ import { DEV_MODE } from "./env.js";
 
 const delimiter = "###";
 
-const VITE_UNJ_IDB_KEY_SECRET_PEPPER =
-	import.meta.env.VITE_UNJ_IDB_KEY_SECRET_PEPPER ?? "";
-const VITE_UNJ_IDB_VALUE_SECRET_PEPPER =
-	import.meta.env.VITE_UNJ_IDB_VALUE_SECRET_PEPPER ?? "";
-const VITE_UNJ_IDB_VALUE_CHECKSUM_SECRET_PEPPER =
-	import.meta.env.VITE_UNJ_IDB_VALUE_CHECKSUM_SECRET_PEPPER ?? "";
+const VITE_UNJ_IDB_KEY_SECRET_PEPPER = String(
+	import.meta.env.VITE_UNJ_IDB_KEY_SECRET_PEPPER,
+);
+const VITE_UNJ_IDB_VALUE_SECRET_PEPPER = String(
+	import.meta.env.VITE_UNJ_IDB_VALUE_SECRET_PEPPER,
+);
+const VITE_UNJ_IDB_VALUE_CHECKSUM_SECRET_PEPPER = String(
+	import.meta.env.VITE_UNJ_IDB_VALUE_CHECKSUM_SECRET_PEPPER,
+);
 
 /**
  * IndexedDBの安全なキーを計算する

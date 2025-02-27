@@ -1,10 +1,11 @@
-const BASE_URL = import.meta.env.BASE_URL;
-export const DEV_MODE = import.meta.env.DEV_MODE;
-export const STG_MODE = import.meta.env.STG_MODE;
-export const PROD_MODE = import.meta.env.PROD_MODE;
+const BASE_URL = String(import.meta.env.BASE_URL);
 
-export const VITE_ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL;
-export const VITE_ADMIN_TWITTER = import.meta.env.VITE_ADMIN_TWITTER;
+export const DEV_MODE = Boolean(import.meta.env.DEV_MODE);
+export const STG_MODE = Boolean(import.meta.env.STG_MODE);
+export const PROD_MODE = Boolean(import.meta.env.PROD_MODE);
+
+export const VITE_ADMIN_EMAIL = String(import.meta.env.VITE_ADMIN_EMAIL);
+export const VITE_ADMIN_TWITTER = String(import.meta.env.VITE_ADMIN_TWITTER);
 
 // 本番ビルドが盗まれて別のホスティングに置かれた場合のせめてもの抵抗
 if (window.location.href === window.location.href.replace(BASE_URL, "")) {
