@@ -2,7 +2,7 @@
     ユーザーのテーブル
 */
 CREATE TABLE users (
-    id SMALLSERIAL PRIMARY KEY, -- フロントエンドに生のIDを公開せず8桁のhashidsを使う。毎日見た目は変わる。
+    id SMALLSERIAL PRIMARY KEY, -- 生のIDを公開せず8桁のhashidsを使う。毎日見た目は変わる。
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     latest_res_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 最終レスの日時（投稿規制用）
@@ -35,10 +35,10 @@ CREATE TABLE user_ip_traces {
     レスに連動して threads.latest_res_at と threads.res_count が更新される。
 */
 CREATE TABLE threads (
-    id SMALLSERIAL PRIMARY KEY, -- フロントエンドに生のIDを公開せず10桁のhashidsを使う
+    id SMALLSERIAL PRIMARY KEY, -- 生のIDを公開せず8桁のhashidsを使う
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP, -- 論理削除の予定日時（ゴミ箱機能用）
+    deleted_at TIMESTAMP, -- 論理削除の予定日時（!timer用）
     latest_res_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 最終レスの日時
     user_id SMALLINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     ref_thread_id SMALLINT NOT NULL DEFAULT 0, -- 前スレのID（0の場合は前スレ無し）
@@ -46,7 +46,7 @@ CREATE TABLE threads (
     ps TEXT NOT NULL DEFAULT '', -- !add機能で>>1の末尾に追記する内容
     res_count SMALLINT NOT NULL DEFAULT 1, -- count()よりも軽量。レス投稿後に発行されるIDが真の値。
     res_limit SMALLINT NOT NULL DEFAULT 1000, -- レスの上限。次スレ誘導のためにスレ主と副主は+5まで投稿可能。
-    age_res_id SMALLINT NOT NULL DEFAULT 0, -- !age機能で表示するレスのID（0の場合はage無し）
+    age_res_num SMALLINT NOT NULL DEFAULT 0, -- !age機能で表示するレスのID（0の場合はage無し）
     thread_type SMALLINT DEFAULT 0, -- スレッドの種類（実況スレ、地震スレ、安価スレ、スレタイで振り分けられる。または、SSスレ、運営用スレ、語尾が変わる特殊なスレなど）
     cc_type SMALLINT DEFAULT 0, -- 写しの取り方
     content_types_bitmask SMALLINT DEFAULT 1, -- 投稿可能なコンテンツの種類
@@ -63,8 +63,9 @@ CREATE TABLE threads (
     基本的にUpdateとDeleteされない静的なレコードである。
 */
 CREATE TABLE res (
+    id SERIAL PRIMARY KEY, -- 生のIDを公開せず8桁のhashidsを使う
     thread_id SMALLINT NOT NULL REFERENCES threads(id) ON DELETE CASCADE, -- スレッドID
-    id SMALLSERIAL, -- レス番号（各スレッド内で連番）
+    num SMALLINT NOT NULL, -- レス番号（各スレッド内で連番）
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     user_id SMALLINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -76,7 +77,7 @@ CREATE TABLE res (
     content TEXT NOT NULL DEFAULT '',
     content_url TEXT NOT NULL DEFAULT '',
     content_type SMALLINT NOT NULL DEFAULT 1, -- 1: text, 2: image, 4: gif
-    PRIMARY KEY (thread_id, id) -- スレッドID + レス番号を複合主キーにする
+    UNIQUE (thread_id, num)  -- スレッド内でのレス番号の一意性を保証
 );
 
 /*

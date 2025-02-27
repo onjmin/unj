@@ -10,6 +10,7 @@
     import IconButton, { Icon } from "@smui/icon-button";
     import { navigate } from "svelte-routing";
     import { base } from "../mylib/env.js";
+    import { socket } from "../mylib/socket.js";
 
     const mock = [
         [42, "今日の絵チャ、自由画法で爆笑必至！"],

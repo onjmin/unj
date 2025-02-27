@@ -25,6 +25,7 @@
   const HomePagePath = base("/");
   const HeadlinePagePath = base("/headline");
   const ThreadPagePath = base("/thread/:threadId");
+  const randomAccessThreadPagePath = base("/thread/:threadId/:resNum");
   const NewPagePath = base("/new");
   const RefNewPagePath = base("/new/:refThreadId");
   const HistoryPagePath = base("/history");
@@ -54,6 +55,7 @@
       <HomePage />
     </BannedCheck>
   </Route>
+
   <!-- ヘッドライン -->
   <Route path={HeadlinePagePath}>
     <BannedCheck>
@@ -62,6 +64,11 @@
   </Route>
   <!-- スレッド -->
   <Route path={ThreadPagePath}>
+    <BannedCheck>
+      <ThreadPage />
+    </BannedCheck>
+  </Route>
+  <Route path={randomAccessThreadPagePath}>
     <BannedCheck>
       <ThreadPage />
     </BannedCheck>

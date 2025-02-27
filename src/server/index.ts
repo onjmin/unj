@@ -1,9 +1,24 @@
 import http from "node:http";
 import path from "node:path";
 import express from "express";
+import { sha256 } from "js-sha256";
 import { Server } from "socket.io";
-// import { calcUnjApiToken } from "./mylib/anti-debug.js";
-import { DEV_MODE, ROOT_PATH, STG_MODE } from "./mylib/env.js";
+import * as v from "valibot";
+import { contentSchemaMap } from "../common/validation/content-schema.js";
+import {
+	HeadlineSchema,
+	MakeThreadSchema,
+	ReadThreadSchema,
+	ResSchema,
+	SearchResSchema,
+	SearchThreadSchema,
+} from "../common/validation/schema.js";
+import {
+	DEV_MODE,
+	ROOT_PATH,
+	STG_MODE,
+	UNJ_ADMIN_API_KEY,
+} from "./mylib/env.js";
 
 const app = express();
 const server = http.createServer(app);
@@ -29,52 +44,76 @@ if (DEV_MODE || STG_MODE) {
 	});
 }
 
-// 適当なAPI
-// app.post("/api/hash", (req, res) => {
-// 	const token = req.body.token;
-// 	const token2 = calcUnjApiToken();
-// 	res.json({ token, token2, message: token === token2 ? "OK" : "NG" });
-// });
+// サービスを止めずに規制するためのAPI
+app.post("/api/admin", (req, res) => {
+	const token = sha256(req.body.token);
+	const token2 = sha256(String(UNJ_ADMIN_API_KEY));
+	res.json({ token, token2, message: token === token2 ? "OK" : "NG" });
+	// TODO: io.disconnectSockets(false);
+	// TODO: io.disconnectSockets(true);
+	// TODO: io.close();
+	// TODO: 対象ユーザーの忍法帖スコアを操作
+	// TODO: 自動BANの基準を変更
+	// TODO: 一律Socket新規発行停止
+	// TODO: 一律スレ立て禁止
+	// TODO: 一律低速レスモード
+	// TODO: 一律content_types_bitmask規制
+});
 
 // socket.io
 io.on("connection", (socket) => {
 	const ip = socket.handshake.address;
 	const ua = socket.handshake.headers["user-agent"];
-
-	// ipとuaのバリデーションが不自然なら遮断
-
-	console.log(`New connection from IP: ${ip}, UA: ${ua}`);
-
-	console.log("WebSocket クライアント接続:", socket.id);
-
-	socket.on("message", (data) => {
-		console.log("受信:", data);
-		io.emit("message", data); // すべてのクライアントに送信
-	});
+	console.log(`Client connected: ${socket.id}, ${ip}, ${ua}`);
 
 	socket.on("disconnect", () => {
 		console.log("クライアント切断:", socket.id);
 	});
 
-	socket.on("new_post", async (data) => {
-		// // サーバー側でも検証を実施
-		// const result = postSchema.safeParse(data);
-		// if (!result.success) {
-		// 	console.error("サーバー側の検証エラー:", result.error);
-		// 	// クライアントにエラー情報を返す（必要なら）
-		// 	socket.emit("post_error", result.error.issues);
-		// 	return;
-		// }
-		// // 検証OKならDBへ挿入する（DB挿入部分はお使いのDBモジュールに合わせて実装）
-		// try {
-		// 	// 例: await insertPost(result.data);
-		// 	console.log("DBに投稿を保存:", result.data);
-		// 	// クライアントに成功通知を送る
-		// 	socket.emit("post_success", { message: "投稿が完了しました" });
-		// } catch (error) {
-		// 	console.error("DB挿入エラー:", error);
-		// 	socket.emit("post_error", { message: "DB挿入に失敗しました" });
-		// }
+	// socket.on("joinRoom", (roomId) => {
+	// 	socket.join(roomId);
+	// 	console.log(`Socket ${socket.id} joined room ${roomId}`);
+	// });
+
+	// socket.on("leaveRoom", (roomId) => {
+	// 	socket.leave(roomId);
+	// 	console.log(`Socket ${socket.id} left room ${roomId}`);
+	// });
+
+	// socket.on("postMessage", (data) => {
+	// 	// const result = postSchema.safeParse(data);
+	// 	// if (!result.success) {
+	// 	// 	return;
+	// 	// }
+	// 	try {
+	// 		// 	// 例: await insertPost(result.data);
+	// 	} catch (error) {}
+	// 	// テーブル追加（自動採番）
+	// 	io.to(data.roomId).emit("newMessage", data.message);
+	// });
+
+	socket.on("makeThread", async (data) => {
+		const resultMakeThread = v.safeParse(MakeThreadSchema, data);
+		if (!resultMakeThread.success) {
+			return;
+		}
+		const resultRes = v.safeParse(ResSchema, data);
+		if (!resultRes.success) {
+			return;
+		}
+		const n = resultRes.output.content_type;
+		if (!(n & resultMakeThread.output.content_types_bitmask)) {
+			return;
+		}
+		const contentSchema = contentSchemaMap[n as keyof typeof contentSchemaMap];
+		const resultContentSchema = v.safeParse(contentSchema, data);
+		if (!resultContentSchema.success) {
+			return;
+		}
+		try {
+			// await insertPost(result.data);
+			socket.emit("makeThread", { message: "スレ立て成功" });
+		} catch (error) {}
 	});
 });
 

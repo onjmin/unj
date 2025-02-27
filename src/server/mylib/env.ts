@@ -15,3 +15,5 @@ if (DEV_MODE) {
 } else {
 	ROOT_PATH = path.resolve(__dirname, "..");
 }
+
+export const UNJ_ADMIN_API_KEY = process.env.UNJ_ADMIN_API_KEY;
