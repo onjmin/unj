@@ -1,6 +1,6 @@
 <script lang="ts">
   import Button, { Label } from "@smui/button";
-  import Dialog, { Header, Title, Content, Actions } from "@smui/dialog";
+  import Dialog, { Title, Content, Actions } from "@smui/dialog";
   import IconButton from "@smui/icon-button";
   import List, {
     Item,
@@ -22,21 +22,15 @@
 
   $effect(() => {
     href = list[selectionIndex] ? list[selectionIndex].href : "";
+    if (!open) {
+      selectionIndex = 0;
+    }
   });
 </script>
 
-<Dialog
-  class="unj-dialog-part"
-  bind:open
-  fullscreen
-  aria-labelledby="fullscreen-title"
-  aria-describedby="fullscreen-content"
->
-  <Header>
-    <Title id="fullscreen-title">URLテンプレ</Title>
-    <IconButton action="close" class="material-icons">close</IconButton>
-  </Header>
-  <Content id="fullscreen-content">
+<Dialog class="unj-dialog-part" bind:open>
+  <Title>URLテンプレ</Title>
+  <Content>
     {#if children !== null}
       <div>
         {@render children?.()}
@@ -83,6 +77,9 @@
       }}
     >
       <Label>貼り付け</Label>
+    </Button>
+    <Button action="reject">
+      <Label>キャンセル</Label>
     </Button>
   </Actions>
 </Dialog>

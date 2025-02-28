@@ -161,8 +161,36 @@ const contentSchemaMap = {
 /**
  * content_typeに応じたスキーマを取得
  */
-export const getContentSchema = (content_type: number) => {
-	const contentSchema =
-		contentSchemaMap[content_type as keyof typeof contentSchemaMap];
-	return contentSchema;
+export const getContentSchema = (content_type: number) =>
+	contentSchemaMap[content_type as keyof typeof contentSchemaMap];
+
+const contentTemplateMap = {
+	1: [],
+	2: [],
+	4: whitelistUnjGames,
+	8: whitelistImage,
+	16: whitelistGif,
+	32: whitelistVideo,
+	64: whitelistAudio,
 };
+
+/**
+ * GUI用
+ * content_typeに応じたテンプレを取得
+ */
+export const getContentTemplate = (content_type: number) =>
+	contentTemplateMap[content_type as keyof typeof contentTemplateMap];
+
+/**
+ * GUI用
+ * プルダウンに表示する順番（入れ替え可能）
+ */
+export const contentTypeOptions = [
+	{ bit: 1, label: "テキスト" },
+	{ bit: 2, label: "テキスト+URL" },
+	{ bit: 4, label: "テキスト+ゲームURL" },
+	{ bit: 8, label: "テキスト+画像URL" },
+	{ bit: 16, label: "テキスト+GIF画像URL" },
+	{ bit: 32, label: "テキスト+動画URL" },
+	{ bit: 64, label: "テキスト+音楽URL" },
+];

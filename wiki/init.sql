@@ -47,7 +47,7 @@ CREATE TABLE threads (
     res_count SMALLINT NOT NULL DEFAULT 1, -- count()よりも軽量。レス投稿後に発行されるIDが真の値。
     res_limit SMALLINT NOT NULL DEFAULT 1000, -- レスの上限。次スレ誘導のためにスレ主と副主は+5まで投稿可能。
     age_res_num SMALLINT NOT NULL DEFAULT 0, -- !age機能で表示するレスのID（0の場合はage無し）
-    thread_type SMALLINT DEFAULT 0, -- スレッドの種類（実況スレ、地震スレ、安価スレ、スレタイで振り分けられる。または、SSスレ、運営用スレ、語尾が変わる特殊なスレなど）
+    thread_type SMALLINT DEFAULT 0, -- スレッドの種類（実況スレ、地震スレ、安価スレ、スレタイで振り分けられる。または、SSスレ、運営スレ、語尾が変わる特殊なスレなど）
     cc_type SMALLINT DEFAULT 0, -- 写しの取り方
     content_types_bitmask SMALLINT DEFAULT 1, -- 投稿可能なコンテンツの種類
     banned_users_utf8mask TEXT NOT NULL DEFAULT '', -- BANされたユーザーリスト（同じtoken または 同じipは書き込み不可）

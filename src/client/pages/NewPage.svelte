@@ -9,40 +9,18 @@
     import Button from "@smui/button";
     import Checkbox from "@smui/checkbox";
     import FormField from "@smui/form-field";
-    import IconButton, { Icon } from "@smui/icon-button";
-    import List, { Item, Graphic, Meta, Label } from "@smui/list";
+    import List, { Item, Meta, Label } from "@smui/list";
     import Select, { Option } from "@smui/select";
     import CharacterCounter from "@smui/textfield/character-counter";
-    import audio from "../../common/validation/whitelist/audio.js";
-    import gif from "../../common/validation/whitelist/gif.js";
-    import image from "../../common/validation/whitelist/image.js";
-    import type { SiteInfo } from "../../common/validation/whitelist/site-info.js";
-    import unjGames from "../../common/validation/whitelist/unj-games.js";
-    import video from "../../common/validation/whitelist/video.js";
-    import UrlSuggestionPart from "../parts/UrlSuggestionPart.svelte";
+    import { contentTypeOptions } from "../../common/validation/content-schema.js";
+    import { socket } from "../mylib/socket.js";
+    import ContentPart from "../parts/ContentPart.svelte";
 
-    let title = $state("");
     let content = $state("");
     let content_url = $state("");
-
-    const contentTypeOptions = [
-        { bit: 1, label: "テキスト", list: [] },
-        { bit: 2, label: "テキスト+URL", list: [] },
-        { bit: 4, label: "テキスト+ゲームURL", list: unjGames },
-        { bit: 8, label: "テキスト+画像URL", list: image },
-        { bit: 16, label: "テキスト+GIF画像URL", list: gif },
-        { bit: 32, label: "テキスト+動画URL", list: video },
-        { bit: 64, label: "テキスト+音楽URL", list: audio },
-    ];
     let content_type = $state(1);
 
-    let open = $state(false);
-    let list: SiteInfo[] = $state([]);
-
-    $effect(() => {
-        list =
-            contentTypeOptions.find((v) => v.bit === content_type)?.list ?? [];
-    });
+    let title = $state("");
 
     const ccTypeOptions = [
         {
@@ -85,7 +63,6 @@
     const ccNoteMap = new Map(ccTypeOptions.map((v) => [v.key, v.note]));
 
     let content_types_bitmask = $state([1, 2, 4]);
-
     let check1 = $state(false);
 
     const tryMakeNewThread = () => {
@@ -95,22 +72,6 @@
 
 <HeaderPart title="新規スレッド作成" />
 
-<UrlSuggestionPart bind:open bind:content_url {list}>
-    {#if content_type === 2}
-        <p>短縮URLは使用禁止！</p>
-    {:else if content_type === 4}
-        <p>みんなで遊べるブラウザゲームを集めました。</p>
-    {:else if content_type === 8}
-        <p>画像が埋め込まれます。</p>
-    {:else if content_type === 16}
-        <p>GIF画像が埋め込まれます。</p>
-    {:else if content_type === 32}
-        <p>動画再生プレイヤーが埋め込まれます。</p>
-    {:else if content_type === 64}
-        <p>音楽再生プレイヤーが埋め込まれます。</p>
-    {/if}
-</UrlSuggestionPart>
-
 <MainPart>
     <div class="form-container">
         <Textfield label="スレタイ" bind:value={title} input$maxlength={32}>
@@ -119,43 +80,7 @@
             {/snippet}
         </Textfield>
 
-        <Textfield
-            textarea
-            label="本文"
-            bind:value={content}
-            input$maxlength={1024}
-        >
-            {#snippet helper()}
-                <CharacterCounter />
-            {/snippet}
-        </Textfield>
-
-        <Select bind:value={content_type} label="本文の形式">
-            {#each contentTypeOptions as v}
-                <Option value={v.bit}>{v.label}</Option>
-            {/each}
-        </Select>
-
-        <Textfield
-            label="URL欄"
-            bind:value={content_url}
-            input$maxlength={1024}
-            style="{content_type !== 1 || 'visibility:hidden'};"
-        >
-            {#snippet trailingIcon()}
-                <IconButton
-                    class="material-icons"
-                    onclick={() => (open = true)}
-                    style="{content_type > 2 || 'visibility:hidden'};"
-                    >add_link</IconButton
-                >
-            {/snippet}
-            {#snippet helper()}
-                <CharacterCounter
-                    style="{content_type !== 1 || 'visibility:hidden'};"
-                />
-            {/snippet}
-        </Textfield>
+        <ContentPart bind:content bind:content_url bind:content_type />
 
         <FormField>
             <Checkbox bind:checked={check1} />

@@ -15,6 +15,7 @@ body {
 }
 .unj-dialog-part {
 	z-index: 128;
+	text-align: left;
 }
 .unj-header-part {
 	z-index: 64;
