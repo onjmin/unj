@@ -1,25 +1,19 @@
 <script lang="ts">
-  import Card, { Content } from "@smui/card";
-  import { Header, Subtitle, Title } from "@smui/drawer";
-  import List from "@smui/list";
+  import { Content, Header, Subtitle, Title } from "@smui/drawer";
   import TopAppBar, { Row } from "@smui/top-app-bar";
 
   let { children, open = false } = $props();
 </script>
 
 <div class="drawer-container-right {open ? '' : 'hidden'}">
-  <Card>
-    <TopAppBar variant="static" fixed><Row /></TopAppBar>
-    <Header>
-      <Title>サブメニュー</Title>
-      <Subtitle>ここにページ固有のUIが入ります。</Subtitle>
-    </Header>
-    <Content>
-      <List>
-        {@render children?.()}
-      </List>
-    </Content>
-  </Card>
+  <TopAppBar variant="static" fixed><Row /></TopAppBar>
+  <Header>
+    <Title class="right-menu-title">サブメニュー</Title>
+    <Subtitle class="right-menu-subtitle">固有のUIです。</Subtitle>
+  </Header>
+  <div class="content">
+    {@render children?.()}
+  </div>
 </div>
 
 <style>
@@ -41,5 +35,16 @@
   }
   .drawer-container-right.hidden {
     transform: translateX(100%);
+  }
+  :global(.right-menu-title) {
+    color: rgba(255, 255, 255, 0.87);
+    font-size: var(--mdc-typography-headline6-font-size, 1.25rem);
+  }
+  :global(.right-menu-subtitle) {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: var(--mdc-typography-body2-font-size, 0.875rem);
+  }
+  .content {
+    padding: 0 8px;
   }
 </style>

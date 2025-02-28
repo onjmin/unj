@@ -4,6 +4,8 @@
     import HeaderPart from "../parts/HeaderPart.svelte";
     import MainPart from "../parts/MainPart.svelte";
     ///////////////
+
+    let { threadId = "", resNum = "" } = $props();
 </script>
 
 <HeaderPart title="ダミーのスレタイ" bookmark={true}>

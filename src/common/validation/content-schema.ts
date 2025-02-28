@@ -187,10 +187,10 @@ export const getContentTemplate = (content_type: number) =>
  */
 export const contentTypeOptions = [
 	{ bit: 1, label: "テキスト" },
-	{ bit: 2, label: "テキスト+URL" },
-	{ bit: 4, label: "テキスト+ゲームURL" },
-	{ bit: 8, label: "テキスト+画像URL" },
-	{ bit: 16, label: "テキスト+GIF画像URL" },
-	{ bit: 32, label: "テキスト+動画URL" },
-	{ bit: 64, label: "テキスト+音楽URL" },
+	{ bit: 2, label: "+URL" },
+	{ bit: 4, label: "+ゲーム" },
+	{ bit: 8, label: "+画像" },
+	{ bit: 16, label: "+GIF" },
+	{ bit: 32, label: "+動画" },
+	{ bit: 64, label: "+音楽" },
 ];

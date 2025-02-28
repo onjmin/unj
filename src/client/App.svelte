@@ -24,10 +24,8 @@
   const NotFoundPagePath = base("/*");
   const HomePagePath = base("/");
   const HeadlinePagePath = base("/headline");
-  const ThreadPagePath = base("/thread/:threadId");
-  const randomAccessThreadPagePath = base("/thread/:threadId/:resNum");
+  const ThreadPagePath = base("/thread");
   const NewPagePath = base("/new");
-  const RefNewPagePath = base("/new/:refThreadId");
   const HistoryPagePath = base("/history");
   const BookmarkPagePath = base("/bookmark");
   const ConfigPagePath = base("/config");
@@ -63,14 +61,14 @@
     </BannedCheck>
   </Route>
   <!-- スレッド -->
-  <Route path={ThreadPagePath}>
+  <Route path="{ThreadPagePath}/:threadId" let:params>
     <BannedCheck>
-      <ThreadPage />
+      <ThreadPage threadId={params.threadId} />
     </BannedCheck>
   </Route>
-  <Route path={randomAccessThreadPagePath}>
+  <Route path="{ThreadPagePath}/:threadId/:resNum" let:params>
     <BannedCheck>
-      <ThreadPage />
+      <ThreadPage threadId={params.threadId} resNum={params.resNum} />
     </BannedCheck>
   </Route>
 
@@ -80,9 +78,9 @@
       <NewPage />
     </BannedCheck>
   </Route>
-  <Route path={RefNewPagePath}>
+  <Route path="{NewPagePath}/:refThreadId" let:params>
     <BannedCheck>
-      <NewPage />
+      <NewPage refThreadId={params.refThreadId} />
     </BannedCheck>
   </Route>
   <!-- 閲覧履歴 -->

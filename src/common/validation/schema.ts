@@ -28,7 +28,7 @@ const USER_ID = v.pipe(v.string(), v.maxLength(4), v.hexadecimal());
  * スレ立てのスキーマ
  */
 export const MakeThreadSchema = v.object({
-	ref_thread_id: SMALLINT,
+	ref_thread_id: THREAD_ID,
 	title: THREAD_TITLE,
 	res_limit: v.pipe(v.number(), v.integer(), v.minValue(10), v.maxValue(1000)),
 	cc_type: SMALLINT,
