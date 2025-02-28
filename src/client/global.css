@@ -13,6 +13,9 @@ body {
 	flex-direction: column;
 	height: 100svh;
 }
+.unj-dialog-part {
+	z-index: 128;
+}
 .unj-header-part {
 	z-index: 64;
 }
@@ -25,7 +28,7 @@ body {
 	max-width: 100svw;
 	min-width: 60svw;
 }
-.unj-main-overlay {
+.unj-main-part-overlay {
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -37,7 +40,7 @@ body {
 	opacity: 1;
 	pointer-events: auto;
 }
-.unj-main-overlay.hidden {
+.unj-main-part-overlay.hidden {
 	opacity: 0;
 	pointer-events: none;
 }

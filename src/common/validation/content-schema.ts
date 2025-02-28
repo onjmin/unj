@@ -1,36 +1,44 @@
 import * as v from "valibot";
 import { playgrounds } from "../../client/mylib/playground.js";
-import { blacklistDarkWeb1 } from "./blacklist/dark-web/domain1.js";
-import { blacklistShortenedUrl2 } from "./blacklist/shortened-url/domain2.js";
-import { blacklistShortenedUrl3 } from "./blacklist/shortened-url/domain3.js";
+import blacklistDarkWeb1 from "./blacklist/dark-web/domain1.js";
+import blacklistShortenedUrl2 from "./blacklist/shortened-url/domain2.js";
+import blacklistShortenedUrl3 from "./blacklist/shortened-url/domain3.js";
+import whitelistAudio from "./whitelist/audio.js";
+import whitelistGif from "./whitelist/gif.js";
+import whitelistImage from "./whitelist/image.js";
+import type { SiteInfo } from "./whitelist/site-info.js";
+import whitelistUnjGames from "./whitelist/unj-games.js";
+import whitelistVideo from "./whitelist/video.js";
 
-const regexUrl = /ttps?:\/\//u;
 // biome-ignore lint/suspicious/noControlCharactersInRegex: <explanation>
 const regexCtrl = /[^\u0000-\u001F\u007F-\u009F]/u;
 const regexArabic =
 	/[^\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\ufb50-\ufdff\ufe70-\ufeFF]/u;
 
+const regexUrl = /ttps?:\/\//;
+
 const SAFE_TEXT = v.pipe(
 	v.string(),
 	v.trim(),
 	v.maxLength(1024),
-	v.check((input) => !regexUrl.test(input)),
 	v.check((input) => !regexCtrl.test(input)),
 	v.check((input) => !regexArabic.test(input)),
+	v.check((input) => !regexUrl.test(input)),
 );
 
 const SAFE_URL = v.pipe(
 	v.string(),
 	v.trim(),
-	v.url(),
-	v.transform((input) => new URL(input).href),
 	v.maxLength(1024),
+	v.check((input) => !regexCtrl.test(input)),
+	v.check((input) => !regexArabic.test(input)),
+	v.url(), // 暗黙的に空文字が許容されなくなる
 );
 
 /**
  * 1: text
  */
-export const TextSchema = v.object({
+const TextSchema = v.object({
 	content_type: v.pipe(v.number(), v.value(1)),
 	content: v.pipe(SAFE_TEXT, v.minLength(1)),
 	content_url: v.pipe(v.string(), v.length(0)),
@@ -45,7 +53,7 @@ const sliceDomain = (url: string, n: number) =>
 /**
  * 2: url
  */
-export const UrlSchema = v.object({
+const UrlSchema = v.object({
 	content_type: v.pipe(v.number(), v.value(2)),
 	content: SAFE_TEXT,
 	content_url: v.pipe(
@@ -53,92 +61,94 @@ export const UrlSchema = v.object({
 		v.check((input) => !blacklistDarkWeb1.has(sliceDomain(input, 1))),
 		v.check((input) => !blacklistShortenedUrl2.has(sliceDomain(input, 2))),
 		v.check((input) => !blacklistShortenedUrl3.has(sliceDomain(input, 3))),
-		v.check((input) => whitelistUnjGames.has(new URL(input).hostname)),
-		v.check((input) => whitelistImage2.has(sliceDomain(input, 2))),
-		v.check((input) => whitelistGif2.has(sliceDomain(input, 2))),
-		v.check((input) => whitelistVideo2.has(sliceDomain(input, 2))),
-		v.check((input) => whitelistAudio2.has(sliceDomain(input, 2))),
+		v.check((input) => setOf(whitelistUnjGames).has(new URL(input).hostname)),
+		v.check((input) => setOf(whitelistImage).has(new URL(input).hostname)),
+		v.check((input) => setOf(whitelistGif).has(new URL(input).hostname)),
+		v.check((input) => setOf(whitelistVideo).has(new URL(input).hostname)),
+		v.check((input) => setOf(whitelistAudio).has(new URL(input).hostname)),
 	),
 });
 
-const whitelistUnjGames = new Set(
-	playgrounds.map((v) => new URL(v.href).hostname),
-);
+/**
+ * 各モジュールにSetオブジェクトを定義するのは冗長なので。
+ */
+const setOf = (() => {
+	const map: Map<SiteInfo[], Set<string>> = new Map();
+	const empty: Set<string> = new Set();
+	return (arr: SiteInfo[]): Set<string> => {
+		if (map.has(arr)) {
+			return map.get(arr) ?? empty;
+		}
+		const sum = [];
+		for (const v of arr) {
+			sum.push(...v.hostnames);
+		}
+		map.set(arr, new Set(sum));
+		return map.get(arr) ?? empty;
+	};
+})();
 
 /**
  * 4: url_of_unj_games
  */
-export const UrlOfUnjGamesSchema = v.object({
+const UrlOfUnjGamesSchema = v.object({
 	content_type: v.pipe(v.number(), v.value(4)),
 	content: SAFE_TEXT,
 	content_url: v.pipe(
 		SAFE_URL,
-		v.check((input) => whitelistUnjGames.has(new URL(input).hostname)),
+		v.check((input) => setOf(whitelistUnjGames).has(new URL(input).hostname)),
 	),
 });
-
-const whitelistImage2 = new Set(["imgur.com"]);
 
 /**
  * 8: url_of_image(Imgur|アル)
  */
-export const UrlOfImageSchema = v.object({
+const UrlOfImageSchema = v.object({
 	content_type: v.pipe(v.number(), v.value(8)),
 	content: SAFE_TEXT,
 	content_url: v.pipe(
 		SAFE_URL,
-		v.check((input) => whitelistImage2.has(sliceDomain(input, 2))),
+		v.check((input) => setOf(whitelistImage).has(sliceDomain(input, 2))),
 	),
 });
-
-const whitelistGif2 = new Set(["imgur.com"]);
 
 /**
  * 16: url_of_gif(Imgur)
  */
-export const UrlOfGifSchema = v.object({
+const UrlOfGifSchema = v.object({
 	content_type: v.pipe(v.number(), v.value(16)),
 	content: SAFE_TEXT,
 	content_url: v.pipe(
 		SAFE_URL,
-		v.check((input) => whitelistGif2.has(sliceDomain(input, 2))),
+		v.check((input) => setOf(whitelistGif).has(sliceDomain(input, 2))),
 	),
 });
-
-const whitelistVideo2 = new Set([
-	"youtu.be",
-	"youtube.com",
-	"nicovideo.jp",
-	"nico.ms",
-]);
 
 /**
  * 32: url_of_video(YouTube||Nicovideo||Vimeo)
  */
-export const UrlOfVideoSchema = v.object({
+const UrlOfVideoSchema = v.object({
 	content_type: v.pipe(v.number(), v.value(32)),
 	content: SAFE_TEXT,
 	content_url: v.pipe(
 		SAFE_URL,
-		v.check((input) => whitelistVideo2.has(sliceDomain(input, 2))),
+		v.check((input) => setOf(whitelistVideo).has(sliceDomain(input, 2))),
 	),
 });
-
-const whitelistAudio2 = new Set(["soundcloud.com"]);
 
 /**
  * 64: url_of_audio(SoundCloud||Spotify)
  */
-export const UrlOfAudioSchema = v.object({
+const UrlOfAudioSchema = v.object({
 	content_type: v.pipe(v.number(), v.value(64)),
 	content: SAFE_TEXT,
 	content_url: v.pipe(
 		SAFE_URL,
-		v.check((input) => whitelistAudio2.has(sliceDomain(input, 2))),
+		v.check((input) => setOf(whitelistAudio).has(sliceDomain(input, 2))),
 	),
 });
 
-export const contentSchemaMap = {
+const contentSchemaMap = {
 	1: TextSchema,
 	2: UrlSchema,
 	4: UrlOfUnjGamesSchema,
@@ -146,4 +156,13 @@ export const contentSchemaMap = {
 	16: UrlOfGifSchema,
 	32: UrlOfVideoSchema,
 	64: UrlOfAudioSchema,
+};
+
+/**
+ * content_typeに応じたスキーマを取得
+ */
+export const getContentSchema = (content_type: number) => {
+	const contentSchema =
+		contentSchemaMap[content_type as keyof typeof contentSchemaMap];
+	return contentSchema;
 };

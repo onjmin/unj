@@ -4,7 +4,7 @@ import express from "express";
 import { sha256 } from "js-sha256";
 import { Server } from "socket.io";
 import * as v from "valibot";
-import { contentSchemaMap } from "../common/validation/content-schema.js";
+import { getContentSchema } from "../common/validation/content-schema.js";
 import {
 	HeadlineSchema,
 	MakeThreadSchema,
@@ -102,11 +102,11 @@ io.on("connection", (socket) => {
 		if (!resultRes.success) {
 			return;
 		}
-		const n = resultRes.output.content_type;
-		if (!(n & resultMakeThread.output.content_types_bitmask)) {
+		const bit = resultRes.output.content_type;
+		if (!(bit & resultMakeThread.output.content_types_bitmask)) {
 			return;
 		}
-		const contentSchema = contentSchemaMap[n as keyof typeof contentSchemaMap];
+		const contentSchema = getContentSchema(bit);
 		const resultContentSchema = v.safeParse(contentSchema, data);
 		if (!resultContentSchema.success) {
 			return;

@@ -3,7 +3,7 @@
  *
  * ソース：https://note.com/text_sakura/n/na421296d4aa9
  */
-export const blacklistShortenedUrl3 = new Set([
+export default new Set([
 	"125.back.jp",
 	"app.udcxx.me",
 	"c.shogo82148.com",

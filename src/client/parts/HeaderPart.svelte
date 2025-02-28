@@ -103,7 +103,7 @@
   {/if}
   <button
     type="button"
-    class="unj-main-overlay {isMobile && (openLeft || openRight)
+    class="unj-main-part-overlay {isMobile && (openLeft || openRight)
       ? ''
       : 'hidden'}"
     onclick={() => {

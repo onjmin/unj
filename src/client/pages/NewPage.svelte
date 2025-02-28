@@ -13,22 +13,36 @@
     import List, { Item, Graphic, Meta, Label } from "@smui/list";
     import Select, { Option } from "@smui/select";
     import CharacterCounter from "@smui/textfield/character-counter";
-    import { socket } from "../mylib/socket.js";
+    import audio from "../../common/validation/whitelist/audio.js";
+    import gif from "../../common/validation/whitelist/gif.js";
+    import image from "../../common/validation/whitelist/image.js";
+    import type { SiteInfo } from "../../common/validation/whitelist/site-info.js";
+    import unjGames from "../../common/validation/whitelist/unj-games.js";
+    import video from "../../common/validation/whitelist/video.js";
+    import UrlSuggestionPart from "../parts/UrlSuggestionPart.svelte";
 
     let title = $state("");
     let content = $state("");
     let content_url = $state("");
 
     const contentTypeOptions = [
-        { bit: 1, label: "テキスト" },
-        { bit: 2, label: "テキスト+URL" },
-        { bit: 4, label: "テキスト+ゲームURL" },
-        { bit: 8, label: "テキスト+画像URL" },
-        { bit: 16, label: "テキスト+GIF画像URL" },
-        { bit: 32, label: "テキスト+動画URL" },
-        { bit: 64, label: "テキスト+音楽URL" },
+        { bit: 1, label: "テキスト", list: [] },
+        { bit: 2, label: "テキスト+URL", list: [] },
+        { bit: 4, label: "テキスト+ゲームURL", list: unjGames },
+        { bit: 8, label: "テキスト+画像URL", list: image },
+        { bit: 16, label: "テキスト+GIF画像URL", list: gif },
+        { bit: 32, label: "テキスト+動画URL", list: video },
+        { bit: 64, label: "テキスト+音楽URL", list: audio },
     ];
     let content_type = $state(1);
+
+    let open = $state(false);
+    let list: SiteInfo[] = $state([]);
+
+    $effect(() => {
+        list =
+            contentTypeOptions.find((v) => v.bit === content_type)?.list ?? [];
+    });
 
     const ccTypeOptions = [
         {
@@ -81,6 +95,22 @@
 
 <HeaderPart title="新規スレッド作成" />
 
+<UrlSuggestionPart bind:open bind:content_url {list}>
+    {#if content_type === 2}
+        <p>短縮URLは使用禁止！</p>
+    {:else if content_type === 4}
+        <p>みんなで遊べるブラウザゲームを集めました。</p>
+    {:else if content_type === 8}
+        <p>画像が埋め込まれます。</p>
+    {:else if content_type === 16}
+        <p>GIF画像が埋め込まれます。</p>
+    {:else if content_type === 32}
+        <p>動画再生プレイヤーが埋め込まれます。</p>
+    {:else if content_type === 64}
+        <p>音楽再生プレイヤーが埋め込まれます。</p>
+    {/if}
+</UrlSuggestionPart>
+
 <MainPart>
     <div class="form-container">
         <Textfield label="スレタイ" bind:value={title} input$maxlength={32}>
@@ -115,7 +145,9 @@
             {#snippet trailingIcon()}
                 <IconButton
                     class="material-icons"
-                    onclick={() => console.log(1)}>add_link</IconButton
+                    onclick={() => (open = true)}
+                    style="{content_type > 2 || 'visibility:hidden'};"
+                    >add_link</IconButton
                 >
             {/snippet}
             {#snippet helper()}

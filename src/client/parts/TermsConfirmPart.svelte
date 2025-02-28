@@ -2,8 +2,9 @@
   import Banner, { Icon } from "@smui/banner";
   import Button, { Label } from "@smui/button";
   import Checkbox from "@smui/checkbox";
-  import Dialog, { Title, Content, Actions } from "@smui/dialog";
+  import Dialog, { Header, Title, Content, Actions } from "@smui/dialog";
   import FormField from "@smui/form-field";
+  import IconButton from "@smui/icon-button";
   import { navigate } from "svelte-routing";
   import { visible } from "../mylib/dom.js";
   import { base } from "../mylib/env.js";
@@ -39,7 +40,7 @@
 
 <!--利用規約に未同意の場合 -->
 
-<Banner bind:open={openConfirm} centered mobileStacked>
+<Banner class="unj-dialog-part" bind:open={openConfirm} centered mobileStacked>
   {#snippet icon()}
     <Icon class="material-icons">warning</Icon>
   {/snippet}
@@ -57,6 +58,7 @@
 <!--「利用規約を表示しない」を選んだ場合 -->
 
 <Dialog
+  class="unj-dialog-part"
   bind:open={openTermsWarn}
   aria-labelledby="simple-title"
   aria-describedby="simple-content"
@@ -76,13 +78,17 @@
 <!--「利用規約を表示する」を選んだ場合 -->
 
 <Dialog
+  class="unj-dialog-part"
   bind:open={openTerms}
   fullscreen
   aria-labelledby="fullscreen-title"
   aria-describedby="fullscreen-content"
   onSMUIDialogClosed={closeHandler}
 >
-  <Title id="fullscreen-title">うんｊ利用規約</Title>
+  <Header>
+    <Title id="fullscreen-title">うんｊ利用規約</Title>
+    <IconButton action="close" class="material-icons">close</IconButton>
+  </Header>
   <Content id="fullscreen-content">
     <TermsPart />
     <div

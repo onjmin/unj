@@ -13,7 +13,7 @@
         PrimaryText,
         SecondaryText,
     } from "@smui/list";
-    import { playgrounds } from "../mylib/playground.js";
+    import whitelistUnjGames from "../../common/validation/whitelist/unj-games.js";
 
     let selectionIndex = $state(0);
 </script>
@@ -30,22 +30,22 @@
             singleSelection
             selectedIndex={selectionIndex}
         >
-            {#each playgrounds as playground, i}
+            {#each whitelistUnjGames as siteInfo, i}
                 <Item
                     onSMUIAction={() => (selectionIndex = i)}
                     selected={selectionIndex === i}
                 >
                     <Graphic
                         class="unj-playground-item-graphic"
-                        style="background-image: url({playground.favicon});"
+                        style="background-image: url({siteInfo.favicon});"
                     />
                     <Text>
-                        <PrimaryText>{playground.name}</PrimaryText>
-                        <SecondaryText>{playground.description}</SecondaryText>
+                        <PrimaryText>{siteInfo.name}</PrimaryText>
+                        <SecondaryText>{siteInfo.description}</SecondaryText>
                     </Text>
                     <IconButton
                         class="material-icons"
-                        onclick={() => window.open(playground.href, "_blank")}
+                        onclick={() => window.open(siteInfo.href, "_blank")}
                         >open_in_new</IconButton
                     >
                 </Item>

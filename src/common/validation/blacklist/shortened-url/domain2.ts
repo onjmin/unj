@@ -3,7 +3,7 @@
  *
  * ソース：https://note.com/text_sakura/n/na421296d4aa9
  */
-export const blacklistShortenedUrl2 = new Set([
+export default new Set([
 	"0.gp",
 	"000.fo",
 	"00m.in",
