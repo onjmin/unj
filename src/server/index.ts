@@ -14,41 +14,45 @@ import {
 	SearchResSchema,
 	SearchThreadSchema,
 } from "../common/validation/schema.js";
-import {
-	DEV_MODE,
-	ROOT_PATH,
-	STG_MODE,
-	UNJ_ADMIN_API_KEY,
-} from "./mylib/env.js";
+import { flaky } from "./mylib/anti-debug.js";
+import { DEV_MODE, PROD_MODE, ROOT_PATH, STG_MODE } from "./mylib/env.js";
 
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
-	cors: { origin: "*" }, // CORS の設定（適宜変更）
+	cors: {
+		origin: new URL(String(process.env.VITE_BASE_URL)).origin,
+		methods: ["GET", "POST"],
+		credentials: true,
+	},
+	transports: ["websocket", "polling"],
 });
 
-if (DEV_MODE || STG_MODE) {
-	// JSON形式のリクエストに対応
-	app.use(express.json());
+app.use(express.json());
 
-	// 静的ファイルの配信
+if (DEV_MODE || STG_MODE) {
 	app.use("/static", express.static(path.resolve(ROOT_PATH, "static")));
 	app.use(express.static(path.resolve(ROOT_PATH, "dist", "client")));
-
-	// フロントエンドのエントリポイント
 	app.get("/", (req, res) => {
 		res.sendFile(path.resolve(ROOT_PATH, "dist", "client", "index.html"));
 	});
-
 	app.use((req, res) => {
 		res.sendFile(path.resolve(ROOT_PATH, "dist", "client", "404.html"));
 	});
+} else if (PROD_MODE) {
+	app.use(express.static(path.resolve(ROOT_PATH, "public")));
 }
+
+const UNJ_ADMIN_API_KEY = String(process.env.UNJ_ADMIN_API_KEY);
+
+app.get("/ping", (req, res) => {
+	res.send("pong");
+});
 
 // サービスを止めずに投稿規制するためのAPI
 app.post("/api/admin", (req, res) => {
 	const token = sha256(req.body.token);
-	const token2 = sha256(String(UNJ_ADMIN_API_KEY));
+	const token2 = sha256(UNJ_ADMIN_API_KEY);
 	res.json({ token, token2, message: token === token2 ? "OK" : "NG" });
 	// TODO: io.disconnectSockets(false);
 	// TODO: io.disconnectSockets(true);
@@ -63,10 +67,12 @@ app.post("/api/admin", (req, res) => {
 
 // socket.io
 io.on("connection", (socket) => {
+	console.log("connection start");
 	// https://socket.io/how-to/get-the-ip-address-of-the-client#x-forwarded-for-header
 	let ip = socket.handshake.address;
 	const cf = socket.handshake.headers["cf-connecting-ip"];
 	const fastly = socket.handshake.headers["fastly-client-ip"];
+	console.log(ip, cf, fastly);
 	if (socket.handshake.headers.forwarded) {
 		const forwarded = forwardedParse(socket.handshake.headers.forwarded);
 		if (forwarded && forwarded.length > 0 && forwarded[0].for) {
@@ -82,9 +88,13 @@ io.on("connection", (socket) => {
 		ip = fastly;
 	}
 	const ua = socket.handshake.headers["user-agent"];
+	console.log(`connected ip:"${ip}",ua:"${ua}"`);
 	if (!ip || !ua) {
+		console.log(`kicked ip:"${ip}",ua:"${ua}"`);
+		socket.emit("disconnect", { reason: "unknownIP" });
 		socket.disconnect();
 	}
+	// gBANチェック
 
 	socket.on("disconnect", () => {
 		console.log("クライアント切断:", socket.id);
@@ -112,32 +122,99 @@ io.on("connection", (socket) => {
 	// 	io.to(data.roomId).emit("newMessage", data.message);
 	// });
 
-	socket.on("makeThread", async (data) => {
-		const resultMakeThread = v.safeParse(MakeThreadSchema, data);
-		if (!resultMakeThread.success) {
-			return;
-		}
+	socket.on("res", async (data) => {
 		const resultRes = v.safeParse(ResSchema, data);
 		if (!resultRes.success) {
 			return;
 		}
-		const bit = resultRes.output.content_type;
-		if (!(bit & resultMakeThread.output.content_types_bitmask)) {
-			return;
-		}
-		const contentSchema = getContentSchema(bit);
+		const { content_type } = resultRes.output;
+		const contentSchema = getContentSchema(content_type);
 		const resultContentSchema = v.safeParse(contentSchema, data);
 		if (!resultContentSchema.success) {
 			return;
 		}
+		// read thread
+		// if (!(content_type & resultMakeThread.output.content_types_bitmask)) {
+		// 	return;
+		// }
 		try {
 			// await insertPost(result.data);
-			socket.emit("makeThread", { message: "スレ立て成功" });
+			const thread_id = "";
+			socket.join(thread_id);
+			socket.emit("res", { success: true }); // TODO
 		} catch (error) {}
 	});
+
+	socket.on("makeThread", async (data) => {
+		const resultRes = v.safeParse(ResSchema, data);
+		if (!resultRes.success) {
+			return;
+		}
+		const { content_type } = resultRes.output;
+		const contentSchema = getContentSchema(content_type);
+		const resultContentSchema = v.safeParse(contentSchema, data);
+		if (!resultContentSchema.success) {
+			return;
+		}
+		const resultMakeThread = v.safeParse(MakeThreadSchema, data);
+		if (!resultMakeThread.success) {
+			return;
+		}
+		const { content_types_bitmask } = resultMakeThread.output;
+		if (!(content_type & content_types_bitmask)) {
+			return;
+		}
+		try {
+			// await insertPost(result.data);
+			const thread_id = Math.random().toString();
+			socket.join(thread_id);
+			socket.emit("makeThread", { success: true, thread_id });
+		} catch (error) {}
+	});
+
+	socket.on("readThread", async (data) => {
+		const resultReadThread = v.safeParse(ReadThreadSchema, data);
+		if (!resultReadThread.success) {
+			return;
+		}
+		const { cursor, size, desc } = resultReadThread.output;
+		const { thread_id } = resultReadThread.output;
+		try {
+			// await getPost(result.data);
+			socket.join(thread_id);
+			socket.emit("readThread", { success: true });
+		} catch (error) {}
+	});
+
+	socket.on("headline", async (data) => {
+		console.log("headline");
+		const resultHeadline = v.safeParse(HeadlineSchema, data);
+		if (!resultHeadline.success) {
+			return;
+		}
+		const { cursor, size, desc } = resultHeadline.output;
+		try {
+			// await getPost(result.data);
+			socket.emit("headline", {
+				success: true,
+				list: [...Array(16)].map((v) => mock),
+			});
+			console.log("headline end");
+		} catch (error) {}
+	});
+
+	const mock = {
+		id: "12345678",
+		latest_res_at: new Date(),
+		res_count: 256,
+		title: "【朗報】侍ジャパン、謎のホームランで勝利！",
+		user_id: "1234",
+		online: io.sockets.adapter.rooms.get("12345678")?.size ?? 0,
+		ikioi: 256 / 100, // おそらく、総レス数/スレ経過日時
+	};
 });
 
-const PORT = process.env.PORT || process.env.VITE_GLITCH_PORT;
+const PORT = process.env.PORT || process.env.VITE_LOCALHOST_PORT;
 server.listen(PORT, () => {
 	console.log(`サーバー起動: ポート ${PORT}`);
 });

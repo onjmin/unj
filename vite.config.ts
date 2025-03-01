@@ -22,15 +22,8 @@ if (DEV_MODE && STG_MODE) {
 	console.log(JSON.stringify(process.env, null, 2));
 	throw 114514;
 }
-if (VITE_BASE_URL !== "/") {
-	if (DEV_MODE) {
-		logWarning("そのVITE_BASE_URLは開発ビルドで合ってる？");
-	} else if (STG_MODE) {
-		logWarning("そのVITE_BASE_URLは検証ビルドで合ってる？");
-	}
-}
 if (VITE_BASE_URL === "/" && PROD_MODE) {
-	logWarning("そのVITE_BASE_URLは本番ビルドで合ってる？");
+	logWarning("本番ビルド用のVITE_BASE_URLじゃなさそう");
 }
 
 export default defineConfig({

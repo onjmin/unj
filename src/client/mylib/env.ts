@@ -5,7 +5,7 @@ export const PROD_MODE = Boolean(import.meta.env.PROD_MODE);
 export const VITE_ADMIN_EMAIL = String(import.meta.env.VITE_ADMIN_EMAIL);
 export const VITE_ADMIN_TWITTER = String(import.meta.env.VITE_ADMIN_TWITTER);
 
-const VITE_BASE_URL = String(import.meta.env.VITE_BASE_URL || "/");
+const VITE_BASE_URL = PROD_MODE ? String(import.meta.env.VITE_BASE_URL) : "/";
 
 // 本番ビルドが盗まれて別のホスティングに置かれた場合のせめてもの抵抗
 if (window.location.href === window.location.href.replace(VITE_BASE_URL, "")) {

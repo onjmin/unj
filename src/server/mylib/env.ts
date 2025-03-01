@@ -2,11 +2,11 @@ import "dotenv/config";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-export const VITE_BASE_URL = process.env.VITE_BASE_URL || "/";
-
 export const DEV_MODE = process.env.DEV_MODE === "true";
 export const STG_MODE = process.env.STG_MODE === "true";
 export const PROD_MODE = !DEV_MODE && !STG_MODE;
+
+export const VITE_BASE_URL = PROD_MODE ? process.env.VITE_BASE_URL : "/";
 
 export let ROOT_PATH = "";
 if (DEV_MODE) {
@@ -16,5 +16,3 @@ if (DEV_MODE) {
 } else {
 	ROOT_PATH = path.resolve(__dirname, "..");
 }
-
-export const UNJ_ADMIN_API_KEY = process.env.UNJ_ADMIN_API_KEY;

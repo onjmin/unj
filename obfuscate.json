@@ -3,12 +3,15 @@
 	"controlFlowFlattening": false,
 	"deadCodeInjection": false,
 	"stringArray": true,
-	"stringArrayThreshold": 0.5,
+	"stringArrayThreshold": 1,
+	"stringArrayEncoding": ["base64"],
+	"stringArrayShuffle": true,
 	"splitStrings": false,
 	"selfDefending": false,
 	"debugProtection": false,
 	"disableConsoleOutput": false,
 	"identifierNamesGenerator": "hexadecimal",
 	"renameGlobals": false,
-	"transformObjectKeys": false
+	"transformObjectKeys": false,
+	"domainLock": ["onjmin.github.io"]
 }

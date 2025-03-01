@@ -11,6 +11,7 @@
   import UrlSuggestionPart from "./UrlSuggestionPart.svelte";
 
   let {
+    disabled = false,
     content = $bindable(""),
     content_url = $bindable(""),
     content_type = $bindable(1),
@@ -38,19 +39,26 @@
   {/if}
 </UrlSuggestionPart>
 
-<Textfield textarea label="本文" bind:value={content} input$maxlength={1024}>
+<Textfield
+  {disabled}
+  textarea
+  label="本文"
+  bind:value={content}
+  input$maxlength={1024}
+>
   {#snippet helper()}
     <CharacterCounter />
   {/snippet}
 </Textfield>
 
-<Select bind:value={content_type} label="本文の形式">
+<Select {disabled} bind:value={content_type} label="本文の形式">
   {#each contentTypeOptions as v}
     <Option value={v.bit}>{v.label}</Option>
   {/each}
 </Select>
 
 <Textfield
+  {disabled}
   label="URL欄"
   bind:value={content_url}
   input$maxlength={1024}
@@ -58,6 +66,7 @@
 >
   {#snippet trailingIcon()}
     <IconButton
+      {disabled}
       class="material-icons"
       onclick={() => (open = true)}
       style="{content_type > 2 || 'visibility:hidden'};">add_link</IconButton

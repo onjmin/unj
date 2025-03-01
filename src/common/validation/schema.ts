@@ -28,17 +28,20 @@ const USER_ID = v.pipe(v.string(), v.maxLength(4), v.hexadecimal());
  * スレ立てのスキーマ
  */
 export const MakeThreadSchema = v.object({
-	ref_thread_id: THREAD_ID,
 	title: THREAD_TITLE,
-	res_limit: v.pipe(v.number(), v.integer(), v.minValue(10), v.maxValue(1000)),
+	sage: v.boolean(),
 	cc_type: SMALLINT,
 	content_types_bitmask: SMALLINT,
+	res_limit: v.pipe(v.number(), v.integer(), v.minValue(10), v.maxValue(1000)),
+	timer: v.pipe(v.number(), v.integer(), v.minValue(0), v.maxValue(168)),
+	ref_thread_id: THREAD_ID,
 });
 
 /**
  * レスのスキーマ
  */
 export const ResSchema = v.object({
+	thread_id: THREAD_ID,
 	token: v.pipe(v.string(), v.length(8), v.hexadecimal()),
 	user_name: USER_NAME,
 	user_icon: SMALLINT,
@@ -54,7 +57,7 @@ export const ResSchema = v.object({
  * スレ閲覧のスキーマ
  */
 export const ReadThreadSchema = v.object({
-	cursor: RES_NUM,
+	cursor: v.nullable(RES_NUM),
 	size: RES_NUM,
 	desc: v.boolean(),
 	thread_id: THREAD_ID,
@@ -64,8 +67,8 @@ export const ReadThreadSchema = v.object({
  * ヘッドライン取得のスキーマ
  */
 export const HeadlineSchema = v.object({
-	cursor: THREAD_ID,
-	size: v.pipe(v.number(), v.integer(), v.minValue(1), v.maxValue(64)),
+	cursor: v.nullable(THREAD_ID),
+	size: v.pipe(v.number(), v.integer(), v.minValue(1), v.maxValue(16)),
 	desc: v.boolean(),
 });
 
@@ -73,8 +76,8 @@ export const HeadlineSchema = v.object({
  * スレ検索のスキーマ
  */
 export const SearchThreadSchema = v.object({
-	cursor: THREAD_ID,
-	size: v.pipe(v.number(), v.integer(), v.minValue(1), v.maxValue(64)),
+	cursor: v.nullable(THREAD_ID),
+	size: v.pipe(v.number(), v.integer(), v.minValue(1), v.maxValue(16)),
 	desc: v.boolean(),
 	from: v.date(),
 	to: v.date(),
@@ -85,8 +88,8 @@ export const SearchThreadSchema = v.object({
  * レス検索のスキーマ
  */
 export const SearchResSchema = v.object({
-	cursor: RES_ID,
-	size: v.pipe(v.number(), v.integer(), v.minValue(1), v.maxValue(64)),
+	cursor: v.nullable(RES_ID),
+	size: v.pipe(v.number(), v.integer(), v.minValue(1), v.maxValue(16)),
 	desc: v.boolean(),
 	from: v.date(),
 	to: v.date(),

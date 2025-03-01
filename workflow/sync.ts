@@ -7,16 +7,19 @@ const __dirname = path.dirname(__filename);
 const dir = path.resolve(__dirname, "..", "..");
 const sourcePath = path.join(dir, "unj/dist/client");
 const sourcePath2 = path.join(dir, "unj/static");
-const destPath = path.join(dir, "unjupiter/docs");
+const sourcePath3 = path.join(dir, "unj/dist/server.cjs");
+const destPathClient = path.join(dir, "unjupiter/docs");
+const destPathServer = path.join(dir, "onjmin/dist/server.cjs");
 
 try {
-	await rm(destPath, { recursive: true, force: true });
+	await rm(destPathClient, { recursive: true, force: true });
 	console.log("🗑️ Removed existing docs folder");
 
-	await cp(sourcePath, destPath, { recursive: true });
-	await cp(sourcePath2, path.join(destPath, "static"), {
+	await cp(sourcePath, destPathClient, { recursive: true });
+	await cp(sourcePath2, path.join(destPathClient, "static"), {
 		recursive: true,
 	});
+	await cp(sourcePath3, destPathServer);
 	console.log("✅ Folder copied successfully!");
 } catch (error) {
 	console.error("❌ Failed to copy folder:", error);
