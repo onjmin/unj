@@ -1,29 +1,31 @@
 import { differenceInDays } from "date-fns";
 import { sha256 } from "js-sha256";
 
-const delimiter = "###";
-
-const VITE_UNJ_API_SECRET_PEPPER = String(
-	import.meta.env.VITE_UNJ_API_SECRET_PEPPER,
-);
-
-const user_a = "user_a";
+const VITE_UNJ_FLAKY_RATE = Number(import.meta.env.VITE_UNJ_FLAKY_RATE);
 
 /**
- * うんｊAPI投稿用トークンを計算する
+ * 再現性を下げる
  */
-const calcUnjApiToken = (): string => {
-	const token = sha256([VITE_UNJ_API_SECRET_PEPPER, user_a].join(delimiter));
-	return token.slice(0, 8); // 衝突の心配が低いので8文字に削減
-};
-
-const VITE_UNJ_FLAKY_RATE = Number(import.meta.env.VITE_UNJ_FLAKY_RATE);
 export const flaky = (func: () => void): boolean => {
 	if (Math.random() > VITE_UNJ_FLAKY_RATE) {
 		func();
 		return true;
 	}
 	return false;
+};
+
+const delimiter = "###";
+
+const VITE_UNJ_API_SECRET_PEPPER = String(
+	import.meta.env.VITE_UNJ_API_SECRET_PEPPER,
+);
+
+/**
+ * うんｊAPI投稿用トークンを計算する
+ */
+const genUnjApiToken = (key: string): string => {
+	const token = sha256([VITE_UNJ_API_SECRET_PEPPER, key].join(delimiter));
+	return token.slice(0, 8); // 衝突の心配が低いので8文字に削減
 };
 
 const VITE_UNJ_BAN_VERIFY_CODE_PEPPER = String(

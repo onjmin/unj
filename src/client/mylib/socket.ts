@@ -1,2 +1,4 @@
 import { io } from "socket.io-client";
-export const socket = io(`http://localhost:${import.meta.env.GLITCH_PORT}`);
+export const socket = io(
+	`http://localhost:${import.meta.env.VITE_GLITCH_PORT}`,
+);

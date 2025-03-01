@@ -18,7 +18,7 @@ const VITE_UNJ_IDB_VALUE_CHECKSUM_SECRET_PEPPER = String(
 /**
  * IndexedDBの安全なキーを計算する
  */
-const calcSecureKey = (key: string): string => {
+const genSecureKey = (key: string): string => {
 	if (DEV_MODE) {
 		return key;
 	}
@@ -33,7 +33,7 @@ const calcSecureKey = (key: string): string => {
  * ユーザーにとって総当たりの試行が容易なのでチェックサムにしては多めに取る。
  * 桁数の判定がし易いように最終的な文字長は4の倍数+3とする。
  */
-const calcUnjStorageValueCheckSum = (encoded: string): string => {
+const genUnjStorageValueCheckSum = (encoded: string): string => {
 	const token = sha256(
 		[VITE_UNJ_IDB_VALUE_CHECKSUM_SECRET_PEPPER, encoded].join(delimiter),
 	);
@@ -70,7 +70,7 @@ const isSecureValue = (str: string) => {
  * 大容量のデータの場合に使う。
  */
 export const dangerousLoad = (key: string): Promise<string | null> =>
-	get(calcSecureKey(key)).then((v) => {
+	get(genSecureKey(key)).then((v) => {
 		if (v === undefined) {
 			return null;
 		}
@@ -88,9 +88,9 @@ export const dangerousSave = async (
 	value: string | null,
 ): Promise<void> => {
 	if (value === null) {
-		del(calcSecureKey(key));
+		del(genSecureKey(key));
 	} else {
-		set(calcSecureKey(key), value);
+		set(genSecureKey(key), value);
 	}
 };
 
@@ -108,7 +108,7 @@ export const load = async (key: string): Promise<string | null> => {
 	// チェックサム
 	const checksum = secureValue.slice(-CHECKSUM_LENGTH);
 	const encoded = secureValue.slice(0, -CHECKSUM_LENGTH);
-	if (calcUnjStorageValueCheckSum(encoded) !== checksum) {
+	if (genUnjStorageValueCheckSum(encoded) !== checksum) {
 		return null;
 	}
 	// 複号
@@ -138,7 +138,7 @@ export const save = async (
 		.map((v) => String(v.codePointAt(0))) // 危険なキャストだが、組み込み関数なので信用する
 		.map((v) => hashids.encode(v))
 		.join("");
-	const secureValue = encoded + calcUnjStorageValueCheckSum(encoded);
+	const secureValue = encoded + genUnjStorageValueCheckSum(encoded);
 	if (!isSecureValue(secureValue)) {
 		return;
 	}

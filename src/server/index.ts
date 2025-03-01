@@ -1,6 +1,7 @@
 import http from "node:http";
 import path from "node:path";
 import express from "express";
+import forwardedParse from "forwarded-parse";
 import { sha256 } from "js-sha256";
 import { Server } from "socket.io";
 import * as v from "valibot";
@@ -15,7 +16,6 @@ import {
 } from "../common/validation/schema.js";
 import {
 	DEV_MODE,
-	GLITCH_PORT,
 	ROOT_PATH,
 	STG_MODE,
 	UNJ_ADMIN_API_KEY,
@@ -63,9 +63,28 @@ app.post("/api/admin", (req, res) => {
 
 // socket.io
 io.on("connection", (socket) => {
-	const ip = socket.handshake.address;
+	// https://socket.io/how-to/get-the-ip-address-of-the-client#x-forwarded-for-header
+	let ip = socket.handshake.address;
+	const cf = socket.handshake.headers["cf-connecting-ip"];
+	const fastly = socket.handshake.headers["fastly-client-ip"];
+	if (socket.handshake.headers.forwarded) {
+		const forwarded = forwardedParse(socket.handshake.headers.forwarded);
+		if (forwarded && forwarded.length > 0 && forwarded[0].for) {
+			ip = forwarded[0].for;
+		}
+	} else if (Array.isArray(cf)) {
+		ip = cf[0];
+	} else if (cf) {
+		ip = cf;
+	} else if (Array.isArray(fastly)) {
+		ip = fastly[0];
+	} else if (fastly) {
+		ip = fastly;
+	}
 	const ua = socket.handshake.headers["user-agent"];
-	console.log(`Client connected: ${socket.id}, ${ip}, ${ua}`);
+	if (!ip || !ua) {
+		socket.disconnect();
+	}
 
 	socket.on("disconnect", () => {
 		console.log("クライアント切断:", socket.id);
@@ -118,7 +137,7 @@ io.on("connection", (socket) => {
 	});
 });
 
-const PORT = process.env.PORT || GLITCH_PORT;
+const PORT = process.env.PORT || process.env.VITE_GLITCH_PORT;
 server.listen(PORT, () => {
 	console.log(`サーバー起動: ポート ${PORT}`);
 });

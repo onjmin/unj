@@ -19,6 +19,10 @@
 
     let { refThreadId = "" } = $props();
 
+    const isRef = refThreadId !== "";
+    let isRefBannedUsers = $state(isRef);
+    let isRefSubbedUsers = $state(isRef);
+
     let content = $state("");
     let content_url = $state("");
     let content_type = $state(1);
@@ -67,9 +71,6 @@
 
     let content_types_bitmask = $state([1, 2, 4]);
 
-    let isRefBannedUsers = $state(!!refThreadId);
-    let isRefSubbedUsers = $state(!!refThreadId);
-
     let max = $state(1000);
 
     const timerOptions = [
@@ -107,13 +108,19 @@
                         />
                         <p>引き継ぐもの</p>
                         <FormField>
-                            <Checkbox bind:checked={isRefBannedUsers} />
+                            <Checkbox
+                                bind:checked={isRefBannedUsers}
+                                disabled={!isRef}
+                            />
                             {#snippet label()}
                                 事前アク禁
                             {/snippet}
                         </FormField>
                         <FormField>
-                            <Checkbox bind:checked={isRefSubbedUsers} />
+                            <Checkbox
+                                bind:checked={isRefSubbedUsers}
+                                disabled={!isRef}
+                            />
                             {#snippet label()}
                                 事前副主
                             {/snippet}

@@ -2,17 +2,15 @@ import { resolve } from "node:path";
 import { svelte } from "@sveltejs/vite-plugin-svelte";
 import { defineConfig } from "vite";
 import {
-	BASE_URL,
 	DEV_MODE,
-	GLITCH_PORT,
 	PROD_MODE,
 	STG_MODE,
+	VITE_BASE_URL,
 } from "./src/server/mylib/env.js";
 import { logError, logWarning } from "./src/server/mylib/log.js";
 
+console.log(`VITE_BASE_URL: "${VITE_BASE_URL}"`);
 const define = {
-	"import.meta.env.BASE_URL": JSON.stringify(BASE_URL),
-	"import.meta.env.GLITCH_PORT": GLITCH_PORT,
 	"import.meta.env.DEV_MODE": DEV_MODE,
 	"import.meta.env.STG_MODE": STG_MODE,
 	"import.meta.env.PROD_MODE": PROD_MODE,
@@ -24,20 +22,20 @@ if (DEV_MODE && STG_MODE) {
 	console.log(JSON.stringify(process.env, null, 2));
 	throw 114514;
 }
-if (BASE_URL !== "/") {
+if (VITE_BASE_URL !== "/") {
 	if (DEV_MODE) {
-		logWarning("そのBASE_URLは開発ビルドで合ってる？");
+		logWarning("そのVITE_BASE_URLは開発ビルドで合ってる？");
 	} else if (STG_MODE) {
-		logWarning("そのBASE_URLは検証ビルドで合ってる？");
+		logWarning("そのVITE_BASE_URLは検証ビルドで合ってる？");
 	}
 }
-if (BASE_URL === "/" && PROD_MODE) {
-	logWarning("そのBASE_URLは本番ビルドで合ってる？");
+if (VITE_BASE_URL === "/" && PROD_MODE) {
+	logWarning("そのVITE_BASE_URLは本番ビルドで合ってる？");
 }
 
 export default defineConfig({
 	plugins: [svelte()],
-	base: BASE_URL,
+	base: VITE_BASE_URL,
 	root: "src/client",
 	envDir: "../../",
 	define,

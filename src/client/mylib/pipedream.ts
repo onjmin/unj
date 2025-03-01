@@ -13,7 +13,7 @@ const PIPEDREAM_API_SECRET_INTERVAL = Number(
 /**
  * Pipedream用の時限式トークンを計算する
  */
-const calcPipedreamApiToken = (): string => {
+const genPipedreamApiToken = (): string => {
 	const secondsSinceEpoch = differenceInSeconds(new Date(), new Date(0));
 	const basedTime = Math.floor(
 		secondsSinceEpoch / PIPEDREAM_API_SECRET_INTERVAL,
