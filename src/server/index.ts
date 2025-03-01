@@ -68,25 +68,7 @@ app.post("/api/admin", (req, res) => {
 // socket.io
 io.on("connection", (socket) => {
 	console.log("connection start");
-	// https://socket.io/how-to/get-the-ip-address-of-the-client#x-forwarded-for-header
-	let ip = socket.handshake.address;
-	const cf = socket.handshake.headers["cf-connecting-ip"];
-	const fastly = socket.handshake.headers["fastly-client-ip"];
-	console.log(ip, cf, fastly);
-	if (socket.handshake.headers.forwarded) {
-		const forwarded = forwardedParse(socket.handshake.headers.forwarded);
-		if (forwarded && forwarded.length > 0 && forwarded[0].for) {
-			ip = forwarded[0].for;
-		}
-	} else if (Array.isArray(cf)) {
-		ip = cf[0];
-	} else if (cf) {
-		ip = cf;
-	} else if (Array.isArray(fastly)) {
-		ip = fastly[0];
-	} else if (fastly) {
-		ip = fastly;
-	}
+	const ip = socket.handshake.address;
 	const ua = socket.handshake.headers["user-agent"];
 	console.log(`connected ip:"${ip}",ua:"${ua}"`);
 	if (!ip || !ua) {
@@ -94,33 +76,16 @@ io.on("connection", (socket) => {
 		socket.emit("disconnect", { reason: "unknownIP" });
 		socket.disconnect();
 	}
-	// gBANチェック
+	// TODO: gBANチェック
 
 	socket.on("disconnect", () => {
 		console.log("クライアント切断:", socket.id);
 	});
 
-	// socket.on("joinRoom", (roomId) => {
-	// 	socket.join(roomId);
-	// 	console.log(`Socket ${socket.id} joined room ${roomId}`);
-	// });
-
-	// socket.on("leaveRoom", (roomId) => {
-	// 	socket.leave(roomId);
-	// 	console.log(`Socket ${socket.id} left room ${roomId}`);
-	// });
-
-	// socket.on("postMessage", (data) => {
-	// 	// const result = postSchema.safeParse(data);
-	// 	// if (!result.success) {
-	// 	// 	return;
-	// 	// }
-	// 	try {
-	// 		// 	// 例: await insertPost(result.data);
-	// 	} catch (error) {}
-	// 	// テーブル追加（自動採番）
-	// 	io.to(data.roomId).emit("newMessage", data.message);
-	// });
+	// TODO: スレを開いたとき：socket.join(roomId); 今まで参加したroomIdはすべて退室
+	// TODO: スレを投稿したとき：io.to(data.roomId).emit("newMessage", data.message);
+	// TODO: 別のスレを開いたとき：socket.join(roomId); 今まで参加したroomIdはすべて退室
+	// TODO: ヘッドラインを開いたとき：socket.join(ヘッドラインのroomId); 今まで参加したroomIdはすべて退室
 
 	socket.on("res", async (data) => {
 		const resultRes = v.safeParse(ResSchema, data);
