@@ -67,12 +67,12 @@ app.post("/api/admin", (req, res) => {
 
 // socket.io
 io.on("connection", (socket) => {
-	console.log("connection start");
+	console.log("connection");
 	const ip = socket.handshake.address;
 	const ua = socket.handshake.headers["user-agent"];
-	console.log(`connected ip:"${ip}",ua:"${ua}"`);
+	console.log("connected", { ip, ua });
 	if (!ip || !ua) {
-		console.log(`kicked ip:"${ip}",ua:"${ua}"`);
+		console.log("kicked", { ip, ua });
 		socket.emit("disconnect", { reason: "unknownIP" });
 		socket.disconnect();
 	}
@@ -164,7 +164,6 @@ io.on("connection", (socket) => {
 				success: true,
 				list: [...Array(16)].map((v) => mock),
 			});
-			console.log("headline end");
 		} catch (error) {}
 	});
 
