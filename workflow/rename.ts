@@ -9,9 +9,11 @@ const sourcePath = path.join(dir, "server.js");
 const destPath = path.join(dir, "server.cjs");
 
 try {
+	console.log("🤖", "server.js → server.cjsにファイル名変更");
+
 	await rename(sourcePath, destPath);
-	console.log(`ファイルをリネームしました: ${sourcePath} -> ${destPath}`);
+	console.log("✅", `ファイルをリネームしました: ${sourcePath} -> ${destPath}`);
 } catch (error) {
-	console.error("ファイルのリネームに失敗しました:", error);
+	console.error("❌", "ファイルのリネームに失敗しました:", error);
 	process.exit(1);
 }

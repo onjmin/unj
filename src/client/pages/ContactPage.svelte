@@ -144,8 +144,6 @@
     });
 </script>
 
-<!-- 問い合わせが殺到するので「よくある質問」も欲しい -->
-
 <HeaderPart title="お問い合わせ" />
 
 <Snackbar bind:this={snackbar}>

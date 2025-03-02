@@ -50,6 +50,9 @@ importers:
       svelte:
         specifier: ^5.20.5
         version: 5.20.5
+      svelte-portal:
+        specifier: ^2.2.1
+        version: 2.2.1
       valibot:
         specifier: 1.0.0-rc.2
         version: 1.0.0-rc.2(typescript@5.8.2)
@@ -1778,6 +1781,9 @@ packages:
 
   svelte-material-ui@8.0.0-beta.3:
     resolution: {integrity: sha512-X1qifLdsIGgsfu3WkaAEbDumFYc6KpdHTZwwSaSFgO5se4wUs5LuLCszFG2GYdBcOi+wVa3Ko7FenMu+zz28XQ==}
+
+  svelte-portal@2.2.1:
+    resolution: {integrity: sha512-uF7is5sM4aq5iN7QF/67XLnTUvQCf2iiG/B1BHTqLwYVY1dsVmTeXZ/LeEyU6dLjApOQdbEG9lkqHzxiQtOLEQ==}
 
   svelte-routing@2.13.0:
     resolution: {integrity: sha512-/NTxqTwLc7Dq306hARJrH2HLXOBtKd7hu8nxgoFDlK0AC4SOKnzisiX/9m8Uksei1QAWtlAEdF91YphNM8iDMg==}
@@ -4145,6 +4151,8 @@ snapshots:
       '@smui/tooltip': 8.0.0-beta.3
       '@smui/top-app-bar': 8.0.0-beta.3
       '@smui/touch-target': 8.0.0-beta.3
+
+  svelte-portal@2.2.1: {}
 
   svelte-routing@2.13.0: {}
 

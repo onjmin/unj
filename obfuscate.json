@@ -12,6 +12,5 @@
 	"disableConsoleOutput": false,
 	"identifierNamesGenerator": "hexadecimal",
 	"renameGlobals": false,
-	"transformObjectKeys": false,
-	"domainLock": ["onjmin.github.io"]
+	"transformObjectKeys": false
 }

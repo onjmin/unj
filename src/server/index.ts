@@ -1,7 +1,6 @@
 import http from "node:http";
 import path from "node:path";
 import express from "express";
-import forwardedParse from "forwarded-parse";
 import { sha256 } from "js-sha256";
 import { Server } from "socket.io";
 import * as v from "valibot";

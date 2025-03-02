@@ -87,7 +87,9 @@
     // TODO: ブックマーク設定
 </script>
 
-<HeaderPart title="ヘッドライン" />
+<HeaderPart title="ヘッドライン">
+    <p>検索UI</p>
+</HeaderPart>
 
 <MainPart>
     <div class="unj-headline-accordion-container">
@@ -108,7 +110,7 @@
                         {#snippet icon()}
                             <Icon
                                 class="material-icons"
-                                style={Math.random() > 0.8 ||
+                                style={String(Math.random() > 0.8) ||
                                     "visibility:hidden"}>remove_red_eye</Icon
                             >
                         {/snippet}
