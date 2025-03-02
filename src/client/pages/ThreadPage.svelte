@@ -6,6 +6,7 @@
     ///////////////
 
     import Button from "@smui/button";
+    import { type Socket, init } from "../mylib/socket.js";
     import ContentPart from "../parts/ContentPart.svelte";
 
     let { threadId = "", resNum = "" } = $props();

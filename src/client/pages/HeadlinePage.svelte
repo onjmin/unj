@@ -19,9 +19,7 @@
     } from "date-fns";
     import { navigate } from "svelte-routing";
     import { base } from "../mylib/env.js";
-
-    import type { Socket } from "socket.io-client";
-    import { start } from "../mylib/socket.js";
+    import { type Socket, init } from "../mylib/socket.js";
 
     const formatTimeAgo = (date: Date): string => {
         const now = new Date();
@@ -55,13 +53,6 @@
 
     let threadList: Array<ThreadInfo> = $state([]);
 
-    const main = async () => {
-        const cursor = null;
-        const size = 16;
-        const desc = true;
-        socket.emit("headline", { cursor, size, desc });
-    };
-
     const handleHeadline = ({
         success,
         list,
@@ -75,10 +66,9 @@
     };
 
     let socket: Socket;
-
     $effect(() => {
-        socket = start();
-        main();
+        socket = init();
+        socket.emit("headline", { cursor: null, size: 16, desc: true });
         socket.on("headline", handleHeadline);
         return () => socket.off("headline", handleHeadline);
     });
