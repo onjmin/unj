@@ -3,12 +3,14 @@ import * as v from "valibot";
 import { getTokenSchema } from "../../../common/request/schema.js";
 import Token from "../token.js";
 
+const api = "getToken";
+
 export default ({ socket, io }: { socket: Socket; io: Server }) => {
-	socket.on("getToken", async (data) => {
+	socket.on(api, async (data) => {
 		const getToken = v.safeParse(getTokenSchema, data);
 		if (!getToken.success) {
 			return;
 		}
-		socket.emit("getToken", { ok: true, token: Token.get(socket) });
+		socket.emit(api, { ok: true, token: Token.get(socket) });
 	});
 };

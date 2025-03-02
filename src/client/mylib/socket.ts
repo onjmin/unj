@@ -22,6 +22,9 @@ export const init = (callback: () => void) => {
 		socket = io(uri, {
 			withCredentials: true,
 		});
+		window.addEventListener("beforeunload", () => {
+			socket.disconnect();
+		});
 		socket.on("getToken", (data: { ok: boolean; token: string | null }) => {
 			if (data.ok && data.token) {
 				token = data.token;
@@ -30,19 +33,15 @@ export const init = (callback: () => void) => {
 				}
 			}
 		});
-		socket.on("connect", () => {
-			console.log("💩", "Connected:", socket.id);
-		});
-		socket.on("disconnect", (reason) => {
-			console.log("💩", "Disconnected:", reason);
-		});
 	}
 	isOK = false;
 	retry = callback;
 	callback();
-	setTimeout(() => {
+	return setTimeout(() => {
 		if (!isOK) {
 			socket.emit("getToken", {});
 		}
-	}, 2048);
+	}, VITE_UNJ_RETRY_MS);
 };
+
+const VITE_UNJ_RETRY_MS = Number(import.meta.env.VITE_UNJ_RETRY_MS);

@@ -43,8 +43,14 @@
 
     let isAlreadyBookmark = $state(false); // TODO
 
-    let threadList: Array<ThreadInfo> = $state([]);
+    let onlineCount = $state(0);
+    const handleJoinHeadline = (data: { ok: boolean; size: number }) => {
+        if (data.ok) {
+            onlineCount = data.size;
+        }
+    };
 
+    let threadList: Array<ThreadInfo> = $state([]);
     const handleHeadline = (data: { ok: boolean; list: Array<ThreadInfo> }) => {
         if (data.ok) {
             ok();
@@ -53,7 +59,8 @@
     };
 
     $effect(() => {
-        init(() => {
+        const id = init(() => {
+            socket.emit("joinHeadline", {});
             socket.emit("headline", {
                 token,
                 cursor: null,
@@ -61,8 +68,13 @@
                 desc: true,
             });
         });
+        socket.on("joinHeadline", handleJoinHeadline);
         socket.on("headline", handleHeadline);
-        return () => socket.off("headline", handleHeadline);
+        return () => {
+            clearTimeout(id);
+            socket.off("joinHeadline", handleJoinHeadline);
+            socket.off("headline", handleHeadline);
+        };
     });
 
     // TODO: 無視設定
@@ -71,7 +83,8 @@
     let snackbar: Snackbar;
 </script>
 
-<HeaderPart title="ヘッドライン">
+<HeaderPart title="ヘッドライン {onlineCount}人閲覧中">
+    <p>{onlineCount}人閲覧中</p>
     <p>検索UI</p>
 </HeaderPart>
 

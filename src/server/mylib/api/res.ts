@@ -5,8 +5,10 @@ import { ResSchema } from "../../../common/request/schema.js";
 import { getThreadRoom } from "../socket.js";
 import Token from "../token.js";
 
+const api = "res";
+
 export default ({ socket, io }: { socket: Socket; io: Server }) => {
-	socket.on("res", async (data) => {
+	socket.on(api, async (data) => {
 		const res = v.safeParse(ResSchema, data);
 		if (!res.success) {
 			return;
@@ -30,8 +32,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			Token.lock(socket);
 			Token.update(socket);
 			// await insertPost(result.data);
-			socket.emit("res", { ok: true }); // TODO
-			socket.to(getThreadRoom(thread_id)).emit("res", { ok: true });
+			io.to(getThreadRoom(thread_id)).emit(api, { ok: true }); // TODO
 		} catch (error) {
 		} finally {
 			Token.unlock(socket);

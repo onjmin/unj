@@ -5,8 +5,10 @@ import { MakeThreadSchema, ResSchema } from "../../../common/request/schema.js";
 import { headlineRoom } from "../socket.js";
 import Token from "../token.js";
 
+const api = "makeThread";
+
 export default ({ socket, io }: { socket: Socket; io: Server }) => {
-	socket.on("makeThread", async (data) => {
+	socket.on(api, async (data) => {
 		const res = v.safeParse(ResSchema, data);
 		if (!res.success) {
 			return;
@@ -34,8 +36,8 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			Token.update(socket);
 			// await insertPost(_.data);
 			const thread_id = Math.random().toString();
-			socket.emit("makeThread", { ok: true, thread_id });
-			socket.to(headlineRoom).emit("makeThread", { ok: true });
+			socket.emit(api, { ok: true, thread_id });
+			io.to(headlineRoom).emit(api, { ok: true });
 		} catch (error) {
 		} finally {
 			Token.unlock(socket);

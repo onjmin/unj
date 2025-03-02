@@ -22,7 +22,12 @@ export const update = (socket: Socket) => tokens.set(a(socket), genToken());
 export const get = (socket: Socket): string | null =>
 	locks.get(a(socket)) ? null : (tokens.get(a(socket)) ?? null);
 export const isValid = (socket: Socket, token: string) => {
-	console.log(tokens.get(a(socket)), token);
+	console.log(
+		"🥺",
+		tokens.get(a(socket)) === token,
+		tokens.get(a(socket)),
+		token,
+	);
 	return tokens.get(a(socket)) === token;
 };
 

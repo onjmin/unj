@@ -3,8 +3,10 @@ import * as v from "valibot";
 import { HeadlineSchema } from "../../../common/request/schema.js";
 import Token from "../token.js";
 
+const api = "headline";
+
 export default ({ socket, io }: { socket: Socket; io: Server }) => {
-	socket.on("headline", async (data) => {
+	socket.on(api, async (data) => {
 		const headline = v.safeParse(HeadlineSchema, data);
 		if (!headline.success) {
 			return;
@@ -18,7 +20,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			Token.lock(socket);
 			Token.update(socket);
 			// await getPost(_.data);
-			socket.emit("headline", {
+			socket.emit(api, {
 				ok: true,
 				list: [...Array(16)].map((v) => mock),
 			});

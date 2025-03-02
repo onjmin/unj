@@ -18,7 +18,7 @@ export const switchRoom = async (
 	// 自分のデフォルトルーム（socket.id）以外から退出
 	for (const room of currentRooms) {
 		if (room !== socket.id) {
-			await socket.leave(room); // デフォルトの部屋である自身のIDは除外
+			await socket.leave(room);
 		}
 	}
 

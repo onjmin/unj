@@ -3,10 +3,10 @@ import path from "node:path";
 import express from "express";
 import { sha256 } from "js-sha256";
 import { Server } from "socket.io";
-import handkeGetToken from "./mylib/api/getToken.js";
+import handleGetToken from "./mylib/api/getToken.js";
 import handleHeadline from "./mylib/api/headline.js";
-import handkeJoinHeadline from "./mylib/api/joinHeadline.js";
-import handkeJoinThread from "./mylib/api/joinThread.js";
+import handleJoinHeadline from "./mylib/api/joinHeadline.js";
+import handleJoinThread from "./mylib/api/joinThread.js";
 import handleMakeThread from "./mylib/api/makeThread.js";
 import handleReadThread from "./mylib/api/readThread.js";
 import handleRes from "./mylib/api/res.js";
@@ -61,33 +61,41 @@ app.post("/api/admin", (req, res) => {
 	// TODO: 一律content_types_bitmask規制
 });
 
+const online = new Set();
+
 // socket.io
 io.on("connection", (socket) => {
-	console.log("connection");
-	const ip = socket.conn.remoteAddress;
+	const ip =
+		socket.handshake.headers["fastly-client-ip"] ?? socket.conn.remoteAddress;
 	const ua = socket.handshake.headers["user-agent"];
+
 	console.log("connected", { ip, ua });
+
 	if (!ip || !ua) {
-		console.log("kicked", { ip, ua });
-		socket.emit("disconnect", { reason: "unknownIP" });
 		socket.disconnect();
+		return;
 	}
+	if (online.has(ip)) {
+		socket.disconnect();
+		return;
+	}
+	online.add(ip);
+	socket.on("disconnect", () => {
+		online.delete(ip);
+	});
+
 	// TODO: gBANチェック
 
-	const auth = "yG8LHE2p"; // テーブルからユーザーを特定する
+	const auth = "yG8LHE2p"; // TODO: usersテーブルからユーザーを特定する
 	Token.init(socket, auth);
 
-	handkeGetToken({ socket, io });
-	handkeJoinHeadline({ socket, io });
-	handkeJoinThread({ socket, io });
+	handleGetToken({ socket, io });
+	handleJoinHeadline({ socket, io });
+	handleJoinThread({ socket, io });
 	handleHeadline({ socket, io });
 	handleMakeThread({ socket, io });
 	handleReadThread({ socket });
 	handleRes({ socket, io });
-
-	socket.on("disconnect", () => {
-		console.log("クライアント切断:", socket.id);
-	});
 });
 
 const PORT = process.env.PORT || process.env.VITE_LOCALHOST_PORT;
