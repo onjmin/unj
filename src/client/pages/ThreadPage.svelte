@@ -6,7 +6,6 @@
     ///////////////
 
     import Button from "@smui/button";
-    import { type Socket, init } from "../mylib/socket.js";
     import ContentPart from "../parts/ContentPart.svelte";
 
     let { threadId = "", resNum = "" } = $props();
@@ -18,14 +17,15 @@
     let bookmark = $state(false); // idbから取得する
 </script>
 
-<HeaderPart title="【速報】みのもんたの家に侵入者。犯人は逃走中" bind:bookmark>
+<HeaderPart title="令和生まれの87%がもはや淫夢を知らない模様" bind:bookmark>
     <p>スレ書き込みUI</p>
     <ContentPart bind:content bind:content_url bind:content_type />
     <Button onclick={() => alert("まだない")} variant="raised">投稿する</Button>
 </HeaderPart>
 
 <MainPart>
-    <p>【速報】みのもんたの家に侵入者。犯人は逃走中</p>
+    <p>令和生まれの87%がもはや淫夢を知らない模様</p>
+    <p>草×</p>
 </MainPart>
 
 <FooterPart />

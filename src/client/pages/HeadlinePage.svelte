@@ -19,8 +19,9 @@
         differenceInYears,
     } from "date-fns";
     import { navigate } from "svelte-routing";
+    import { type ThreadInfo } from "../../common/response/schema.js";
     import { base } from "../mylib/env.js";
-    import { type Socket, init } from "../mylib/socket.js";
+    import { init, ok, socket, token } from "../mylib/socket.js";
 
     const formatTimeAgo = (date: Date): string => {
         const now = new Date();
@@ -42,37 +43,24 @@
 
     let isAlreadyBookmark = $state(false); // TODO
 
-    type ThreadInfo = {
-        id: string;
-        latest_res_at: Date;
-        res_count: number;
-        title: string;
-        user_id: string;
-        online: number;
-        ikioi: number;
-        lol_count: number;
-        good_count: number;
-        bad_count: number;
-    };
-
     let threadList: Array<ThreadInfo> = $state([]);
 
-    const handleHeadline = ({
-        success,
-        list,
-    }: {
-        success: boolean;
-        list: Array<ThreadInfo>;
-    }) => {
-        if (success) {
-            threadList = list;
+    const handleHeadline = (data: { ok: boolean; list: Array<ThreadInfo> }) => {
+        if (data.ok) {
+            ok();
+            threadList = data.list;
         }
     };
 
-    let socket: Socket;
     $effect(() => {
-        socket = init();
-        socket.emit("headline", { cursor: null, size: 16, desc: true });
+        init(() => {
+            socket.emit("headline", {
+                token,
+                cursor: null,
+                size: 16,
+                desc: true,
+            });
+        });
         socket.on("headline", handleHeadline);
         return () => socket.off("headline", handleHeadline);
     });

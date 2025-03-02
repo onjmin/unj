@@ -13,7 +13,7 @@
         PrimaryText,
         SecondaryText,
     } from "@smui/list";
-    import whitelistUnjGames from "../../common/validation/whitelist/unj-games.js";
+    import whitelistUnjGames from "../../common/request/whitelist/unj-games.js";
 
     let selectionIndex = $state(0);
 </script>

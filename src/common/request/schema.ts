@@ -1,5 +1,6 @@
 import * as v from "valibot";
 
+const TOKEN = v.pipe(v.string(), v.length(8), v.hexadecimal());
 const SMALLINT = v.pipe(
 	v.number(),
 	v.integer(),
@@ -25,6 +26,15 @@ const USER_NAME = v.pipe(v.string(), v.trim(), v.maxLength(32));
 const USER_ID = v.pipe(v.string(), v.maxLength(4), v.hexadecimal());
 
 /**
+ * コストが低い処理のためtokenの検証は不要
+ */
+export const getTokenSchema = v.strictObject({});
+export const joinHeadlineSchema = v.strictObject({});
+export const joinThreadSchema = v.strictObject({
+	thread_id: THREAD_ID,
+});
+
+/**
  * スレ立てのスキーマ
  */
 export const MakeThreadSchema = v.object({
@@ -41,8 +51,8 @@ export const MakeThreadSchema = v.object({
  * レスのスキーマ
  */
 export const ResSchema = v.object({
+	token: TOKEN,
 	thread_id: THREAD_ID,
-	token: v.pipe(v.string(), v.length(8), v.hexadecimal()),
 	user_name: USER_NAME,
 	user_icon: SMALLINT,
 	content: v.string(), // この段階では簡易的にしか見ない
@@ -56,7 +66,8 @@ export const ResSchema = v.object({
 /**
  * スレ閲覧のスキーマ
  */
-export const ReadThreadSchema = v.object({
+export const ReadThreadSchema = v.strictObject({
+	token: TOKEN,
 	cursor: v.nullable(RES_NUM),
 	size: RES_NUM,
 	desc: v.boolean(),
@@ -66,7 +77,8 @@ export const ReadThreadSchema = v.object({
 /**
  * ヘッドライン取得のスキーマ
  */
-export const HeadlineSchema = v.object({
+export const HeadlineSchema = v.strictObject({
+	token: TOKEN,
 	cursor: v.nullable(THREAD_ID),
 	size: v.pipe(v.number(), v.integer(), v.minValue(1), v.maxValue(16)),
 	desc: v.boolean(),
@@ -75,7 +87,8 @@ export const HeadlineSchema = v.object({
 /**
  * スレ検索のスキーマ
  */
-export const SearchThreadSchema = v.object({
+export const SearchThreadSchema = v.strictObject({
+	token: TOKEN,
 	cursor: v.nullable(THREAD_ID),
 	size: v.pipe(v.number(), v.integer(), v.minValue(1), v.maxValue(16)),
 	desc: v.boolean(),
@@ -87,7 +100,8 @@ export const SearchThreadSchema = v.object({
 /**
  * レス検索のスキーマ
  */
-export const SearchResSchema = v.object({
+export const SearchResSchema = v.strictObject({
+	token: TOKEN,
 	cursor: v.nullable(RES_ID),
 	size: v.pipe(v.number(), v.integer(), v.minValue(1), v.maxValue(16)),
 	desc: v.boolean(),

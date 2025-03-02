@@ -6,8 +6,8 @@
   import {
     contentTypeOptions,
     getContentTemplate,
-  } from "../../common/validation/content-schema.js";
-  import type { SiteInfo } from "../../common/validation/whitelist/site-info.js";
+  } from "../../common/request/content-schema.js";
+  import type { SiteInfo } from "../../common/request/whitelist/site-info.js";
   import UrlSuggestionPart from "./UrlSuggestionPart.svelte";
 
   let {

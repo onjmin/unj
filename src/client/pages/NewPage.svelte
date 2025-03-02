@@ -13,7 +13,7 @@
     import List, { Item, Meta, Label, Separator, Subheader } from "@smui/list";
     import Select, { Option } from "@smui/select";
     import CharacterCounter from "@smui/textfield/character-counter";
-    import { contentTypeOptions } from "../../common/validation/content-schema.js";
+    import { contentTypeOptions } from "../../common/request/content-schema.js";
     import ContentPart from "../parts/ContentPart.svelte";
 
     let { refThreadId = "" } = $props();

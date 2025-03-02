@@ -17,7 +17,7 @@
     import { addHours, differenceInHours, format } from "date-fns";
     import { ja } from "date-fns/locale";
     import * as v from "valibot";
-    import { validate1 } from "../../common/validation/util.js";
+    import { validate1 } from "../../common/request/util.js";
     import { load, save } from "../mylib/idb/keyval.js";
     import {
         contactAGPL3,

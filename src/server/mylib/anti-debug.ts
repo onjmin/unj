@@ -17,16 +17,6 @@ export const flaky = (func: () => void): boolean => {
 
 const delimiter = "###";
 
-const VITE_UNJ_API_SECRET_PEPPER = process.env.VITE_UNJ_API_SECRET_PEPPER ?? "";
-
-/**
- * うんｊAPI投稿用トークンを計算する
- */
-const genUnjApiToken = (key: string): string => {
-	const token = sha256([VITE_UNJ_API_SECRET_PEPPER, key].join(delimiter));
-	return token.slice(0, 8); // 衝突の心配が低いので8文字に削減
-};
-
 const HASHIDS_SECRET_PEPPER = process.env.HASHIDS_SECRET_PEPPER ?? "";
 const USER_ID_LENGTH = Number(process.env.USER_ID_LENGTH);
 const THREAD_ID_LENGTH = Number(process.env.THREAD_ID_LENGTH);

@@ -7,7 +7,7 @@ CREATE TABLE users (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     latest_res_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 最終レスの日時（投稿規制用）
     latest_make_thread_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 最終スレ立ての日時（投稿規制用）
-    token TEXT NOT NULL UNIQUE, -- 別端末で引き継ぎ可能なトークン
+    authorization TEXT NOT NULL UNIQUE, -- 別端末で引き継ぎ可能なトークン
     name TEXT NOT NULL DEFAULT '', -- ハンドルネーム
     icon SMALLINT NOT NULL DEFAULT 0, -- アイコンID, 0: 未設定
     ninja_pokemon SMALLINT NOT NULL DEFAULT 0, -- 忍法帖ポケモンのID「■忍【LV38,ピカチュウ,9S】◆KOSOVO//9k」
@@ -51,8 +51,8 @@ CREATE TABLE threads (
     thread_type SMALLINT DEFAULT 0, -- スレッドの種類（実況スレ、地震スレ、安価スレ、スレタイで振り分けられる。または、SSスレ、運営スレ、語尾が変わる特殊なスレなど）
     cc_type SMALLINT DEFAULT 0, -- 写しの取り方
     content_types_bitmask SMALLINT DEFAULT 1, -- 投稿可能なコンテンツの種類
-    banned_users_utf8mask TEXT NOT NULL DEFAULT '', -- BANされたユーザーリスト（同じtoken または 同じipは書き込み不可）
-    subbed_users_utf8mask TEXT NOT NULL DEFAULT '', -- 副主ユーザーリスト（同じtoken であれば行使可能）
+    banned_users_utf8mask TEXT NOT NULL DEFAULT '', -- BANされたユーザーリスト（同じauthorization または 同じipは書き込み不可）
+    subbed_users_utf8mask TEXT NOT NULL DEFAULT '', -- 副主ユーザーリスト（同じauthorization であれば行使可能）
     lol_count SMALLINT NOT NULL DEFAULT 0 -- 草ボタン
     good_count SMALLINT NOT NULL DEFAULT 0, -- ｲｲ!(・∀・)
     bad_count SMALLINT NOT NULL DEFAULT 0, -- (・Ａ・)ｲｸﾅｲ!

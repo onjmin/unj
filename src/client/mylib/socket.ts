@@ -1,29 +1,48 @@
 import { type Socket, io } from "socket.io-client";
 import { PROD_MODE } from "./env.js";
 
-export type { Socket };
-
 const uri = PROD_MODE
 	? import.meta.env.VITE_GLITCH_URL
 	: `http://localhost:${import.meta.env.VITE_LOCALHOST_PORT}`;
 
-let socket: Socket;
+export let socket: Socket;
+export let token: string;
+let isOK = false;
+export const ok = () => {
+	isOK = true;
+	socket.emit("getToken", {});
+};
+let retry: () => void;
 
 /**
- * Socket.IOの初回接続、または接続済みのインスタンスを返す
+ * Socket.IOの初回接続
  */
-export const init = () => {
-	if (socket) {
-		return socket;
+export const init = (callback: () => void) => {
+	if (!socket) {
+		socket = io(uri, {
+			withCredentials: true,
+		});
+		socket.on("getToken", (data: { ok: boolean; token: string | null }) => {
+			if (data.ok && data.token) {
+				token = data.token;
+				if (!isOK) {
+					retry();
+				}
+			}
+		});
+		socket.on("connect", () => {
+			console.log("💩", "Connected:", socket.id);
+		});
+		socket.on("disconnect", (reason) => {
+			console.log("💩", "Disconnected:", reason);
+		});
 	}
-	socket = io(uri, {
-		withCredentials: true,
-	});
-	socket.on("connect", () => {
-		console.log("💩", "Connected:", socket.id);
-	});
-	socket.on("disconnect", (reason) => {
-		console.log("💩", "Disconnected:", reason);
-	});
-	return socket;
+	isOK = false;
+	retry = callback;
+	callback();
+	setTimeout(() => {
+		if (!isOK) {
+			socket.emit("getToken", {});
+		}
+	}, 2048);
 };
