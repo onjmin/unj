@@ -2,7 +2,7 @@
     import { navigate } from "svelte-routing";
     import { flaky } from "../mylib/anti-debug.js";
     import { base, pathname } from "../mylib/env.js";
-    import { save } from "../mylib/storage.js";
+    import { save } from "../mylib/idb/keyval.js";
 
     let { children } = $props();
     let ready = $state(false);
@@ -59,6 +59,4 @@
 
 {#if ready}
     {@render children?.()}
-{:else}
-    <div>Loading...</div>
 {/if}

@@ -7,7 +7,7 @@
 
     import { genBanVerifyCode } from "../mylib/anti-debug.js";
     import { VITE_ADMIN_EMAIL, VITE_ADMIN_TWITTER } from "../mylib/env.js";
-    import { load, save } from "../mylib/storage.js";
+    import { load, save } from "../mylib/idb/keyval.js";
     import { reportTraversal, reportUnknownIP } from "../mylib/webhook.js";
 
     let ip = $state("");

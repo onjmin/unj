@@ -67,7 +67,7 @@ app.post("/api/admin", (req, res) => {
 // socket.io
 io.on("connection", (socket) => {
 	console.log("connection");
-	const ip = socket.handshake.address;
+	const ip = socket.conn.remoteAddress;
 	const ua = socket.handshake.headers["user-agent"];
 	console.log("connected", { ip, ua });
 	if (!ip || !ua) {
@@ -174,6 +174,9 @@ io.on("connection", (socket) => {
 		user_id: "1234",
 		online: io.sockets.adapter.rooms.get("12345678")?.size ?? 0,
 		ikioi: 256 / 100, // おそらく、総レス数/スレ経過日時
+		lol_count: 3,
+		good_count: 4,
+		bad_count: 5,
 	};
 });
 

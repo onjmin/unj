@@ -1,11 +1,17 @@
 <script lang="ts">
   import IconButton from "@smui/icon-button";
+  import Snackbar, { Label } from "@smui/snackbar";
   import TopAppBar, { Title, Row, Section } from "@smui/top-app-bar";
   import { DEV_MODE, STG_MODE, pathname } from "../mylib/env.js";
   import LeftMenuPart from "./LeftMenuPart.svelte";
   import RightMenuPart from "./RightMenuPart.svelte";
 
-  let { children = null, title = "", menu = true, bookmark = false } = $props();
+  let {
+    children = null,
+    title = "",
+    menu = true,
+    bookmark = $bindable(null),
+  } = $props();
 
   if (DEV_MODE) {
     title = `DEV - ${title}`;
@@ -34,7 +40,7 @@
     return () => window.removeEventListener("resize", onResize);
   });
 
-  let isAlreadyBookmark = $state(false); // TODO
+  let snackbar: Snackbar = $state(null);
 </script>
 
 <svelte:head>
@@ -66,12 +72,21 @@
         <Title style="width: 100svw; text-align: center;">{title}</Title>
       </Section>
       {#if menu}
-        <Section align="end" toolbar style="{bookmark || 'visibility:hidden'};">
+        <Section
+          align="end"
+          toolbar
+          style="{bookmark !== null || 'visibility:hidden'};"
+        >
           <IconButton
             class="material-icons"
             onclick={() => {
-              isAlreadyBookmark = !isAlreadyBookmark;
-            }}>{isAlreadyBookmark ? "bookmark" : "bookmark_border"}</IconButton
+              bookmark = !bookmark;
+              if (bookmark) {
+                snackbar.open();
+              } else {
+                snackbar.close();
+              }
+            }}>{bookmark ? "bookmark" : "bookmark_border"}</IconButton
           >
         </Section>
         <Section
@@ -111,4 +126,10 @@
       openRight = false;
     }}>うんｊ</button
   >
+{/if}
+
+{#if bookmark !== null}
+  <Snackbar bind:this={snackbar}>
+    <Label>#後で見る</Label>
+  </Snackbar>
 {/if}

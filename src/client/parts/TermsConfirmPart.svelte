@@ -8,7 +8,7 @@
   import { navigate } from "svelte-routing";
   import { visible } from "../mylib/dom.js";
   import { base } from "../mylib/env.js";
-  import { load, save } from "../mylib/storage.js";
+  import { load, save } from "../mylib/idb/keyval.js";
   import TermsPart from "./TermsPart.svelte";
 
   let { openConfirm = false } = $props();

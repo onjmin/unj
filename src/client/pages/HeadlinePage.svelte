@@ -8,6 +8,7 @@
     import Accordion, { Panel, Header, Content } from "@smui-extra/accordion";
     import DataTable, { Head, Body, Row, Cell } from "@smui/data-table";
     import IconButton, { Icon } from "@smui/icon-button";
+    import Snackbar, { Label } from "@smui/snackbar";
     import {
         differenceInDays,
         differenceInHours,
@@ -49,6 +50,9 @@
         user_id: string;
         online: number;
         ikioi: number;
+        lol_count: number;
+        good_count: number;
+        bad_count: number;
     };
 
     let threadList: Array<ThreadInfo> = $state([]);
@@ -75,6 +79,8 @@
 
     // TODO: 無視設定
     // TODO: ブックマーク設定
+
+    let snackbar: Snackbar;
 </script>
 
 <HeaderPart title="ヘッドライン">
@@ -116,6 +122,9 @@
                                     <Cell>スレ主ID</Cell>
                                     <Cell>接続</Cell>
                                     <Cell>勢い</Cell>
+                                    <Cell numeric>草</Cell>
+                                    <Cell numeric>ｲｲ!(・∀・)</Cell>
+                                    <Cell numeric>(・Ａ・)ｲｸﾅｲ!</Cell>
                                 </Row>
                             </Head>
                             <Body>
@@ -123,17 +132,22 @@
                                     <Cell>{thread.user_id}</Cell>
                                     <Cell numeric>{thread.online}</Cell>
                                     <Cell numeric>{thread.ikioi}</Cell>
+                                    <Cell numeric>{thread.lol_count}</Cell>
+                                    <Cell numeric>{thread.good_count}</Cell>
+                                    <Cell numeric>{thread.bad_count}</Cell>
                                 </Row>
                             </Body>
                         </DataTable>
                         <span class="thread-detail-ui">
-                            <IconButton class="material-icons"
-                                >person_off</IconButton
-                            >
                             <IconButton
                                 class="material-icons"
                                 onclick={() => {
                                     isAlreadyBookmark = !isAlreadyBookmark;
+                                    if (isAlreadyBookmark) {
+                                        snackbar.open();
+                                    } else {
+                                        snackbar.close();
+                                    }
                                 }}
                                 >{isAlreadyBookmark
                                     ? "bookmark"
@@ -154,6 +168,12 @@
 </MainPart>
 
 <FooterPart />
+
+<!-- ここから固有のUI -->
+
+<Snackbar bind:this={snackbar}>
+    <Label>#後で見る</Label>
+</Snackbar>
 
 <style>
     .unj-headline-accordion-container {

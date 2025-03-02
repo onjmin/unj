@@ -10,7 +10,7 @@
     import LayoutGrid, { Cell } from "@smui/layout-grid";
     import Paper, { Title, Content } from "@smui/paper";
     import Select, { Option } from "@smui/select";
-    import Snackbar, { Actions } from "@smui/snackbar";
+    import Snackbar from "@smui/snackbar";
     import Tab, { Icon, Label } from "@smui/tab";
     import TabBar from "@smui/tab-bar";
     import CharacterCounter from "@smui/textfield/character-counter";
@@ -18,7 +18,7 @@
     import { ja } from "date-fns/locale";
     import * as v from "valibot";
     import { validate1 } from "../../common/validation/util.js";
-    import { load, save } from "../mylib/storage.js";
+    import { load, save } from "../mylib/idb/keyval.js";
     import {
         contactAGPL3,
         contactKaizen,
@@ -146,10 +146,6 @@
 
 <HeaderPart title="お問い合わせ" />
 
-<Snackbar bind:this={snackbar}>
-    <Label>{snackbarText}</Label>
-</Snackbar>
-
 <MainPart>
     <p>当ページからのお問い合わせには、迅速に対応いたします。</p>
     <p>
@@ -215,6 +211,12 @@
 </MainPart>
 
 <FooterPart />
+
+<!-- ここから固有のUI -->
+
+<Snackbar bind:this={snackbar}>
+    <Label>{snackbarText}</Label>
+</Snackbar>
 
 <style>
     .form-container {

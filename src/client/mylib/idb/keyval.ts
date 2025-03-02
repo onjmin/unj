@@ -1,7 +1,7 @@
 import Hashids from "hashids";
 import { del, get, set } from "idb-keyval";
 import { sha256 } from "js-sha256";
-import { DEV_MODE } from "./env.js";
+import { DEV_MODE } from "../env.js";
 
 const delimiter = "###";
 

@@ -1,7 +1,7 @@
 <script lang="ts">
     import { navigate } from "svelte-routing";
     import { base } from "../mylib/env.js";
-    import { load } from "../mylib/storage.js";
+    import { load } from "../mylib/idb/keyval.js";
 
     let { children } = $props();
     let ready = $state(false);
@@ -21,6 +21,4 @@
 
 {#if ready}
     {@render children?.()}
-{:else}
-    <div>Loading...</div>
 {/if}

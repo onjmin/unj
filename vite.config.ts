@@ -9,7 +9,7 @@ import {
 } from "./src/server/mylib/env.js";
 import { logError, logWarning } from "./src/server/mylib/log.js";
 
-console.log(`VITE_BASE_URL: "${VITE_BASE_URL}"`);
+console.log("⚡", `VITE_BASE_URL: "${VITE_BASE_URL}"`);
 const define = {
 	"import.meta.env.DEV_MODE": DEV_MODE,
 	"import.meta.env.STG_MODE": STG_MODE,

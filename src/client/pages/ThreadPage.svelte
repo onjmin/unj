@@ -14,12 +14,11 @@
     let content = $state("");
     let content_url = $state("");
     let content_type = $state(1);
+
+    let bookmark = $state(false); // idbから取得する
 </script>
 
-<HeaderPart
-    title="【速報】みのもんたの家に侵入者。犯人は逃走中"
-    bookmark={true}
->
+<HeaderPart title="【速報】みのもんたの家に侵入者。犯人は逃走中" bind:bookmark>
     <p>スレ書き込みUI</p>
     <ContentPart bind:content bind:content_url bind:content_type />
     <Button onclick={() => alert("まだない")} variant="raised">投稿する</Button>

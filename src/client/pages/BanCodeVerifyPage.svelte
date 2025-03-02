@@ -21,7 +21,7 @@
     import { navigate } from "svelte-routing";
     import { genBanVerifyCode } from "../mylib/anti-debug.js";
     import { base } from "../mylib/env.js";
-    import { load, save } from "../mylib/storage.js";
+    import { load, save } from "../mylib/idb/keyval.js";
 
     const handleSubmit = async () => {
         loading = true;
@@ -180,6 +180,8 @@
 </MainPart>
 
 <FooterPart />
+
+<!-- ここから固有のUI -->
 
 <Dialog
     bind:open

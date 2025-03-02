@@ -53,9 +53,9 @@ CREATE TABLE threads (
     content_types_bitmask SMALLINT DEFAULT 1, -- 投稿可能なコンテンツの種類
     banned_users_utf8mask TEXT NOT NULL DEFAULT '', -- BANされたユーザーリスト（同じtoken または 同じipは書き込み不可）
     subbed_users_utf8mask TEXT NOT NULL DEFAULT '', -- 副主ユーザーリスト（同じtoken であれば行使可能）
+    lol_count SMALLINT NOT NULL DEFAULT 0 -- 草ボタン
     good_count SMALLINT NOT NULL DEFAULT 0, -- ｲｲ!(・∀・)
     bad_count SMALLINT NOT NULL DEFAULT 0, -- (・Ａ・)ｲｸﾅｲ!
-    lol_count SMALLINT NOT NULL DEFAULT 0 -- 草ボタン
 );
 
 /*

@@ -8,7 +8,7 @@
   import Button from "@smui/button";
   import { navigate } from "svelte-routing";
   import { base } from "../mylib/env.js";
-  import { load } from "../mylib/storage.js";
+  import { load } from "../mylib/idb/keyval.js";
   import { randArray, topIllusts } from "../mylib/top-illust.js";
   import TermsConfirmPart from "../parts/TermsConfirmPart.svelte";
 
@@ -39,7 +39,6 @@
 </script>
 
 <HeaderPart menu={false} title="うんｊ掲示板へようこそ" />
-<TermsConfirmPart {openConfirm} />
 
 <MainPart menu={false}>
   <h1>運営と運命を共にする、うんち実況（セーラージュピター）</h1>
@@ -53,3 +52,7 @@
 </MainPart>
 
 <FooterPart />
+
+<!-- ここから固有のUI -->
+
+<TermsConfirmPart {openConfirm} />
