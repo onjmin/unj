@@ -1,6 +1,9 @@
+import { differenceInMinutes } from "date-fns";
 import type { Server, Socket } from "socket.io";
 import * as v from "valibot";
 import { HeadlineSchema } from "../../../common/request/schema.js";
+import { encodeThreadId, encodeUserId } from "../anti-debug.js";
+import { count } from "../socket.js";
 import Token from "../token.js";
 
 const api = "headline";
@@ -31,13 +34,15 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 	});
 
 	const mock = {
-		id: "12345678",
+		id: encodeThreadId("12345678"),
 		latest_res_at: new Date(),
 		res_count: 256,
 		title: "【朗報】侍ジャパン、謎のホームランで勝利！",
-		user_id: "1234",
-		online: io.sockets.adapter.rooms.get("12345678")?.size ?? 0,
-		ikioi: 256 / 100, // おそらく、総レス数/スレ経過日時
+		user_id: encodeUserId("1234"),
+		online: count(io, encodeThreadId("12345678")),
+		ikioi:
+			(256 / 60) *
+			differenceInMinutes(new Date(), new Date(+new Date() - 9000000)), // レス数 × (60 / 経過時間[分])
 		lol_count: 3,
 		good_count: 4,
 		bad_count: 5,

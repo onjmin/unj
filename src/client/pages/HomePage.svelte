@@ -40,6 +40,8 @@
 
 <HeaderPart menu={false} title="うんｊ掲示板へようこそ" />
 
+<TermsConfirmPart {openConfirm} />
+
 <MainPart menu={false}>
   <h1>運営と運命を共にする、うんち実況（セーラージュピター）</h1>
   <img class="unj-img" alt="TOP絵" src={randomIllust} />
@@ -52,7 +54,3 @@
 </MainPart>
 
 <FooterPart />
-
-<!-- ここから固有のUI -->
-
-<TermsConfirmPart {openConfirm} />

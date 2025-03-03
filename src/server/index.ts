@@ -1,8 +1,12 @@
+import { DEV_MODE, PROD_MODE, ROOT_PATH, STG_MODE } from "./mylib/env.js";
+
+import dns from "node:dns/promises";
 import http from "node:http";
 import path from "node:path";
 import express from "express";
 import { sha256 } from "js-sha256";
-import { Server } from "socket.io";
+import { Server, type Socket } from "socket.io";
+import { flaky } from "./mylib/anti-debug.js";
 import handleGetToken from "./mylib/api/getToken.js";
 import handleHeadline from "./mylib/api/headline.js";
 import handleJoinHeadline from "./mylib/api/joinHeadline.js";
@@ -10,7 +14,6 @@ import handleJoinThread from "./mylib/api/joinThread.js";
 import handleMakeThread from "./mylib/api/makeThread.js";
 import handleReadThread from "./mylib/api/readThread.js";
 import handleRes from "./mylib/api/res.js";
-import { DEV_MODE, PROD_MODE, ROOT_PATH, STG_MODE } from "./mylib/env.js";
 import Token from "./mylib/token.js";
 
 const app = express();
@@ -62,9 +65,15 @@ app.post("/api/admin", (req, res) => {
 });
 
 const online: Set<string> = new Set();
+const kick = (socket: Socket, reason: string) =>
+	flaky(() => {
+		socket.emit("kicked", {
+			reason,
+		});
+	});
 
 // socket.io
-io.on("connection", (socket) => {
+io.on("connection", async (socket) => {
 	const fastlyClientIp = socket.handshake.headers["fastly-client-ip"];
 	const ip = Array.isArray(fastlyClientIp)
 		? fastlyClientIp[0] // TODO: 人為的にfastly-client-ipヘッダを付加されたケース
@@ -74,10 +83,12 @@ io.on("connection", (socket) => {
 	console.log("connected", { ip, ua });
 
 	if (!ip || !ua) {
+		kick(socket, "unknownIP");
 		socket.disconnect();
 		return;
 	}
 	if (online.has(ip)) {
+		kick(socket, "multipleConnections");
 		socket.disconnect();
 		return;
 	}
@@ -86,7 +97,13 @@ io.on("connection", (socket) => {
 		online.delete(ip);
 	});
 
-	// TODO: gBANチェック
+	// TODO: IPブラックリストチェック
+
+	// リバースDNSルックアップ
+	const hostnames = await dns.reverse(ip);
+	console.log({ hostnames });
+
+	// TODO: ホスト名ブラックリストチェック
 
 	const auth = "yG8LHE2p"; // TODO: usersテーブルからユーザーを特定する
 	Token.init(socket, auth);

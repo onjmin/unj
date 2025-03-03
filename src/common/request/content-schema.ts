@@ -1,5 +1,4 @@
 import * as v from "valibot";
-import { playgrounds } from "../../client/mylib/playground.js";
 import blacklistDarkWeb1 from "./blacklist/dark-web/domain1.js";
 import blacklistShortenedUrl2 from "./blacklist/shortened-url/domain2.js";
 import blacklistShortenedUrl3 from "./blacklist/shortened-url/domain3.js";

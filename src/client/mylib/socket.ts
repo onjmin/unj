@@ -6,7 +6,7 @@ const uri = PROD_MODE
 	: `http://localhost:${import.meta.env.VITE_LOCALHOST_PORT}`;
 
 export let socket: Socket;
-export let token: string;
+export let token = "";
 let isOK = false;
 export const ok = () => {
 	isOK = true;
@@ -41,7 +41,7 @@ export const init = (callback: () => void) => {
 		if (!isOK) {
 			socket.emit("getToken", {});
 		}
-	}, VITE_UNJ_RETRY_MS);
+	}, VITE_UNJ_API_RETRY_MS);
 };
 
-const VITE_UNJ_RETRY_MS = Number(import.meta.env.VITE_UNJ_RETRY_MS);
+const VITE_UNJ_API_RETRY_MS = Number(import.meta.env.VITE_UNJ_API_RETRY_MS);

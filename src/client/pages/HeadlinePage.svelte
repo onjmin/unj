@@ -20,6 +20,7 @@
     } from "date-fns";
     import { navigate } from "svelte-routing";
     import { type ThreadInfo } from "../../common/response/schema.js";
+    import { genUnjApiToken } from "../mylib/anti-debug.js";
     import { base } from "../mylib/env.js";
     import { init, ok, socket, token } from "../mylib/socket.js";
 
@@ -62,7 +63,7 @@
         const id = init(() => {
             socket.emit("joinHeadline", {});
             socket.emit("headline", {
-                token,
+                token: genUnjApiToken(token),
                 cursor: null,
                 size: 16,
                 desc: true,

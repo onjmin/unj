@@ -107,15 +107,6 @@
                     >
                     <Text>TOP絵集</Text>
                 </Item>
-                <Item
-                    onclick={() => navigate(base("/links"))}
-                    activated={pathname().startsWith("/links")}
-                >
-                    <Graphic class="material-icons" aria-hidden="true"
-                        >link</Graphic
-                    >
-                    <Text>リンク集</Text>
-                </Item>
             </List>
         </Content>
     </Drawer>

@@ -86,3 +86,13 @@
     </Actions>
   </Dialog>
 </Portal>
+
+<style>
+  * :global(.demo-list) {
+    text-align: left;
+  }
+  :global(.unj-playground-item-graphic) {
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+  }
+</style>
