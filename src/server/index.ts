@@ -61,12 +61,14 @@ app.post("/api/admin", (req, res) => {
 	// TODO: 一律content_types_bitmask規制
 });
 
-const online = new Set();
+const online: Set<string> = new Set();
 
 // socket.io
 io.on("connection", (socket) => {
-	const ip =
-		socket.handshake.headers["fastly-client-ip"] ?? socket.conn.remoteAddress;
+	const fastlyClientIp = socket.handshake.headers["fastly-client-ip"];
+	const ip = Array.isArray(fastlyClientIp)
+		? fastlyClientIp[0] // TODO: 人為的にfastly-client-ipヘッダを付加されたケース
+		: (fastlyClientIp ?? socket.conn.remoteAddress);
 	const ua = socket.handshake.headers["user-agent"];
 
 	console.log("connected", { ip, ua });
@@ -90,7 +92,7 @@ io.on("connection", (socket) => {
 	Token.init(socket, auth);
 
 	handleGetToken({ socket, io });
-	handleJoinHeadline({ socket, io });
+	handleJoinHeadline({ socket, io, online });
 	handleJoinThread({ socket, io });
 	handleHeadline({ socket, io });
 	handleMakeThread({ socket, io });

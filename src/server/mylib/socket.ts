@@ -1,4 +1,13 @@
-import type { Socket } from "socket.io";
+import type { Server, Socket } from "socket.io";
+
+export const headlineRoom = "headline";
+export const getThreadRoom = (thread_id: string) => `thread:${thread_id}`;
+
+/**
+ * 人数算出
+ */
+export const count = (io: Server, room: string) =>
+	io.sockets.adapter.rooms.get(room)?.size ?? 0;
 
 /**
  * 2つ以上の部屋に入らない
@@ -25,6 +34,3 @@ export const switchRoom = async (
 	await socket.join(newRoom);
 	return true;
 };
-
-export const headlineRoom = "headline";
-export const getThreadRoom = (thread_id: string) => `thread:${thread_id}`;

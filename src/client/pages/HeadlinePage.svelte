@@ -43,10 +43,10 @@
 
     let isAlreadyBookmark = $state(false); // TODO
 
-    let onlineCount = $state(0);
+    let onlineUserCount = $state(0);
     const handleJoinHeadline = (data: { ok: boolean; size: number }) => {
         if (data.ok) {
-            onlineCount = data.size;
+            onlineUserCount = data.size;
         }
     };
 
@@ -83,8 +83,8 @@
     let snackbar: Snackbar;
 </script>
 
-<HeaderPart title="ヘッドライン {onlineCount}人閲覧中">
-    <p>{onlineCount}人閲覧中</p>
+<HeaderPart title="ヘッドライン {onlineUserCount}人閲覧中">
+    <p>{onlineUserCount}人がオンライン…</p>
     <p>検索UI</p>
 </HeaderPart>
 
