@@ -1,19 +1,25 @@
 import { DEV_MODE, PROD_MODE, ROOT_PATH, STG_MODE } from "./mylib/env.js";
 
-import dns from "node:dns/promises";
 import http from "node:http";
 import path from "node:path";
-import express from "express";
+import express, {
+	type NextFunction,
+	type Request,
+	type Response,
+} from "express";
 import { sha256 } from "js-sha256";
 import { Server, type Socket } from "socket.io";
+import registerBlacklist, { blacklist } from "./admin/blacklist.js";
+import registerTor, { torIPList } from "./admin/tor.js";
+import registerVpngate, { vpngateIPList } from "./admin/vpngate.js";
+import handleGetToken from "./api/getToken.js";
+import handleHeadline from "./api/headline.js";
+import handleJoinHeadline from "./api/joinHeadline.js";
+import handleJoinThread from "./api/joinThread.js";
+import handleMakeThread from "./api/makeThread.js";
+import handleReadThread from "./api/readThread.js";
+import handleRes from "./api/res.js";
 import { flaky } from "./mylib/anti-debug.js";
-import handleGetToken from "./mylib/api/getToken.js";
-import handleHeadline from "./mylib/api/headline.js";
-import handleJoinHeadline from "./mylib/api/joinHeadline.js";
-import handleJoinThread from "./mylib/api/joinThread.js";
-import handleMakeThread from "./mylib/api/makeThread.js";
-import handleReadThread from "./mylib/api/readThread.js";
-import handleRes from "./mylib/api/res.js";
 import Token from "./mylib/token.js";
 
 const app = express();
@@ -29,6 +35,40 @@ const io = new Server(server, {
 
 app.use(express.json());
 
+app.get("/ping", (req, res) => {
+	res.send("pong");
+});
+
+// サービスを止めずに投稿規制するためのAPI
+const UNJ_ADMIN_API_KEY = String(process.env.UNJ_ADMIN_API_KEY);
+const adminAuthMiddleware = (
+	req: Request,
+	res: Response,
+	next: NextFunction,
+): void => {
+	const authHeader = req.headers.authorization ?? "";
+	const [scheme, token] = authHeader.split(" ");
+	if (scheme !== "Bearer" || sha256(token) !== sha256(UNJ_ADMIN_API_KEY)) {
+		res.status(401).json({ error: "Unauthorized: Invalid token" });
+	}
+	next();
+};
+const router = express.Router();
+router.use(adminAuthMiddleware);
+registerBlacklist(router);
+registerTor(router);
+registerVpngate(router);
+// TODO: io.disconnectSockets(false);
+// TODO: io.disconnectSockets(true);
+// TODO: io.close();
+// TODO: 対象ユーザーの忍法帖スコアを操作
+// TODO: 自動BANの基準を変更
+// TODO: 一律Socket新規発行停止
+// TODO: 一律スレ立て禁止
+// TODO: 一律低速レスモード
+// TODO: 一律content_types_bitmask規制
+app.use("/api/admin", router);
+
 if (DEV_MODE || STG_MODE) {
 	app.use("/static", express.static(path.resolve(ROOT_PATH, "static")));
 	app.use(express.static(path.resolve(ROOT_PATH, "dist", "client")));
@@ -41,28 +81,6 @@ if (DEV_MODE || STG_MODE) {
 } else if (PROD_MODE) {
 	app.use(express.static(path.resolve(ROOT_PATH, "public")));
 }
-
-const UNJ_ADMIN_API_KEY = String(process.env.UNJ_ADMIN_API_KEY);
-
-app.get("/ping", (req, res) => {
-	res.send("pong");
-});
-
-// サービスを止めずに投稿規制するためのAPI
-app.post("/api/admin", (req, res) => {
-	const token = sha256(req.body.token);
-	const token2 = sha256(UNJ_ADMIN_API_KEY);
-	res.json({ token, token2, message: token === token2 ? "OK" : "NG" });
-	// TODO: io.disconnectSockets(false);
-	// TODO: io.disconnectSockets(true);
-	// TODO: io.close();
-	// TODO: 対象ユーザーの忍法帖スコアを操作
-	// TODO: 自動BANの基準を変更
-	// TODO: 一律Socket新規発行停止
-	// TODO: 一律スレ立て禁止
-	// TODO: 一律低速レスモード
-	// TODO: 一律content_types_bitmask規制
-});
 
 const online: Set<string> = new Set();
 const kick = (socket: Socket, reason: string) =>
@@ -87,6 +105,21 @@ io.on("connection", async (socket) => {
 		socket.disconnect();
 		return;
 	}
+	if (torIPList.has(ip)) {
+		kick(socket, "torIP");
+		socket.disconnect();
+		return;
+	}
+	if (vpngateIPList.has(ip)) {
+		kick(socket, "vpngateIP");
+		socket.disconnect();
+		return;
+	}
+	if (blacklist.has(ip)) {
+		kick(socket, "blacklist");
+		socket.disconnect();
+		return;
+	}
 	if (online.has(ip)) {
 		kick(socket, "multipleConnections");
 		socket.disconnect();
@@ -97,16 +130,8 @@ io.on("connection", async (socket) => {
 		online.delete(ip);
 	});
 
-	// TODO: IPブラックリストチェック
-
-	// リバースDNSルックアップ
-	const hostnames = await dns.reverse(ip);
-	console.log({ hostnames });
-
-	// TODO: ホスト名ブラックリストチェック
-
 	const auth = "yG8LHE2p"; // TODO: usersテーブルからユーザーを特定する
-	Token.init(socket, auth);
+	Token.init(socket, ip);
 
 	handleGetToken({ socket, io });
 	handleJoinHeadline({ socket, io, online });

@@ -1,7 +1,12 @@
 import type { Server, Socket } from "socket.io";
 import * as v from "valibot";
-import { joinThreadSchema } from "../../../common/request/schema.js";
-import { count, getThreadRoom, headlineRoom, switchRoom } from "../socket.js";
+import { joinThreadSchema } from "../../common/request/schema.js";
+import {
+	count,
+	getThreadRoom,
+	headlineRoom,
+	switchRoom,
+} from "../mylib/socket.js";
 import headline from "./headline.js";
 
 const api = "joinThread";

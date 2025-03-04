@@ -1,10 +1,10 @@
 import { differenceInMinutes } from "date-fns";
 import type { Server, Socket } from "socket.io";
 import * as v from "valibot";
-import { HeadlineSchema } from "../../../common/request/schema.js";
-import { encodeThreadId, encodeUserId } from "../anti-debug.js";
-import { count } from "../socket.js";
-import Token from "../token.js";
+import { HeadlineSchema } from "../../common/request/schema.js";
+import { encodeThreadId, encodeUserId } from "../mylib/anti-debug.js";
+import { count } from "../mylib/socket.js";
+import Token from "../mylib/token.js";
 
 const api = "headline";
 

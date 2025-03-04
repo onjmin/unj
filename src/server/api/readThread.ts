@@ -1,7 +1,7 @@
 import type { Socket } from "socket.io";
 import * as v from "valibot";
-import { ReadThreadSchema } from "../../../common/request/schema.js";
-import Token from "../token.js";
+import { ReadThreadSchema } from "../../common/request/schema.js";
+import Token from "../mylib/token.js";
 
 const api = "readThread";
 

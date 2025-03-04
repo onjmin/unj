@@ -1,7 +1,7 @@
 import type { Server, Socket } from "socket.io";
 import * as v from "valibot";
-import { getTokenSchema } from "../../../common/request/schema.js";
-import Token from "../token.js";
+import { getTokenSchema } from "../../common/request/schema.js";
+import Token from "../mylib/token.js";
 
 const api = "getToken";
 
