@@ -1,5 +1,9 @@
 import * as v from "valibot";
 
+export const tokenLength = 8;
+export const userIdLength = 4;
+export const threadIdLength = 8;
+
 const TOKEN = v.pipe(v.string(), v.length(8), v.hexadecimal());
 const SMALLINT = v.pipe(
 	v.number(),
@@ -8,7 +12,7 @@ const SMALLINT = v.pipe(
 	v.maxValue(32767),
 );
 
-const THREAD_ID = v.pipe(v.string(), v.length(8), v.hexadecimal());
+const THREAD_ID = v.pipe(v.string(), v.length(threadIdLength), v.hexadecimal());
 const THREAD_TITLE = v.pipe(
 	v.string(),
 	v.trim(),
@@ -23,7 +27,7 @@ const RES_NUM = v.pipe(
 	v.maxValue(1005),
 );
 const USER_NAME = v.pipe(v.string(), v.trim(), v.maxLength(32));
-const USER_ID = v.pipe(v.string(), v.maxLength(4), v.hexadecimal());
+const USER_ID = v.pipe(v.string(), v.maxLength(userIdLength), v.hexadecimal());
 
 /**
  * コストが低い処理のためtokenの検証は不要
@@ -32,6 +36,23 @@ export const getTokenSchema = v.strictObject({});
 export const joinHeadlineSchema = v.strictObject({});
 export const joinThreadSchema = v.strictObject({
 	thread_id: THREAD_ID,
+});
+
+/**
+ * 草ボタンのスキーマ
+ */
+export const lolSchema = v.object({
+	token: TOKEN,
+	thread_id: THREAD_ID,
+});
+
+/**
+ * ｲｲ!(・∀・)(・Ａ・)ｲｸﾅｲ!
+ */
+export const likeSchema = v.object({
+	token: TOKEN,
+	thread_id: THREAD_ID,
+	good: v.boolean(),
 });
 
 /**

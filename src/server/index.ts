@@ -9,6 +9,8 @@ import express, {
 } from "express";
 import { sha256 } from "js-sha256";
 import { Server, type Socket } from "socket.io";
+import * as v from "valibot";
+import { validate1 } from "../common/request/util.js";
 import registerBlacklist, { blacklist } from "./admin/blacklist.js";
 import registerTor, { torIPList } from "./admin/tor.js";
 import registerVpngate, { vpngateIPList } from "./admin/vpngate.js";
@@ -20,6 +22,7 @@ import handleMakeThread from "./api/makeThread.js";
 import handleReadThread from "./api/readThread.js";
 import handleRes from "./api/res.js";
 import { flaky } from "./mylib/anti-debug.js";
+import Auth from "./mylib/auth.js";
 import Token from "./mylib/token.js";
 
 const app = express();
@@ -44,6 +47,8 @@ app.get("/ping", (req, res) => {
 	res.send("pong");
 });
 
+const authorizationSchema = v.pipe(v.string(), v.hash(["sha256"]));
+
 // サービスを止めずに投稿規制するためのAPI
 const UNJ_ADMIN_API_KEY = String(process.env.UNJ_ADMIN_API_KEY);
 const adminAuthMiddleware = (
@@ -51,10 +56,15 @@ const adminAuthMiddleware = (
 	res: Response,
 	next: NextFunction,
 ): void => {
-	const authHeader = req.headers.authorization ?? "";
-	const [scheme, token] = authHeader.split(" ");
-	if (scheme !== "Bearer" || sha256(token) !== sha256(UNJ_ADMIN_API_KEY)) {
+	const input = req.headers.authorization;
+	const error = validate1(authorizationSchema, input);
+	if (error) {
+		res.status(400).json({ error });
+		return;
+	}
+	if (sha256(input ?? "") !== sha256(UNJ_ADMIN_API_KEY)) {
 		res.status(401).json({ error: "Unauthorized: Invalid token" });
+		return;
 	}
 	next();
 };
@@ -63,10 +73,6 @@ router.use(adminAuthMiddleware);
 registerBlacklist(router);
 registerTor(router);
 registerVpngate(router);
-// TODO: io.disconnectSockets(false);
-// TODO: io.disconnectSockets(true);
-// TODO: io.close();
-// TODO: 対象ユーザーの忍法帖スコアを操作
 // TODO: 自動BANの基準を変更
 // TODO: 一律Socket新規発行停止
 // TODO: 一律スレ立て禁止
@@ -135,8 +141,9 @@ io.on("connection", async (socket) => {
 		online.delete(ip);
 	});
 
-	const auth = "yG8LHE2p"; // TODO: usersテーブルからユーザーを特定する
-	Token.init(socket, ip);
+	const auth = "yG8LHE2p"; // TODO: 新規user発行 || usersテーブルからユーザーを特定する
+	Auth.init(socket, auth);
+	Token.init(socket);
 
 	handleGetToken({ socket, io });
 	handleJoinHeadline({ socket, io, online });

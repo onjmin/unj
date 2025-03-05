@@ -14,12 +14,16 @@ export default ({ socket }: { socket: Socket }) => {
 		const { token } = readThread.output;
 		const { cursor, size, desc } = readThread.output;
 		const { thread_id } = readThread.output;
+
+		// token検証
+		if (!Token.isValid(socket, token)) {
+			return;
+		}
+		Token.lock(socket);
+		Token.update(socket);
+
+		// 危険な処理
 		try {
-			if (!Token.isValid(socket, token)) {
-				return;
-			}
-			Token.lock(socket);
-			Token.update(socket);
 			// await getPost(result.data);
 			socket.emit(api, { ok: true });
 		} catch (error) {

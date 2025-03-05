@@ -68,7 +68,6 @@ CREATE TABLE res (
     thread_id SMALLINT NOT NULL REFERENCES threads(id) ON DELETE CASCADE, -- スレッドID
     num SMALLINT NOT NULL, -- レス番号（各スレッド内で連番）
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     user_id SMALLINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     -- メタ情報（基本的にUserの写し）
     cc_user_id TEXT NOT NULL DEFAULT '', -- 表示用ID、自演防止IDが記録される。空文字は匿名化ID

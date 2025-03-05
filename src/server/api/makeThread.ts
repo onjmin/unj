@@ -28,12 +28,16 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		if (!(content_type & content_types_bitmask)) {
 			return;
 		}
+
+		// token検証
+		if (!Token.isValid(socket, token)) {
+			return;
+		}
+		Token.lock(socket);
+		Token.update(socket);
+
+		// 危険な処理
 		try {
-			if (!Token.isValid(socket, token)) {
-				return;
-			}
-			Token.lock(socket);
-			Token.update(socket);
 			// await insertPost(_.data);
 			const thread_id = Math.random().toString();
 			socket.emit(api, { ok: true, thread_id });

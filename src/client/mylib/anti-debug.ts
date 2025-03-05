@@ -1,5 +1,6 @@
 import { differenceInDays } from "date-fns";
 import { sha256 } from "js-sha256";
+import { tokenLength } from "../../common/request/schema.js";
 
 const VITE_UNJ_FLAKY_RATE = Number(import.meta.env.VITE_UNJ_FLAKY_RATE);
 
@@ -25,7 +26,7 @@ const VITE_UNJ_API_SECRET_PEPPER = String(
  */
 export const genUnjApiToken = (key: string): string => {
 	const token = sha256([VITE_UNJ_API_SECRET_PEPPER, key].join(delimiter));
-	return token.slice(0, 8); // 衝突の心配が低いので8文字に削減
+	return token.slice(0, tokenLength);
 };
 
 const VITE_UNJ_BAN_VERIFY_CODE_PEPPER = String(

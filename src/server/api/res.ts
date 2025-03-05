@@ -25,12 +25,16 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		// 	return;
 		// }
 		const thread_id = ""; // threadから取得
+
+		// token検証
+		if (!Token.isValid(socket, token)) {
+			return;
+		}
+		Token.lock(socket);
+		Token.update(socket);
+
+		// 危険な処理
 		try {
-			if (!Token.isValid(socket, token)) {
-				return;
-			}
-			Token.lock(socket);
-			Token.update(socket);
 			// await insertPost(result.data);
 			io.to(getThreadRoom(thread_id)).emit(api, { ok: true }); // TODO
 		} catch (error) {

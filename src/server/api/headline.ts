@@ -16,12 +16,16 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		}
 		const { token } = headline.output;
 		const { cursor, size, desc } = headline.output;
+
+		// token検証
+		if (!Token.isValid(socket, token)) {
+			return;
+		}
+		Token.lock(socket);
+		Token.update(socket);
+
+		// 危険な処理
 		try {
-			if (!Token.isValid(socket, token)) {
-				return;
-			}
-			Token.lock(socket);
-			Token.update(socket);
 			// await getPost(_.data);
 			socket.emit(api, {
 				ok: true,
