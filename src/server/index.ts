@@ -26,7 +26,12 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
 	cors: {
-		origin: new URL(String(process.env.VITE_BASE_URL)).origin,
+		origin: [
+			new URL(String(process.env.VITE_BASE_URL)).origin,
+			"https://onjmin.github.io",
+			"https://unj.pages.dev",
+			"https://unjupiter.pages.dev",
+		],
 		methods: ["GET", "POST"],
 		credentials: true,
 	},

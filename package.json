@@ -9,7 +9,8 @@
 		"obfuscate": "javascript-obfuscator dist --output dist --config obfuscate.json",
 		"dev": "pnpm run clean && tsx workflow/copy.ts && cross-env DEV_MODE=true vite build && cross-env DEV_MODE=true tsx src/server/index.ts",
 		"stg": "pnpm run clean && tsx workflow/copy.ts && cross-env STG_MODE=true vite build && pnpm run build && pnpm run obfuscate && tsx workflow/rename.ts && cross-env STG_MODE=true node dist/server.cjs",
-		"prod": "pnpm run clean && tsx workflow/copy.ts && vite build && pnpm run build && pnpm run obfuscate && tsx workflow/rename.ts && tsx workflow/sync.ts"
+		"prod": "pnpm run clean && tsx workflow/copy.ts && vite build && pnpm run build && pnpm run obfuscate && tsx workflow/rename.ts",
+		"sync": "tsx workflow/sync.ts"
 	},
 	"keywords": [],
 	"author": "",

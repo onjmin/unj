@@ -1,7 +1,7 @@
 <script lang="ts">
-  import Textfield from "@smui/Textfield";
   import IconButton, { Icon } from "@smui/icon-button";
   import Select, { Option } from "@smui/select";
+  import Textfield from "@smui/textfield";
   import CharacterCounter from "@smui/textfield/character-counter";
   import {
     contentTypeOptions,

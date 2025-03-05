@@ -5,7 +5,6 @@
     import MainPart from "../parts/MainPart.svelte";
     ///////////////
 
-    import Textfield from "@smui/Textfield";
     import Button from "@smui/button";
     import LayoutGrid, { Cell } from "@smui/layout-grid";
     import Paper, { Title, Content } from "@smui/paper";
@@ -13,6 +12,7 @@
     import Snackbar from "@smui/snackbar";
     import Tab, { Icon, Label } from "@smui/tab";
     import TabBar from "@smui/tab-bar";
+    import Textfield from "@smui/textfield";
     import CharacterCounter from "@smui/textfield/character-counter";
     import { addHours, differenceInHours, format } from "date-fns";
     import { ja } from "date-fns/locale";

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Textfield from "@smui/Textfield";
+  import Textfield from "@smui/textfield";
   import CharacterCounter from "@smui/textfield/character-counter";
 
   let { fill = $bindable(false) } = $props();

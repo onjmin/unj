@@ -2,7 +2,7 @@
     ユーザーのテーブル
 */
 CREATE TABLE users (
-    id SMALLSERIAL PRIMARY KEY, -- 生のIDを公開せず8桁のhashidsを使う。毎日見た目は変わる。
+    id SMALLSERIAL PRIMARY KEY, -- 生のIDを公開せず4桁のhashidsを使う。毎日見た目は変わる。
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     latest_res_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 最終レスの日時（投稿規制用）

@@ -6,12 +6,12 @@
     ///////////////
 
     import Accordion, { Panel, Header, Content } from "@smui-extra/accordion";
-    import Textfield from "@smui/Textfield";
     import Button from "@smui/button";
     import Checkbox from "@smui/checkbox";
     import FormField from "@smui/form-field";
     import List, { Item, Meta, Label, Separator, Subheader } from "@smui/list";
     import Select, { Option } from "@smui/select";
+    import Textfield from "@smui/textfield";
     import CharacterCounter from "@smui/textfield/character-counter";
     import { contentTypeOptions } from "../../common/request/content-schema.js";
     import ContentPart from "../parts/ContentPart.svelte";
@@ -128,7 +128,7 @@
                     <Header>投稿許可リスト</Header>
                     <Content>
                         <Label>!nopic</Label>
-                        <List checkList={contentTypeOptions}>
+                        <List checkList>
                             {#each contentTypeOptions as v}
                                 <Item>
                                     <Label>{v.label}</Label>

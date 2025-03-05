@@ -1,8 +1,8 @@
 <script lang="ts">
   import Autocomplete from "@smui-extra/autocomplete";
-  import Textfield from "@smui/Textfield";
   import Checkbox from "@smui/checkbox";
   import FormField from "@smui/form-field";
+  import Textfield from "@smui/textfield";
   import CharacterCounter from "@smui/textfield/character-counter";
   import { VITE_ADMIN_EMAIL } from "../../mylib/env.js";
 
