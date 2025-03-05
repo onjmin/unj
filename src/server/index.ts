@@ -29,7 +29,7 @@ const io = new Server(server, {
 		origin: [
 			new URL(String(process.env.VITE_BASE_URL)).origin,
 			"https://onjmin.github.io",
-			"https://unj.pages.dev",
+			"https://onjmin.pages.dev",
 			"https://unjupiter.pages.dev",
 		],
 		methods: ["GET", "POST"],
