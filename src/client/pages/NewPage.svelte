@@ -14,7 +14,7 @@
     import Textfield from "@smui/textfield";
     import CharacterCounter from "@smui/textfield/character-counter";
     import { contentTypeOptions } from "../../common/request/content-schema.js";
-    import ContentPart from "../parts/ContentPart.svelte";
+    import ContentFormPart from "../parts/ContentFormPart.svelte";
 
     let { refThreadId = "" } = $props();
 
@@ -182,7 +182,7 @@
                 <CharacterCounter />
             {/snippet}
         </Textfield>
-        <ContentPart
+        <ContentFormPart
             disabled={isRef}
             bind:content
             bind:content_url

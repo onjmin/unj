@@ -22,8 +22,13 @@ export const update = (socket: Socket) =>
 	tokens.set(Auth.get(socket), genToken());
 export const get = (socket: Socket): string | null =>
 	locks.get(Auth.get(socket)) ? null : (tokens.get(Auth.get(socket)) ?? null);
-export const isValid = (socket: Socket, token: string) =>
-	genUnjApiToken(tokens.get(Auth.get(socket)) ?? "") === token;
+export const isValid = (socket: Socket, token: string) => {
+	const result = locks.get(Auth.get(socket))
+		? false
+		: genUnjApiToken(tokens.get(Auth.get(socket)) ?? "") === token;
+	console.log(result);
+	return result;
+};
 
 export default {
 	lock,

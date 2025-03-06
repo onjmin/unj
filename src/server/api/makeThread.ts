@@ -6,6 +6,7 @@ import { headlineRoom } from "../mylib/socket.js";
 import Token from "../mylib/token.js";
 
 const api = "makeThread";
+const delimiter = "###";
 
 export default ({ socket, io }: { socket: Socket; io: Server }) => {
 	socket.on(api, async (data) => {

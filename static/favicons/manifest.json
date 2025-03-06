@@ -4,8 +4,8 @@
 	"description": "ＮＥＸＴおんＪ",
 	"start_url": "/",
 	"display": "standalone",
-	"background_color": "#ffffff",
-	"theme_color": "#ff3e00",
+	"background_color": "#222222",
+	"theme_color": "#7dd7c7",
 	"icons": [
 		{
 			"src": "android-chrome-192x192.png",

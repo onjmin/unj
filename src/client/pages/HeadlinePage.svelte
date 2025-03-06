@@ -19,7 +19,7 @@
         differenceInYears,
     } from "date-fns";
     import { navigate } from "svelte-routing";
-    import { type ThreadInfo } from "../../common/response/schema.js";
+    import type { HeadlineThread } from "../../common/response/schema.js";
     import { genUnjApiToken } from "../mylib/anti-debug.js";
     import { base } from "../mylib/env.js";
     import { init, ok, socket, token } from "../mylib/socket.js";
@@ -51,8 +51,8 @@
         }
     };
 
-    let threadList: Array<ThreadInfo> = $state([]);
-    const handleHeadline = (data: { ok: boolean; list: Array<ThreadInfo> }) => {
+    let threadList: HeadlineThread[] = $state([]);
+    const handleHeadline = (data: { ok: boolean; list: HeadlineThread[] }) => {
         if (data.ok) {
             ok();
             threadList = data.list;

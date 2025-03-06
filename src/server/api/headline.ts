@@ -2,6 +2,7 @@ import { differenceInMinutes } from "date-fns";
 import type { Server, Socket } from "socket.io";
 import * as v from "valibot";
 import { HeadlineSchema } from "../../common/request/schema.js";
+import type { HeadlineThread } from "../../common/response/schema.js";
 import { encodeThreadId, encodeUserId } from "../mylib/anti-debug.js";
 import { count } from "../mylib/socket.js";
 import Token from "../mylib/token.js";
@@ -37,7 +38,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		}
 	});
 
-	const mock = {
+	const mock: HeadlineThread = {
 		id: encodeThreadId("12345678"),
 		latest_res_at: new Date(),
 		res_count: 256,

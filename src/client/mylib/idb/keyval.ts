@@ -1,6 +1,7 @@
 import Hashids from "hashids";
 import { del, get, set } from "idb-keyval";
 import { sha256 } from "js-sha256";
+import { hashidsRegex } from "../../../common/request/schema.js";
 import { DEV_MODE } from "../env.js";
 
 const delimiter = "###";
@@ -57,10 +58,7 @@ const isSecureValue = (str: string) => {
 	) {
 		return false;
 	}
-	if (regexHashids.test(str)) {
-		return false;
-	}
-	return true;
+	return hashidsRegex.test(str);
 };
 
 /**

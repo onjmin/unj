@@ -23,33 +23,26 @@ import handleReadThread from "./api/readThread.js";
 import handleRes from "./api/res.js";
 import { flaky } from "./mylib/anti-debug.js";
 import Auth from "./mylib/auth.js";
+import { detectFastlyClientIp, isBannedIP } from "./mylib/ip.js";
 import Token from "./mylib/token.js";
 
-const app = express();
-const server = http.createServer(app);
-const io = new Server(server, {
-	cors: {
-		origin: [
-			new URL(String(process.env.VITE_BASE_URL)).origin,
-			"https://onjmin.github.io",
-			"https://unj-i1v.pages.dev",
-			"https://unjupiter.pages.dev",
-		],
-		methods: ["GET", "POST"],
-		credentials: true,
-	},
-	transports: ["websocket", "polling"],
-});
-
-app.use(express.json());
-
-app.get("/ping", (req, res) => {
-	res.send("pong");
-});
-
-const authorizationSchema = v.pipe(v.string(), v.hash(["sha256"]));
+const bannedCheckMiddleware = (
+	req: Request,
+	res: Response,
+	next: NextFunction,
+): void => {
+	const ip =
+		detectFastlyClientIp(req.headers["fastly-client-ip"]) ?? req.ip ?? "";
+	console.log("👀", ip);
+	if (isBannedIP(ip)) {
+		console.log("❌", ip);
+		return;
+	}
+	next();
+};
 
 // サービスを止めずに投稿規制するためのAPI
+const authorizationSchema = v.pipe(v.string(), v.hash(["sha256"]));
 const UNJ_ADMIN_API_KEY = String(process.env.UNJ_ADMIN_API_KEY);
 const adminAuthMiddleware = (
 	req: Request,
@@ -68,8 +61,30 @@ const adminAuthMiddleware = (
 	}
 	next();
 };
+
+const app = express();
+const server = http.createServer(app);
+const io = new Server(server, {
+	cors: {
+		origin: [
+			new URL(String(process.env.VITE_BASE_URL)).origin,
+			"https://onjmin.github.io",
+			"https://unj-i1v.pages.dev",
+			"https://unjupiter.pages.dev",
+		],
+		methods: ["GET", "POST"],
+		credentials: true,
+	},
+	transports: ["websocket", "polling"],
+});
+
+app.use(express.json());
+app.get("/ping", bannedCheckMiddleware, (req, res) => {
+	res.send("pong");
+});
+
 const router = express.Router();
-router.use(adminAuthMiddleware);
+router.use(bannedCheckMiddleware, adminAuthMiddleware);
 registerBlacklist(router);
 registerTor(router);
 registerVpngate(router);
@@ -103,31 +118,13 @@ const kick = (socket: Socket, reason: string) =>
 
 // socket.io
 io.on("connection", async (socket) => {
-	const fastlyClientIp = socket.handshake.headers["fastly-client-ip"];
-	const ip = Array.isArray(fastlyClientIp)
-		? fastlyClientIp[0] // TODO: 人為的にfastly-client-ipヘッダを付加されたケース
-		: (fastlyClientIp ?? socket.conn.remoteAddress);
-	const ua = socket.handshake.headers["user-agent"];
-
-	console.log("connected", { ip, ua });
-
-	if (!ip || !ua) {
-		kick(socket, "unknownIP");
-		socket.disconnect();
-		return;
-	}
-	if (torIPList.has(ip)) {
-		kick(socket, "torIP");
-		socket.disconnect();
-		return;
-	}
-	if (vpngateIPList.has(ip)) {
-		kick(socket, "vpngateIP");
-		socket.disconnect();
-		return;
-	}
-	if (blacklist.has(ip)) {
-		kick(socket, "blacklist");
+	const ip =
+		detectFastlyClientIp(socket.handshake.headers["fastly-client-ip"]) ??
+		socket.conn.remoteAddress;
+	console.log("👀", ip);
+	if (isBannedIP(ip)) {
+		console.log("❌", ip);
+		kick(socket, "banned");
 		socket.disconnect();
 		return;
 	}

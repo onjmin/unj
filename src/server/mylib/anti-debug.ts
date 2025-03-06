@@ -2,6 +2,7 @@ import { differenceInDays } from "date-fns";
 import Hashids from "hashids";
 import { sha256 } from "js-sha256";
 import {
+	resIdLength,
 	threadIdLength,
 	tokenLength,
 	userIdLength,
@@ -80,4 +81,26 @@ export const decodeThreadId = (threadId: string): string => {
 		threadIdLength,
 	);
 	return String(hashids.decode(threadId)[0]);
+};
+
+/**
+ * フロントエンドに晒せるようにレスIDを符号化する
+ */
+export const encodeResId = (resId: string): string => {
+	const hashids = new Hashids(
+		[HASHIDS_SECRET_PEPPER].join(delimiter),
+		resIdLength,
+	);
+	return hashids.encode(resId);
+};
+
+/**
+ * フロントエンド上のレスIDを復号する
+ */
+export const decodeResId = (resId: string): string => {
+	const hashids = new Hashids(
+		[HASHIDS_SECRET_PEPPER].join(delimiter),
+		resIdLength,
+	);
+	return String(hashids.decode(resId)[0]);
 };

@@ -8,7 +8,7 @@ import Token from "../mylib/token.js";
 const api = "lol";
 const delimiter = "###";
 const done: Set<string> = new Set();
-const lol_counts: Map<string, number> = new Map();
+export const lol_counts: Map<string, number> = new Map();
 
 let id: NodeJS.Timeout;
 const delay = 1000 * 60 * 8;
@@ -46,14 +46,8 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 
 		// 危険な処理
 		try {
-			let lol_count: number;
-			if (lol_counts.has(key)) {
-				lol_count = lol_counts.get(key) ?? 0;
-			} else {
-				// await getThread(result.data);
-				lol_count = 810;
-			}
-			lol_counts.set(key, ++lol_count);
+			let lol_count = lol_counts.get(thread_id) ?? 0;
+			lol_counts.set(thread_id, ++lol_count);
 			io.to(getThreadRoom(thread_id)).emit(api, {
 				ok: true,
 				lol_count,

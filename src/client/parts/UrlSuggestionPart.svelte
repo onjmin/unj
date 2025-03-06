@@ -52,7 +52,7 @@
               selected={selectionIndex === i}
             >
               <Graphic
-                class="unj-playground-item-graphic"
+                class="favicon-item-graphic"
                 style="background-image: url({siteInfo.favicon});"
               />
               <Text>
@@ -91,7 +91,7 @@
   * :global(.demo-list) {
     text-align: left;
   }
-  :global(.unj-playground-item-graphic) {
+  :global(.favicon-item-graphic) {
     background-repeat: no-repeat;
     background-size: 100% 100%;
   }

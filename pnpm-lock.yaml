@@ -102,6 +102,9 @@ importers:
       '@smui/layout-grid':
         specifier: 8.0.0-beta.3
         version: 8.0.0-beta.3
+      '@smui/linear-progress':
+        specifier: 8.0.0-beta.3
+        version: 8.0.0-beta.3
       '@smui/list':
         specifier: 8.0.0-beta.3
         version: 8.0.0-beta.3
@@ -115,6 +118,9 @@ importers:
         specifier: 8.0.0-beta.3
         version: 8.0.0-beta.3
       '@smui/select':
+        specifier: 8.0.0-beta.3
+        version: 8.0.0-beta.3
+      '@smui/slider':
         specifier: 8.0.0-beta.3
         version: 8.0.0-beta.3
       '@smui/snackbar':

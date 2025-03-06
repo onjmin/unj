@@ -5,11 +5,9 @@ CREATE TABLE users (
     id SMALLSERIAL PRIMARY KEY, -- 生のIDを公開せず4桁のhashidsを使う。毎日見た目は変わる。
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    latest_res_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 最終レスの日時（投稿規制用）
-    latest_make_thread_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 最終スレ立ての日時（投稿規制用）
     authorization TEXT NOT NULL UNIQUE, -- 別端末で引き継ぎ可能なトークン
     name TEXT NOT NULL DEFAULT '', -- ハンドルネーム
-    icon SMALLINT NOT NULL DEFAULT 0, -- アイコンID, 0: 未設定
+    avatar SMALLINT NOT NULL DEFAULT 0, -- アバターID, 0: 未設定
     ninja_pokemon SMALLINT NOT NULL DEFAULT 0, -- 忍法帖ポケモンのID「■忍【LV38,ピカチュウ,9S】◆KOSOVO//9k」
     ninja_score SMALLINT NOT NULL DEFAULT 0, -- 忍法帖スコア
 );
@@ -49,7 +47,7 @@ CREATE TABLE threads (
     age_res_num SMALLINT NOT NULL DEFAULT 0, -- !age機能で表示するレスのID（0の場合はage無し）
     sage BOOLEAN NOT NULL DEFAULT FALSE, -- 強制sage進行
     thread_type SMALLINT DEFAULT 0, -- スレッドの種類（実況スレ、地震スレ、安価スレ、スレタイで振り分けられる。または、SSスレ、運営スレ、語尾が変わる特殊なスレなど）
-    cc_type SMALLINT DEFAULT 0, -- 写しの取り方
+    cc_type SMALLINT DEFAULT 1, -- 写しの取り方
     content_types_bitmask SMALLINT DEFAULT 1, -- 投稿可能なコンテンツの種類
     banned_users_utf8mask TEXT NOT NULL DEFAULT '', -- BANされたユーザーリスト（同じauthorization または 同じipは書き込み不可）
     subbed_users_utf8mask TEXT NOT NULL DEFAULT '', -- 副主ユーザーリスト（同じauthorization であれば行使可能）
@@ -72,7 +70,7 @@ CREATE TABLE res (
     -- メタ情報（基本的にUserの写し）
     cc_user_id TEXT NOT NULL DEFAULT '', -- 表示用ID、自演防止IDが記録される。空文字は匿名化ID
     cc_user_name TEXT NOT NULL DEFAULT '', -- トリップ、忍法帖、副マークが記録される。空文字は「月沈めば名無し」
-    cc_user_icon SMALLINT NOT NULL DEFAULT 0, -- アイコンID, 0: 未設定
+    cc_user_avatar SMALLINT NOT NULL DEFAULT 0, -- アバターID, 0: 未設定
     -- 投稿内容
     content TEXT NOT NULL DEFAULT '',
     content_url TEXT NOT NULL DEFAULT '',

@@ -3,31 +3,42 @@ import * as v from "valibot";
 export const tokenLength = 8;
 export const userIdLength = 4;
 export const threadIdLength = 8;
+export const resIdLength = 8;
+export const hashidsRegex = /^[0-9A-Za-z]+$/;
 
 const TOKEN = v.pipe(v.string(), v.length(8), v.hexadecimal());
-const SMALLINT = v.pipe(
-	v.number(),
-	v.integer(),
-	v.minValue(0),
-	v.maxValue(32767),
+const USER_ID = v.pipe(
+	v.string(),
+	v.length(userIdLength),
+	v.regex(hashidsRegex),
 );
+const THREAD_ID = v.pipe(
+	v.string(),
+	v.length(threadIdLength),
+	v.regex(hashidsRegex),
+);
+const RES_ID = v.pipe(v.string(), v.length(resIdLength), v.regex(hashidsRegex));
 
-const THREAD_ID = v.pipe(v.string(), v.length(threadIdLength), v.hexadecimal());
+const USER_NAME = v.pipe(v.string(), v.trim(), v.maxLength(32));
 const THREAD_TITLE = v.pipe(
 	v.string(),
 	v.trim(),
 	v.minLength(1),
 	v.maxLength(32),
 );
-const RES_ID = v.pipe(v.string(), v.length(8), v.hexadecimal());
 const RES_NUM = v.pipe(
 	v.number(),
 	v.integer(),
 	v.minValue(1),
 	v.maxValue(1005),
 );
-const USER_NAME = v.pipe(v.string(), v.trim(), v.maxLength(32));
-const USER_ID = v.pipe(v.string(), v.maxLength(userIdLength), v.hexadecimal());
+
+const SMALLINT = v.pipe(
+	v.number(),
+	v.integer(),
+	v.minValue(0),
+	v.maxValue(32767),
+);
 
 /**
  * コストが低い処理のためtokenの検証は不要
@@ -75,7 +86,7 @@ export const ResSchema = v.object({
 	token: TOKEN,
 	thread_id: THREAD_ID,
 	user_name: USER_NAME,
-	user_icon: SMALLINT,
+	user_avatar: SMALLINT,
 	content: v.string(), // この段階では簡易的にしか見ない
 	content_url: v.string(), // この段階では簡易的にしか見ない
 	content_type: v.pipe(
@@ -130,6 +141,6 @@ export const SearchResSchema = v.strictObject({
 	to: v.date(),
 	user_id: USER_ID,
 	user_name: USER_NAME,
-	user_icon: SMALLINT,
+	user_avatar: SMALLINT,
 	content_types_bitmask: SMALLINT,
 });

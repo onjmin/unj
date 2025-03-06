@@ -40,7 +40,7 @@
     return () => window.removeEventListener("resize", onResize);
   });
 
-  let snackbar: Snackbar = $state(null);
+  let snackbar: Snackbar;
 </script>
 
 <svelte:head>
@@ -128,8 +128,6 @@
   >
 {/if}
 
-{#if bookmark !== null}
-  <Snackbar bind:this={snackbar}>
-    <Label>#後で見る</Label>
-  </Snackbar>
-{/if}
+<Snackbar bind:this={snackbar}>
+  <Label>#後で見る</Label>
+</Snackbar>
