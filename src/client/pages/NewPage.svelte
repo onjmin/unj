@@ -19,10 +19,10 @@
     let { refThreadId = "" } = $props();
 
     let content = $state("");
-    let content_url = $state("");
-    let content_type = $state(1);
+    let contentUrl = $state("");
+    let contentType = $state(1);
 
-    let content_types_bitmask = $state([1, 2, 4, 8, 16, 32, 64]);
+    let contentTypesBitmask = $state([1, 2, 4, 8, 16, 32, 64]);
     let title = $state("");
 
     const ccTypeOptions = [
@@ -62,7 +62,7 @@
             note: "コテハン使用可 + 自演防止ID表示",
         },
     ];
-    let cc_type = $state(1);
+    let ccType = $state(1);
     const ccNoteMap = new Map(ccTypeOptions.map((v) => [v.key, v.note]));
 
     let max = $state(1000);
@@ -112,7 +112,7 @@
                 <Panel>
                     <Header>匿名レベルの変更</Header>
                     <Content>
-                        <Select bind:value={cc_type} label="!jien">
+                        <Select bind:value={ccType} label="!jien">
                             {#each ccTypeOptions as v}
                                 <Option value={v.key}>{v.label}</Option>
                             {/each}
@@ -120,7 +120,7 @@
                         <div
                             style="color: rgba(255, 255, 255, 0.6); font-size: 0.7rem;"
                         >
-                            例：{ccNoteMap.get(cc_type)}
+                            例：{ccNoteMap.get(ccType)}
                         </div>
                     </Content>
                 </Panel>
@@ -134,7 +134,7 @@
                                     <Label>{v.label}</Label>
                                     <Meta>
                                         <Checkbox
-                                            bind:group={content_types_bitmask}
+                                            bind:group={contentTypesBitmask}
                                             value={v.bit}
                                         />
                                     </Meta>
@@ -185,8 +185,8 @@
         <ContentFormPart
             disabled={isRef}
             bind:content
-            bind:content_url
-            bind:content_type
+            bind:contentUrl
+            bind:contentType
         />
         <FormField>
             <Checkbox bind:checked={check1} />

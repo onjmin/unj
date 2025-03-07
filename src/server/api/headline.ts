@@ -4,8 +4,8 @@ import * as v from "valibot";
 import { HeadlineSchema } from "../../common/request/schema.js";
 import type { HeadlineThread } from "../../common/response/schema.js";
 import { encodeThreadId, encodeUserId } from "../mylib/anti-debug.js";
+import Nonce from "../mylib/nonce.js";
 import { count } from "../mylib/socket.js";
-import Token from "../mylib/token.js";
 
 const api = "headline";
 
@@ -15,15 +15,14 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		if (!headline.success) {
 			return;
 		}
-		const { token } = headline.output;
 		const { cursor, size, desc } = headline.output;
 
-		// token検証
-		if (!Token.isValid(socket, token)) {
+		// Nonce値の完全一致チェック
+		if (!Nonce.isValid(socket, headline.output.nonce)) {
 			return;
 		}
-		Token.lock(socket);
-		Token.update(socket);
+		Nonce.lock(socket);
+		Nonce.update(socket);
 
 		// 危険な処理
 		try {
@@ -34,22 +33,22 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			});
 		} catch (error) {
 		} finally {
-			Token.unlock(socket);
+			Nonce.unlock(socket);
 		}
 	});
 
 	const mock: HeadlineThread = {
-		id: encodeThreadId("12345678"),
-		latest_res_at: new Date(),
-		res_count: 256,
+		id: encodeThreadId(9800),
+		latestResAt: new Date(),
+		resCount: 256,
 		title: "【朗報】侍ジャパン、謎のホームランで勝利！",
-		user_id: encodeUserId("1234"),
-		online: count(io, encodeThreadId("12345678")),
+		userId: encodeUserId(334, new Date()).slice(0, 4),
+		online: count(io, encodeThreadId(9800)),
 		ikioi:
 			(256 / 60) *
 			differenceInMinutes(new Date(), new Date(+new Date() - 9000000)), // レス数 × (60 / 経過時間[分])
-		lol_count: 3,
-		good_count: 4,
-		bad_count: 5,
+		lolCount: 3,
+		goodCount: 4,
+		badCount: 5,
 	};
 };

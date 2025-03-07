@@ -1,7 +1,7 @@
 import type { Server, Socket } from "socket.io";
 
 export const headlineRoom = "headline";
-export const getThreadRoom = (thread_id: string) => `thread:${thread_id}`;
+export const getThreadRoom = (threadId: number) => `thread:${threadId}`;
 
 /**
  * 人数算出

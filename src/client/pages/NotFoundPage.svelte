@@ -7,7 +7,7 @@
 
     import { navigate } from "svelte-routing";
     import { base } from "../mylib/env.js";
-    import { randArray } from "../mylib/top-illust.js";
+    import { randArray } from "../mylib/top-illusts.js";
 
     $effect(() => {
         setTimeout(() => {

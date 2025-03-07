@@ -13,13 +13,11 @@ const PIPEDREAM_API_SECRET_INTERVAL = Number(
 /**
  * Pipedream用の時限式トークンを計算する
  */
-const genPipedreamApiToken = (): string => {
+const genPipedreamApiTimedToken = (): string => {
 	const secondsSinceEpoch = differenceInSeconds(new Date(), new Date(0));
 	const basedTime = Math.floor(
 		secondsSinceEpoch / PIPEDREAM_API_SECRET_INTERVAL,
 	);
-	const token = sha256(
-		[PIPEDREAM_API_SECRET_PEPPER, basedTime].join(delimiter),
-	);
-	return token.slice(0, 8); // 衝突の心配が低いので8文字に削減
+	const str = sha256([PIPEDREAM_API_SECRET_PEPPER, basedTime].join(delimiter));
+	return str.slice(0, 8); // 衝突の心配が低いので8文字に削減
 };

@@ -9,7 +9,7 @@
   import { navigate } from "svelte-routing";
   import { base } from "../mylib/env.js";
   import { load } from "../mylib/idb/keyval.js";
-  import { randArray, topIllusts } from "../mylib/top-illust.js";
+  import { randArray, topIllusts } from "../mylib/top-illusts.js";
   import TermsConfirmPart from "../parts/TermsConfirmPart.svelte";
 
   const onjKeyWords = [

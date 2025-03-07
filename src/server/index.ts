@@ -14,7 +14,7 @@ import { validate1 } from "../common/request/util.js";
 import registerBlacklist, { blacklist } from "./admin/blacklist.js";
 import registerTor, { torIPList } from "./admin/tor.js";
 import registerVpngate, { vpngateIPList } from "./admin/vpngate.js";
-import handleGetToken from "./api/getToken.js";
+import handleGetNonceKey from "./api/getNonceKey.js";
 import handleHeadline from "./api/headline.js";
 import handleJoinHeadline from "./api/joinHeadline.js";
 import handleJoinThread from "./api/joinThread.js";
@@ -24,7 +24,7 @@ import handleRes from "./api/res.js";
 import { flaky } from "./mylib/anti-debug.js";
 import Auth from "./mylib/auth.js";
 import { detectFastlyClientIp, isBannedIP } from "./mylib/ip.js";
-import Token from "./mylib/token.js";
+import Nonce from "./mylib/nonce.js";
 
 const bannedCheckMiddleware = (
 	req: Request,
@@ -116,6 +116,9 @@ const kick = (socket: Socket, reason: string) =>
 		});
 	});
 
+let accessCount = 0;
+const accessCounter = () => accessCount;
+
 // socket.io
 io.on("connection", async (socket) => {
 	const ip =
@@ -138,12 +141,14 @@ io.on("connection", async (socket) => {
 		online.delete(ip);
 	});
 
+	accessCount++;
+
 	const auth = "yG8LHE2p"; // TODO: 新規user発行 || usersテーブルからユーザーを特定する
 	Auth.init(socket, auth);
-	Token.init(socket);
+	Nonce.init(socket);
 
-	handleGetToken({ socket, io });
-	handleJoinHeadline({ socket, io, online });
+	handleGetNonceKey({ socket });
+	handleJoinHeadline({ socket, io, online, accessCounter });
 	handleJoinThread({ socket, io });
 	handleHeadline({ socket, io });
 	handleMakeThread({ socket, io });

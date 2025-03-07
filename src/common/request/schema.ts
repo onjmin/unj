@@ -1,12 +1,27 @@
 import * as v from "valibot";
+import { SAFE_TEXT } from "./content-schema.js";
 
-export const tokenLength = 8;
-export const userIdLength = 4;
-export const threadIdLength = 8;
-export const resIdLength = 8;
+const smallintMax = 2 ** 15 - 1;
+const intMax = 2 ** 31 - 1;
+
+export const nonceLength = 16;
+export const userIdLength = 16;
+export const threadIdLength = 16;
+export const resIdLength = 16;
 export const hashidsRegex = /^[0-9A-Za-z]+$/;
 
-const TOKEN = v.pipe(v.string(), v.length(8), v.hexadecimal());
+const SMALLINT = v.pipe(
+	v.number(),
+	v.integer(),
+	v.minValue(0),
+	v.maxValue(smallintMax),
+);
+const INT = v.pipe(v.number(), v.integer(), v.minValue(0), v.maxValue(intMax));
+
+export const SMALLSERIAL = v.pipe(SMALLINT, v.minValue(1));
+export const SERIAL = v.pipe(INT, v.minValue(1));
+
+const NONCE = v.pipe(v.string(), v.length(nonceLength), v.hexadecimal());
 const USER_ID = v.pipe(
 	v.string(),
 	v.length(userIdLength),
@@ -19,13 +34,8 @@ const THREAD_ID = v.pipe(
 );
 const RES_ID = v.pipe(v.string(), v.length(resIdLength), v.regex(hashidsRegex));
 
-const USER_NAME = v.pipe(v.string(), v.trim(), v.maxLength(32));
-const THREAD_TITLE = v.pipe(
-	v.string(),
-	v.trim(),
-	v.minLength(1),
-	v.maxLength(32),
-);
+const USER_NAME = v.pipe(SAFE_TEXT, v.maxLength(32));
+const THREAD_TITLE = v.pipe(SAFE_TEXT, v.minLength(1), v.maxLength(32));
 const RES_NUM = v.pipe(
 	v.number(),
 	v.integer(),
@@ -33,36 +43,29 @@ const RES_NUM = v.pipe(
 	v.maxValue(1005),
 );
 
-const SMALLINT = v.pipe(
-	v.number(),
-	v.integer(),
-	v.minValue(0),
-	v.maxValue(32767),
-);
-
 /**
- * コストが低い処理のためtokenの検証は不要
+ * コストが低い処理のためNonce値の検証は不要
  */
-export const getTokenSchema = v.strictObject({});
+export const getNonceKeySchema = v.strictObject({});
 export const joinHeadlineSchema = v.strictObject({});
 export const joinThreadSchema = v.strictObject({
-	thread_id: THREAD_ID,
+	threadId: THREAD_ID,
 });
 
 /**
  * 草ボタンのスキーマ
  */
 export const lolSchema = v.object({
-	token: TOKEN,
-	thread_id: THREAD_ID,
+	nonce: NONCE,
+	threadId: THREAD_ID,
 });
 
 /**
  * ｲｲ!(・∀・)(・Ａ・)ｲｸﾅｲ!
  */
 export const likeSchema = v.object({
-	token: TOKEN,
-	thread_id: THREAD_ID,
+	nonce: NONCE,
+	threadId: THREAD_ID,
 	good: v.boolean(),
 });
 
@@ -72,24 +75,24 @@ export const likeSchema = v.object({
 export const MakeThreadSchema = v.object({
 	title: THREAD_TITLE,
 	sage: v.boolean(),
-	cc_type: SMALLINT,
-	content_types_bitmask: SMALLINT,
-	res_limit: v.pipe(v.number(), v.integer(), v.minValue(10), v.maxValue(1000)),
+	ccType: SMALLINT,
+	contentTypesBitmask: SMALLSERIAL,
+	resLimit: v.pipe(v.number(), v.integer(), v.minValue(10), v.maxValue(1000)),
 	timer: v.pipe(v.number(), v.integer(), v.minValue(0), v.maxValue(168)),
-	ref_thread_id: THREAD_ID,
+	refThreadId: THREAD_ID,
 });
 
 /**
  * レスのスキーマ
  */
 export const ResSchema = v.object({
-	token: TOKEN,
-	thread_id: THREAD_ID,
-	user_name: USER_NAME,
-	user_avatar: SMALLINT,
+	nonce: NONCE,
+	threadId: THREAD_ID,
+	userName: USER_NAME,
+	userAvatar: SMALLINT,
 	content: v.string(), // この段階では簡易的にしか見ない
-	content_url: v.string(), // この段階では簡易的にしか見ない
-	content_type: v.pipe(
+	contentUrl: v.string(), // この段階では簡易的にしか見ない
+	contentType: v.pipe(
 		SMALLINT,
 		v.check<number>((n) => (n & (n - 1)) === 0),
 	),
@@ -99,18 +102,18 @@ export const ResSchema = v.object({
  * スレ閲覧のスキーマ
  */
 export const ReadThreadSchema = v.strictObject({
-	token: TOKEN,
+	nonce: NONCE,
 	cursor: v.nullable(RES_NUM),
 	size: RES_NUM,
 	desc: v.boolean(),
-	thread_id: THREAD_ID,
+	threadId: THREAD_ID,
 });
 
 /**
  * ヘッドライン取得のスキーマ
  */
 export const HeadlineSchema = v.strictObject({
-	token: TOKEN,
+	nonce: NONCE,
 	cursor: v.nullable(THREAD_ID),
 	size: v.pipe(v.number(), v.integer(), v.minValue(1), v.maxValue(16)),
 	desc: v.boolean(),
@@ -120,7 +123,7 @@ export const HeadlineSchema = v.strictObject({
  * スレ検索のスキーマ
  */
 export const SearchThreadSchema = v.strictObject({
-	token: TOKEN,
+	nonce: NONCE,
 	cursor: v.nullable(THREAD_ID),
 	size: v.pipe(v.number(), v.integer(), v.minValue(1), v.maxValue(16)),
 	desc: v.boolean(),
@@ -133,14 +136,14 @@ export const SearchThreadSchema = v.strictObject({
  * レス検索のスキーマ
  */
 export const SearchResSchema = v.strictObject({
-	token: TOKEN,
+	nonce: NONCE,
 	cursor: v.nullable(RES_ID),
 	size: v.pipe(v.number(), v.integer(), v.minValue(1), v.maxValue(16)),
 	desc: v.boolean(),
 	from: v.date(),
 	to: v.date(),
-	user_id: USER_ID,
-	user_name: USER_NAME,
-	user_avatar: SMALLINT,
-	content_types_bitmask: SMALLINT,
+	userId: USER_ID,
+	userName: USER_NAME,
+	userAvatar: SMALLINT,
+	contentTypesBitmask: SMALLSERIAL,
 });

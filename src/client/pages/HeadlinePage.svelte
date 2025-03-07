@@ -20,9 +20,10 @@
     } from "date-fns";
     import { navigate } from "svelte-routing";
     import type { HeadlineThread } from "../../common/response/schema.js";
-    import { genUnjApiToken } from "../mylib/anti-debug.js";
+    import { genNonce } from "../mylib/anti-debug.js";
     import { base } from "../mylib/env.js";
-    import { init, ok, socket, token } from "../mylib/socket.js";
+    import { init, nonceKey, ok, socket } from "../mylib/socket.js";
+    import AccessCounterPart from "../parts/AccessCounterPart.svelte";
 
     const formatTimeAgo = (date: Date): string => {
         const now = new Date();
@@ -44,10 +45,16 @@
 
     let isAlreadyBookmark = $state(false); // TODO
 
-    let onlineUserCount = $state(0);
-    const handleJoinHeadline = (data: { ok: boolean; size: number }) => {
+    let online = $state(0);
+    let pv = $state(0);
+    const handleJoinHeadline = (data: {
+        ok: boolean;
+        size: number;
+        accessCount: number;
+    }) => {
         if (data.ok) {
-            onlineUserCount = data.size;
+            online = data.size;
+            pv = data.accessCount;
         }
     };
 
@@ -63,7 +70,7 @@
         const id = init(() => {
             socket.emit("joinHeadline", {});
             socket.emit("headline", {
-                token: genUnjApiToken(token),
+                nonce: genNonce(nonceKey),
                 cursor: null,
                 size: 16,
                 desc: true,
@@ -84,8 +91,8 @@
     let snackbar: Snackbar;
 </script>
 
-<HeaderPart title="ヘッドライン {onlineUserCount}人閲覧中">
-    <p>{onlineUserCount}人がオンライン…</p>
+<HeaderPart title="ヘッドライン {online}人閲覧中">
+    <AccessCounterPart {online} {pv} />
     <p>検索UI</p>
 </HeaderPart>
 
@@ -97,10 +104,9 @@
                     <Header>
                         <div class="time-and-count-container">
                             <span class="res-time"
-                                >{formatTimeAgo(thread.latest_res_at)}</span
+                                >{formatTimeAgo(thread.latestResAt)}</span
                             >
-                            <span class="res-count">{thread.res_count}レス</span
-                            >
+                            <span class="res-count">{thread.resCount}レス</span>
                         </div>
                         {#snippet description()}
                             <span class="thread-title">{thread.title}</span>
@@ -108,8 +114,9 @@
                         {#snippet icon()}
                             <Icon
                                 class="material-icons"
-                                style={String(Math.random() > 0.8) ||
-                                    "visibility:hidden"}>remove_red_eye</Icon
+                                style="visibility:{Math.random() > 0.2
+                                    ? 'hidden'
+                                    : 'visible'}">remove_red_eye</Icon
                             >
                         {/snippet}
                     </Header>
@@ -131,12 +138,12 @@
                             </Head>
                             <Body>
                                 <Row>
-                                    <Cell>{thread.user_id}</Cell>
+                                    <Cell>{thread.userId}</Cell>
                                     <Cell numeric>{thread.online}</Cell>
                                     <Cell numeric>{thread.ikioi}</Cell>
-                                    <Cell numeric>{thread.lol_count}</Cell>
-                                    <Cell numeric>{thread.good_count}</Cell>
-                                    <Cell numeric>{thread.bad_count}</Cell>
+                                    <Cell numeric>{thread.lolCount}</Cell>
+                                    <Cell numeric>{thread.goodCount}</Cell>
+                                    <Cell numeric>{thread.badCount}</Cell>
                                 </Row>
                             </Body>
                         </DataTable>

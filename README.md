@@ -69,7 +69,7 @@
   - テキスト（入力可能文字種をホワイトリストで制限）
   - 画像のNSFW判定
 - その他
-  - token引き継ぎ機能
+  - users.authorizationの引き継ぎ機能
 
 ## 環境構築
 1. [Voltaをインストール](https://docs.volta.sh/guide/getting-started)

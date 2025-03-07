@@ -6,7 +6,7 @@
     ///////////////
 
     import LayoutGrid, { Cell } from "@smui/layout-grid";
-    import { topIllusts } from "../mylib/top-illust.js";
+    import { topIllusts } from "../mylib/top-illusts.js";
 </script>
 
 <HeaderPart title="TOP絵集" />

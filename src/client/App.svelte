@@ -11,6 +11,7 @@
   import HeadlinePage from "./pages/HeadlinePage.svelte";
   import HistoryPage from "./pages/HistoryPage.svelte";
   import HomePage from "./pages/HomePage.svelte";
+  import LinksPage from "./pages/LinksPage.svelte";
   import NewPage from "./pages/NewPage.svelte";
   import NotFoundPage from "./pages/NotFoundPage.svelte";
   import TermsPage from "./pages/TermsPage.svelte";
@@ -32,6 +33,7 @@
   const ContactPagePath = base("/contact");
   const UpdatePagePath = base("/update");
   const ArtPagePath = base("/art");
+  const LinksPagePath = base("/links");
   const AkukinPagePath = base("/akukin");
   const AkukinKaijoPagePath = base("/akukin/kaijo");
 </script>
@@ -122,6 +124,12 @@
   <Route path={ArtPagePath}>
     <BannedCheck>
       <ArtPage />
+    </BannedCheck>
+  </Route>
+  <!-- リンク集 -->
+  <Route path={LinksPagePath}>
+    <BannedCheck>
+      <LinksPage />
     </BannedCheck>
   </Route>
 

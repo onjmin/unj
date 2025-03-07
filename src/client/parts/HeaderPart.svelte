@@ -75,7 +75,7 @@
         <Section
           align="end"
           toolbar
-          style="{bookmark !== null || 'visibility:hidden'};"
+          style="visibility:{bookmark === null ? 'hidden' : 'visible'};"
         >
           <IconButton
             class="material-icons"
@@ -92,7 +92,7 @@
         <Section
           align="end"
           toolbar
-          style="{isEnabledRightMenu || 'visibility:hidden'};"
+          style="visibility:{isEnabledRightMenu ? 'visible' : 'hidden'};"
         >
           <IconButton
             class="material-icons"

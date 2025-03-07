@@ -1,15 +1,16 @@
 import type { Server, Socket } from "socket.io";
 import * as v from "valibot";
-import { likeSchema } from "../../common/request/schema.js";
+import { SMALLSERIAL, likeSchema } from "../../common/request/schema.js";
+import { decodeThreadId } from "../mylib/anti-debug.js";
 import Auth from "../mylib/auth.js";
+import Nonce from "../mylib/nonce.js";
 import { getThreadRoom } from "../mylib/socket.js";
-import Token from "../mylib/token.js";
 
 const api = "like";
 const delimiter = "###";
 const done: Set<string> = new Set();
-export const good_counts: Map<string, number> = new Map();
-export const bad_counts: Map<string, number> = new Map();
+export const goodCounts: Map<number, number> = new Map();
+export const badCounts: Map<number, number> = new Map();
 
 let id: NodeJS.Timeout;
 const delay = 1000 * 60 * 8;
@@ -26,13 +27,22 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		if (!like.success) {
 			return;
 		}
-		const { token } = like.output;
-		const { thread_id, good } = like.output;
-		const auth = Auth.get(socket);
-		const key = [auth, thread_id].join(delimiter);
 
-		// token検証
-		if (!Token.isValid(socket, token)) {
+		// フロントエンド上のスレッドIDを復号する
+		const smallserial = v.safeParse(
+			SMALLSERIAL,
+			decodeThreadId(like.output.threadId),
+		);
+		if (!smallserial.success) {
+			return;
+		}
+		const id = smallserial.output;
+
+		const auth = Auth.get(socket);
+		const key = [auth, id].join(delimiter);
+
+		// Nonce値の完全一致チェック
+		if (!Nonce.isValid(socket, like.output.nonce)) {
 			return;
 		}
 
@@ -42,27 +52,27 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		}
 		done.add(key);
 
-		Token.lock(socket);
-		Token.update(socket);
+		Nonce.lock(socket);
+		Nonce.update(socket);
 
 		// 危険な処理
 		try {
-			let good_count = good_counts.get(thread_id) ?? 0;
-			let bad_count = bad_counts.get(thread_id) ?? 0;
-			if (good) {
-				good_counts.set(thread_id, ++good_count);
+			let goodCount = goodCounts.get(id) ?? 0;
+			let badCount = badCounts.get(id) ?? 0;
+			if (like.output.good) {
+				goodCounts.set(id, ++goodCount);
 			} else {
-				bad_counts.set(thread_id, ++bad_count);
+				badCounts.set(id, ++badCount);
 			}
-			io.to(getThreadRoom(thread_id)).emit(api, {
+			io.to(getThreadRoom(id)).emit(api, {
 				ok: true,
-				good_count,
-				bad_count,
+				goodCount,
+				badCount,
 			});
 			lazyUpdate();
 		} catch (error) {
 		} finally {
-			Token.unlock(socket);
+			Nonce.unlock(socket);
 		}
 	});
 };

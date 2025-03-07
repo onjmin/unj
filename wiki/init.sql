@@ -2,10 +2,10 @@
     ユーザーのテーブル
 */
 CREATE TABLE users (
-    id SMALLSERIAL PRIMARY KEY, -- 生のIDを公開せず4桁のhashidsを使う。毎日見た目は変わる。
+    id SMALLSERIAL PRIMARY KEY,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    authorization TEXT NOT NULL UNIQUE, -- 別端末で引き継ぎ可能なトークン
+    authorization TEXT NOT NULL UNIQUE, -- 別端末で引き継ぎ可能な認可トークン
     name TEXT NOT NULL DEFAULT '', -- ハンドルネーム
     avatar SMALLINT NOT NULL DEFAULT 0, -- アバターID, 0: 未設定
     ninja_pokemon SMALLINT NOT NULL DEFAULT 0, -- 忍法帖ポケモンのID「■忍【LV38,ピカチュウ,9S】◆KOSOVO//9k」
@@ -33,7 +33,7 @@ CREATE TABLE user_ip_traces {
     レスに連動して threads.latest_res_at と threads.res_count が更新される。
 */
 CREATE TABLE threads (
-    id SMALLSERIAL PRIMARY KEY, -- 生のIDを公開せず8桁のhashidsを使う
+    id SMALLSERIAL PRIMARY KEY,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     deleted_at TIMESTAMP, -- 論理削除の予定日時（!timer用）
@@ -62,12 +62,13 @@ CREATE TABLE threads (
     基本的にUpdateとDeleteされない静的なレコードである。
 */
 CREATE TABLE res (
-    id SERIAL PRIMARY KEY, -- 生のIDを公開せず8桁のhashidsを使う
-    thread_id SMALLINT NOT NULL REFERENCES threads(id) ON DELETE CASCADE, -- スレッドID
+    id SERIAL PRIMARY KEY,
+    thread_id SMALLINT NOT NULL REFERENCES threads(id) ON DELETE CASCADE,
     num SMALLINT NOT NULL, -- レス番号（各スレッド内で連番）
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     user_id SMALLINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     -- メタ情報（基本的にUserの写し）
+    is_owner BOOLEAN NOT NULL DEFAULT FALSE, -- スレ主フラグ
     cc_user_id TEXT NOT NULL DEFAULT '', -- 表示用ID、自演防止IDが記録される。空文字は匿名化ID
     cc_user_name TEXT NOT NULL DEFAULT '', -- トリップ、忍法帖、副マークが記録される。空文字は「月沈めば名無し」
     cc_user_avatar SMALLINT NOT NULL DEFAULT 0, -- アバターID, 0: 未設定

@@ -9,7 +9,13 @@ export default ({
 	socket,
 	io,
 	online,
-}: { socket: Socket; io: Server; online: Set<string> }) => {
+	accessCounter,
+}: {
+	socket: Socket;
+	io: Server;
+	online: Set<string>;
+	accessCounter: () => number;
+}) => {
 	socket.data.prevRoom = "";
 	socket.on(api, async (data) => {
 		const joinHeadline = v.safeParse(joinHeadlineSchema, data);
@@ -19,22 +25,24 @@ export default ({
 		const room = headlineRoom;
 		const moved = await switchRoom(socket, room);
 		const { size } = online;
+		const accessCount = accessCounter();
 		if (moved) {
-			io.to(room).emit(api, { ok: true, size });
+			io.to(room).emit(api, { ok: true, size, accessCount });
 			// 元いたスレに退室通知
 			const { prevRoom } = socket.data;
 			if (prevRoom !== "") {
 				const size = count(io, prevRoom);
-				socket.to(prevRoom).emit("joinThread", { ok: true, size });
+				socket.to(prevRoom).emit("joinThread", { ok: true, size, pv: null });
 			}
 			socket.data.prevRoom = room;
 		} else {
-			socket.emit(api, { ok: true, size });
+			socket.emit(api, { ok: true, size, accessCount });
 		}
 	});
 	socket.on("disconnect", () => {
 		const room = headlineRoom;
 		const { size } = online;
-		socket.to(room).emit(api, { ok: true, size });
+		const accessCount = accessCounter();
+		socket.to(room).emit(api, { ok: true, size, accessCount });
 	});
 };

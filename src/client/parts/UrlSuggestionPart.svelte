@@ -14,7 +14,7 @@
   let {
     children = null,
     open = $bindable(false),
-    content_url = $bindable(""),
+    contentUrl = $bindable(""),
     list = [],
   } = $props();
 
@@ -74,7 +74,7 @@
         action="accept"
         onclick={() => {
           if (href !== "") {
-            content_url = href;
+            contentUrl = href;
           }
         }}
       >

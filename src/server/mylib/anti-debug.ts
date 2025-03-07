@@ -2,9 +2,9 @@ import { differenceInDays } from "date-fns";
 import Hashids from "hashids";
 import { sha256 } from "js-sha256";
 import {
+	nonceLength,
 	resIdLength,
 	threadIdLength,
-	tokenLength,
 	userIdLength,
 } from "../../common/request/schema.js";
 
@@ -23,16 +23,16 @@ export const flaky = (func: () => void): boolean => {
 
 const delimiter = "###";
 
-const VITE_UNJ_API_SECRET_PEPPER = String(
-	process.env.VITE_UNJ_API_SECRET_PEPPER,
+const VITE_UNJ_NONCE_SECRET_PEPPER = String(
+	process.env.VITE_UNJ_NONCE_SECRET_PEPPER,
 );
 
 /**
- * うんｊAPIトークンの生成
+ * Nonce値の生成
  */
-export const genUnjApiToken = (key: string): string => {
-	const token = sha256([VITE_UNJ_API_SECRET_PEPPER, key].join(delimiter));
-	return token.slice(0, tokenLength);
+export const genNonce = (key: string): string => {
+	const str = sha256([VITE_UNJ_NONCE_SECRET_PEPPER, key].join(delimiter));
+	return str.slice(0, nonceLength);
 };
 
 const HASHIDS_SECRET_PEPPER = process.env.HASHIDS_SECRET_PEPPER ?? "";
@@ -40,8 +40,8 @@ const HASHIDS_SECRET_PEPPER = process.env.HASHIDS_SECRET_PEPPER ?? "";
 /**
  * フロントエンドに晒せるようにユーザーIDを符号化する
  */
-export const encodeUserId = (userId: string): string => {
-	const basedTime = differenceInDays(new Date(), new Date(0));
+export const encodeUserId = (userId: number, date: Date): string => {
+	const basedTime = differenceInDays(date, new Date(0));
 	const hashids = new Hashids(
 		[HASHIDS_SECRET_PEPPER, basedTime].join(delimiter),
 		userIdLength,
@@ -52,19 +52,20 @@ export const encodeUserId = (userId: string): string => {
 /**
  * フロントエンド上のユーザーIDを復号する
  */
-export const decodeUserId = (userId: string): string => {
-	const basedTime = differenceInDays(new Date(), new Date(0));
+export const decodeUserId = (userId: string, date: Date): number | null => {
+	const basedTime = differenceInDays(date, new Date(0));
 	const hashids = new Hashids(
 		[HASHIDS_SECRET_PEPPER, basedTime].join(delimiter),
 		userIdLength,
 	);
-	return String(hashids.decode(userId)[0]);
+	const n = hashids.decode(userId)?.[0];
+	return n ? Number(n) : null;
 };
 
 /**
  * フロントエンドに晒せるようにスレッドIDを符号化する
  */
-export const encodeThreadId = (threadId: string): string => {
+export const encodeThreadId = (threadId: number): string => {
 	const hashids = new Hashids(
 		[HASHIDS_SECRET_PEPPER].join(delimiter),
 		threadIdLength,
@@ -75,18 +76,19 @@ export const encodeThreadId = (threadId: string): string => {
 /**
  * フロントエンド上のスレッドIDを復号する
  */
-export const decodeThreadId = (threadId: string): string => {
+export const decodeThreadId = (threadId: string): number | null => {
 	const hashids = new Hashids(
 		[HASHIDS_SECRET_PEPPER].join(delimiter),
 		threadIdLength,
 	);
-	return String(hashids.decode(threadId)[0]);
+	const n = hashids.decode(threadId)?.[0];
+	return n ? Number(n) : null;
 };
 
 /**
  * フロントエンドに晒せるようにレスIDを符号化する
  */
-export const encodeResId = (resId: string): string => {
+export const encodeResId = (resId: number): string => {
 	const hashids = new Hashids(
 		[HASHIDS_SECRET_PEPPER].join(delimiter),
 		resIdLength,
@@ -97,10 +99,11 @@ export const encodeResId = (resId: string): string => {
 /**
  * フロントエンド上のレスIDを復号する
  */
-export const decodeResId = (resId: string): string => {
+export const decodeResId = (resId: string): number | null => {
 	const hashids = new Hashids(
 		[HASHIDS_SECRET_PEPPER].join(delimiter),
 		resIdLength,
 	);
-	return String(hashids.decode(resId)[0]);
+	const n = hashids.decode(resId)?.[0];
+	return n ? Number(n) : null;
 };

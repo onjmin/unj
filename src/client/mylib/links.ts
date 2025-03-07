@@ -1,0 +1,39 @@
+import { SiteInfo } from "../../common/request/whitelist/site-info.js";
+
+export const links = [
+	new SiteInfo({
+		name: "おんたこ",
+		description: "おんｊの植民地",
+		href: "https://ikura.open2ch.net/konamono/",
+	}),
+	new SiteInfo({
+		name: "なんでも実況osv",
+		description: "OSVを内部で用いています",
+		href: "https://openosv.net/",
+	}),
+	new SiteInfo({
+		name: "おんじぇいスタジアム",
+		description: "全員が執筆者や",
+		href: "https://onjstu.livedoor.blog/",
+	}),
+	new SiteInfo({
+		name: "Hallo おんｊ",
+		description: "おんj民でウェブサイト作るぞ",
+		href: "https://onj-onj.vercel.app/1",
+	}),
+	new SiteInfo({
+		name: "WTAG",
+		description: "90年代個人サイト風掲示板",
+		href: "https://wtag.noob.jp/",
+	}),
+	new SiteInfo({
+		name: "GABUNOMY",
+		description: "意識低い系SNS",
+		href: "https://lowawareness.com/",
+	}),
+	new SiteInfo({
+		name: "チラウラリア",
+		description: "カネルが作ったサイト",
+		href: "https://tirauraria.me/",
+	}),
+];

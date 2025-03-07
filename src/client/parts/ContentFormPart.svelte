@@ -13,28 +13,28 @@
   let {
     disabled = false,
     content = $bindable(""),
-    content_url = $bindable(""),
-    content_type = $bindable(1),
+    contentUrl = $bindable(""),
+    contentType = $bindable(1),
   } = $props();
 
   let open = $state(false);
   let list: SiteInfo[] = $state([]);
 
   $effect(() => {
-    list = getContentTemplate(content_type) ?? [];
+    list = getContentTemplate(contentType) ?? [];
   });
 </script>
 
-<UrlSuggestionPart bind:open bind:content_url {list}>
-  {#if content_type === 4}
+<UrlSuggestionPart bind:open bind:contentUrl {list}>
+  {#if contentType === 4}
     <p>みんなで遊べるブラウザゲームを集めました。</p>
-  {:else if content_type === 8}
+  {:else if contentType === 8}
     <p>画像が埋め込まれます。</p>
-  {:else if content_type === 16}
+  {:else if contentType === 16}
     <p>GIF画像が埋め込まれます。</p>
-  {:else if content_type === 32}
+  {:else if contentType === 32}
     <p>動画再生プレイヤーが埋め込まれます。</p>
-  {:else if content_type === 64}
+  {:else if contentType === 64}
     <p>音楽再生プレイヤーが埋め込まれます。</p>
   {/if}
 </UrlSuggestionPart>
@@ -51,7 +51,7 @@
   {/snippet}
 </Textfield>
 
-<Select {disabled} bind:value={content_type} label="本文の形式">
+<Select {disabled} bind:value={contentType} label="本文の形式">
   {#each contentTypeOptions as v}
     <Option value={v.bit}>{v.label}</Option>
   {/each}
@@ -60,19 +60,22 @@
 <Textfield
   {disabled}
   label="URL欄"
-  bind:value={content_url}
+  bind:value={contentUrl}
   input$maxlength={1024}
-  style="{content_type !== 1 || 'visibility:hidden'};"
+  style="visibility:{contentType === 1 ? 'hidden' : 'visible'};"
 >
   {#snippet trailingIcon()}
     <IconButton
       {disabled}
       class="material-icons"
       onclick={() => (open = true)}
-      style="{content_type > 2 || 'visibility:hidden'};">add_link</IconButton
+      style="visibility:{contentType <= 2 ? 'hidden' : 'visible'};"
+      >add_link</IconButton
     >
   {/snippet}
   {#snippet helper()}
-    <CharacterCounter style="{content_type !== 1 || 'visibility:hidden'};" />
+    <CharacterCounter
+      style="visibility:{contentType === 1 ? 'hidden' : 'visible'};"
+    />
   {/snippet}
 </Textfield>

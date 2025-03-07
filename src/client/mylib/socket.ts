@@ -6,11 +6,11 @@ const uri = PROD_MODE
 	: `http://localhost:${import.meta.env.VITE_LOCALHOST_PORT}`;
 
 export let socket: Socket;
-export let token = "";
+export let nonceKey = "";
 let isOK = false;
 export const ok = () => {
 	isOK = true;
-	socket.emit("getToken", {});
+	socket.emit("getNonceKey", {});
 };
 let retry: () => void;
 
@@ -25,21 +25,24 @@ export const init = (callback: () => void) => {
 		window.addEventListener("beforeunload", () => {
 			socket.disconnect();
 		});
-		socket.on("getToken", (data: { ok: boolean; token: string | null }) => {
-			if (data.ok && data.token) {
-				token = data.token;
-				if (!isOK) {
-					retry();
+		socket.on(
+			"getNonceKey",
+			(data: { ok: boolean; nonceKey: string | null }) => {
+				if (data.ok && data.nonceKey) {
+					nonceKey = data.nonceKey;
+					if (!isOK) {
+						retry();
+					}
 				}
-			}
-		});
+			},
+		);
 	}
 	isOK = false;
 	retry = callback;
 	callback();
 	return setTimeout(() => {
 		if (!isOK) {
-			socket.emit("getToken", {});
+			socket.emit("getNonceKey", {});
 		}
 	}, VITE_UNJ_API_RETRY_MS);
 };

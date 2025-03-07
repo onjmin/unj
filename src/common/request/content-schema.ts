@@ -16,7 +16,7 @@ const regexArabic =
 
 const regexUrl = /ttps?:\/\//;
 
-const SAFE_TEXT = v.pipe(
+export const SAFE_TEXT = v.pipe(
 	v.string(),
 	v.trim(),
 	v.maxLength(1024),
@@ -38,9 +38,9 @@ const SAFE_URL = v.pipe(
  * 1: text
  */
 const TextSchema = v.object({
-	content_type: v.pipe(v.number(), v.value(1)),
+	contentType: v.pipe(v.number(), v.value(1)),
 	content: v.pipe(SAFE_TEXT, v.minLength(1)),
-	content_url: v.pipe(v.string(), v.length(0)),
+	contentUrl: v.pipe(v.string(), v.length(0)),
 });
 
 /**
@@ -53,9 +53,9 @@ const sliceDomain = (url: string, n: number) =>
  * 2: url
  */
 const UrlSchema = v.object({
-	content_type: v.pipe(v.number(), v.value(2)),
+	contentType: v.pipe(v.number(), v.value(2)),
 	content: SAFE_TEXT,
-	content_url: v.pipe(
+	contentUrl: v.pipe(
 		SAFE_URL,
 		v.check((input) => !blacklistDarkWeb1.has(sliceDomain(input, 1))),
 		v.check((input) => !blacklistShortenedUrl2.has(sliceDomain(input, 2))),
@@ -91,9 +91,9 @@ const setOf = (() => {
  * 4: url_of_unj_games
  */
 const UrlOfUnjGamesSchema = v.object({
-	content_type: v.pipe(v.number(), v.value(4)),
+	contentType: v.pipe(v.number(), v.value(4)),
 	content: SAFE_TEXT,
-	content_url: v.pipe(
+	contentUrl: v.pipe(
 		SAFE_URL,
 		v.check((input) => setOf(whitelistUnjGames).has(new URL(input).hostname)),
 	),
@@ -103,9 +103,9 @@ const UrlOfUnjGamesSchema = v.object({
  * 8: url_of_image(Imgur|アル)
  */
 const UrlOfImageSchema = v.object({
-	content_type: v.pipe(v.number(), v.value(8)),
+	contentType: v.pipe(v.number(), v.value(8)),
 	content: SAFE_TEXT,
-	content_url: v.pipe(
+	contentUrl: v.pipe(
 		SAFE_URL,
 		v.check((input) => setOf(whitelistImage).has(sliceDomain(input, 2))),
 	),
@@ -115,9 +115,9 @@ const UrlOfImageSchema = v.object({
  * 16: url_of_gif(Imgur)
  */
 const UrlOfGifSchema = v.object({
-	content_type: v.pipe(v.number(), v.value(16)),
+	contentType: v.pipe(v.number(), v.value(16)),
 	content: SAFE_TEXT,
-	content_url: v.pipe(
+	contentUrl: v.pipe(
 		SAFE_URL,
 		v.check((input) => setOf(whitelistGif).has(sliceDomain(input, 2))),
 	),
@@ -127,9 +127,9 @@ const UrlOfGifSchema = v.object({
  * 32: url_of_video(YouTube||Nicovideo||Vimeo)
  */
 const UrlOfVideoSchema = v.object({
-	content_type: v.pipe(v.number(), v.value(32)),
+	contentType: v.pipe(v.number(), v.value(32)),
 	content: SAFE_TEXT,
-	content_url: v.pipe(
+	contentUrl: v.pipe(
 		SAFE_URL,
 		v.check((input) => setOf(whitelistVideo).has(sliceDomain(input, 2))),
 	),
@@ -139,9 +139,9 @@ const UrlOfVideoSchema = v.object({
  * 64: url_of_audio(SoundCloud||Spotify)
  */
 const UrlOfAudioSchema = v.object({
-	content_type: v.pipe(v.number(), v.value(64)),
+	contentType: v.pipe(v.number(), v.value(64)),
 	content: SAFE_TEXT,
-	content_url: v.pipe(
+	contentUrl: v.pipe(
 		SAFE_URL,
 		v.check((input) => setOf(whitelistAudio).has(sliceDomain(input, 2))),
 	),
@@ -160,8 +160,8 @@ const contentSchemaMap = {
 /**
  * content_typeに応じたスキーマを取得
  */
-export const getContentSchema = (content_type: number) =>
-	contentSchemaMap[content_type as keyof typeof contentSchemaMap];
+export const getContentSchema = (contentType: number) =>
+	contentSchemaMap[contentType as keyof typeof contentSchemaMap];
 
 const contentTemplateMap = {
 	1: [],
@@ -177,8 +177,8 @@ const contentTemplateMap = {
  * GUI用
  * content_typeに応じたテンプレを取得
  */
-export const getContentTemplate = (content_type: number) =>
-	contentTemplateMap[content_type as keyof typeof contentTemplateMap];
+export const getContentTemplate = (contentType: number) =>
+	contentTemplateMap[contentType as keyof typeof contentTemplateMap];
 
 /**
  * GUI用

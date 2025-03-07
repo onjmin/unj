@@ -2,8 +2,8 @@ import type { Server, Socket } from "socket.io";
 import * as v from "valibot";
 import { getContentSchema } from "../../common/request/content-schema.js";
 import { MakeThreadSchema, ResSchema } from "../../common/request/schema.js";
+import Nonce from "../mylib/nonce.js";
 import { headlineRoom } from "../mylib/socket.js";
-import Token from "../mylib/token.js";
 
 const api = "makeThread";
 const delimiter = "###";
@@ -14,28 +14,30 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		if (!res.success) {
 			return;
 		}
-		const { token } = res.output;
-		const { content_type } = res.output;
-		const ContentSchema = getContentSchema(content_type);
+
+		// 本文のバリデーション
+		const { contentType } = res.output;
+		const ContentSchema = getContentSchema(contentType);
 		const content = v.safeParse(ContentSchema, data);
 		if (!content.success) {
 			return;
 		}
+
 		const makeThread = v.safeParse(MakeThreadSchema, data);
 		if (!makeThread.success) {
 			return;
 		}
-		const { content_types_bitmask } = makeThread.output;
-		if (!(content_type & content_types_bitmask)) {
+		const { contentTypesBitmask } = makeThread.output;
+		if (!(contentType & contentTypesBitmask)) {
 			return;
 		}
 
-		// token検証
-		if (!Token.isValid(socket, token)) {
+		// Nonce値の完全一致チェック
+		if (!Nonce.isValid(socket, res.output.nonce)) {
 			return;
 		}
-		Token.lock(socket);
-		Token.update(socket);
+		Nonce.lock(socket);
+		Nonce.update(socket);
 
 		// 危険な処理
 		try {
@@ -45,7 +47,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			io.to(headlineRoom).emit(api, { ok: true });
 		} catch (error) {
 		} finally {
-			Token.unlock(socket);
+			Nonce.unlock(socket);
 		}
 	});
 };

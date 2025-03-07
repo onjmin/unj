@@ -1,14 +1,15 @@
 import type { Server, Socket } from "socket.io";
 import * as v from "valibot";
-import { lolSchema } from "../../common/request/schema.js";
+import { SMALLSERIAL, lolSchema } from "../../common/request/schema.js";
+import { decodeThreadId } from "../mylib/anti-debug.js";
 import Auth from "../mylib/auth.js";
+import Nonce from "../mylib/nonce.js";
 import { getThreadRoom } from "../mylib/socket.js";
-import Token from "../mylib/token.js";
 
 const api = "lol";
 const delimiter = "###";
 const done: Set<string> = new Set();
-export const lol_counts: Map<string, number> = new Map();
+export const lolCounts: Map<number, number> = new Map();
 
 let id: NodeJS.Timeout;
 const delay = 1000 * 60 * 8;
@@ -25,13 +26,22 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		if (!lol.success) {
 			return;
 		}
-		const { token } = lol.output;
-		const { thread_id } = lol.output;
-		const auth = Auth.get(socket);
-		const key = [auth, thread_id].join(delimiter);
 
-		// token検証
-		if (!Token.isValid(socket, token)) {
+		// フロントエンド上のスレッドIDを復号する
+		const smallserial = v.safeParse(
+			SMALLSERIAL,
+			decodeThreadId(lol.output.threadId),
+		);
+		if (!smallserial.success) {
+			return;
+		}
+		const id = smallserial.output;
+
+		const auth = Auth.get(socket);
+		const key = [auth, id].join(delimiter);
+
+		// Nonce値の完全一致チェック
+		if (!Nonce.isValid(socket, lol.output.nonce)) {
 			return;
 		}
 
@@ -41,21 +51,21 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		}
 		done.add(key);
 
-		Token.lock(socket);
-		Token.update(socket);
+		Nonce.lock(socket);
+		Nonce.update(socket);
 
 		// 危険な処理
 		try {
-			let lol_count = lol_counts.get(thread_id) ?? 0;
-			lol_counts.set(thread_id, ++lol_count);
-			io.to(getThreadRoom(thread_id)).emit(api, {
+			let lolCount = lolCounts.get(id) ?? 0;
+			lolCounts.set(id, ++lolCount);
+			io.to(getThreadRoom(id)).emit(api, {
 				ok: true,
-				lol_count,
+				lolCount,
 			});
 			lazyUpdate();
 		} catch (error) {
 		} finally {
-			Token.unlock(socket);
+			Nonce.unlock(socket);
 		}
 	});
 };

@@ -16,7 +16,7 @@
 
 <div class="drawer-container-left">
     <Drawer variant="modal" fixed bind:open>
-        <TopAppBar variant="static" fixed><Row /></TopAppBar>
+        <TopAppBar variant="static"><Row /></TopAppBar>
         <Header>
             <Title>メインメニュー</Title>
             <Subtitle>うんｊのサイトマップです。</Subtitle>
@@ -106,6 +106,15 @@
                         >view_carousel</Graphic
                     >
                     <Text>TOP絵集</Text>
+                </Item>
+                <Item
+                    onclick={() => navigate(base("/links"))}
+                    activated={pathname().startsWith("/links")}
+                >
+                    <Graphic class="material-icons" aria-hidden="true"
+                        >link</Graphic
+                    >
+                    <Text>リンク集</Text>
                 </Item>
             </List>
         </Content>

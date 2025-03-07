@@ -23,8 +23,8 @@ const genSecureKey = (key: string): string => {
 	if (DEV_MODE) {
 		return key;
 	}
-	const token = sha256([VITE_UNJ_IDB_KEY_SECRET_PEPPER, key].join(delimiter));
-	return token.slice(0, 8); // 衝突の心配が低いので8文字に削減
+	const str = sha256([VITE_UNJ_IDB_KEY_SECRET_PEPPER, key].join(delimiter));
+	return str.slice(0, 8); // 衝突の心配が低いので8文字に削減
 };
 
 /**
@@ -35,10 +35,10 @@ const genSecureKey = (key: string): string => {
  * 桁数の判定がし易いように最終的な文字長は4の倍数+3とする。
  */
 const genUnjStorageValueCheckSum = (encoded: string): string => {
-	const token = sha256(
+	const str = sha256(
 		[VITE_UNJ_IDB_VALUE_CHECKSUM_SECRET_PEPPER, encoded].join(delimiter),
 	);
-	return token.slice(0, CHECKSUM_LENGTH);
+	return str.slice(0, CHECKSUM_LENGTH);
 };
 
 const CHECKSUM_LENGTH = 3; // 桁数を判定し易くするために最終的な文字長は4の倍数+3

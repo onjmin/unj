@@ -6,27 +6,32 @@
     ///////////////
 
     import Button from "@smui/button";
-    import LinearProgress from "@smui/linear-progress";
-    import Slider from "@smui/slider";
     import { format } from "date-fns";
     import { ja } from "date-fns/locale";
     import type { Res, Thread } from "../../common/response/schema.js";
-    import { genUnjApiToken } from "../mylib/anti-debug.js";
-    import { init, ok, socket, token } from "../mylib/socket.js";
+    import { genNonce } from "../mylib/anti-debug.js";
+    import { init, nonceKey, ok, socket } from "../mylib/socket.js";
+    import AccessCounterPart from "../parts/AccessCounterPart.svelte";
     import ContentFormPart from "../parts/ContentFormPart.svelte";
 
     let { threadId = "", resNum = "" } = $props();
 
     let content = $state("");
-    let content_url = $state("");
-    let content_type = $state(1);
+    let contentUrl = $state("");
+    let contentType = $state(1);
 
     let bookmark = $state(false); // idbから取得する
 
-    let onlineUserCount = $state(0);
-    const handleJoinThread = (data: { ok: boolean; size: number }) => {
+    let online = $state(0);
+    let pv = $state(0);
+    const handleJoinThread = (data: {
+        ok: boolean;
+        size: number;
+        pv: number | null;
+    }) => {
         if (data.ok) {
-            onlineUserCount = data.size;
+            online = data.size;
+            pv = data.pv ?? pv;
         }
     };
 
@@ -44,9 +49,9 @@
             ok();
             thread = data.thread;
             title = thread.title;
-            lolCount = thread.lol_count;
-            goodVotes = thread.good_count;
-            badVotes = thread.bad_count;
+            lolCount = thread.lolCount;
+            goodVotes = thread.goodCount;
+            badVotes = thread.badCount;
         }
     };
 
@@ -59,13 +64,15 @@
 
     $effect(() => {
         const id = init(() => {
-            socket.emit("joinThread", {});
+            socket.emit("joinThread", {
+                threadId: threadId,
+            });
             socket.emit("readThread", {
-                token: genUnjApiToken(token),
+                nonce: genNonce(nonceKey),
                 cursor: null,
                 size: 16,
                 desc: true,
-                thread_id: threadId,
+                threadId: threadId,
             });
         });
         socket.on("joinThread", handleJoinThread);
@@ -79,27 +86,31 @@
 </script>
 
 <HeaderPart {title} bind:bookmark>
+    <AccessCounterPart {online} {pv} />
     <p>スレ書き込みUI</p>
-    <ContentFormPart bind:content bind:content_url bind:content_type />
+    <ContentFormPart bind:content bind:contentUrl bind:contentType />
     <Button onclick={() => alert("まだない")} variant="raised">投稿する</Button>
 </HeaderPart>
 
 <MainPart>
     {#if thread}
         <p>{thread.title}</p>
-        <p>草×{thread.lol_count}草</p>
+        <p>草×{thread.lolCount}草</p>
         <div class="res-list">
-            {#each thread.res_list as res, i}
+            {#each thread.resList as res, i}
                 <div class="res">
                     <!-- 上段: 名前欄 -->
                     <div class="name-row">
                         {res.num}：<span class="user-name"
-                            >{res.cc_user_name}</span
+                            >{res.ccUserName}</span
                         >：
-                        {format(res.created_at, "yy/MM/dd(EEE) HH:mm:ss", {
+                        {format(res.createdAt, "yy/MM/dd(EEE) HH:mm:ss", {
                             locale: ja,
                         })}
-                        ID:{res.cc_user_id}
+                        ID:{res.ccUserId}
+                        {#if res.isOwner}
+                            <span class="thread-owner">主</span>
+                        {/if}
                     </div>
                     <!-- 下段: アイコンと内容 -->
                     <div class="content-row">
@@ -113,15 +124,15 @@
                         <!-- 右側のコンテンツ領域 -->
                         <div class="content">
                             <div class="content-text">
-                                {res.content.repeat(1000)}
+                                {res.content}
                             </div>
                             <div class="content-url">
                                 <a
-                                    href={res.content_url}
+                                    href={res.contentUrl}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                 >
-                                    {res.content_url}
+                                    {res.contentUrl}
                                 </a>
                             </div>
                             <div class="content-embed">youtube embed</div>
@@ -170,25 +181,29 @@
         gap: 1rem;
         text-align: left;
     }
-
     .res {
         border: 2mm ridge rgba(255, 255, 255, 0.1);
         padding: 8px;
     }
-
     /* 名前欄は全幅で上段に表示 */
     .name-row {
         width: 100%;
         margin-bottom: 8px;
     }
-
+    .user-name {
+        color: #66c0b5;
+        font-weight: bold;
+    }
+    .thread-owner {
+        color: #aa0000;
+        font-size: small;
+    }
     /* content-row はアイコンと内容を横並びに */
     .content-row {
         display: flex;
         align-items: flex-start;
         width: 100%;
     }
-
     /* avatar は固定サイズ、左側に配置 */
     .avatar {
         flex: 0 0 auto;
@@ -203,14 +218,12 @@
         height: 100%;
         object-fit: cover;
     }
-
     .avatar img {
         display: block;
         width: 100%;
         height: 100%;
         object-fit: cover;
     }
-
     /* content は縦並びに、右側の残りスペースを使用 */
     .content {
         flex: 1;
@@ -220,7 +233,6 @@
         inline-size: 768px;
         max-inline-size: 100%;
     }
-
     /* content-text は改行を含むテキストを自動折り返し */
     .content-text {
         display: block;
@@ -228,21 +240,14 @@
         overflow-wrap: break-word; /* 長い単語も折り返し */
         margin-bottom: 4px;
     }
-
     .content-url,
     .content-embed {
         margin-bottom: 4px;
     }
-
     .content-url a {
         display: block;
         overflow: hidden;
         text-overflow: ellipsis;
-    }
-
-    .user-name {
-        color: #66c0b5;
-        font-weight: bold;
     }
 
     /* ｲｲ!(・∀・) (・Ａ・)ｲｸﾅｲ!  */
@@ -289,5 +294,12 @@
         top: 0;
         bottom: 0;
         background-color: #f99;
+    }
+    .good-count {
+        min-width: 3rem;
+        text-align: right;
+    }
+    .bad-count {
+        min-width: 3rem;
     }
 </style>
