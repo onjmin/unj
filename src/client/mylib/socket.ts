@@ -44,7 +44,7 @@ export const init = (callback: () => void) => {
 		if (!isOK) {
 			socket.emit("getNonceKey", {});
 		}
-	}, VITE_UNJ_API_RETRY_MS);
+	}, retryMs);
 };
 
-const VITE_UNJ_API_RETRY_MS = Number(import.meta.env.VITE_UNJ_API_RETRY_MS);
+const retryMs = 2048;
