@@ -58,7 +58,7 @@
         }
     };
 
-    let threadList: HeadlineThread[] = $state([]);
+    let threadList: HeadlineThread[] | null = $state(null);
     const handleHeadline = (data: { ok: boolean; list: HeadlineThread[] }) => {
         if (data.ok) {
             ok();
@@ -97,9 +97,12 @@
 </HeaderPart>
 
 <MainPart>
+    {#if threadList === null}
+        <p>ヘッドライン読み込み中…</p>
+    {/if}
     <div class="unj-headline-accordion-container">
         <Accordion>
-            {#each threadList as thread}
+            {#each threadList ?? [] as thread}
                 <Panel>
                     <Header>
                         <div class="time-and-count-container">

@@ -36,7 +36,7 @@
     };
 
     let thread: Thread | null = $state(null);
-    let title = $state("少女祈祷中…");
+    let title = $state("スレ読み込み中");
     let lolCount = $state(0);
     let goodVotes = $state(0);
     let badVotes = $state(0);
@@ -94,87 +94,103 @@
 
 <MainPart>
     {#if thread}
-        <p>{thread.title}</p>
-        <p>草×{thread.lolCount}草</p>
-        <div class="res-list">
-            {#each thread.resList as res, i}
-                <div class="res">
-                    <!-- 上段: 名前欄 -->
-                    <div class="name-row">
-                        {res.num}：<span class="user-name"
-                            >{res.ccUserName}</span
-                        >：
-                        {format(res.createdAt, "yy/MM/dd(EEE) HH:mm:ss", {
-                            locale: ja,
-                        })}
-                        ID:{res.ccUserId}
-                        {#if res.isOwner}
-                            <span class="thread-owner">主</span>
-                        {/if}
-                    </div>
-                    <!-- 下段: アイコンと内容 -->
-                    <div class="content-row">
-                        <!-- 固定幅・高さのアイコン -->
-                        <span class="avatar">
-                            <img
-                                src="https://avatars.githubusercontent.com/u/88383494"
-                                alt="User Avatar"
-                            />
-                        </span>
-                        <!-- 右側のコンテンツ領域 -->
-                        <div class="content">
-                            <div class="content-text">
-                                {res.content}
-                            </div>
-                            <div class="content-url">
-                                <a
-                                    href={res.contentUrl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    {res.contentUrl}
-                                </a>
-                            </div>
-                            <div class="content-embed">youtube embed</div>
-                        </div>
-                    </div>
-                    {#if i === 0}
-                        <div class="unj-like-vote-container">
-                            <div class="vote-buttons">
-                                <Button
-                                    class="good-vote"
-                                    onclick={() => (goodVotes += 1)}
-                                    >ｲｲ!(・∀・)</Button
-                                >
-                                <span class="good-count">+{goodVotes}</span>
-                                <div class="bar">
-                                    <div
-                                        class="good"
-                                        style="width:{goodRatio}%;"
-                                    ></div>
-                                    <div
-                                        class="bad"
-                                        style="width:{badRatio}%;"
-                                    ></div>
-                                </div>
-                                <span class="bad-count">-{badVotes}</span>
-                                <Button
-                                    class="bad-vote"
-                                    onclick={() => (badVotes += 1)}
-                                    >(・Ａ・)ｲｸﾅｲ!</Button
-                                >
-                            </div>
-                        </div>
+        <div class="thread-header">
+            <p class="thread-title">{thread.title}</p>
+            <div class="lol-button-container">
+                <Button class="lol" onclick={() => (lolCount += 1)}>草</Button>
+                <span>×{lolCount}草</span>
+                <span>{"ｗ".repeat(lolCount)}</span>
+            </div>
+        </div>
+    {:else}
+        <p>スレ読み込み中…</p>
+    {/if}
+    <div class="res-list">
+        {#each thread?.resList ?? [] as res, i}
+            <div class="res">
+                <!-- 上段: 名前欄 -->
+                <div class="name-row">
+                    {res.num}：<span class="user-name">{res.ccUserName}</span>：
+                    {format(res.createdAt, "yy/MM/dd(EEE) HH:mm:ss", {
+                        locale: ja,
+                    })}
+                    ID:{res.ccUserId}
+                    {#if res.isOwner}
+                        <span class="thread-owner">主</span>
                     {/if}
                 </div>
-            {/each}
-        </div>
-    {/if}
+                <!-- 下段: アイコンと内容 -->
+                <div class="content-row">
+                    <!-- 固定幅・高さのアイコン -->
+                    <span class="avatar">
+                        <img
+                            src="https://avatars.githubusercontent.com/u/88383494"
+                            alt="User Avatar"
+                        />
+                    </span>
+                    <!-- 右側のコンテンツ領域 -->
+                    <div class="content">
+                        <div class="content-text">
+                            {res.content}
+                        </div>
+                        <div class="content-url">
+                            <a
+                                href={res.contentUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                {res.contentUrl}
+                            </a>
+                        </div>
+                        <div class="content-embed">youtube embed</div>
+                    </div>
+                </div>
+                {#if i === 0}
+                    <div class="unj-like-vote-container">
+                        <div class="vote-buttons">
+                            <Button
+                                class="good-vote"
+                                onclick={() => (goodVotes += 1)}>ｲｲ!</Button
+                            >
+                            <span class="good-count">+{goodVotes}</span>
+                            <div class="bar">
+                                <div
+                                    class="good"
+                                    style="width:{goodRatio}%;"
+                                ></div>
+                                <div
+                                    class="bad"
+                                    style="width:{badRatio}%;"
+                                ></div>
+                            </div>
+                            <span class="bad-count">-{badVotes}</span>
+                            <Button
+                                class="bad-vote"
+                                onclick={() => (badVotes += 1)}>ｲｸﾅｲ!</Button
+                            >
+                        </div>
+                    </div>
+                {/if}
+            </div>
+        {/each}
+    </div>
 </MainPart>
 
 <FooterPart />
 
 <style>
+    .thread-header {
+        text-align: left;
+        inline-size: 768px;
+        max-inline-size: 92%;
+        padding-bottom: 16px;
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+    .thread-title {
+        color: #66c0b5;
+        font-weight: bold;
+    }
     .res-list {
         display: flex;
         flex-direction: column;
@@ -245,9 +261,10 @@
         margin-bottom: 4px;
     }
     .content-url a {
-        display: block;
+        display: inline-block;
         overflow: hidden;
         text-overflow: ellipsis;
+        max-width: 100%;
     }
 
     /* ｲｲ!(・∀・) (・Ａ・)ｲｸﾅｲ!  */
@@ -264,13 +281,19 @@
         gap: 4px;
     }
     :global(.unj-like-vote-container .good-vote) {
-        background-color: #66f;
-        color: white;
+        color: #66f;
     }
 
     :global(.unj-like-vote-container .bad-vote) {
-        background-color: #f66;
-        color: white;
+        color: #f66;
+    }
+    @media screen and (min-width: 768px) {
+        :global(.unj-like-vote-container .good-vote)::after {
+            content: "(・∀・)";
+        }
+        :global(.unj-like-vote-container .bad-vote)::before {
+            content: "(・Ａ・)";
+        }
     }
     .bar {
         position: relative;

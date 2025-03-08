@@ -33,8 +33,8 @@ export type Thread = {
 	goodCount: number;
 	badCount: number;
 	resList: Res[];
+	ageRes: Res;
 	ps: string;
-	ageResNum: number;
 	threadType: number;
 	varsan: boolean;
 	sage: boolean;
