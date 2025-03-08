@@ -147,38 +147,36 @@ const UrlOfAudioSchema = v.object({
 	),
 });
 
-const contentSchemaMap = {
-	1: TextSchema,
-	2: UrlSchema,
-	4: UrlOfUnjGamesSchema,
-	8: UrlOfImageSchema,
-	16: UrlOfGifSchema,
-	32: UrlOfVideoSchema,
-	64: UrlOfAudioSchema,
-};
-
 /**
- * content_typeに応じたスキーマを取得
+ * content_typeに対応するスキーマ
  */
-export const getContentSchema = (contentType: number) =>
-	contentSchemaMap[contentType as keyof typeof contentSchemaMap];
-
-const contentTemplateMap = {
-	1: [],
-	2: [],
-	4: whitelistUnjGames,
-	8: whitelistImage,
-	16: whitelistGif,
-	32: whitelistVideo,
-	64: whitelistAudio,
-};
+export const contentSchemaMap = new Map(
+	Object.entries({
+		1: TextSchema,
+		2: UrlSchema,
+		4: UrlOfUnjGamesSchema,
+		8: UrlOfImageSchema,
+		16: UrlOfGifSchema,
+		32: UrlOfVideoSchema,
+		64: UrlOfAudioSchema,
+	}).map(([k, v]) => [Number(k), v]),
+);
 
 /**
  * GUI用
- * content_typeに応じたテンプレを取得
+ * content_typeに対応するテンプレ
  */
-export const getContentTemplate = (contentType: number) =>
-	contentTemplateMap[contentType as keyof typeof contentTemplateMap];
+export const contentTemplateMap = new Map(
+	Object.entries({
+		1: [],
+		2: [],
+		4: whitelistUnjGames,
+		8: whitelistImage,
+		16: whitelistGif,
+		32: whitelistVideo,
+		64: whitelistAudio,
+	}).map(([k, v]) => [Number(k), v]),
+);
 
 /**
  * GUI用
@@ -192,4 +190,15 @@ export const contentTypeOptions = [
 	{ bit: 16, label: "+GIF" },
 	{ bit: 32, label: "+動画" },
 	{ bit: 64, label: "+音楽" },
+];
+
+/**
+ * GUI用
+ * プルダウンに表示する順番（入れ替え可能）
+ */
+export const ccOptions = [
+	{ bit: 1, label: "ID" },
+	{ bit: 2, label: "自演防止ID" },
+	{ bit: 4, label: "コテハン" },
+	{ bit: 8, label: "アイコン" },
 ];

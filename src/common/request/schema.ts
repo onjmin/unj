@@ -74,12 +74,12 @@ export const likeSchema = v.object({
  */
 export const MakeThreadSchema = v.object({
 	title: THREAD_TITLE,
+	varsan: v.boolean(),
 	sage: v.boolean(),
-	ccType: SMALLINT,
+	ccTypesBitmask: SMALLINT,
 	contentTypesBitmask: SMALLSERIAL,
 	resLimit: v.pipe(v.number(), v.integer(), v.minValue(10), v.maxValue(1000)),
 	timer: v.pipe(v.number(), v.integer(), v.minValue(0), v.maxValue(168)),
-	refThreadId: THREAD_ID,
 });
 
 /**

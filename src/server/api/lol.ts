@@ -1,10 +1,10 @@
 import type { Server, Socket } from "socket.io";
 import * as v from "valibot";
-import { SMALLSERIAL, lolSchema } from "../../common/request/schema.js";
+import { SERIAL, lolSchema } from "../../common/request/schema.js";
 import { decodeThreadId } from "../mylib/anti-debug.js";
 import Auth from "../mylib/auth.js";
 import Nonce from "../mylib/nonce.js";
-import { getThreadRoom } from "../mylib/socket.js";
+import { exist, getThreadRoom, joined } from "../mylib/socket.js";
 
 const api = "lol";
 const delimiter = "###";
@@ -28,14 +28,16 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		}
 
 		// フロントエンド上のスレッドIDを復号する
-		const smallserial = v.safeParse(
-			SMALLSERIAL,
-			decodeThreadId(lol.output.threadId),
-		);
-		if (!smallserial.success) {
+		const serial = v.safeParse(SERIAL, decodeThreadId(lol.output.threadId));
+		if (!serial.success) {
 			return;
 		}
-		const id = smallserial.output;
+		const id = serial.output;
+
+		// roomのチェック
+		if (!exist(io, getThreadRoom(id)) || !joined(socket, getThreadRoom(id))) {
+			return;
+		}
 
 		const auth = Auth.get(socket);
 		const key = [auth, id].join(delimiter);

@@ -4,8 +4,8 @@
   import Textfield from "@smui/textfield";
   import CharacterCounter from "@smui/textfield/character-counter";
   import {
+    contentTemplateMap,
     contentTypeOptions,
-    getContentTemplate,
   } from "../../common/request/content-schema.js";
   import type { SiteInfo } from "../../common/request/whitelist/site-info.js";
   import UrlSuggestionPart from "./UrlSuggestionPart.svelte";
@@ -21,7 +21,7 @@
   let list: SiteInfo[] = $state([]);
 
   $effect(() => {
-    list = getContentTemplate(contentType) ?? [];
+    list = contentTemplateMap.get(contentType) ?? [];
   });
 </script>
 

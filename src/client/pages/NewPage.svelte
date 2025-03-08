@@ -9,62 +9,25 @@
     import Button from "@smui/button";
     import Checkbox from "@smui/checkbox";
     import FormField from "@smui/form-field";
-    import List, { Item, Meta, Label, Separator, Subheader } from "@smui/list";
+    import List, { Item, Meta, Label } from "@smui/list";
     import Select, { Option } from "@smui/select";
     import Textfield from "@smui/textfield";
     import CharacterCounter from "@smui/textfield/character-counter";
-    import { contentTypeOptions } from "../../common/request/content-schema.js";
+    import {
+        ccOptions,
+        contentTypeOptions,
+    } from "../../common/request/content-schema.js";
     import ContentFormPart from "../parts/ContentFormPart.svelte";
 
-    let { refThreadId = "" } = $props();
+    let { isRef = false } = $props();
 
     let content = $state("");
     let contentUrl = $state("");
     let contentType = $state(1);
 
-    let contentTypesBitmask = $state([1, 2, 4, 8, 16, 32, 64]);
+    let contentTypesBitmask = $state([1, 4, 8, 16, 32, 64]);
+    let ccBitmask = $state([1, 4, 8]);
     let title = $state("");
-
-    const ccTypeOptions = [
-        {
-            key: 0,
-            label: "完全匿名モード",
-            note: "月沈めば名無し + 匿名化ID表示（ID:???）",
-        },
-        {
-            key: 1,
-            label: "半匿名モード",
-            note: "月沈めば名無し + ID表示（ID:1w3z）",
-        },
-        {
-            key: 2,
-            label: "半コテモード",
-            note: "月沈めば名無し + ID表示 + アイコン表示",
-        },
-        {
-            key: 3,
-            label: "コテモード",
-            note: "コテハン使用可 + ID表示",
-        },
-        {
-            key: 4,
-            label: "自演防止モード",
-            note: "月沈めば名無し + 自演防止ID表示（ID:8z.8u.L60）",
-        },
-        {
-            key: 5,
-            label: "半コテ & 自演防止モード",
-            note: "月沈めば名無し + 自演防止ID表示 + アイコン表示",
-        },
-        {
-            key: 6,
-            label: "コテ & 自演防止モード",
-            note: "コテハン使用可 + 自演防止ID表示",
-        },
-    ];
-    let ccType = $state(1);
-    const ccNoteMap = new Map(ccTypeOptions.map((v) => [v.key, v.note]));
-
     let max = $state(1000);
 
     const timerOptions = [
@@ -79,18 +42,18 @@
     ];
     let timer = $state(0);
 
-    let check1 = $state(false);
+    let varsan = $state(false);
     let sage = $state(false);
+
+    let check1 = $state(false);
 
     const tryMakeNewThread = () => {
         alert("まだない");
     };
 
-    const isRef = refThreadId !== "";
     if (isRef) {
         $effect(() => {
-            // 次スレの場合はidbからスレタイを取ってくる
-            // ただし、バックエンドで破棄される
+            // 次スレの場合はkeyvalから次スレ情報を取ってくる
         });
     }
 </script>
@@ -102,6 +65,12 @@
     {:else}
         <p>高度な設定</p>
         <FormField>
+            <Checkbox bind:checked={varsan} />
+            {#snippet label()}
+                事前バルサン
+            {/snippet}
+        </FormField>
+        <FormField>
             <Checkbox bind:checked={sage} />
             {#snippet label()}
                 強制sage進行
@@ -112,16 +81,20 @@
                 <Panel>
                     <Header>匿名レベルの変更</Header>
                     <Content>
-                        <Select bind:value={ccType} label="!jien">
-                            {#each ccTypeOptions as v}
-                                <Option value={v.key}>{v.label}</Option>
+                        <Label>!jien</Label>
+                        <List checkList>
+                            {#each ccOptions as v}
+                                <Item>
+                                    <Label>{v.label}</Label>
+                                    <Meta>
+                                        <Checkbox
+                                            bind:group={ccBitmask}
+                                            value={v.bit}
+                                        />
+                                    </Meta>
+                                </Item>
                             {/each}
-                        </Select>
-                        <div
-                            style="color: rgba(255, 255, 255, 0.6); font-size: 0.7rem;"
-                        >
-                            例：{ccNoteMap.get(ccType)}
-                        </div>
+                        </List>
                     </Content>
                 </Panel>
                 <Panel>
@@ -140,8 +113,8 @@
                                     </Meta>
                                 </Item>
                             {/each}
-                        </List></Content
-                    >
+                        </List>
+                    </Content>
                 </Panel>
                 <Panel>
                     <Header>レス数上限</Header>

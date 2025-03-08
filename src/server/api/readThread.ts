@@ -1,6 +1,6 @@
 import type { Socket } from "socket.io";
 import * as v from "valibot";
-import { ReadThreadSchema, SMALLSERIAL } from "../../common/request/schema.js";
+import { ReadThreadSchema, SERIAL } from "../../common/request/schema.js";
 import type { Res, Thread } from "../../common/response/schema.js";
 import {
 	decodeThreadId,
@@ -21,14 +21,14 @@ export default ({ socket }: { socket: Socket }) => {
 		}
 
 		// フロントエンド上のスレッドIDを復号する
-		const smallserial = v.safeParse(
-			SMALLSERIAL,
+		const serial = v.safeParse(
+			SERIAL,
 			decodeThreadId(readThread.output.threadId),
 		);
-		if (!smallserial.success) {
+		if (!serial.success) {
 			return;
 		}
-		const id = smallserial.output;
+		const id = serial.output;
 
 		const { cursor, size, desc } = readThread.output;
 
@@ -95,15 +95,13 @@ export default ({ socket }: { socket: Socket }) => {
 			),
 		),
 		deletedAt: new Date(+new Date() + 1000 * 60 * 64),
-		refThreadId: encodeThreadId(9800),
 		ps: "追記",
 		resLimit: 1000,
 		ageResNum: 0,
+		varsan: false,
 		sage: false,
 		threadType: 0,
-		ccType: 1,
+		ccBitmask: 1,
 		contentTypesBitmask: 1,
-		banned: false,
-		subbed: false,
 	};
 };

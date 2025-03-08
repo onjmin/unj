@@ -1,12 +1,12 @@
 import type { Server, Socket } from "socket.io";
 import * as v from "valibot";
-import { getContentSchema } from "../../common/request/content-schema.js";
+import { contentSchemaMap } from "../../common/request/content-schema.js";
 import { MakeThreadSchema, ResSchema } from "../../common/request/schema.js";
+import { NeverSchema } from "../../common/request/util.js";
 import Nonce from "../mylib/nonce.js";
 import { headlineRoom } from "../mylib/socket.js";
 
 const api = "makeThread";
-const delimiter = "###";
 
 export default ({ socket, io }: { socket: Socket; io: Server }) => {
 	socket.on(api, async (data) => {
@@ -17,8 +17,10 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 
 		// 本文のバリデーション
 		const { contentType } = res.output;
-		const ContentSchema = getContentSchema(contentType);
-		const content = v.safeParse(ContentSchema, data);
+		const content = v.safeParse(
+			contentSchemaMap.get(contentType) ?? NeverSchema,
+			data,
+		);
 		if (!content.success) {
 			return;
 		}

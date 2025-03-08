@@ -1,10 +1,11 @@
 import type { Server, Socket } from "socket.io";
 import * as v from "valibot";
-import { getContentSchema } from "../../common/request/content-schema.js";
-import { ResSchema, SMALLSERIAL } from "../../common/request/schema.js";
+import { contentSchemaMap } from "../../common/request/content-schema.js";
+import { ResSchema, SERIAL } from "../../common/request/schema.js";
+import { NeverSchema } from "../../common/request/util.js";
 import { decodeThreadId } from "../mylib/anti-debug.js";
 import Nonce from "../mylib/nonce.js";
-import { getThreadRoom } from "../mylib/socket.js";
+import { exist, getThreadRoom, joined } from "../mylib/socket.js";
 
 const api = "res";
 
@@ -16,19 +17,23 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		}
 
 		// フロントエンド上のスレッドIDを復号する
-		const smallserial = v.safeParse(
-			SMALLSERIAL,
-			decodeThreadId(res.output.threadId),
-		);
-		if (!smallserial.success) {
+		const serial = v.safeParse(SERIAL, decodeThreadId(res.output.threadId));
+		if (!serial.success) {
 			return;
 		}
-		const id = smallserial.output;
+		const id = serial.output;
+
+		// roomのチェック
+		if (!exist(io, getThreadRoom(id)) || !joined(socket, getThreadRoom(id))) {
+			return;
+		}
 
 		// 本文のバリデーション
 		const { contentType } = res.output;
-		const ContentSchema = getContentSchema(contentType);
-		const content = v.safeParse(ContentSchema, data);
+		const content = v.safeParse(
+			contentSchemaMap.get(contentType) ?? NeverSchema,
+			data,
+		);
 		if (!content.success) {
 			return;
 		}

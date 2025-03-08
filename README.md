@@ -27,7 +27,7 @@
   - Biome
 - フロントエンド
   - Vite
-  - Svelte
+  - Svelte 5
   - svelte-material-ui@8.0.0-beta.3
 - バックエンド
   - esbuild
@@ -64,9 +64,11 @@
   - Valibot: 入力バリデーション（ホワイトリストが望ましい）
   - date-fns: 日付フォーマット
 - アンチ荒らし機構
+  - 隠ぺいによるセキュリティ（Security Through Obscurity）
+    - 処理失敗時にレスポンスを返させない
   - 難読化（最高設定）
   - 確率的なBAN（VITE_UNJ_FLAKY_RATE）
-  - テキスト（入力可能文字種をホワイトリストで制限）
+  - string型の入力を必ず正規表現で縛る
   - 画像のNSFW判定
 - その他
   - users.authorizationの引き継ぎ機能

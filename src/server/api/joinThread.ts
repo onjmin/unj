@@ -1,8 +1,8 @@
 import type { Server, Socket } from "socket.io";
 import * as v from "valibot";
-import { SMALLSERIAL, joinThreadSchema } from "../../common/request/schema.js";
+import { SERIAL, joinThreadSchema } from "../../common/request/schema.js";
 import { decodeThreadId } from "../mylib/anti-debug.js";
-import { count, getThreadRoom, switchRoom } from "../mylib/socket.js";
+import { getThreadRoom, sizeOf, switchTo } from "../mylib/socket.js";
 import headline from "./headline.js";
 
 const api = "joinThread";
@@ -17,18 +17,18 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		}
 
 		// フロントエンド上のスレッドIDを復号する
-		const smallserial = v.safeParse(
-			SMALLSERIAL,
+		const serial = v.safeParse(
+			SERIAL,
 			decodeThreadId(joinThread.output.threadId),
 		);
-		if (!smallserial.success) {
+		if (!serial.success) {
 			return;
 		}
-		const id = smallserial.output;
+		const id = serial.output;
 
 		const room = getThreadRoom(id);
-		const moved = await switchRoom(socket, room);
-		const size = count(io, room);
+		const moved = await switchTo(socket, room);
+		const size = sizeOf(io, room);
 		if (moved) {
 			const pv = (pvMap.get(id) ?? 0) + 1;
 			pvMap.set(id, pv);
@@ -36,7 +36,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			// 元いたスレに退室通知
 			const { prevRoom } = socket.data;
 			if (prevRoom !== "" && prevRoom !== headline) {
-				const size = count(io, prevRoom);
+				const size = sizeOf(io, prevRoom);
 				socket.to(prevRoom).emit(api, { ok: true, size, pv: null });
 			}
 			socket.data.prevRoom = room;
@@ -47,7 +47,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 	socket.on("disconnect", () => {
 		const { prevRoom } = socket.data;
 		if (prevRoom !== "" && prevRoom !== headline) {
-			const size = count(io, prevRoom);
+			const size = sizeOf(io, prevRoom);
 			socket.to(prevRoom).emit(api, { ok: true, size, pv: null });
 		}
 	});

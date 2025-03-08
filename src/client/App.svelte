@@ -20,26 +20,10 @@
   import BannedCheck from "./plugs/BannedCheck.svelte";
   import TraversalCheck from "./plugs/TraversalCheck.svelte";
   import UnbannedCheck from "./plugs/UnbannedCheck.svelte";
-
-  const NotFoundPagePath = base("/*");
-  const HomePagePath = base("/");
-  const HeadlinePagePath = base("/headline");
-  const ThreadPagePath = base("/thread");
-  const NewPagePath = base("/new");
-  const HistoryPagePath = base("/history");
-  const BookmarkPagePath = base("/bookmark");
-  const ConfigPagePath = base("/config");
-  const TermsPagePath = base("/terms");
-  const ContactPagePath = base("/contact");
-  const UpdatePagePath = base("/update");
-  const ArtPagePath = base("/art");
-  const LinksPagePath = base("/links");
-  const AkukinPagePath = base("/akukin");
-  const AkukinKaijoPagePath = base("/akukin/kaijo");
 </script>
 
 <Router>
-  <Route path={NotFoundPagePath}>
+  <Route path={base("/*")}>
     <BannedCheck>
       <TraversalCheck>
         <NotFoundPage />
@@ -48,98 +32,98 @@
   </Route>
 
   <!-- エントリページ -->
-  <Route path={HomePagePath}>
+  <Route path={base("/")}>
     <BannedCheck>
       <HomePage />
     </BannedCheck>
   </Route>
 
   <!-- ヘッドライン -->
-  <Route path={HeadlinePagePath}>
+  <Route path={base("/headline")}>
     <BannedCheck>
       <HeadlinePage />
     </BannedCheck>
   </Route>
   <!-- スレッド -->
-  <Route path="{ThreadPagePath}/:threadId" let:params>
+  <Route path="{base('/thread')}/:threadId" let:params>
     <BannedCheck>
       <ThreadPage threadId={params.threadId} />
     </BannedCheck>
   </Route>
-  <Route path="{ThreadPagePath}/:threadId/:resNum" let:params>
+  <Route path="{base('/thread')}/:threadId/:resNum" let:params>
     <BannedCheck>
       <ThreadPage threadId={params.threadId} resNum={params.resNum} />
     </BannedCheck>
   </Route>
 
   <!-- スレ立て -->
-  <Route path={NewPagePath}>
+  <Route path={base("/new")}>
     <BannedCheck>
       <NewPage />
     </BannedCheck>
   </Route>
-  <Route path="{NewPagePath}/:refThreadId" let:params>
+  <Route path={base("/new/next")}>
     <BannedCheck>
-      <NewPage refThreadId={params.refThreadId} />
+      <NewPage isRef />
     </BannedCheck>
   </Route>
   <!-- 閲覧履歴 -->
-  <Route path={HistoryPagePath}>
+  <Route path={base("/history")}>
     <BannedCheck>
       <HistoryPage />
     </BannedCheck>
   </Route>
   <!-- #後で見る -->
-  <Route path={BookmarkPagePath}>
+  <Route path={base("/bookmark")}>
     <BannedCheck>
       <BookmarkPage />
     </BannedCheck>
   </Route>
   <!-- 個人設定 -->
-  <Route path={ConfigPagePath}>
+  <Route path={base("/config")}>
     <BannedCheck>
       <ConfigPage />
     </BannedCheck>
   </Route>
 
   <!-- 利用規約 -->
-  <Route path={TermsPagePath}>
+  <Route path={base("/terms")}>
     <BannedCheck>
       <TermsPage />
     </BannedCheck>
   </Route>
   <!-- お問い合わせ -->
-  <Route path={ContactPagePath}>
+  <Route path={base("/contact")}>
     <BannedCheck>
       <ContactPage />
     </BannedCheck>
   </Route>
   <!-- 新機能のお知らせ -->
-  <Route path={UpdatePagePath}>
+  <Route path={base("/update")}>
     <BannedCheck>
       <UpdatePage />
     </BannedCheck>
   </Route>
   <!-- TOP絵集 -->
-  <Route path={ArtPagePath}>
+  <Route path={base("/art")}>
     <BannedCheck>
       <ArtPage />
     </BannedCheck>
   </Route>
   <!-- リンク集 -->
-  <Route path={LinksPagePath}>
+  <Route path={base("/links")}>
     <BannedCheck>
       <LinksPage />
     </BannedCheck>
   </Route>
 
   <!-- 直リンでは辿り着けない -->
-  <Route path={AkukinPagePath}>
+  <Route path={base("/akukin")}>
     <UnbannedCheck>
       <BannedPage />
     </UnbannedCheck>
   </Route>
-  <Route path={AkukinKaijoPagePath}>
+  <Route path={base("/akukin/kaijo")}>
     <UnbannedCheck>
       <BanCodeVerifyPage />
     </UnbannedCheck>

@@ -94,8 +94,8 @@
         <Cell>
             <Label>BAN日時の入力</Label>
             <DateInput
-                closeOnSelection={true}
-                browseWithoutSelecting={true}
+                closeOnSelection
+                browseWithoutSelecting
                 format="yyyy-MM-dd"
                 placeholder="BANされた日付"
                 bind:value={bannedDate}
