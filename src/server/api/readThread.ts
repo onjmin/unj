@@ -97,7 +97,7 @@ export default ({ socket }: { socket: Socket }) => {
 		deletedAt: new Date(+new Date() + 1000 * 60 * 64),
 		ps: "追記",
 		resLimit: 1000,
-		ageResNum: 0,
+		ageRes: null,
 		varsan: false,
 		sage: false,
 		threadType: 0,

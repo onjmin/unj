@@ -6,6 +6,7 @@
     ///////////////
 
     import Button from "@smui/button";
+    import Chip, { Set as ChipSet, LeadingIcon, Text } from "@smui/chips";
     import { format } from "date-fns";
     import { ja } from "date-fns/locale";
     import type { Res, Thread } from "../../common/response/schema.js";
@@ -44,6 +45,7 @@
     let denominator = $state(0);
     let goodRatio = $state(0);
     let badRatio = $state(0);
+    let chips: string[] = $state([]);
     const handleReadThread = (data: { ok: boolean; thread: Thread }) => {
         if (data.ok) {
             ok();
@@ -52,6 +54,16 @@
             lolCount = thread.lolCount;
             goodVotes = thread.goodCount;
             badVotes = thread.badCount;
+            chips = [];
+            if (thread.ccBitmask & 2) {
+                chips.push("自演防止＠jien");
+            }
+            if (thread.varsan) {
+                chips.push("バルサン中");
+            }
+            if (thread.sage) {
+                chips.push("強制sage");
+            }
         }
     };
 
@@ -96,6 +108,16 @@
     {#if thread}
         <div class="thread-header">
             <p class="thread-title">{thread.title}</p>
+            <ChipSet {chips}>
+                {#snippet chip(chip)}
+                    <Chip {chip}>
+                        <LeadingIcon class="material-icons"
+                            >priority_high</LeadingIcon
+                        >
+                        <Text tabindex={0}>{chip}</Text>
+                    </Chip>
+                {/snippet}
+            </ChipSet>
             <div class="lol-button-container">
                 <Button class="lol" onclick={() => (lolCount += 1)}>草</Button>
                 <span>×{lolCount}草</span>
