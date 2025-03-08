@@ -3,6 +3,7 @@
 		"biomejs.biome",
 		"usernamehw.errorlens",
 		"mhutchie.git-graph",
-		"svelte.svelte-vscode"
+		"svelte.svelte-vscode",
+		"bierner.markdown-mermaid"
 	]
 }
