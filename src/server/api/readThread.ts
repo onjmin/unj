@@ -74,7 +74,6 @@ export default ({ socket }: { socket: Socket }) => {
 	};
 
 	const mock: Thread = {
-		isOwner: false,
 		id: encodeThreadId(9800),
 		latestResAt: new Date(),
 		resCount: 256,

@@ -5,13 +5,23 @@
     import MainPart from "../parts/MainPart.svelte";
     ///////////////
 
+    import Banner, { Icon, Label } from "@smui/banner";
     import Button from "@smui/button";
     import Chip, { Set as ChipSet, LeadingIcon, Text } from "@smui/chips";
     import { format } from "date-fns";
     import { ja } from "date-fns/locale";
+    import { Howl, Howler } from "howler";
     import type { Res, Thread } from "../../common/response/schema.js";
     import { genNonce } from "../mylib/anti-debug.js";
-    import { init, nonceKey, ok, socket } from "../mylib/socket.js";
+    import { visible } from "../mylib/dom.js";
+    import {
+        coolTimeOfModify,
+        getNonceKey,
+        init,
+        nonceKey,
+        ok,
+        socket,
+    } from "../mylib/socket.js";
     import AccessCounterPart from "../parts/AccessCounterPart.svelte";
     import ContentFormPart from "../parts/ContentFormPart.svelte";
 
@@ -67,6 +77,44 @@
         }
     };
 
+    const sound = new Howl({
+        src: ["https://rpgen.org/dq/sound/res/29.mp3"],
+    });
+
+    let openNewResNotice = $state(false);
+    let newResCount = $state(0);
+    let isAlreadyScrollEnd = $state(false);
+    const handleRes = (data: { ok: boolean; new: Res; yours: boolean }) => {
+        if (data.ok) {
+            if (!thread) {
+                return;
+            }
+            if (thread.resList.length > 128) {
+                thread.resList.shift();
+            }
+            thread.resList.push(data.new);
+            sound.play();
+            if (data.yours) {
+                getNonceKey();
+                content = "";
+                contentUrl = "";
+                setTimeout(() => scrollToEnd(), 512);
+            } else {
+                openNewResNotice = true;
+                newResCount++;
+                isAlreadyScrollEnd = false;
+            }
+        }
+    };
+
+    const scrollToEnd = () => {
+        const main = document.querySelector(".unj-main-part") ?? document.body;
+        main.scrollTo({ top: main.scrollHeight, behavior: "smooth" });
+        openNewResNotice = false;
+        newResCount = 0;
+        isAlreadyScrollEnd = true;
+    };
+
     $effect(() => {
         total = goodVotes + badVotes;
         denominator = total < 16 ? 16 : total;
@@ -74,8 +122,9 @@
         badRatio = (badVotes / denominator) * 100;
     });
 
+    let id: NodeJS.Timeout | undefined;
     $effect(() => {
-        const id = init(() => {
+        id = init(() => {
             socket.emit("joinThread", {
                 threadId: threadId,
             });
@@ -89,20 +138,62 @@
         });
         socket.on("joinThread", handleJoinThread);
         socket.on("readThread", handleReadThread);
+        socket.on("res", handleRes);
         return () => {
             clearTimeout(id);
             socket.off("joinThread", handleJoinThread);
             socket.off("readThread", handleReadThread);
+            socket.off("res", handleRes);
         };
     });
+
+    let emitting = $state(false);
+    const tryRes = () => {
+        emitting = true;
+        // フロントエンドのバリデーション
+        // バックエンドに送信
+        socket.emit("res", {
+            nonce: genNonce(nonceKey),
+            threadId,
+            userName: null,
+            userAvatar: null,
+            content,
+            contentUrl,
+            contentType,
+        });
+        id = setTimeout(() => {
+            emitting = false;
+            getNonceKey();
+        }, coolTimeOfModify);
+    };
 </script>
 
 <HeaderPart {title} bind:bookmark>
     <AccessCounterPart {online} {pv} />
-    <p>スレ書き込みUI</p>
-    <ContentFormPart bind:content bind:contentUrl bind:contentType />
-    <Button onclick={() => alert("まだない")} variant="raised">投稿する</Button>
+    <p>レス書き込み欄</p>
+    <ContentFormPart
+        disabled={emitting}
+        bind:content
+        bind:contentUrl
+        bind:contentType
+    />
+    <Button disabled={emitting} onclick={tryRes} variant="raised"
+        >投稿する</Button
+    >
 </HeaderPart>
+
+<Banner bind:open={openNewResNotice} centered mobileStacked>
+    {#snippet icon()}
+        <Icon class="material-icons">fiber_new</Icon>
+    {/snippet}
+    {#snippet label()}
+        <Label>{newResCount}件の新着レス</Label>
+    {/snippet}
+    {#snippet actions()}
+        <Button onclick={scrollToEnd}>見に行く</Button>
+        <Button>却下</Button>
+    {/snippet}
+</Banner>
 
 <MainPart>
     {#if thread}
@@ -196,6 +287,15 @@
             </div>
         {/each}
     </div>
+    <div
+        use:visible={(visible) => {
+            if (visible && !isAlreadyScrollEnd) {
+                openNewResNotice = false;
+                newResCount = 0;
+                isAlreadyScrollEnd = true;
+            }
+        }}
+    ></div>
 </MainPart>
 
 <FooterPart />

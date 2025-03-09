@@ -68,7 +68,12 @@
 
     const handleMakeThread = (data: { ok: boolean; new: HeadlineThread }) => {
         if (data.ok) {
-            threadList?.unshift(data.new);
+            if (threadList) {
+                if (threadList.length > 128) {
+                    threadList.pop();
+                }
+                threadList.unshift(data.new);
+            }
         }
     };
 

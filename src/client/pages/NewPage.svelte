@@ -22,11 +22,11 @@
     import { genNonce } from "../mylib/anti-debug.js";
     import { base } from "../mylib/env.js";
     import {
+        coolTimeOfModify,
         getNonceKey,
         init,
         nonceKey,
         ok,
-        retryMs2nd,
         socket,
     } from "../mylib/socket.js";
     import ContentFormPart from "../parts/ContentFormPart.svelte";
@@ -60,7 +60,6 @@
     let timer = $state(0);
 
     let check1 = $state(false);
-    let emitting = $state(false);
 
     const handleMakeThread = (data: { ok: boolean; new: HeadlineThread }) => {
         if (data.ok) {
@@ -70,7 +69,6 @@
     };
 
     let id: NodeJS.Timeout | undefined;
-
     $effect(() => {
         init();
         socket.on("makeThread", handleMakeThread);
@@ -80,7 +78,8 @@
         };
     });
 
-    const tryMakeNewThread = () => {
+    let emitting = $state(false);
+    const tryMakeThread = () => {
         emitting = true;
         // フロントエンドのバリデーション
         // バックエンドに送信
@@ -103,7 +102,7 @@
         id = setTimeout(() => {
             emitting = false;
             getNonceKey();
-        }, retryMs2nd);
+        }, coolTimeOfModify);
     };
 
     if (isRef) {
@@ -228,7 +227,7 @@
             {/snippet}
         </FormField>
         <Button
-            onclick={tryMakeNewThread}
+            onclick={tryMakeThread}
             variant="raised"
             disabled={emitting || !check1}>新規スレッド作成</Button
         >

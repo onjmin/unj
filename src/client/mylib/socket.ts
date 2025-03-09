@@ -55,7 +55,7 @@ export const init = (callback?: () => void) => {
 			if (!isOK) {
 				getNonceKey();
 			}
-		}, retryMs1st);
+		}, coolTimeOfSelect);
 	}
 	if (first) {
 		isOK = false;
@@ -64,5 +64,5 @@ export const init = (callback?: () => void) => {
 	}
 };
 
-export const retryMs1st = 2048;
-export const retryMs2nd = 4096;
+export const coolTimeOfSelect = 2048; // SELECTのクールタイム
+export const coolTimeOfModify = 4096; // INSERT/UPDATE/DELETEのクールタイム

@@ -52,8 +52,14 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		try {
 			// await insertPost(_.data);
 			const thread_id = Math.random().toString();
-			socket.emit(api, { ok: true, new: mock });
-			socket.to(headlineRoom).emit(api, { ok: true, new: mock });
+			const _mock = Object.assign(
+				{ ...mock },
+				{
+					title: makeThread.output.title,
+				},
+			);
+			socket.emit(api, { ok: true, new: _mock });
+			socket.to(headlineRoom).emit(api, { ok: true, new: _mock });
 		} catch (error) {
 		} finally {
 			Nonce.unlock(socket);

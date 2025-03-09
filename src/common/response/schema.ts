@@ -24,7 +24,6 @@ export type Res = {
 };
 
 export type Thread = {
-	isOwner: boolean;
 	id: string;
 	latestResAt: Date;
 	resCount: number;

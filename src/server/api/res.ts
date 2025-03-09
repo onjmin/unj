@@ -3,7 +3,8 @@ import * as v from "valibot";
 import { contentSchemaMap } from "../../common/request/content-schema.js";
 import { ResSchema, SERIAL } from "../../common/request/schema.js";
 import { NeverSchema } from "../../common/request/util.js";
-import { decodeThreadId } from "../mylib/anti-debug.js";
+import type { Res } from "../../common/response/schema.js";
+import { decodeThreadId, encodeUserId } from "../mylib/anti-debug.js";
 import Nonce from "../mylib/nonce.js";
 import { exist, getThreadRoom, joined } from "../mylib/socket.js";
 
@@ -59,10 +60,40 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		// 危険な処理
 		try {
 			// await insertPost(result.data);
-			io.to(getThreadRoom(id)).emit(api, { ok: true }); // TODO
+			const newRes = Object.assign(
+				{ ...mock2 },
+				{
+					num: 65 + ((Math.random() * 100) | 0),
+					content: res.output.content,
+					contentUrl: res.output.contentUrl,
+					contentType: res.output.contentType,
+				},
+			);
+			socket.emit(api, {
+				ok: true,
+				new: newRes,
+				yours: true,
+			});
+			socket.to(getThreadRoom(id)).emit(api, {
+				ok: true,
+				new: newRes,
+				yours: false,
+			});
 		} catch (error) {
 		} finally {
 			Nonce.unlock(socket);
 		}
 	});
+
+	const mock2: Res = {
+		isOwner: true,
+		num: 1,
+		createdAt: new Date(),
+		ccUserId: encodeUserId(334, new Date()).slice(0, 4),
+		ccUserName: "月沈めば名無し2",
+		ccUserAvatar: 0,
+		content: "草".repeat(20),
+		contentUrl: "https://i.imgur.com/7dzm3JU.jpeg",
+		contentType: 8,
+	};
 };
