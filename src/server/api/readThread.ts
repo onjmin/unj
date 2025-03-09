@@ -10,6 +10,7 @@ import {
 	encodeThreadId,
 	encodeUserId,
 } from "../mylib/anti-debug.js";
+import { unjDefaultUserName } from "../mylib/cc.js";
 import { DEV_MODE, NEON_DATABASE_URL } from "../mylib/env.js";
 import Nonce from "../mylib/nonce.js";
 import { badCounts, goodCounts } from "./like.js";
@@ -88,7 +89,7 @@ export default ({ socket }: { socket: Socket }) => {
 					num: record.num,
 					createdAt: record.created_at,
 					ccUserId: record.cc_user_id || "???",
-					ccUserName: record.cc_user_name || "月沈めば名無し",
+					ccUserName: record.cc_user_name || unjDefaultUserName,
 					ccUserAvatar: record.cc_user_avatar,
 					content: record.content,
 					contentUrl: record.content_url,

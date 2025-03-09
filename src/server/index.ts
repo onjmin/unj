@@ -145,8 +145,7 @@ io.on("connection", async (socket) => {
 
 	accessCount++;
 
-	const auth = "yG8LHE2p"; // TODO: 新規user発行 || usersテーブルからユーザーを特定する
-	Auth.init(socket, auth);
+	Auth.init(socket);
 	Nonce.init(socket);
 
 	handleGetNonceKey({ socket });

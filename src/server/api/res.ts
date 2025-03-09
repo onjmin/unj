@@ -5,6 +5,8 @@ import { ResSchema, SERIAL } from "../../common/request/schema.js";
 import { NeverSchema } from "../../common/request/util.js";
 import type { Res } from "../../common/response/schema.js";
 import { decodeThreadId, encodeUserId } from "../mylib/anti-debug.js";
+import { unjDefaultUserName } from "../mylib/cc.js";
+import { DEV_MODE } from "../mylib/env.js";
 import Nonce from "../mylib/nonce.js";
 import { exist, getThreadRoom, joined } from "../mylib/socket.js";
 
@@ -63,7 +65,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 				{ ...mock2 },
 				{
 					num: 65 + ((Math.random() * 100) | 0),
-					ccUserName: res.output.userName || "月沈めば名無し",
+					ccUserName: res.output.userName || unjDefaultUserName,
 					ccUserAvatar: res.output.userAvatar,
 					content: res.output.content,
 					contentUrl: res.output.contentUrl,
@@ -81,6 +83,9 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 				yours: false,
 			});
 		} catch (error) {
+			if (DEV_MODE) {
+				console.error(error);
+			}
 		} finally {
 			Nonce.unlock(socket);
 		}

@@ -66,18 +66,40 @@ new Sound({
 	src: "https://rpgen.org/dq/sound/res/11.mp3",
 });
 
+// 33-4
+new Sound({
+	label: "ち～ん(笑)",
+	src: "https://rpgen.org/dq/sound/res/54.mp3",
+});
+new Sound({
+	label: "ち～ん(笑)2",
+	src: "https://rpgen.org/dq/sound/res/298.mp3",
+});
+
 // 淫夢系
 new Sound({
 	label: "こ↑こ↓",
 	src: "https://rpgen.org/dq/sound/res/29.mp3",
 });
 new Sound({
+	label: "野獣先輩/ヌッ！",
+	src: "https://rpgen.org/dq/sound/res/1335.mp3",
+});
+new Sound({
+	label: "野獣の咆哮",
+	src: "https://rpgen.org/dq/sound/res/68.mp3",
+});
+new Sound({
 	label: "ゆうさく/ﾁｸ",
 	src: "https://rpgen.org/dq/sound/res/1438.mp3",
 });
 new Sound({
-	label: "ち～ん(笑)2",
-	src: "https://rpgen.org/dq/sound/res/298.mp3",
+	label: "イグゾ！",
+	src: "https://rpgen.org/dq/sound/res/1451.mp3",
+});
+new Sound({
+	label: "ひで/ワァオ",
+	src: "https://rpgen.org/dq/sound/res/1449.mp3",
 });
 
 new Sound({
