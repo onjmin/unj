@@ -109,7 +109,7 @@
         <div class="thread-header">
             <p class="thread-title">{thread.title}</p>
             <ChipSet {chips}>
-                {#snippet chip(chip)}
+                {#snippet chip(chip: string)}
                     <Chip {chip}>
                         <LeadingIcon class="material-icons"
                             >priority_high</LeadingIcon

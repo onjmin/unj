@@ -16,6 +16,11 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			return;
 		}
 
+		// resとmakeThreadを共通化しているために必要な検証
+		if (res.output.threadId === null) {
+			return;
+		}
+
 		// フロントエンド上のスレッドIDを復号する
 		const serial = v.safeParse(SERIAL, decodeThreadId(res.output.threadId));
 		if (!serial.success) {

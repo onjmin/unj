@@ -13,21 +13,38 @@
     import Select, { Option } from "@smui/select";
     import Textfield from "@smui/textfield";
     import CharacterCounter from "@smui/textfield/character-counter";
+    import { navigate } from "svelte-routing";
     import {
         ccOptions,
         contentTypeOptions,
     } from "../../common/request/content-schema.js";
+    import type { HeadlineThread } from "../../common/response/schema.js";
+    import { genNonce } from "../mylib/anti-debug.js";
+    import { base } from "../mylib/env.js";
+    import {
+        getNonceKey,
+        init,
+        nonceKey,
+        ok,
+        retryMs2nd,
+        socket,
+    } from "../mylib/socket.js";
     import ContentFormPart from "../parts/ContentFormPart.svelte";
 
     let { isRef = false } = $props();
 
+    let title = $state("");
     let content = $state("");
     let contentUrl = $state("");
     let contentType = $state(1);
 
-    let contentTypesBitmask = $state([1, 4, 8, 16, 32, 64]);
+    let varsan = $state(false);
+    let sage = $state(false);
+
+    const bits2Int = (bits: number[]) => bits.reduce((p, x) => p | x);
+
     let ccBitmask = $state([1, 4, 8]);
-    let title = $state("");
+    let contentTypesBitmask = $state([1, 4, 8, 16, 32, 64]);
     let max = $state(1000);
 
     const timerOptions = [
@@ -42,13 +59,51 @@
     ];
     let timer = $state(0);
 
-    let varsan = $state(false);
-    let sage = $state(false);
-
     let check1 = $state(false);
+    let emitting = $state(false);
+
+    const handleMakeThread = (data: { ok: boolean; new: HeadlineThread }) => {
+        if (data.ok) {
+            ok();
+            navigate(base(`/thread/${data.new.id}`));
+        }
+    };
+
+    let id: NodeJS.Timeout | undefined;
+
+    $effect(() => {
+        init();
+        socket.on("makeThread", handleMakeThread);
+        return () => {
+            clearTimeout(id);
+            socket.off("makeThread", handleMakeThread);
+        };
+    });
 
     const tryMakeNewThread = () => {
-        alert("まだない");
+        emitting = true;
+        // フロントエンドのバリデーション
+        // バックエンドに送信
+        socket.emit("makeThread", {
+            nonce: genNonce(nonceKey),
+            threadId: null,
+            userName: null,
+            userAvatar: null,
+            title,
+            content,
+            contentUrl,
+            contentType,
+            varsan,
+            sage,
+            ccBitmask: bits2Int(ccBitmask),
+            contentTypesBitmask: bits2Int(contentTypesBitmask),
+            max,
+            timer,
+        });
+        id = setTimeout(() => {
+            emitting = false;
+            getNonceKey();
+        }, retryMs2nd);
     };
 
     if (isRef) {
@@ -65,13 +120,13 @@
     {:else}
         <p>高度な設定</p>
         <FormField>
-            <Checkbox bind:checked={varsan} />
+            <Checkbox disabled={emitting} bind:checked={varsan} />
             {#snippet label()}
                 事前バルサン
             {/snippet}
         </FormField>
         <FormField>
-            <Checkbox bind:checked={sage} />
+            <Checkbox disabled={emitting} bind:checked={sage} />
             {#snippet label()}
                 強制sage進行
             {/snippet}
@@ -120,6 +175,7 @@
                     <Header>レス数上限</Header>
                     <Content>
                         <Textfield
+                            disabled={emitting}
                             bind:value={max}
                             label="!max"
                             type="number"
@@ -131,7 +187,11 @@
                 <Panel>
                     <Header>時間制限</Header>
                     <Content>
-                        <Select bind:value={timer} label="!timer">
+                        <Select
+                            disabled={emitting}
+                            bind:value={timer}
+                            label="!timer"
+                        >
                             {#each timerOptions as v}
                                 <Option value={v.key}>{v.label}</Option>
                             {/each}
@@ -146,7 +206,7 @@
 <MainPart>
     <div class="form-container">
         <Textfield
-            disabled={isRef}
+            disabled={emitting || isRef}
             label="スレタイ"
             bind:value={title}
             input$maxlength={32}
@@ -156,19 +216,21 @@
             {/snippet}
         </Textfield>
         <ContentFormPart
-            disabled={isRef}
+            disabled={emitting || isRef}
             bind:content
             bind:contentUrl
             bind:contentType
         />
         <FormField>
-            <Checkbox bind:checked={check1} />
+            <Checkbox disabled={emitting} bind:checked={check1} />
             {#snippet label()}
                 スレ立て準備完了？
             {/snippet}
         </FormField>
-        <Button onclick={tryMakeNewThread} variant="raised" disabled={!check1}
-            >新規スレッド作成</Button
+        <Button
+            onclick={tryMakeNewThread}
+            variant="raised"
+            disabled={emitting || !check1}>新規スレッド作成</Button
         >
     </div>
 </MainPart>

@@ -10,9 +10,9 @@ import whitelistUnjGames from "./whitelist/unj-games.js";
 import whitelistVideo from "./whitelist/video.js";
 
 // biome-ignore lint/suspicious/noControlCharactersInRegex: <explanation>
-const regexCtrl = /[^\u0000-\u001F\u007F-\u009F]/u;
+const regexCtrl = /[\u0000-\u001F\u007F-\u009F]/u;
 const regexArabic =
-	/[^\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\ufb50-\ufdff\ufe70-\ufeFF]/u;
+	/[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\ufb50-\ufdff\ufe70-\ufeFF]/u;
 
 const regexUrl = /ttps?:\/\//;
 

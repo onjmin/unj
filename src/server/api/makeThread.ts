@@ -3,6 +3,8 @@ import * as v from "valibot";
 import { contentSchemaMap } from "../../common/request/content-schema.js";
 import { MakeThreadSchema, ResSchema } from "../../common/request/schema.js";
 import { NeverSchema } from "../../common/request/util.js";
+import type { HeadlineThread } from "../../common/response/schema.js";
+import { encodeThreadId, encodeUserId } from "../mylib/anti-debug.js";
 import Nonce from "../mylib/nonce.js";
 import { headlineRoom } from "../mylib/socket.js";
 
@@ -12,6 +14,11 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 	socket.on(api, async (data) => {
 		const res = v.safeParse(ResSchema, data);
 		if (!res.success) {
+			return;
+		}
+
+		// resとmakeThreadを共通化しているために必要な検証
+		if (res.output.threadId !== null) {
 			return;
 		}
 
@@ -45,11 +52,24 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		try {
 			// await insertPost(_.data);
 			const thread_id = Math.random().toString();
-			socket.emit(api, { ok: true, thread_id });
-			io.to(headlineRoom).emit(api, { ok: true });
+			socket.emit(api, { ok: true, new: mock });
+			socket.to(headlineRoom).emit(api, { ok: true, new: mock });
 		} catch (error) {
 		} finally {
 			Nonce.unlock(socket);
 		}
 	});
+
+	const mock: HeadlineThread = {
+		id: encodeThreadId(114514),
+		latestResAt: new Date(),
+		resCount: 1,
+		title: "【朗報】侍ジャパン、謎のホームランで勝利！",
+		userId: encodeUserId(334, new Date()).slice(0, 4),
+		online: 1,
+		ikioi: 0,
+		lolCount: 0,
+		goodCount: 0,
+		badCount: 0,
+	};
 };

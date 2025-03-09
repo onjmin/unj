@@ -66,6 +66,12 @@
         }
     };
 
+    const handleMakeThread = (data: { ok: boolean; new: HeadlineThread }) => {
+        if (data.ok) {
+            threadList?.unshift(data.new);
+        }
+    };
+
     $effect(() => {
         const id = init(() => {
             socket.emit("joinHeadline", {});
@@ -78,10 +84,12 @@
         });
         socket.on("joinHeadline", handleJoinHeadline);
         socket.on("headline", handleHeadline);
+        socket.on("makeThread", handleMakeThread);
         return () => {
             clearTimeout(id);
             socket.off("joinHeadline", handleJoinHeadline);
             socket.off("headline", handleHeadline);
+            socket.off("makeThread", handleMakeThread);
         };
     });
 

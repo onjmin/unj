@@ -8,17 +8,27 @@ const uri = PROD_MODE
 export let socket: Socket;
 export let nonceKey = "";
 let isOK = false;
+
+/**
+ * リロードしていない場合に直接呼び出す
+ */
+export const getNonceKey = () => socket.emit("getNonceKey", {});
+
+/**
+ * 再送の必要なし
+ */
 export const ok = () => {
 	isOK = true;
-	socket.emit("getNonceKey", {});
+	getNonceKey();
 };
-let retry: () => void;
+let retry: null | (() => void);
 
 /**
  * Socket.IOの初回接続
  */
-export const init = (callback: () => void) => {
-	if (!socket) {
+export const init = (callback?: () => void) => {
+	const first = !socket;
+	if (first) {
 		socket = io(uri, {
 			withCredentials: true,
 		});
@@ -30,21 +40,29 @@ export const init = (callback: () => void) => {
 			(data: { ok: boolean; nonceKey: string | null }) => {
 				if (data.ok && data.nonceKey) {
 					nonceKey = data.nonceKey;
-					if (!isOK) {
+					if (!isOK && retry) {
 						retry();
 					}
 				}
 			},
 		);
 	}
-	isOK = false;
-	retry = callback;
-	callback();
-	return setTimeout(() => {
-		if (!isOK) {
-			socket.emit("getNonceKey", {});
-		}
-	}, retryMs);
+	if (callback) {
+		isOK = false;
+		retry = callback;
+		callback();
+		return setTimeout(() => {
+			if (!isOK) {
+				getNonceKey();
+			}
+		}, retryMs1st);
+	}
+	if (first) {
+		isOK = false;
+		retry = null;
+		getNonceKey();
+	}
 };
 
-const retryMs = 2048;
+export const retryMs1st = 2048;
+export const retryMs2nd = 4096;

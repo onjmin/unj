@@ -76,9 +76,9 @@ export const MakeThreadSchema = v.object({
 	title: THREAD_TITLE,
 	varsan: v.boolean(),
 	sage: v.boolean(),
-	ccTypesBitmask: SMALLINT,
+	ccBitmask: SMALLINT,
 	contentTypesBitmask: SMALLSERIAL,
-	resLimit: v.pipe(v.number(), v.integer(), v.minValue(10), v.maxValue(1000)),
+	max: v.pipe(v.number(), v.integer(), v.minValue(10), v.maxValue(1000)),
 	timer: v.pipe(v.number(), v.integer(), v.minValue(0), v.maxValue(168)),
 });
 
@@ -87,9 +87,9 @@ export const MakeThreadSchema = v.object({
  */
 export const ResSchema = v.object({
 	nonce: NONCE,
-	threadId: THREAD_ID,
-	userName: USER_NAME,
-	userAvatar: SMALLINT,
+	threadId: v.nullable(THREAD_ID),
+	userName: v.nullable(USER_NAME),
+	userAvatar: v.nullable(SMALLINT),
 	content: v.string(), // この段階では簡易的にしか見ない
 	contentUrl: v.string(), // この段階では簡易的にしか見ない
 	contentType: v.pipe(
