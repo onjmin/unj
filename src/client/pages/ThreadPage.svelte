@@ -11,7 +11,7 @@
     import Paper, { Title, Content, Subtitle } from "@smui/paper";
     import { format } from "date-fns";
     import { ja } from "date-fns/locale";
-    import { Howl, Howler } from "howler";
+    import { Howl } from "howler";
     import { avatarMap } from "../../common/request/avatar.js";
     import type { Res, Thread } from "../../common/response/schema.js";
     import { genNonce } from "../mylib/anti-debug.js";
@@ -25,6 +25,11 @@
         ok,
         socket,
     } from "../mylib/socket.js";
+    import {
+        loadNewResSound,
+        loadReplyResSound,
+        loadSoundVolume,
+    } from "../mylib/sound.js";
     import AccessCounterPart from "../parts/AccessCounterPart.svelte";
     import ResPart from "../parts/ResPart.svelte";
 
@@ -91,8 +96,26 @@
         }
     };
 
-    const sound = new Howl({
-        src: ["https://rpgen.org/dq/sound/res/29.mp3"],
+    let newResSound: Howl;
+    let replyResSound: Howl;
+    $effect(() => {
+        loadSoundVolume();
+        loadNewResSound().then((sound) => {
+            if (sound && sound.src !== null) {
+                newResSound = new Howl({
+                    src: [sound.src],
+                    html5: true,
+                });
+            }
+        });
+        loadReplyResSound().then((sound) => {
+            if (sound && sound.src !== null) {
+                replyResSound = new Howl({
+                    src: [sound.src],
+                    html5: true,
+                });
+            }
+        });
     });
 
     let openNewResNotice = $state(false);
@@ -107,7 +130,7 @@
                 thread.resList.shift();
             }
             thread.resList.push(data.new);
-            sound.play();
+            newResSound.play();
             if (data.yours) {
                 getNonceKey();
                 content = "";

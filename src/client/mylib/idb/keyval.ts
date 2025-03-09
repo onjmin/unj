@@ -79,7 +79,7 @@ export const dangerousLoad = (key: string): Promise<string | null> =>
  * IndexedDBに平文で保存する
  *
  * 生の値を保存するため危険。
- * 大容量のデータの場合に使う。
+ * 大容量のデータ保存時に直接呼び出す。
  */
 export const dangerousSave = async (
 	key: string,
