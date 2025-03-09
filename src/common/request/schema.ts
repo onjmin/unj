@@ -87,9 +87,9 @@ export const MakeThreadSchema = v.object({
  */
 export const ResSchema = v.object({
 	nonce: NONCE,
-	threadId: v.nullable(THREAD_ID),
-	userName: v.nullable(USER_NAME),
-	userAvatar: v.nullable(SMALLINT),
+	threadId: v.nullable(THREAD_ID), // スレ立てのスキーマにも使うため
+	userName: USER_NAME,
+	userAvatar: SMALLINT,
 	content: v.string(), // この段階では簡易的にしか見ない
 	contentUrl: v.string(), // この段階では簡易的にしか見ない
 	contentType: v.pipe(

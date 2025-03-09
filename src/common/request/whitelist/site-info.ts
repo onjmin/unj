@@ -7,8 +7,8 @@ export class SiteInfo {
 	constructor({
 		name,
 		description,
-		href,
-		hostnames,
+		href, // URLテンプレ機能の対象
+		hostnames, // href以外の許容ホスト名
 	}: {
 		name: string;
 		description: string;

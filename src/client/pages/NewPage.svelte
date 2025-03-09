@@ -29,11 +29,13 @@
         ok,
         socket,
     } from "../mylib/socket.js";
-    import ContentFormPart from "../parts/ContentFormPart.svelte";
+    import ResPart from "../parts/ResPart.svelte";
 
     let { isRef = false } = $props();
 
     let title = $state("");
+    let userName = $state("");
+    let userAvatar = $state(0);
     let content = $state("");
     let contentUrl = $state("");
     let contentType = $state(1);
@@ -86,8 +88,8 @@
         socket.emit("makeThread", {
             nonce: genNonce(nonceKey),
             threadId: null,
-            userName: null,
-            userAvatar: null,
+            userName,
+            userAvatar,
             title,
             content,
             contentUrl,
@@ -214,8 +216,10 @@
                 <CharacterCounter />
             {/snippet}
         </Textfield>
-        <ContentFormPart
+        <ResPart
             disabled={emitting || isRef}
+            bind:userName
+            bind:userAvatar
             bind:content
             bind:contentUrl
             bind:contentType

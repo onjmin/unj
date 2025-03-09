@@ -8,16 +8,20 @@
     contentTypeOptions,
   } from "../../common/request/content-schema.js";
   import type { SiteInfo } from "../../common/request/whitelist/site-info.js";
-  import UrlSuggestionPart from "./UrlSuggestionPart.svelte";
+  import AvatarPart from "./AvatarPart.svelte";
+  import UrlTemplatePart from "./UrlTemplatePart.svelte";
 
   let {
     disabled = false,
+    userName = $bindable(""),
+    userAvatar = $bindable(0),
     content = $bindable(""),
     contentUrl = $bindable(""),
     contentType = $bindable(1),
   } = $props();
 
-  let open = $state(false);
+  let openUrlTemplate = $state(false);
+  let openAvatar = $state(false);
   let list: SiteInfo[] = $state([]);
 
   $effect(() => {
@@ -25,7 +29,7 @@
   });
 </script>
 
-<UrlSuggestionPart bind:open bind:contentUrl {list}>
+<UrlTemplatePart bind:open={openUrlTemplate} bind:contentUrl {list}>
   {#if contentType === 4}
     <p>みんなで遊べるブラウザゲームを集めました。</p>
   {:else if contentType === 8}
@@ -37,8 +41,22 @@
   {:else if contentType === 64}
     <p>音楽再生プレイヤーが埋め込まれます。</p>
   {/if}
-</UrlSuggestionPart>
+</UrlTemplatePart>
 
+<AvatarPart bind:open={openAvatar} bind:userAvatar />
+
+<Textfield {disabled} label="名前" bind:value={userName} input$maxlength={32}>
+  {#snippet trailingIcon()}
+    <IconButton
+      {disabled}
+      class="material-icons"
+      onclick={() => (openAvatar = true)}>image</IconButton
+    >
+  {/snippet}
+  {#snippet helper()}
+    <CharacterCounter />
+  {/snippet}
+</Textfield>
 <Textfield
   {disabled}
   textarea
@@ -68,7 +86,7 @@
     <IconButton
       {disabled}
       class="material-icons"
-      onclick={() => (open = true)}
+      onclick={() => (openUrlTemplate = true)}
       style="visibility:{contentType <= 2 ? 'hidden' : 'visible'};"
       >add_link</IconButton
     >

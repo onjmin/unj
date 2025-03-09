@@ -6,10 +6,14 @@
     ///////////////
 </script>
 
-<HeaderPart title="個人設定" />
+<HeaderPart title="個人設定">
+    <p>高度な設定</p>
+    <p>なし</p>
+</HeaderPart>
 
 <MainPart>
-    <p>UNDER CONSTRUCTION</p>
+    <p>レスの効果音</p>
+    <!-- アコーディオン & 試聴UI -->
 </MainPart>
 
 <FooterPart />

@@ -31,7 +31,7 @@
 
 <Portal target="body">
   <Dialog class="unj-dialog-part" bind:open>
-    <Title>URLテンプレ</Title>
+    <Title>URLテンプレ機能</Title>
     <Content>
       {#if children !== null}
         <div>

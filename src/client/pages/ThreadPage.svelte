@@ -11,6 +11,7 @@
     import { format } from "date-fns";
     import { ja } from "date-fns/locale";
     import { Howl, Howler } from "howler";
+    import { avatarMap } from "../../common/request/avatar.js";
     import type { Res, Thread } from "../../common/response/schema.js";
     import { genNonce } from "../mylib/anti-debug.js";
     import { visible } from "../mylib/dom.js";
@@ -23,10 +24,12 @@
         socket,
     } from "../mylib/socket.js";
     import AccessCounterPart from "../parts/AccessCounterPart.svelte";
-    import ContentFormPart from "../parts/ContentFormPart.svelte";
+    import ResPart from "../parts/ResPart.svelte";
 
     let { threadId = "", resNum = "" } = $props();
 
+    let userName = $state("");
+    let userAvatar = $state(0);
     let content = $state("");
     let contentUrl = $state("");
     let contentType = $state(1);
@@ -65,8 +68,17 @@
             goodVotes = thread.goodCount;
             badVotes = thread.badCount;
             chips = [];
+            if ((thread.ccBitmask & 3) === 0) {
+                chips.push("ID非表示");
+            }
             if (thread.ccBitmask & 2) {
                 chips.push("自演防止＠jien");
+            }
+            if ((thread.ccBitmask & 4) === 0) {
+                chips.push("コテ禁");
+            }
+            if ((thread.ccBitmask & 8) === 0) {
+                chips.push("アイコン禁止");
             }
             if (thread.varsan) {
                 chips.push("バルサン中");
@@ -183,8 +195,8 @@
         socket.emit("res", {
             nonce: genNonce(nonceKey),
             threadId,
-            userName: null,
-            userAvatar: null,
+            userName,
+            userAvatar,
             content,
             contentUrl,
             contentType,
@@ -214,8 +226,10 @@
 <HeaderPart {title} bind:bookmark>
     <AccessCounterPart {online} {pv} />
     <p>レス書き込み欄</p>
-    <ContentFormPart
+    <ResPart
         disabled={emitting}
+        bind:userName
+        bind:userAvatar
         bind:content
         bind:contentUrl
         bind:contentType
@@ -279,10 +293,12 @@
                 <div class="content-row">
                     <!-- 固定幅・高さのアイコン -->
                     <span class="avatar">
-                        <img
-                            src="https://avatars.githubusercontent.com/u/88383494"
-                            alt="User Avatar"
-                        />
+                        {#if res.ccUserAvatar && avatarMap.get(res.ccUserAvatar)}
+                            <img
+                                src={avatarMap.get(res.ccUserAvatar)?.src}
+                                alt="User Avatar"
+                            />
+                        {/if}
                     </span>
                     <!-- 右側のコンテンツ領域 -->
                     <div class="content">

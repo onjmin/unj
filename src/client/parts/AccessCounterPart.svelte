@@ -44,6 +44,12 @@
     })();
   });
 
+  const caress = async () => {
+    face = "sentiment_very_satisfied";
+    await sleep(fadeOutMs * 2);
+    face = null;
+  };
+
   // PV数の増減
   let diffPv = $state(0);
   let visibilityDiffPv = $state(false);
@@ -66,7 +72,7 @@
 
 <div>
   <List class="demo-list" dense>
-    <Item>
+    <Item onclick={caress}>
       <Graphic class="material-icons"
         >{face ? face : "sentiment_neutral"}</Graphic
       >
