@@ -23,7 +23,7 @@
 
   $effect(() => {
     href = list[selectionIndex] ? list[selectionIndex].href : "";
-    if (!open) {
+    if (open && list.length <= selectionIndex) {
       selectionIndex = 0;
     }
   });
