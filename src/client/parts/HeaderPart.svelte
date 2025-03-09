@@ -27,17 +27,12 @@
   let openRight = $state(false);
   let isMobile = $state(false);
 
-  const onResize = () => {
+  $effect(() => {
+    // ソフトウェアキーボードが出現すると画面幅が変わるため、最初の1回だけ実行する
     isMobile = calcIsMobile();
     const isPC = !isMobile;
     openLeft = isPC || pathname().slice(1).indexOf("/") === -1;
     openRight = isPC;
-  };
-
-  $effect(() => {
-    onResize();
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
   });
 
   let snackbar: Snackbar;
