@@ -60,9 +60,15 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		try {
 			let lolCount = lolCounts.get(id) ?? 0;
 			lolCounts.set(id, ++lolCount);
-			io.to(getThreadRoom(id)).emit(api, {
+			socket.emit(api, {
 				ok: true,
 				lolCount,
+				yours: true,
+			});
+			socket.to(getThreadRoom(id)).emit(api, {
+				ok: true,
+				lolCount,
+				yours: false,
 			});
 			lazyUpdate();
 		} catch (error) {

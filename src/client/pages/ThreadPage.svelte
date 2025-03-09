@@ -115,6 +115,30 @@
         isAlreadyScrollEnd = true;
     };
 
+    const handleLoL = (data: {
+        ok: boolean;
+        lolCount: number;
+        yours: boolean;
+    }) => {
+        if (data.ok) {
+            lolCount = data.lolCount;
+            if (data.yours) getNonceKey();
+        }
+    };
+
+    const handleLike = (data: {
+        ok: boolean;
+        goodCount: number;
+        badCount: number;
+        yours: boolean;
+    }) => {
+        if (data.ok) {
+            goodVotes = data.goodCount;
+            badVotes = data.badCount;
+            if (data.yours) getNonceKey();
+        }
+    };
+
     $effect(() => {
         total = goodVotes + badVotes;
         denominator = total < 16 ? 16 : total;
@@ -126,24 +150,28 @@
     $effect(() => {
         id = init(() => {
             socket.emit("joinThread", {
-                threadId: threadId,
+                threadId,
             });
             socket.emit("readThread", {
                 nonce: genNonce(nonceKey),
                 cursor: null,
                 size: 16,
                 desc: true,
-                threadId: threadId,
+                threadId,
             });
         });
         socket.on("joinThread", handleJoinThread);
         socket.on("readThread", handleReadThread);
         socket.on("res", handleRes);
+        socket.on("lol", handleLoL);
+        socket.on("like", handleLike);
         return () => {
             clearTimeout(id);
             socket.off("joinThread", handleJoinThread);
             socket.off("readThread", handleReadThread);
             socket.off("res", handleRes);
+            socket.off("lol", handleLoL);
+            socket.off("like", handleLike);
         };
     });
 
@@ -165,6 +193,21 @@
             emitting = false;
             getNonceKey();
         }, coolTimeOfModify);
+    };
+
+    const tryLoL = () => {
+        socket.emit("lol", {
+            nonce: genNonce(nonceKey),
+            threadId,
+        });
+    };
+
+    const tryLike = (good: boolean) => {
+        socket.emit("like", {
+            nonce: genNonce(nonceKey),
+            threadId,
+            good,
+        });
     };
 </script>
 
@@ -210,7 +253,7 @@
                 {/snippet}
             </ChipSet>
             <div class="lol-button-container">
-                <Button class="lol" onclick={() => (lolCount += 1)}>草</Button>
+                <Button class="lol" onclick={tryLoL}>草</Button>
                 <span>×{lolCount}草</span>
                 <span>{"ｗ".repeat(lolCount)}</span>
             </div>
@@ -263,7 +306,7 @@
                         <div class="vote-buttons">
                             <Button
                                 class="good-vote"
-                                onclick={() => (goodVotes += 1)}>ｲｲ!</Button
+                                onclick={() => tryLike(true)}>ｲｲ!</Button
                             >
                             <span class="good-count">+{goodVotes}</span>
                             <div class="bar">
@@ -279,7 +322,7 @@
                             <span class="bad-count">-{badVotes}</span>
                             <Button
                                 class="bad-vote"
-                                onclick={() => (badVotes += 1)}>ｲｸﾅｲ!</Button
+                                onclick={() => tryLike(false)}>ｲｸﾅｲ!</Button
                             >
                         </div>
                     </div>

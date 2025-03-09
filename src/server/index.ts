@@ -18,6 +18,8 @@ import handleGetNonceKey from "./api/getNonceKey.js";
 import handleHeadline from "./api/headline.js";
 import handleJoinHeadline from "./api/joinHeadline.js";
 import handleJoinThread from "./api/joinThread.js";
+import handleLike from "./api/like.js";
+import handleLol from "./api/lol.js";
 import handleMakeThread from "./api/makeThread.js";
 import handleReadThread from "./api/readThread.js";
 import handleRes from "./api/res.js";
@@ -151,6 +153,8 @@ io.on("connection", async (socket) => {
 	handleJoinHeadline({ socket, io, online, accessCounter });
 	handleJoinThread({ socket, io });
 	handleHeadline({ socket, io });
+	handleLike({ socket, io });
+	handleLol({ socket, io });
 	handleMakeThread({ socket, io });
 	handleReadThread({ socket });
 	handleRes({ socket, io });

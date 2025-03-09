@@ -66,10 +66,17 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			} else {
 				badCounts.set(id, ++badCount);
 			}
-			io.to(getThreadRoom(id)).emit(api, {
+			socket.emit(api, {
 				ok: true,
 				goodCount,
 				badCount,
+				yours: true,
+			});
+			socket.to(getThreadRoom(id)).emit(api, {
+				ok: true,
+				goodCount,
+				badCount,
+				yours: false,
 			});
 			lazyUpdate();
 		} catch (error) {
