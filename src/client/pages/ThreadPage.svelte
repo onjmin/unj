@@ -8,6 +8,7 @@
     import Banner, { Icon, Label } from "@smui/banner";
     import Button from "@smui/button";
     import Chip, { Set as ChipSet, LeadingIcon, Text } from "@smui/chips";
+    import Paper, { Title, Content, Subtitle } from "@smui/paper";
     import { format } from "date-fns";
     import { ja } from "date-fns/locale";
     import { Howl, Howler } from "howler";
@@ -17,6 +18,7 @@
     import { visible } from "../mylib/dom.js";
     import {
         coolTimeOfModify,
+        coolTimeOfSelect,
         getNonceKey,
         init,
         nonceKey,
@@ -187,6 +189,16 @@
         };
     });
 
+    let laaaaaaaag = $state(false);
+    $effect(() => {
+        const id = setTimeout(() => {
+            laaaaaaaag = true;
+        }, coolTimeOfSelect * 2);
+        return () => {
+            clearTimeout(id);
+        };
+    });
+
     let emitting = $state(false);
     const tryRes = () => {
         emitting = true;
@@ -253,6 +265,18 @@
 </Banner>
 
 <MainPart>
+    {#if thread === null}
+        <p>スレ読み込み中…</p>
+        <Paper
+            color="primary"
+            variant="outlined"
+            style="visibility:{laaaaaaaag ? 'visible' : 'hidden'};"
+        >
+            <Title>まだ終わらない？</Title>
+            <Subtitle>うんｊは同じIPからの多窓を禁止しています。</Subtitle>
+            <Content>ページ更新してみてね。</Content>
+        </Paper>
+    {/if}
     {#if thread}
         <div class="thread-header">
             <p class="thread-title">{thread.title}</p>
@@ -272,8 +296,6 @@
                 <span>{"ｗ".repeat(lolCount)}</span>
             </div>
         </div>
-    {:else}
-        <p>スレ読み込み中…</p>
     {/if}
     <div class="res-list">
         {#each thread?.resList ?? [] as res, i}

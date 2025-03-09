@@ -5,9 +5,10 @@
     import MainPart from "../parts/MainPart.svelte";
     ///////////////
 
-    import Accordion, { Panel, Header, Content } from "@smui-extra/accordion";
+    import Accordion, { Panel, Header } from "@smui-extra/accordion";
     import DataTable, { Head, Body, Row, Cell } from "@smui/data-table";
     import IconButton, { Icon } from "@smui/icon-button";
+    import Paper, { Title, Content, Subtitle } from "@smui/paper";
     import Snackbar, { Label } from "@smui/snackbar";
     import {
         differenceInDays,
@@ -22,7 +23,13 @@
     import type { HeadlineThread } from "../../common/response/schema.js";
     import { genNonce } from "../mylib/anti-debug.js";
     import { base } from "../mylib/env.js";
-    import { init, nonceKey, ok, socket } from "../mylib/socket.js";
+    import {
+        coolTimeOfSelect,
+        init,
+        nonceKey,
+        ok,
+        socket,
+    } from "../mylib/socket.js";
     import AccessCounterPart from "../parts/AccessCounterPart.svelte";
 
     const formatTimeAgo = (date: Date): string => {
@@ -98,6 +105,16 @@
         };
     });
 
+    let laaaaaaaag = $state(false);
+    $effect(() => {
+        const id = setTimeout(() => {
+            laaaaaaaag = true;
+        }, coolTimeOfSelect * 2);
+        return () => {
+            clearTimeout(id);
+        };
+    });
+
     // TODO: 無視設定
     // TODO: ブックマーク設定
 
@@ -112,6 +129,15 @@
 <MainPart>
     {#if threadList === null}
         <p>ヘッドライン読み込み中…</p>
+        <Paper
+            color="primary"
+            variant="outlined"
+            style="visibility:{laaaaaaaag ? 'visible' : 'hidden'};"
+        >
+            <Title>まだ終わらない？</Title>
+            <Subtitle>うんｊは同じIPからの多窓を禁止しています。</Subtitle>
+            <Content>ページ更新してみてね。</Content>
+        </Paper>
     {/if}
     <div class="unj-headline-accordion-container">
         <Accordion>
