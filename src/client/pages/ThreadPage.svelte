@@ -292,14 +292,16 @@
                 <!-- 下段: アイコンと内容 -->
                 <div class="content-row">
                     <!-- 固定幅・高さのアイコン -->
-                    <span class="avatar">
-                        {#if res.ccUserAvatar && avatarMap.get(res.ccUserAvatar)}
+                    {#if res.ccUserAvatar && avatarMap.get(res.ccUserAvatar)}
+                        <div class="avatar">
                             <img
                                 src={avatarMap.get(res.ccUserAvatar)?.src}
                                 alt="User Avatar"
                             />
-                        {/if}
-                    </span>
+                        </div>
+                    {:else}
+                        <div class="empty-avatar"></div>
+                    {/if}
                     <!-- 右側のコンテンツ領域 -->
                     <div class="content">
                         <div class="content-text">
@@ -402,10 +404,13 @@
         width: 100%;
     }
     /* avatar は固定サイズ、左側に配置 */
+    .empty-avatar {
+        width: 32px;
+    }
     .avatar {
         flex: 0 0 auto;
         width: 64px;
-        height: 64px;
+        height: auto;
         margin-right: 8px;
     }
     .avatar img {

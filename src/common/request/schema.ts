@@ -1,4 +1,5 @@
 import * as v from "valibot";
+import { avatarMap } from "./avatar.js";
 import { SAFE_TEXT } from "./content-schema.js";
 
 const smallintMax = 2 ** 15 - 1;
@@ -35,6 +36,10 @@ const THREAD_ID = v.pipe(
 const RES_ID = v.pipe(v.string(), v.length(resIdLength), v.regex(hashidsRegex));
 
 const USER_NAME = v.pipe(SAFE_TEXT, v.maxLength(32));
+const USER_AVATAR = v.pipe(
+	SMALLINT,
+	v.check((n) => avatarMap.has(n)),
+);
 const THREAD_TITLE = v.pipe(SAFE_TEXT, v.minLength(1), v.maxLength(32));
 const RES_NUM = v.pipe(
 	v.number(),
@@ -89,7 +94,7 @@ export const ResSchema = v.object({
 	nonce: NONCE,
 	threadId: v.nullable(THREAD_ID), // スレ立てのスキーマにも使うため
 	userName: USER_NAME,
-	userAvatar: SMALLINT,
+	userAvatar: USER_AVATAR,
 	content: v.string(), // この段階では簡易的にしか見ない
 	contentUrl: v.string(), // この段階では簡易的にしか見ない
 	contentType: v.pipe(
@@ -144,6 +149,6 @@ export const SearchResSchema = v.strictObject({
 	to: v.date(),
 	userId: USER_ID,
 	userName: USER_NAME,
-	userAvatar: SMALLINT,
+	userAvatar: USER_AVATAR,
 	contentTypesBitmask: SMALLSERIAL,
 });

@@ -64,6 +64,8 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 				{ ...mock2 },
 				{
 					num: 65 + ((Math.random() * 100) | 0),
+					ccUserName: res.output.userName || "月沈めば名無し",
+					ccUserAvatar: res.output.userAvatar,
 					content: res.output.content,
 					contentUrl: res.output.contentUrl,
 					contentType: res.output.contentType,
