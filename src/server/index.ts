@@ -155,7 +155,7 @@ io.on("connection", async (socket) => {
 	handleHeadline({ socket, io });
 	handleLike({ socket, io });
 	handleLol({ socket, io });
-	handleMakeThread({ socket, io });
+	handleMakeThread({ socket });
 	handleReadThread({ socket });
 	handleRes({ socket, io });
 });

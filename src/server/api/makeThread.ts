@@ -1,3 +1,4 @@
+import { neon } from "@neondatabase/serverless";
 import type { Server, Socket } from "socket.io";
 import * as v from "valibot";
 import { contentSchemaMap } from "../../common/request/content-schema.js";
@@ -5,12 +6,13 @@ import { MakeThreadSchema, ResSchema } from "../../common/request/schema.js";
 import { NeverSchema } from "../../common/request/util.js";
 import type { HeadlineThread } from "../../common/response/schema.js";
 import { encodeThreadId, encodeUserId } from "../mylib/anti-debug.js";
+import { NEON_DATABASE_URL } from "../mylib/env.js";
 import Nonce from "../mylib/nonce.js";
 import { headlineRoom } from "../mylib/socket.js";
 
 const api = "makeThread";
 
-export default ({ socket, io }: { socket: Socket; io: Server }) => {
+export default ({ socket }: { socket: Socket }) => {
 	socket.on(api, async (data) => {
 		const res = v.safeParse(ResSchema, data);
 		if (!res.success) {
@@ -50,7 +52,8 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 
 		// 危険な処理
 		try {
-			// await insertPost(_.data);
+			const sql = neon(NEON_DATABASE_URL);
+			const query = await sql("SELECT * FROM threads");
 			const thread_id = Math.random().toString();
 			const _mock = Object.assign(
 				{ ...mock },
@@ -67,11 +70,10 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 	});
 
 	const mock: HeadlineThread = {
-		id: encodeThreadId(114514),
+		id: encodeThreadId(114514) ?? "",
 		latestResAt: new Date(),
 		resCount: 1,
 		title: "【朗報】侍ジャパン、謎のホームランで勝利！",
-		userId: encodeUserId(334, new Date()).slice(0, 4),
 		online: 1,
 		ikioi: 0,
 		lolCount: 0,

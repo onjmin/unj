@@ -1,9 +1,11 @@
+import { neon } from "@neondatabase/serverless";
 import { differenceInMinutes } from "date-fns";
 import type { Server, Socket } from "socket.io";
 import * as v from "valibot";
 import { HeadlineSchema } from "../../common/request/schema.js";
 import type { HeadlineThread } from "../../common/response/schema.js";
-import { encodeThreadId, encodeUserId } from "../mylib/anti-debug.js";
+import { decodeThreadId, encodeThreadId } from "../mylib/anti-debug.js";
+import { DEV_MODE, NEON_DATABASE_URL } from "../mylib/env.js";
 import Nonce from "../mylib/nonce.js";
 import { sizeOf } from "../mylib/socket.js";
 
@@ -15,7 +17,16 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		if (!headline.success) {
 			return;
 		}
-		const { cursor, size, desc } = headline.output;
+
+		// cursorの復号
+		let cursor: number | null = null;
+		if (headline.output.cursor !== null) {
+			cursor = decodeThreadId(headline.output.cursor);
+			if (cursor === null) {
+				return;
+			}
+		}
+		const { size, desc } = headline.output;
 
 		// Nonce値の完全一致チェック
 		if (!Nonce.isValid(socket, headline.output.nonce)) {
@@ -26,29 +37,44 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 
 		// 危険な処理
 		try {
-			// await getPost(_.data);
+			const sql = neon(NEON_DATABASE_URL);
+			const query = ["SELECT * FROM threads"];
+			if (cursor !== null) {
+				if (desc) {
+					query.push(`WHERE id < ${cursor}`);
+				} else {
+					query.push(`WHERE id > ${cursor}`);
+				}
+			}
+			query.push(`ORDER BY latest_res_at ${desc ? "DESC" : "ASC"}`);
+			query.push(`LIMIT ${size}`);
+			const list: HeadlineThread[] = [];
+			for (const record of await sql(query.join(" "))) {
+				const latestResAt = new Date(record.latest_res_at);
+				const resCount = record.res_count;
+				list.push({
+					id: encodeThreadId(record.id) ?? "",
+					latestResAt,
+					resCount,
+					title: record.title,
+					online: sizeOf(io, record.id),
+					ikioi:
+						((resCount * (+new Date() - +latestResAt)) / 1000 / 60 / 60) | 0,
+					lolCount: record.lol_count,
+					goodCount: record.good_count,
+					badCount: record.bad_count,
+				});
+			}
 			socket.emit(api, {
 				ok: true,
-				list: [...Array(16)].map((v) => mock),
+				list,
 			});
 		} catch (error) {
+			if (DEV_MODE) {
+				console.error(error);
+			}
 		} finally {
 			Nonce.unlock(socket);
 		}
 	});
-
-	const mock: HeadlineThread = {
-		id: encodeThreadId(9800),
-		latestResAt: new Date(),
-		resCount: 256,
-		title: "【朗報】侍ジャパン、謎のホームランで勝利！",
-		userId: encodeUserId(334, new Date()).slice(0, 4),
-		online: sizeOf(io, encodeThreadId(9800)),
-		ikioi:
-			(256 / 60) *
-			differenceInMinutes(new Date(), new Date(+new Date() - 9000000)), // レス数 × (60 / 経過時間[分])
-		lolCount: 3,
-		goodCount: 4,
-		badCount: 5,
-	};
 };

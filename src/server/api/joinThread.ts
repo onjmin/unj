@@ -17,14 +17,10 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		}
 
 		// フロントエンド上のスレッドIDを復号する
-		const serial = v.safeParse(
-			SERIAL,
-			decodeThreadId(joinThread.output.threadId),
-		);
-		if (!serial.success) {
+		const id = decodeThreadId(joinThread.output.threadId);
+		if (id === null) {
 			return;
 		}
-		const id = serial.output;
 
 		const room = getThreadRoom(id);
 		const moved = await switchTo(socket, room);

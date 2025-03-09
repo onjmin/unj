@@ -5,9 +5,9 @@ CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    authorization TEXT NOT NULL UNIQUE, -- 別端末で引き継ぎ可能な認可トークン
+    auth TEXT NOT NULL UNIQUE, -- 別端末で引き継ぎ可能な認可トークン
     ninja_pokemon SMALLINT NOT NULL DEFAULT 0, -- 忍法帖ポケモンのID「■忍【LV38,ピカチュウ,9S】◆KOSOVO//9k」
-    ninja_score SMALLINT NOT NULL DEFAULT 0, -- 忍法帖スコア
+    ninja_score SMALLINT NOT NULL DEFAULT 0 -- 忍法帖スコア
 );
 
 /*
@@ -30,9 +30,9 @@ CREATE TABLE threads (
     sage BOOLEAN NOT NULL DEFAULT FALSE, -- 強制sage進行
     cc_bitmask SMALLINT DEFAULT 1, -- 写しの取り方
     content_types_bitmask SMALLINT DEFAULT 1, -- 投稿可能なコンテンツの種類
-    lol_count SMALLINT NOT NULL DEFAULT 0 -- 草ボタン
+    lol_count SMALLINT NOT NULL DEFAULT 0, -- 草ボタン
     good_count SMALLINT NOT NULL DEFAULT 0, -- ｲｲ!(・∀・)
-    bad_count SMALLINT NOT NULL DEFAULT 0, -- (・Ａ・)ｲｸﾅｲ!
+    bad_count SMALLINT NOT NULL DEFAULT 0 -- (・Ａ・)ｲｸﾅｲ!
 );
 
 /*

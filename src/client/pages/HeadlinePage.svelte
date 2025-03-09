@@ -170,7 +170,6 @@
                         >
                             <Head>
                                 <Row>
-                                    <Cell>スレ主ID</Cell>
                                     <Cell>接続</Cell>
                                     <Cell>勢い</Cell>
                                     <Cell numeric>草</Cell>
@@ -180,7 +179,6 @@
                             </Head>
                             <Body>
                                 <Row>
-                                    <Cell>{thread.userId}</Cell>
                                     <Cell numeric>{thread.online}</Cell>
                                     <Cell numeric>{thread.ikioi}</Cell>
                                     <Cell numeric>{thread.lolCount}</Cell>

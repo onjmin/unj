@@ -23,11 +23,10 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		}
 
 		// フロントエンド上のスレッドIDを復号する
-		const serial = v.safeParse(SERIAL, decodeThreadId(res.output.threadId));
-		if (!serial.success) {
+		const id = decodeThreadId(res.output.threadId);
+		if (id === null) {
 			return;
 		}
-		const id = serial.output;
 
 		// roomのチェック
 		if (!exist(io, getThreadRoom(id)) || !joined(socket, getThreadRoom(id))) {
@@ -91,7 +90,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		isOwner: true,
 		num: 1,
 		createdAt: new Date(),
-		ccUserId: encodeUserId(334, new Date()).slice(0, 4),
+		ccUserId: encodeUserId(334, new Date())?.slice(0, 4) ?? "",
 		ccUserName: "月沈めば名無し2",
 		ccUserAvatar: 0,
 		content: "草".repeat(20),

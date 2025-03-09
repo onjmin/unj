@@ -3,7 +3,6 @@ export type HeadlineThread = {
 	latestResAt: Date;
 	resCount: number;
 	title: string;
-	userId: string;
 	online: number;
 	ikioi: number;
 	lolCount: number;
@@ -40,5 +39,5 @@ export type Thread = {
 	ccBitmask: number;
 	contentTypesBitmask: number;
 	resLimit: number;
-	deletedAt: Date;
+	deletedAt: Date | null;
 };

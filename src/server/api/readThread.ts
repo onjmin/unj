@@ -1,12 +1,16 @@
+import { neon } from "@neondatabase/serverless";
+import { th } from "date-fns/locale";
 import type { Socket } from "socket.io";
 import * as v from "valibot";
-import { ReadThreadSchema, SERIAL } from "../../common/request/schema.js";
+import { ReadThreadSchema } from "../../common/request/schema.js";
 import type { Res, Thread } from "../../common/response/schema.js";
 import {
+	decodeResId,
 	decodeThreadId,
 	encodeThreadId,
 	encodeUserId,
 } from "../mylib/anti-debug.js";
+import { DEV_MODE, NEON_DATABASE_URL } from "../mylib/env.js";
 import Nonce from "../mylib/nonce.js";
 import { badCounts, goodCounts } from "./like.js";
 import { lolCounts } from "./lol.js";
@@ -21,16 +25,20 @@ export default ({ socket }: { socket: Socket }) => {
 		}
 
 		// フロントエンド上のスレッドIDを復号する
-		const serial = v.safeParse(
-			SERIAL,
-			decodeThreadId(readThread.output.threadId),
-		);
-		if (!serial.success) {
+		const id = decodeThreadId(readThread.output.threadId);
+		if (id === null) {
 			return;
 		}
-		const id = serial.output;
 
-		const { cursor, size, desc } = readThread.output;
+		// cursorの復号
+		let cursor: number | null = null;
+		if (readThread.output.cursor !== null) {
+			cursor = decodeResId(readThread.output.cursor);
+			if (cursor === null) {
+				return;
+			}
+		}
+		const { size, desc } = readThread.output;
 
 		// Nonce値の完全一致チェック
 		if (!Nonce.isValid(socket, readThread.output.nonce)) {
@@ -41,66 +49,83 @@ export default ({ socket }: { socket: Socket }) => {
 
 		// 危険な処理
 		try {
-			// await getThread(result.data)
-			// await getPost(result.data);
-			if (!lolCounts.has(id)) {
-				lolCounts.set(id, 810);
-				goodCounts.set(id, 114);
-				badCounts.set(id, 514);
+			const sql = neon(NEON_DATABASE_URL);
+			// スレッドの取得
+			const records = await sql(`SELECT * FROM threads WHERE id = ${id}`);
+			if (!records.length) {
+				return;
 			}
-			const lolCount = lolCounts.get(id) ?? 0;
-			const goodCount = goodCounts.get(id) ?? 0;
-			const badCount = badCounts.get(id) ?? 0;
+			const threadRecord = records[0];
+			let deletedAt: Date | null = null;
+			if (threadRecord.deleted_at !== null) {
+				deletedAt = new Date(threadRecord.deleted_at);
+				if (new Date() > deletedAt) {
+					return;
+				}
+			}
+
+			if (!lolCounts.has(id)) {
+				lolCounts.set(id, threadRecord.lol_count);
+				goodCounts.set(id, threadRecord.good_count);
+				badCounts.set(id, threadRecord.bad_count);
+			}
+
+			// レスの取得
+			const query = [`SELECT * FROM res WHERE thread_id = ${id}`];
+			if (cursor !== null) {
+				if (desc) {
+					query.push(`AND id < ${cursor}`);
+				} else {
+					query.push(`AND id > ${cursor}`);
+				}
+			}
+			query.push(`ORDER BY num ${desc ? "DESC" : "ASC"}`);
+			query.push(`LIMIT ${size}`);
+			const list: Res[] = [];
+			for (const record of await sql(query.join(" "))) {
+				list.push({
+					isOwner: record.is_owner,
+					num: record.num,
+					createdAt: record.created_at,
+					ccUserId: record.cc_user_id || "???",
+					ccUserName: record.cc_user_name || "月沈めば名無し",
+					ccUserAvatar: record.cc_user_avatar,
+					content: record.content,
+					contentUrl: record.content_url,
+					contentType: record.content_type,
+				});
+			}
+
+			const thread: Thread = {
+				id: threadRecord.id,
+				latestResAt: new Date(threadRecord.latest_res_at),
+				resCount: threadRecord.res_count,
+				title: threadRecord.title,
+				lolCount: lolCounts.get(id) ?? 0,
+				goodCount: goodCounts.get(id) ?? 0,
+				badCount: badCounts.get(id) ?? 0,
+				resList: list,
+				deletedAt,
+				ps: threadRecord.ps,
+				resLimit: threadRecord.res_limit,
+				ageRes: null, // TODO: 未実装
+				varsan: threadRecord.varsan,
+				sage: threadRecord.sage,
+				threadType: threadRecord.thread_type,
+				ccBitmask: threadRecord.cc_bitmask,
+				contentTypesBitmask: threadRecord.content_types_bitmask,
+			};
+
 			socket.emit(api, {
 				ok: true,
-				thread: mock,
+				thread,
 			});
 		} catch (error) {
+			if (DEV_MODE) {
+				console.error(error);
+			}
 		} finally {
 			Nonce.unlock(socket);
 		}
 	});
-
-	const mock2: Res = {
-		isOwner: false,
-		num: 1,
-		createdAt: new Date(),
-		ccUserId: encodeUserId(334, new Date()).slice(0, 4),
-		ccUserName: "月沈めば名無し",
-		ccUserAvatar: 0,
-		content: "草",
-		contentUrl: "https://i.imgur.com/7dzm3JU.jpeg",
-		contentType: 8,
-	};
-
-	const mock: Thread = {
-		id: encodeThreadId(9800),
-		latestResAt: new Date(),
-		resCount: 256,
-		title: "【朗報】侍ジャパン、謎のホームランで勝利！",
-		lolCount: 3,
-		goodCount: 4,
-		badCount: 5,
-		resList: [...Array(64)].map((v, i) =>
-			Object.assign(
-				{ ...mock2 },
-				{
-					num: i + 1,
-					contentUrl:
-						Math.random() > 0.3
-							? "https://i.imgur.com/7dzm3JU.jpeg"
-							: "https://youtu.be/3-kI9rDwQ8E",
-				},
-			),
-		),
-		deletedAt: new Date(+new Date() + 1000 * 60 * 64),
-		ps: "追記",
-		resLimit: 1000,
-		ageRes: null,
-		varsan: false,
-		sage: false,
-		threadType: 0,
-		ccBitmask: 1,
-		contentTypesBitmask: 1,
-	};
 };

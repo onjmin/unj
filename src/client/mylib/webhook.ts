@@ -27,7 +27,7 @@ const sendDiscordWebhook = (url: string, array: string[]) =>
 			content: [
 				"```",
 				format(new Date(), "yyyy年MM月dd日 HH時mm分ss秒", { locale: ja }),
-				array.join("\n").replace(/```/g, ""),
+				array.join("\n").replace(/`/g, ""),
 				"```",
 			].join("\n"),
 		}),

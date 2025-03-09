@@ -28,11 +28,10 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		}
 
 		// フロントエンド上のスレッドIDを復号する
-		const serial = v.safeParse(SERIAL, decodeThreadId(lol.output.threadId));
-		if (!serial.success) {
+		const id = decodeThreadId(lol.output.threadId);
+		if (id === null) {
 			return;
 		}
-		const id = serial.output;
 
 		// roomのチェック
 		if (!exist(io, getThreadRoom(id)) || !joined(socket, getThreadRoom(id))) {

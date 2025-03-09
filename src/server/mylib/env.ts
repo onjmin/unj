@@ -7,6 +7,7 @@ export const STG_MODE = process.env.STG_MODE === "true";
 export const PROD_MODE = !DEV_MODE && !STG_MODE;
 
 export const VITE_BASE_URL = PROD_MODE ? process.env.VITE_BASE_URL : "/";
+export const NEON_DATABASE_URL = String(process.env.NEON_DATABASE_URL);
 
 export let ROOT_PATH = "";
 if (DEV_MODE) {

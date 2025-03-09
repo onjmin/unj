@@ -22,6 +22,8 @@ const INT = v.pipe(v.number(), v.integer(), v.minValue(0), v.maxValue(intMax));
 export const SMALLSERIAL = v.pipe(SMALLINT, v.minValue(1));
 export const SERIAL = v.pipe(INT, v.minValue(1));
 
+export const isSerial = (n: number) => v.safeParse(SERIAL, n).success;
+
 const NONCE = v.pipe(v.string(), v.length(nonceLength), v.hexadecimal());
 const USER_ID = v.pipe(
 	v.string(),
@@ -108,7 +110,7 @@ export const ResSchema = v.object({
  */
 export const ReadThreadSchema = v.strictObject({
 	nonce: NONCE,
-	cursor: v.nullable(RES_NUM),
+	cursor: v.nullable(RES_ID),
 	size: RES_NUM,
 	desc: v.boolean(),
 	threadId: THREAD_ID,
