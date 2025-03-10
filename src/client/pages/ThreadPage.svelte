@@ -190,7 +190,7 @@
             socket.emit("readThread", {
                 nonce: genNonce(nonceKey),
                 cursor: null,
-                size: 16,
+                size: 64,
                 desc: false,
                 threadId,
             });

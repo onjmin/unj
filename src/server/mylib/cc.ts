@@ -1,7 +1,7 @@
 import { encodeUserId } from "./anti-debug.js";
 
 export const makeCcUserId = (ccBitmask: number, userId: number) => {
-	if ((ccBitmask & 2) === 1) {
+	if ((ccBitmask & 2) === 2) {
 		// 2: 自演防止ID表示 # （ID:8z.8u.L60）
 		const result = encodeUserId(userId, new Date());
 		if (result !== null) {
@@ -25,14 +25,14 @@ export const unjDefaultUserName = "月沈めば名無し";
  * 名前に付加される系のコマンドもここで作成する
  */
 export const makeCcUserName = (ccBitmask: number, userName: string) => {
-	if ((ccBitmask & 4) === 1) {
+	if ((ccBitmask & 4) === 4) {
 		return userName;
 	}
 	return "";
 };
 
 export const makeCcUserAvatar = (ccBitmask: number, userAvatar: number) => {
-	if ((ccBitmask & 8) === 1) {
+	if ((ccBitmask & 8) === 8) {
 		return userAvatar;
 	}
 	return 0;
