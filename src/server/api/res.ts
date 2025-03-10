@@ -151,8 +151,6 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 				return;
 			}
 
-			console.log(1111111);
-
 			// スレッドの更新
 			// TODO: スレ主による高度な設定の更新などここで行う
 			await sql(
