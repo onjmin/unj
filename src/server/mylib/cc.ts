@@ -22,7 +22,7 @@ export const makeCcUserId = (ccBitmask: number, userId: number) => {
 export const unjDefaultUserName = "月沈めば名無し";
 
 /**
- * 名前に付加するコマンドもここで作成する
+ * 名前に付加される系のコマンドもここで作成する
  */
 export const makeCcUserName = (ccBitmask: number, userName: string) => {
 	if ((ccBitmask & 4) === 1) {

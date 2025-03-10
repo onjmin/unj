@@ -1,13 +1,17 @@
 import type { Server, Socket } from "socket.io";
 import * as v from "valibot";
-import { SERIAL, joinThreadSchema } from "../../common/request/schema.js";
+import { joinThreadSchema } from "../../common/request/schema.js";
 import { decodeThreadId } from "../mylib/anti-debug.js";
+import { isExpired } from "../mylib/cache.js";
 import { getThreadRoom, sizeOf, switchTo } from "../mylib/socket.js";
 import headline from "./headline.js";
 
 const api = "joinThread";
-export const pvMap: Map<number, number> = new Map();
+export const pvCache: Map<number, number> = new Map();
 
+/**
+ * Nonce値の検証なしで叩けるため、脆弱性にさせないためにpvCacheはDBに反映しない
+ */
 export default ({ socket, io }: { socket: Socket; io: Server }) => {
 	socket.data.prevRoom = "";
 	socket.on(api, async (data) => {
@@ -17,17 +21,22 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		}
 
 		// フロントエンド上のスレッドIDを復号する
-		const id = decodeThreadId(joinThread.output.threadId);
-		if (id === null) {
+		const threadId = decodeThreadId(joinThread.output.threadId);
+		if (threadId === null) {
 			return;
 		}
 
-		const room = getThreadRoom(id);
+		// TODO: 未キャッシュ状態の削除済みスレに入れてしまう問題
+		if (isExpired(threadId)) {
+			return;
+		}
+
+		const room = getThreadRoom(threadId);
 		const moved = await switchTo(socket, room);
 		const size = sizeOf(io, room);
 		if (moved) {
-			const pv = (pvMap.get(id) ?? 0) + 1;
-			pvMap.set(id, pv);
+			const pv = (pvCache.get(threadId) ?? 0) + 1;
+			pvCache.set(threadId, pv);
 			io.to(room).emit(api, { ok: true, size, pv });
 			// 元いたスレに退室通知
 			const { prevRoom } = socket.data;

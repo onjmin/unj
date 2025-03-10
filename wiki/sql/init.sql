@@ -1,57 +1,61 @@
-/*
-    ユーザーのテーブル
-*/
+DROP TABLE IF EXISTS users CASCADE;
+DROP TABLE IF EXISTS threads CASCADE;
+DROP TABLE IF EXISTS res CASCADE;
+-- ========== users テーブル ==========
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     auth TEXT NOT NULL UNIQUE, -- 別端末で引き継ぎ可能な認可トークン
     ninja_pokemon SMALLINT NOT NULL DEFAULT 0, -- 忍法帖ポケモンのID「■忍【LV38,ピカチュウ,9S】◆KOSOVO//9k」
     ninja_score SMALLINT NOT NULL DEFAULT 0 -- 忍法帖スコア
 );
 
-/*
-    スレッドのテーブル
-*/
+-- ========== threads テーブル ==========
 CREATE TABLE threads (
     id SERIAL PRIMARY KEY,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     deleted_at TIMESTAMP, -- 論理削除の予定日時（!timer用）
     latest_res_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 最終レスの日時
-    user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    -- 基本的な情報
     title TEXT NOT NULL DEFAULT '',
-    ps TEXT NOT NULL DEFAULT '', -- !add機能で>>1の末尾に追記する内容
-    res_count SMALLINT NOT NULL DEFAULT 1, -- count()よりも軽量。レス投稿後に発行されるIDが真の値。
-    res_limit SMALLINT NOT NULL DEFAULT 1000, -- レスの上限。次スレ誘導のためにスレ主と副主は+5まで投稿可能。
-    age_res_num INT NOT NULL DEFAULT 0, -- !age機能で表示するレスのID（0の場合はage無し）
     thread_type SMALLINT DEFAULT 0, -- スレッドの種類（実況スレ、地震スレ、安価スレ、スレタイで振り分けられる。または、SSスレ、運営スレ、語尾が変わる特殊なスレなど）
+    -- 高度な設定
     varsan BOOLEAN NOT NULL DEFAULT FALSE, -- !バルサン
     sage BOOLEAN NOT NULL DEFAULT FALSE, -- 強制sage進行
     cc_bitmask SMALLINT DEFAULT 1, -- 写しの取り方
     content_types_bitmask SMALLINT DEFAULT 1, -- 投稿可能なコンテンツの種類
+    res_limit SMALLINT NOT NULL DEFAULT 1000, -- レスの上限
+    -- 動的なデータ
+    res_count SMALLINT NOT NULL DEFAULT 1, -- count()よりも軽量。レス投稿後に発行されるIDが真の値。
+    ps TEXT NOT NULL DEFAULT '', -- !add機能で>>1の末尾に追記する内容
+    age_res_num INT NOT NULL DEFAULT 0, -- !age機能で表示するレスのID（0の場合はage無し）
     lol_count SMALLINT NOT NULL DEFAULT 0, -- 草ボタン
     good_count SMALLINT NOT NULL DEFAULT 0, -- ｲｲ!(・∀・)
-    bad_count SMALLINT NOT NULL DEFAULT 0 -- (・Ａ・)ｲｸﾅｲ!
+    bad_count SMALLINT NOT NULL DEFAULT 0, -- (・Ａ・)ｲｸﾅｲ!
+    -- 書き込み内容
+    user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    cc_user_id TEXT NOT NULL DEFAULT '',
+    cc_user_name TEXT NOT NULL DEFAULT '',
+    cc_user_avatar SMALLINT NOT NULL DEFAULT 0,
+    content TEXT NOT NULL DEFAULT '',
+    content_url TEXT NOT NULL DEFAULT '',
+    content_type SMALLINT NOT NULL DEFAULT 1
 );
 
-/*
-    レスのテーブル
-*/
+-- ========== res テーブル ==========
 CREATE TABLE res (
     id SERIAL PRIMARY KEY,
     thread_id INT NOT NULL REFERENCES threads(id) ON DELETE CASCADE,
-    num SMALLINT NOT NULL, -- レス番号（各スレッド内で連番）
+    num SMALLINT NOT NULL DEFAULT 2, -- レス番号（各スレッド内で連番）
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    -- メタ情報（基本的にUserの写し）
     is_owner BOOLEAN NOT NULL DEFAULT FALSE, -- スレ主フラグ
-    cc_user_id TEXT NOT NULL DEFAULT '', -- 表示用ID、自演防止IDが記録される。空文字は匿名化ID
-    cc_user_name TEXT NOT NULL DEFAULT '', -- トリップ、忍法帖、副マークが記録される。空文字は「月沈めば名無し」
-    cc_user_avatar SMALLINT NOT NULL DEFAULT 0, -- アバターID, 0: 未設定
-    -- 投稿内容
+    -- 書き込み内容
+    user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    cc_user_id TEXT NOT NULL DEFAULT '',
+    cc_user_name TEXT NOT NULL DEFAULT '',
+    cc_user_avatar SMALLINT NOT NULL DEFAULT 0,
     content TEXT NOT NULL DEFAULT '',
     content_url TEXT NOT NULL DEFAULT '',
-    content_type SMALLINT NOT NULL DEFAULT 1, -- 1: text, 2: image, 4: gif
+    content_type SMALLINT NOT NULL DEFAULT 1,
     UNIQUE (thread_id, num)  -- スレッド内でのレス番号の一意性を保証
 );

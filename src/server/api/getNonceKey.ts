@@ -1,7 +1,7 @@
 import type { Socket } from "socket.io";
 import * as v from "valibot";
 import { getNonceKeySchema } from "../../common/request/schema.js";
-import Nonce from "../mylib/nonce.js";
+import nonce from "../mylib/nonce.js";
 
 const api = "getNonceKey";
 
@@ -11,6 +11,6 @@ export default ({ socket }: { socket: Socket }) => {
 		if (!getNonceKey.success) {
 			return;
 		}
-		socket.emit(api, { ok: true, nonceKey: Nonce.get(socket) });
+		socket.emit(api, { ok: true, nonceKey: nonce.get(socket) });
 	});
 };

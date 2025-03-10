@@ -1,7 +1,7 @@
 import { sha256 } from "js-sha256";
 import type { Socket } from "socket.io";
 import { genNonce } from "./anti-debug.js";
-import Auth from "./auth.js";
+import auth from "./auth.js";
 
 const nonces: Map<string, string> = new Map();
 const locks: Map<string, boolean> = new Map();
@@ -9,23 +9,23 @@ const locks: Map<string, boolean> = new Map();
 const genNonceKey = () => sha256(Math.random().toString(36)).slice(0, 8); // TODO: 脆弱性
 
 export const init = (socket: Socket) => {
-	const auth = Auth.get(socket);
-	if (!nonces.has(auth)) {
-		nonces.set(auth, genNonceKey());
-		locks.set(auth, false);
+	const key = auth.get(socket);
+	if (!nonces.has(key)) {
+		nonces.set(key, genNonceKey());
+		locks.set(key, false);
 	}
 };
 
-export const lock = (socket: Socket) => locks.set(Auth.get(socket), true);
-export const unlock = (socket: Socket) => locks.set(Auth.get(socket), false);
+export const lock = (socket: Socket) => locks.set(auth.get(socket), true);
+export const unlock = (socket: Socket) => locks.set(auth.get(socket), false);
 export const update = (socket: Socket) =>
-	nonces.set(Auth.get(socket), genNonceKey());
+	nonces.set(auth.get(socket), genNonceKey());
 export const get = (socket: Socket): string | null =>
-	locks.get(Auth.get(socket)) ? null : (nonces.get(Auth.get(socket)) ?? null);
+	locks.get(auth.get(socket)) ? null : (nonces.get(auth.get(socket)) ?? null);
 export const isValid = (socket: Socket, nonce: string) => {
-	const result = locks.get(Auth.get(socket))
+	const result = locks.get(auth.get(socket))
 		? false
-		: genNonce(nonces.get(Auth.get(socket)) ?? "") === nonce;
+		: genNonce(nonces.get(auth.get(socket)) ?? "") === nonce;
 	console.log("🔑", result);
 	return result;
 };

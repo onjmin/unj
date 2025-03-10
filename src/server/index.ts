@@ -24,9 +24,9 @@ import handleMakeThread from "./api/makeThread.js";
 import handleReadThread from "./api/readThread.js";
 import handleRes from "./api/res.js";
 import { flaky } from "./mylib/anti-debug.js";
-import Auth from "./mylib/auth.js";
+import auth from "./mylib/auth.js";
 import { detectFastlyClientIp, isBannedIP } from "./mylib/ip.js";
-import Nonce from "./mylib/nonce.js";
+import nonce from "./mylib/nonce.js";
 
 const bannedCheckMiddleware = (
 	req: Request,
@@ -145,8 +145,8 @@ io.on("connection", async (socket) => {
 
 	accessCount++;
 
-	Auth.init(socket);
-	Nonce.init(socket);
+	auth.init(socket);
+	nonce.init(socket);
 
 	handleGetNonceKey({ socket });
 	handleJoinHeadline({ socket, io, online, accessCounter });

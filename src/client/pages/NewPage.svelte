@@ -29,7 +29,7 @@
         ok,
         socket,
     } from "../mylib/socket.js";
-    import ResPart from "../parts/ResPart.svelte";
+    import ResFormPart from "../parts/ResFormPart.svelte";
 
     let { isRef = false } = $props();
 
@@ -87,7 +87,6 @@
         // バックエンドに送信
         socket.emit("makeThread", {
             nonce: genNonce(nonceKey),
-            threadId: null,
             userName,
             userAvatar,
             title,
@@ -216,7 +215,7 @@
                 <CharacterCounter />
             {/snippet}
         </Textfield>
-        <ResPart
+        <ResFormPart
             disabled={emitting || isRef}
             bind:userName
             bind:userAvatar

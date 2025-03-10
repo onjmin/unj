@@ -1,13 +1,25 @@
+import { neon } from "@neondatabase/serverless";
 import type { Server, Socket } from "socket.io";
 import * as v from "valibot";
 import { contentSchemaMap } from "../../common/request/content-schema.js";
-import { ResSchema, SERIAL } from "../../common/request/schema.js";
+import { ResSchema } from "../../common/request/schema.js";
 import { NeverSchema } from "../../common/request/util.js";
 import type { Res } from "../../common/response/schema.js";
-import { decodeThreadId, encodeUserId } from "../mylib/anti-debug.js";
-import { unjDefaultUserName } from "../mylib/cc.js";
-import { DEV_MODE } from "../mylib/env.js";
-import Nonce from "../mylib/nonce.js";
+import { decodeThreadId, encodeResId } from "../mylib/anti-debug.js";
+import auth from "../mylib/auth.js";
+import {
+	ccBitmaskCache,
+	contentTypesBitmaskCache,
+	isExpired,
+	ownerIdCache,
+	resCountCache,
+	resLimitCache,
+	sageCache,
+	varsanCache,
+} from "../mylib/cache.js";
+import { makeCcUserAvatar, makeCcUserId, makeCcUserName } from "../mylib/cc.js";
+import { DEV_MODE, NEON_DATABASE_URL } from "../mylib/env.js";
+import nonce from "../mylib/nonce.js";
 import { exist, getThreadRoom, joined } from "../mylib/socket.js";
 
 const api = "res";
@@ -19,87 +31,173 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			return;
 		}
 
-		// resとmakeThreadを共通化しているために必要な検証
-		if (res.output.threadId === null) {
+		// フロントエンド上のスレッドIDを復号する
+		const threadId = decodeThreadId(res.output.threadId);
+		if (threadId === null) {
 			return;
 		}
 
-		// フロントエンド上のスレッドIDを復号する
-		const id = decodeThreadId(res.output.threadId);
-		if (id === null) {
+		if (isExpired(threadId)) {
 			return;
+		}
+
+		const userId = auth.getUserId(socket);
+		const isOwner = ownerIdCache.get(threadId) === userId;
+
+		const resCount = resCountCache.get(threadId) ?? 0;
+		const resLimit = resLimitCache.get(threadId) ?? 0;
+		if (isOwner) {
+			// 次スレ誘導のためにスレ主は+5まで投稿可能
+			if (resCount >= resLimit + 5) {
+				return;
+			}
+		} else {
+			if (resCount >= resLimit) {
+				return;
+			}
+		}
+
+		// !バルサン
+		if (!isOwner && varsanCache.get(threadId)) {
+			// TODO: 忍法帖の実装後
 		}
 
 		// roomのチェック
-		if (!exist(io, getThreadRoom(id)) || !joined(socket, getThreadRoom(id))) {
+		if (
+			!exist(io, getThreadRoom(threadId)) ||
+			!joined(socket, getThreadRoom(threadId))
+		) {
 			return;
 		}
 
-		// 本文のバリデーション
-		const { contentType } = res.output;
-		const content = v.safeParse(
+		// 投稿許可されたコンテンツなのか
+		const { content, contentUrl, contentType } = res.output;
+		const contentTypesBitmask = contentTypesBitmaskCache.get(threadId) ?? 0;
+		if ((contentTypesBitmask & contentType) === 0) {
+			return;
+		}
+
+		// 偽装されたコンテンツなのか
+		const contentResult = v.safeParse(
 			contentSchemaMap.get(contentType) ?? NeverSchema,
 			data,
 		);
-		if (!content.success) {
+		if (!contentResult.success) {
 			return;
 		}
 
-		// read thread
-		// if (!(content_type & resultMakeThread.output.content_types_bitmask)) {
-		// 	return;
-		// }
-		// const thread_id = ""; // threadから取得
+		const ccBitmask = ccBitmaskCache.get(threadId) ?? 0;
+		const ccUserId = makeCcUserId(ccBitmask, userId);
+		const ccUserName = makeCcUserName(ccBitmask, res.output.userName);
+		const ccUserAvatar = makeCcUserAvatar(ccBitmask, res.output.userAvatar);
 
 		// Nonce値の完全一致チェック
-		if (!Nonce.isValid(socket, res.output.nonce)) {
+		if (!nonce.isValid(socket, res.output.nonce)) {
 			return;
 		}
-		Nonce.lock(socket);
-		Nonce.update(socket);
 
 		// 危険な処理
+		const sql = neon(NEON_DATABASE_URL);
 		try {
-			// await insertPost(result.data);
-			const newRes = Object.assign(
-				{ ...mock2 },
-				{
-					num: 65 + ((Math.random() * 100) | 0),
-					ccUserName: res.output.userName || unjDefaultUserName,
-					ccUserAvatar: res.output.userAvatar,
-					content: res.output.content,
-					contentUrl: res.output.contentUrl,
-					contentType: res.output.contentType,
-				},
+			nonce.lock(socket);
+			nonce.update(socket);
+
+			await sql("BEGIN"); // トランザクション開始
+
+			const next = resCount + 1;
+			resCountCache.set(threadId, next);
+
+			// レスの作成
+			const records = await sql(
+				[
+					`INSERT INTO res (${[
+						// 書き込み内容
+						"user_id",
+						"cc_user_id",
+						"cc_user_name",
+						"cc_user_avatar",
+						"content",
+						"content_url",
+						"content_type",
+						// メタ情報
+						"thread_id",
+						"num",
+						"is_owner",
+					].join(",")})`,
+					"VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)",
+					"RETURNING *",
+				].join(" "),
+				[
+					// 書き込み内容
+					userId,
+					ccUserId,
+					ccUserName,
+					ccUserAvatar,
+					content,
+					contentUrl,
+					contentType,
+					// メタ情報
+					threadId,
+					next,
+					isOwner,
+				],
 			);
+			if (!records.length) {
+				return;
+			}
+			const { id, num, created_at } = records[0];
+			const resId = encodeResId(id);
+			if (resId === null) {
+				return;
+			}
+
+			// スレッドの更新
+			// TODO: スレ主による高度な設定の更新などここで行う
+			const records2 = await sql(
+				[
+					`UPDATE threads SET${sageCache.get(threadId) ? "" : " latest_res_at = NOW(),"}`,
+					"res_count = $1",
+					"WHERE id = $2",
+				].join(" "),
+				[next, threadId],
+			);
+			if (!records2.length) {
+				return;
+			}
+
+			const newRes: Res = {
+				// 書き込み内容
+				ccUserId,
+				ccUserName,
+				ccUserAvatar,
+				content,
+				contentUrl,
+				contentType,
+				// メタ情報
+				id: resId,
+				num,
+				isOwner,
+				createdAt: created_at,
+			};
+
 			socket.emit(api, {
 				ok: true,
 				new: newRes,
 				yours: true,
 			});
-			socket.to(getThreadRoom(id)).emit(api, {
+			socket.to(getThreadRoom(threadId)).emit(api, {
 				ok: true,
 				new: newRes,
 				yours: false,
 			});
+			await sql("COMMIT"); // 問題なければコミット
 		} catch (error) {
+			await sql("ROLLBACK"); // エラーが発生した場合はロールバック
 			if (DEV_MODE) {
 				console.error(error);
 			}
 		} finally {
-			Nonce.unlock(socket);
+			nonce.unlock(socket);
 		}
 	});
-
-	const mock2: Res = {
-		isOwner: true,
-		num: 1,
-		createdAt: new Date(),
-		ccUserId: encodeUserId(334, new Date())?.slice(0, 4) ?? "",
-		ccUserName: "月沈めば名無し2",
-		ccUserAvatar: 0,
-		content: "草".repeat(20),
-		contentUrl: "https://i.imgur.com/7dzm3JU.jpeg",
-		contentType: 8,
-	};
 };

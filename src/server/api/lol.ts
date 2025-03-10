@@ -1,18 +1,18 @@
 import type { Server, Socket } from "socket.io";
 import * as v from "valibot";
-import { SERIAL, lolSchema } from "../../common/request/schema.js";
+import { lolSchema } from "../../common/request/schema.js";
 import { decodeThreadId } from "../mylib/anti-debug.js";
-import Auth from "../mylib/auth.js";
-import Nonce from "../mylib/nonce.js";
+import auth from "../mylib/auth.js";
+import { isExpired, lolCountCache } from "../mylib/cache.js";
+import nonce from "../mylib/nonce.js";
 import { exist, getThreadRoom, joined } from "../mylib/socket.js";
 
 const api = "lol";
 const delimiter = "###";
 const done: Set<string> = new Set();
-export const lolCounts: Map<number, number> = new Map();
 
 let id: NodeJS.Timeout;
-const delay = 1000 * 60 * 8;
+const delay = 1000 * 60 * 4;
 const lazyUpdate = () => {
 	clearTimeout(id);
 	id = setTimeout(() => {
@@ -28,43 +28,48 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		}
 
 		// フロントエンド上のスレッドIDを復号する
-		const id = decodeThreadId(lol.output.threadId);
-		if (id === null) {
+		const threadId = decodeThreadId(lol.output.threadId);
+		if (threadId === null) {
+			return;
+		}
+
+		if (isExpired(threadId)) {
 			return;
 		}
 
 		// roomのチェック
-		if (!exist(io, getThreadRoom(id)) || !joined(socket, getThreadRoom(id))) {
+		if (
+			!exist(io, getThreadRoom(threadId)) ||
+			!joined(socket, getThreadRoom(threadId))
+		) {
 			return;
 		}
 
-		const auth = Auth.get(socket);
-		const key = [auth, id].join(delimiter);
-
-		// Nonce値の完全一致チェック
-		if (!Nonce.isValid(socket, lol.output.nonce)) {
-			return;
-		}
-
-		// 追加検証
+		// 連投規制
+		const key = [auth.get(socket), id].join(delimiter);
 		if (done.has(key)) {
 			return;
 		}
 		done.add(key);
 
-		Nonce.lock(socket);
-		Nonce.update(socket);
+		// Nonce値の完全一致チェック
+		if (!nonce.isValid(socket, lol.output.nonce)) {
+			return;
+		}
 
 		// 危険な処理
 		try {
-			let lolCount = lolCounts.get(id) ?? 0;
-			lolCounts.set(id, ++lolCount);
+			nonce.lock(socket);
+			nonce.update(socket);
+
+			let lolCount = lolCountCache.get(threadId) ?? 0;
+			lolCountCache.set(threadId, ++lolCount);
 			socket.emit(api, {
 				ok: true,
 				lolCount,
 				yours: true,
 			});
-			socket.to(getThreadRoom(id)).emit(api, {
+			socket.to(getThreadRoom(threadId)).emit(api, {
 				ok: true,
 				lolCount,
 				yours: false,
@@ -72,7 +77,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			lazyUpdate();
 		} catch (error) {
 		} finally {
-			Nonce.unlock(socket);
+			nonce.unlock(socket);
 		}
 	});
 };

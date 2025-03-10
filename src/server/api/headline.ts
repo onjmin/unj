@@ -1,12 +1,11 @@
 import { neon } from "@neondatabase/serverless";
-import { differenceInMinutes } from "date-fns";
 import type { Server, Socket } from "socket.io";
 import * as v from "valibot";
 import { HeadlineSchema } from "../../common/request/schema.js";
 import type { HeadlineThread } from "../../common/response/schema.js";
 import { decodeThreadId, encodeThreadId } from "../mylib/anti-debug.js";
 import { DEV_MODE, NEON_DATABASE_URL } from "../mylib/env.js";
-import Nonce from "../mylib/nonce.js";
+import nonce from "../mylib/nonce.js";
 import { sizeOf } from "../mylib/socket.js";
 
 const api = "headline";
@@ -29,21 +28,24 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		const { size, desc } = headline.output;
 
 		// Nonce値の完全一致チェック
-		if (!Nonce.isValid(socket, headline.output.nonce)) {
+		if (!nonce.isValid(socket, headline.output.nonce)) {
 			return;
 		}
-		Nonce.lock(socket);
-		Nonce.update(socket);
 
 		// 危険な処理
+		const sql = neon(NEON_DATABASE_URL);
 		try {
-			const sql = neon(NEON_DATABASE_URL);
-			const query = ["SELECT * FROM threads"];
+			nonce.lock(socket);
+			nonce.update(socket);
+
+			const query = [
+				"SELECT * FROM threads WHERE deleted_at IS NULL OR deleted_at > CURRENT_TIMESTAMP",
+			];
 			if (cursor !== null) {
 				if (desc) {
-					query.push(`WHERE id < ${cursor}`);
+					query.push(`AND id < ${cursor}`);
 				} else {
-					query.push(`WHERE id > ${cursor}`);
+					query.push(`AND id > ${cursor}`);
 				}
 			}
 			query.push(`ORDER BY latest_res_at ${desc ? "DESC" : "ASC"}`);
@@ -53,10 +55,15 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 				const latestResAt = new Date(record.latest_res_at);
 				const resCount = record.res_count;
 				list.push({
+					// 書き込み内容
+					ccUserId: record.cc_user_id,
+					// メタ情報
 					id: encodeThreadId(record.id) ?? "",
 					latestResAt,
 					resCount,
+					// 基本的な情報
 					title: record.title,
+					// 動的なデータ
 					online: sizeOf(io, record.id),
 					ikioi:
 						((resCount * (+new Date() - +latestResAt)) / 1000 / 60 / 60) | 0,
@@ -74,7 +81,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 				console.error(error);
 			}
 		} finally {
-			Nonce.unlock(socket);
+			nonce.unlock(socket);
 		}
 	});
 };

@@ -35,7 +35,7 @@ export const saveReplyResSound = (sound: Sound) => {
 	save("replyResSound", sound.key);
 };
 
-export const soundMap = new Map<string, Sound>();
+export const soundMap: Map<string, Sound> = new Map();
 class Sound {
 	label;
 	src;

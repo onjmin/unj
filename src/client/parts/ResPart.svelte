@@ -1,99 +1,130 @@
 <script lang="ts">
-  import IconButton, { Icon } from "@smui/icon-button";
-  import Select, { Option } from "@smui/select";
-  import Textfield from "@smui/textfield";
-  import CharacterCounter from "@smui/textfield/character-counter";
-  import {
-    contentTemplateMap,
-    contentTypeOptions,
-  } from "../../common/request/content-schema.js";
-  import type { SiteInfo } from "../../common/request/whitelist/site-info.js";
-  import AvatarPart from "./AvatarPart.svelte";
-  import UrlTemplatePart from "./UrlTemplatePart.svelte";
+  import { format } from "date-fns";
+  import { ja } from "date-fns/locale";
+  import { avatarMap } from "../../common/request/avatar.js";
 
   let {
-    disabled = false,
-    userName = $bindable(""),
-    userAvatar = $bindable(0),
-    content = $bindable(""),
-    contentUrl = $bindable(""),
-    contentType = $bindable(1),
+    children = null,
+    num,
+    isOwner,
+    createdAt,
+    ccUserId,
+    ccUserName,
+    ccUserAvatar,
+    content,
+    contentUrl,
   } = $props();
-
-  let openUrlTemplate = $state(false);
-  let openAvatar = $state(false);
-  let list: SiteInfo[] = $state([]);
-
-  $effect(() => {
-    list = contentTemplateMap.get(contentType) ?? [];
-  });
 </script>
 
-<UrlTemplatePart bind:open={openUrlTemplate} bind:contentUrl {list}>
-  {#if contentType === 4}
-    <p>みんなで遊べるブラウザゲームを集めました。</p>
-  {:else if contentType === 8}
-    <p>画像が埋め込まれます。</p>
-  {:else if contentType === 16}
-    <p>GIF画像が埋め込まれます。</p>
-  {:else if contentType === 32}
-    <p>動画再生プレイヤーが埋め込まれます。</p>
-  {:else if contentType === 64}
-    <p>音楽再生プレイヤーが埋め込まれます。</p>
-  {/if}
-</UrlTemplatePart>
+<div class="res">
+  <!-- 上段: 名前欄 -->
+  <div class="name-row">
+    {num}：<span class="user-name">{ccUserName}</span>：
+    {format(createdAt, "yy/MM/dd(EEE) HH:mm:ss", {
+      locale: ja,
+    })}
+    ID:{ccUserId}
+    {#if isOwner}
+      <span class="thread-owner">主</span>
+    {/if}
+  </div>
+  <!-- 下段: アイコンと内容 -->
+  <div class="content-row">
+    <!-- 固定幅・高さのアイコン -->
+    {#if ccUserAvatar && avatarMap.get(ccUserAvatar)}
+      <div class="avatar">
+        <img src={avatarMap.get(ccUserAvatar)?.src} alt="User Avatar" />
+      </div>
+    {:else}
+      <div class="empty-avatar"></div>
+    {/if}
+    <!-- 右側のコンテンツ領域 -->
+    <div class="content">
+      <div class="content-text">
+        {content}
+      </div>
+      <div class="content-url">
+        <a href={contentUrl} target="_blank" rel="noopener noreferrer">
+          {contentUrl}
+        </a>
+      </div>
+      <div class="content-embed">youtube embed</div>
+    </div>
+  </div>
+  {@render children?.()}
+</div>
 
-<AvatarPart bind:open={openAvatar} bind:userAvatar />
-
-<Textfield {disabled} label="名前" bind:value={userName} input$maxlength={32}>
-  {#snippet trailingIcon()}
-    <IconButton
-      {disabled}
-      class="material-icons"
-      onclick={() => (openAvatar = true)}>image</IconButton
-    >
-  {/snippet}
-  {#snippet helper()}
-    <CharacterCounter />
-  {/snippet}
-</Textfield>
-<Textfield
-  {disabled}
-  textarea
-  label="本文"
-  bind:value={content}
-  input$maxlength={1024}
->
-  {#snippet helper()}
-    <CharacterCounter />
-  {/snippet}
-</Textfield>
-
-<Select {disabled} bind:value={contentType} label="本文の形式">
-  {#each contentTypeOptions as v}
-    <Option value={v.bit}>{v.label}</Option>
-  {/each}
-</Select>
-
-<Textfield
-  {disabled}
-  label="URL欄"
-  bind:value={contentUrl}
-  input$maxlength={1024}
-  style="visibility:{contentType === 1 ? 'hidden' : 'visible'};"
->
-  {#snippet trailingIcon()}
-    <IconButton
-      {disabled}
-      class="material-icons"
-      onclick={() => (openUrlTemplate = true)}
-      style="visibility:{contentType <= 2 ? 'hidden' : 'visible'};"
-      >add_link</IconButton
-    >
-  {/snippet}
-  {#snippet helper()}
-    <CharacterCounter
-      style="visibility:{contentType === 1 ? 'hidden' : 'visible'};"
-    />
-  {/snippet}
-</Textfield>
+<style>
+  .res {
+    border: 2mm ridge rgba(255, 255, 255, 0.1);
+    padding: 8px;
+  }
+  /* 名前欄は全幅で上段に表示 */
+  .name-row {
+    width: 100%;
+    margin-bottom: 8px;
+  }
+  .user-name {
+    color: #66c0b5;
+    font-weight: bold;
+  }
+  .thread-owner {
+    color: #aa0000;
+    font-size: small;
+  }
+  /* content-row はアイコンと内容を横並びに */
+  .content-row {
+    display: flex;
+    align-items: flex-start;
+    width: 100%;
+  }
+  /* avatar は固定サイズ、左側に配置 */
+  .empty-avatar {
+    width: 32px;
+  }
+  .avatar {
+    flex: 0 0 auto;
+    width: 64px;
+    height: auto;
+    margin-right: 8px;
+  }
+  .avatar img {
+    border-radius: 50%;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .avatar img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  /* content は縦並びに、右側の残りスペースを使用 */
+  .content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    inline-size: 768px;
+    max-inline-size: 100%;
+  }
+  /* content-text は改行を含むテキストを自動折り返し */
+  .content-text {
+    display: block;
+    white-space: pre-wrap; /* 改行も反映、必要に応じて折り返す */
+    overflow-wrap: break-word; /* 長い単語も折り返し */
+    margin-bottom: 4px;
+  }
+  .content-url,
+  .content-embed {
+    margin-bottom: 4px;
+  }
+  .content-url a {
+    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+</style>

@@ -62,7 +62,7 @@ export const joinThreadSchema = v.strictObject({
 /**
  * 草ボタンのスキーマ
  */
-export const lolSchema = v.object({
+export const lolSchema = v.strictObject({
 	nonce: NONCE,
 	threadId: THREAD_ID,
 });
@@ -70,7 +70,7 @@ export const lolSchema = v.object({
 /**
  * ｲｲ!(・∀・)(・Ａ・)ｲｸﾅｲ!
  */
-export const likeSchema = v.object({
+export const likeSchema = v.strictObject({
 	nonce: NONCE,
 	threadId: THREAD_ID,
 	good: v.boolean(),
@@ -79,7 +79,8 @@ export const likeSchema = v.object({
 /**
  * スレ立てのスキーマ
  */
-export const MakeThreadSchema = v.object({
+export const MakeThreadSchema = v.strictObject({
+	nonce: NONCE,
 	title: THREAD_TITLE,
 	varsan: v.boolean(),
 	sage: v.boolean(),
@@ -87,14 +88,24 @@ export const MakeThreadSchema = v.object({
 	contentTypesBitmask: SMALLSERIAL,
 	max: v.pipe(v.number(), v.integer(), v.minValue(10), v.maxValue(1000)),
 	timer: v.pipe(v.number(), v.integer(), v.minValue(0), v.maxValue(168)),
+	// 書き込み内容
+	userName: USER_NAME,
+	userAvatar: USER_AVATAR,
+	content: v.string(), // この段階では簡易的にしか見ない
+	contentUrl: v.string(), // この段階では簡易的にしか見ない
+	contentType: v.pipe(
+		SMALLINT,
+		v.check<number>((n) => (n & (n - 1)) === 0),
+	),
 });
 
 /**
  * レスのスキーマ
  */
-export const ResSchema = v.object({
+export const ResSchema = v.strictObject({
 	nonce: NONCE,
-	threadId: v.nullable(THREAD_ID), // スレ立てのスキーマにも使うため
+	threadId: THREAD_ID,
+	// 書き込み内容
 	userName: USER_NAME,
 	userAvatar: USER_AVATAR,
 	content: v.string(), // この段階では簡易的にしか見ない
