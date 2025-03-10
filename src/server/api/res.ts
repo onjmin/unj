@@ -145,15 +145,17 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			if (!records.length) {
 				return;
 			}
-			const { id, num, created_at } = records[0];
+			const { id, created_at } = records[0];
 			const resId = encodeResId(id);
 			if (resId === null) {
 				return;
 			}
 
+			console.log(1111111);
+
 			// スレッドの更新
 			// TODO: スレ主による高度な設定の更新などここで行う
-			const records2 = await sql(
+			await sql(
 				[
 					`UPDATE threads SET${sageCache.get(threadId) ? "" : " latest_res_at = NOW(),"}`,
 					"res_count = $1",
@@ -161,9 +163,6 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 				].join(" "),
 				[next, threadId],
 			);
-			if (!records2.length) {
-				return;
-			}
 
 			const newRes: Res = {
 				// 書き込み内容
@@ -175,7 +174,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 				contentType,
 				// メタ情報
 				id: resId,
-				num,
+				num: next,
 				isOwner,
 				createdAt: created_at,
 			};
@@ -190,6 +189,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 				new: newRes,
 				yours: false,
 			});
+
 			await sql("COMMIT"); // 問題なければコミット
 		} catch (error) {
 			await sql("ROLLBACK"); // エラーが発生した場合はロールバック
