@@ -124,7 +124,7 @@
             {/snippet}
         </FormField>
         <div class="accordion-container">
-            <Accordion multiple>
+            <Accordion>
                 <Panel>
                     <Header>匿名レベルの変更</Header>
                     <Content>

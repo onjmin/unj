@@ -116,6 +116,8 @@ export default ({ socket }: { socket: Socket }) => {
 			}
 			query.push(`ORDER BY num ${desc ? "DESC" : "ASC"}`);
 			query.push(`LIMIT ${size}`);
+
+			const userId = auth.getUserId(socket);
 			const list: Res[] = [];
 			for (const record of await sql(query.join(" "))) {
 				const resId = encodeResId(record.id);
@@ -123,6 +125,7 @@ export default ({ socket }: { socket: Socket }) => {
 					return;
 				}
 				list.push({
+					yours: record.user_id === userId,
 					// 書き込み内容
 					ccUserId: record.cc_user_id || "???",
 					ccUserName: record.cc_user_name || unjDefaultUserName,
@@ -138,10 +141,8 @@ export default ({ socket }: { socket: Socket }) => {
 				});
 			}
 
-			const userId = auth.getUserId(socket);
-			const isOwner = ownerIdCache.get(threadId) === userId;
-
 			const thread: Thread = {
+				yours: threadRecord.user_id === userId,
 				// 書き込み内容
 				ccUserId: threadRecord.cc_user_id,
 				ccUserName: threadRecord.cc_user_name,
@@ -168,7 +169,6 @@ export default ({ socket }: { socket: Socket }) => {
 				badCount: badCountCache.get(threadId) ?? 0,
 				// メタ情報
 				id: readThread.output.threadId,
-				isOwner,
 				createdAt: threadRecord.created_at,
 				resList: list,
 			};

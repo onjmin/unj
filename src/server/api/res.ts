@@ -163,6 +163,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			);
 
 			const newRes: Res = {
+				yours: true,
 				// 書き込み内容
 				ccUserId,
 				ccUserName,
@@ -182,6 +183,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 				new: newRes,
 				yours: true,
 			});
+			newRes.yours = false;
 			socket.to(getThreadRoom(threadId)).emit(api, {
 				ok: true,
 				new: newRes,

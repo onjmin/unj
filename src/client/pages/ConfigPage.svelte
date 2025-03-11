@@ -67,7 +67,7 @@
 <MainPart>
     <p>ここで設定変更できます</p>
     <div class="accordion-container">
-        <Accordion multiple>
+        <Accordion>
             <Panel>
                 <Header>SE音量</Header>
                 <Content>
@@ -76,10 +76,10 @@
                             style="flex-grow: 1;"
                             bind:value={soundVolume}
                             min={0}
-                            max={0.4}
-                            step={0.001}
+                            max={1}
+                            step={0.01}
                         />
-                        <div>音量：{(soundVolume * 1000) >> 2}%</div>
+                        <div>音量：{(soundVolume * 100) | 0}%</div>
                     </FormField>
                 </Content>
             </Panel>

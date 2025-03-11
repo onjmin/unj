@@ -1,6 +1,6 @@
 import * as v from "valibot";
 import { avatarMap } from "./avatar.js";
-import { SAFE_TEXT } from "./content-schema.js";
+import { SAFE_TEXT_SINGLELINE } from "./content-schema.js";
 
 const smallintMax = 2 ** 15 - 1;
 const intMax = 2 ** 31 - 1;
@@ -37,12 +37,16 @@ const THREAD_ID = v.pipe(
 );
 const RES_ID = v.pipe(v.string(), v.length(resIdLength), v.regex(hashidsRegex));
 
-const USER_NAME = v.pipe(SAFE_TEXT, v.maxLength(32));
+const USER_NAME = v.pipe(SAFE_TEXT_SINGLELINE, v.maxLength(32));
 const USER_AVATAR = v.pipe(
 	SMALLINT,
 	v.check((n) => avatarMap.has(n)),
 );
-const THREAD_TITLE = v.pipe(SAFE_TEXT, v.minLength(1), v.maxLength(32));
+const THREAD_TITLE = v.pipe(
+	SAFE_TEXT_SINGLELINE,
+	v.minLength(1),
+	v.maxLength(32),
+);
 const RES_NUM = v.pipe(
 	v.number(),
 	v.integer(),

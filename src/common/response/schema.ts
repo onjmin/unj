@@ -16,6 +16,7 @@ export type HeadlineThread = {
 };
 
 export type Res = {
+	yours: boolean;
 	// 書き込み内容
 	ccUserId: string;
 	ccUserName: string;
@@ -31,6 +32,7 @@ export type Res = {
 };
 
 export type Thread = {
+	yours: boolean;
 	// 書き込み内容
 	ccUserId: string;
 	ccUserName: string;
@@ -40,7 +42,6 @@ export type Thread = {
 	contentType: number;
 	// メタ情報
 	id: string;
-	isOwner: boolean;
 	createdAt: Date;
 	resList: Res[];
 	// 基本的な情報
