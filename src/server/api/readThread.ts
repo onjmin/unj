@@ -26,7 +26,7 @@ import {
 	varsanCache,
 } from "../mylib/cache.js";
 import { unjDefaultUserName } from "../mylib/cc.js";
-import { DEV_MODE, NEON_DATABASE_URL } from "../mylib/env.js";
+import { DEV_MODE, NEON_DATABASE_URL, PROD_MODE } from "../mylib/env.js";
 import nonce from "../mylib/nonce.js";
 
 const api = "readThread";
@@ -178,7 +178,7 @@ export default ({ socket }: { socket: Socket }) => {
 				thread,
 			});
 		} catch (error) {
-			if (DEV_MODE) {
+			if (DEV_MODE || PROD_MODE) {
 				console.error(error);
 			}
 		} finally {

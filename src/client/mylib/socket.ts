@@ -1,4 +1,5 @@
 import { type Socket, io } from "socket.io-client";
+import { sleep } from "../mylib/util.js";
 import { PROD_MODE } from "./env.js";
 
 const uri = PROD_MODE
@@ -8,27 +9,37 @@ const uri = PROD_MODE
 export let socket: Socket;
 export let nonceKey = "";
 let isOK = false;
+let retry: (() => void) | null;
+
+const getNonceKey = () => socket.emit("getNonceKey", {});
+const areYouOk = () => {
+	if (isOK) {
+		throw "OK, OK! Copy that!";
+	}
+};
 
 /**
- * リロードしていない場合に直接呼び出す
- */
-export const getNonceKey = () => socket.emit("getNonceKey", {});
-
-/**
- * 再送の必要なし
+ * サーバーと対話が成立したのでNonce値を更新する
  */
 export const ok = () => {
 	isOK = true;
 	getNonceKey();
 };
-let retry: null | (() => void);
 
 /**
- * Socket.IOの初回接続
+ * Svelteのunmount時、Socket.IOのイベントハンドラ登録解除の共通処理
  */
-export const init = (callback?: () => void) => {
-	const first = !socket;
-	if (first) {
+export const goodbye = () => {
+	retry = null;
+};
+
+/**
+ * Svelteのmount時のSocket.IOのイベントハンドラ登録の共通処理
+ */
+export const hello = (callback: (() => void) | null = null) => {
+	retry = callback;
+	isOK = false;
+	if (!socket) {
 		socket = io(uri, {
 			withCredentials: true,
 		});
@@ -46,23 +57,23 @@ export const init = (callback?: () => void) => {
 				}
 			},
 		);
-	}
-	if (callback) {
-		isOK = false;
-		retry = callback;
-		callback();
-		return setTimeout(() => {
-			if (!isOK) {
-				getNonceKey();
-			}
-		}, coolTimeOfSelect);
-	}
-	if (first) {
-		isOK = false;
-		retry = null;
 		getNonceKey();
 	}
+	(async () => {
+		if (!retry) {
+			return;
+		}
+		try {
+			retry();
+			await sleep(2048);
+			areYouOk();
+			getNonceKey();
+			await sleep(4096);
+			areYouOk();
+			getNonceKey();
+			await sleep(8192);
+			areYouOk();
+			getNonceKey();
+		} catch (err) {}
+	})();
 };
-
-export const coolTimeOfSelect = 2048; // SELECTのクールタイム
-export const coolTimeOfModify = 4096; // INSERT/UPDATE/DELETEのクールタイム

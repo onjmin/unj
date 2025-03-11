@@ -22,15 +22,11 @@
     import { genBanVerifyCode } from "../mylib/anti-debug.js";
     import { base } from "../mylib/env.js";
     import { load, save } from "../mylib/idb/keyval.js";
+    import { sleep } from "../mylib/util.js";
 
     const handleSubmit = async () => {
         loading = true;
-        await new Promise((resolve) =>
-            setTimeout(
-                resolve,
-                (2783 + 114514 / 334 ** Math.random()) & (9800 + 3777),
-            ),
-        );
+        await sleep((2783 + 114514 / 334 ** Math.random()) & (9800 + 3777));
         if (
             genBanVerifyCode(
                 bannedDate,

@@ -23,13 +23,7 @@
     import type { HeadlineThread } from "../../common/response/schema.js";
     import { genNonce } from "../mylib/anti-debug.js";
     import { base } from "../mylib/env.js";
-    import {
-        coolTimeOfSelect,
-        init,
-        nonceKey,
-        ok,
-        socket,
-    } from "../mylib/socket.js";
+    import { goodbye, hello, nonceKey, ok, socket } from "../mylib/socket.js";
     import AccessCounterPart from "../parts/AccessCounterPart.svelte";
 
     const formatTimeAgo = (date: Date): string => {
@@ -85,7 +79,7 @@
     };
 
     $effect(() => {
-        const id = init(() => {
+        hello(() => {
             socket.emit("joinHeadline", {});
             socket.emit("headline", {
                 nonce: genNonce(nonceKey),
@@ -98,7 +92,7 @@
         socket.on("headline", handleHeadline);
         socket.on("makeThread", handleMakeThread);
         return () => {
-            clearTimeout(id);
+            goodbye();
             socket.off("joinHeadline", handleJoinHeadline);
             socket.off("headline", handleHeadline);
             socket.off("makeThread", handleMakeThread);
@@ -109,10 +103,8 @@
     $effect(() => {
         const id = setTimeout(() => {
             laaaaaaaag = true;
-        }, coolTimeOfSelect * 2);
-        return () => {
-            clearTimeout(id);
-        };
+        }, 4096);
+        return () => clearTimeout(id);
     });
 
     // TODO: 無視設定

@@ -13,20 +13,13 @@
     import type { Res, Thread } from "../../common/response/schema.js";
     import { genNonce } from "../mylib/anti-debug.js";
     import { visible } from "../mylib/dom.js";
-    import {
-        coolTimeOfModify,
-        coolTimeOfSelect,
-        getNonceKey,
-        init,
-        nonceKey,
-        ok,
-        socket,
-    } from "../mylib/socket.js";
+    import { goodbye, hello, nonceKey, ok, socket } from "../mylib/socket.js";
     import {
         loadNewResSound,
         loadReplyResSound,
         loadSoundVolume,
     } from "../mylib/sound.js";
+    import { sleep } from "../mylib/util.js";
     import AccessCounterPart from "../parts/AccessCounterPart.svelte";
     import ResFormPart from "../parts/ResFormPart.svelte";
     import ResPart from "../parts/ResPart.svelte";
@@ -119,7 +112,11 @@
     let openNewResNotice = $state(false);
     let newResCount = $state(0);
     let isAlreadyScrollEnd = $state(false);
-    const handleRes = (data: { ok: boolean; new: Res; yours: boolean }) => {
+    const handleRes = async (data: {
+        ok: boolean;
+        new: Res;
+        yours: boolean;
+    }) => {
         if (data.ok) {
             if (!thread) {
                 return;
@@ -130,10 +127,11 @@
             thread.resList.push(data.new);
             newResSound.play();
             if (data.yours) {
-                getNonceKey();
+                ok();
                 content = "";
                 contentUrl = "";
-                setTimeout(() => scrollToEnd(), 512);
+                await sleep(512);
+                scrollToEnd();
             } else {
                 openNewResNotice = true;
                 newResCount++;
@@ -157,7 +155,7 @@
     }) => {
         if (data.ok) {
             lolCount = data.lolCount;
-            if (data.yours) getNonceKey();
+            if (data.yours) ok();
         }
     };
 
@@ -170,7 +168,7 @@
         if (data.ok) {
             goodVotes = data.goodCount;
             badVotes = data.badCount;
-            if (data.yours) getNonceKey();
+            if (data.yours) ok();
         }
     };
 
@@ -181,9 +179,8 @@
         badRatio = (badVotes / denominator) * 100;
     });
 
-    let id: NodeJS.Timeout | undefined;
     $effect(() => {
-        id = init(() => {
+        hello(() => {
             socket.emit("joinThread", {
                 threadId,
             });
@@ -201,7 +198,7 @@
         socket.on("lol", handleLoL);
         socket.on("like", handleLike);
         return () => {
-            clearTimeout(id);
+            goodbye();
             socket.off("joinThread", handleJoinThread);
             socket.off("readThread", handleReadThread);
             socket.off("res", handleRes);
@@ -214,14 +211,12 @@
     $effect(() => {
         const id = setTimeout(() => {
             laaaaaaaag = true;
-        }, coolTimeOfSelect * 2);
-        return () => {
-            clearTimeout(id);
-        };
+        }, 4096);
+        return () => clearTimeout(id);
     });
 
     let emitting = $state(false);
-    const tryRes = () => {
+    const tryRes = async () => {
         emitting = true;
         // フロントエンドのバリデーション
         // バックエンドに送信
@@ -234,10 +229,9 @@
             contentUrl,
             contentType,
         });
-        id = setTimeout(() => {
-            emitting = false;
-            getNonceKey();
-        }, coolTimeOfModify);
+        await sleep(4096);
+        ok();
+        emitting = false;
     };
 
     const tryLoL = () => {

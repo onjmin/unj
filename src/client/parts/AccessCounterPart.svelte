@@ -1,5 +1,6 @@
 <script lang="ts">
   import List, { Item, Graphic, Text } from "@smui/list";
+  import { sleep } from "../mylib/util.js";
 
   let { online, pv } = $props();
 
@@ -12,9 +13,6 @@
 
   const delay = 1024;
   const fadeOutMs = 2048;
-
-  const sleep = (ms: number) =>
-    new Promise((resolve) => setTimeout(resolve, ms));
 
   // 接続数の増減
   let diffOnline = $state(0);

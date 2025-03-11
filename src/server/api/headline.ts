@@ -4,7 +4,7 @@ import * as v from "valibot";
 import { HeadlineSchema } from "../../common/request/schema.js";
 import type { HeadlineThread } from "../../common/response/schema.js";
 import { decodeThreadId, encodeThreadId } from "../mylib/anti-debug.js";
-import { DEV_MODE, NEON_DATABASE_URL } from "../mylib/env.js";
+import { DEV_MODE, NEON_DATABASE_URL, PROD_MODE } from "../mylib/env.js";
 import nonce from "../mylib/nonce.js";
 import { sizeOf } from "../mylib/socket.js";
 
@@ -77,7 +77,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 				list,
 			});
 		} catch (error) {
-			if (DEV_MODE) {
+			if (DEV_MODE || PROD_MODE) {
 				console.error(error);
 			}
 		} finally {

@@ -7,12 +7,13 @@
 
     import { navigate } from "svelte-routing";
     import { base } from "../mylib/env.js";
-    import { randArray } from "../mylib/top-illusts.js";
+    import { randArray, sleep } from "../mylib/util.js";
 
     $effect(() => {
-        setTimeout(() => {
+        const id = setTimeout(() => {
             navigate(base("/"), { replace: true });
-        }, 5000);
+        }, 4096);
+        return () => clearTimeout(id);
     });
 
     const illusts = [

@@ -9,7 +9,7 @@ import type { HeadlineThread } from "../../common/response/schema.js";
 import { encodeThreadId } from "../mylib/anti-debug.js";
 import auth from "../mylib/auth.js";
 import { makeCcUserAvatar, makeCcUserId, makeCcUserName } from "../mylib/cc.js";
-import { DEV_MODE, NEON_DATABASE_URL } from "../mylib/env.js";
+import { DEV_MODE, NEON_DATABASE_URL, PROD_MODE } from "../mylib/env.js";
 import nonce from "../mylib/nonce.js";
 import { headlineRoom } from "../mylib/socket.js";
 
@@ -132,7 +132,7 @@ export default ({ socket }: { socket: Socket }) => {
 			await sql("COMMIT"); // 問題なければコミット
 		} catch (error) {
 			await sql("ROLLBACK"); // エラーが発生した場合はロールバック
-			if (DEV_MODE) {
+			if (DEV_MODE || PROD_MODE) {
 				console.error(error);
 			}
 		} finally {

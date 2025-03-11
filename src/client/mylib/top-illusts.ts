@@ -1,6 +1,3 @@
-export const randArray = (arr: string[]) =>
-	arr[Math.floor(Math.random() * arr.length)];
-
 class TopIllust {
 	label: string;
 	src: string;

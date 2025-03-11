@@ -21,14 +21,8 @@
     import type { HeadlineThread } from "../../common/response/schema.js";
     import { genNonce } from "../mylib/anti-debug.js";
     import { base } from "../mylib/env.js";
-    import {
-        coolTimeOfModify,
-        getNonceKey,
-        init,
-        nonceKey,
-        ok,
-        socket,
-    } from "../mylib/socket.js";
+    import { goodbye, hello, nonceKey, ok, socket } from "../mylib/socket.js";
+    import { sleep } from "../mylib/util.js";
     import ResFormPart from "../parts/ResFormPart.svelte";
 
     let { isRef = false } = $props();
@@ -70,18 +64,17 @@
         }
     };
 
-    let id: NodeJS.Timeout | undefined;
     $effect(() => {
-        init();
+        hello();
         socket.on("makeThread", handleMakeThread);
         return () => {
-            clearTimeout(id);
+            goodbye();
             socket.off("makeThread", handleMakeThread);
         };
     });
 
     let emitting = $state(false);
-    const tryMakeThread = () => {
+    const tryMakeThread = async () => {
         emitting = true;
         // フロントエンドのバリデーション
         // バックエンドに送信
@@ -100,10 +93,9 @@
             max,
             timer,
         });
-        id = setTimeout(() => {
-            emitting = false;
-            getNonceKey();
-        }, coolTimeOfModify);
+        await sleep(4096);
+        ok();
+        emitting = false;
     };
 
     if (isRef) {
