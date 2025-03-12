@@ -68,7 +68,9 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 					// 動的なデータ
 					online: sizeOf(io, record.id),
 					ikioi:
-						((resCount * (+new Date() - +latestResAt)) / 1000 / 60 / 60) | 0,
+						Math.floor(
+							(resCount * 3600_000_0) / (+new Date() - +record.created_at),
+						) / 10,
 					lolCount: record.lol_count,
 					goodCount: record.good_count,
 					badCount: record.bad_count,
