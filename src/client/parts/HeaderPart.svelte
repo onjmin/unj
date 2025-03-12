@@ -81,7 +81,7 @@
               } else {
                 snackbar.close();
               }
-            }}>{bookmark ? "bookmark" : "bookmark_border"}</IconButton
+            }}>{bookmark ? "star" : "star_outline"}</IconButton
           >
         </Section>
         <Section

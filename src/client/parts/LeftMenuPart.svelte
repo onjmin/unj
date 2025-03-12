@@ -55,7 +55,7 @@
                     activated={pathname().startsWith("/bookmark")}
                 >
                     <Graphic class="material-icons" aria-hidden="true"
-                        >bookmark</Graphic
+                        >star</Graphic
                     >
                     <Text>#後で見る</Text>
                 </Item>

@@ -193,8 +193,8 @@
                                     }
                                 }}
                                 >{isAlreadyBookmark
-                                    ? "bookmark"
-                                    : "bookmark_border"}</IconButton
+                                    ? "star"
+                                    : "star_outline"}</IconButton
                             >
                             <IconButton
                                 class="material-icons"

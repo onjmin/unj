@@ -351,7 +351,7 @@
                 {#snippet chip(chip: string)}
                     <Chip {chip}>
                         <LeadingIcon class="material-icons"
-                            >priority_high</LeadingIcon
+                            >new_releases</LeadingIcon
                         >
                         <Text tabindex={0}>{chip}</Text>
                     </Chip>
