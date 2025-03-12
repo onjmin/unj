@@ -1,5 +1,6 @@
 import { resolve } from "node:path";
 import { svelte } from "@sveltejs/vite-plugin-svelte";
+import chalk from "chalk";
 import { defineConfig } from "vite";
 import {
 	DEV_MODE,
@@ -7,7 +8,6 @@ import {
 	STG_MODE,
 	VITE_BASE_URL,
 } from "./src/server/mylib/env.js";
-import { logError, logWarning } from "./src/server/mylib/log.js";
 
 console.log("⚡", `VITE_BASE_URL: "${VITE_BASE_URL}"`);
 const define = {
@@ -18,12 +18,12 @@ const define = {
 console.log(define);
 
 if (DEV_MODE && STG_MODE) {
-	logError("環境変数がおかしい。");
+	console.error(chalk.bgRed.white("環境変数がおかしい。"));
 	console.log(JSON.stringify(process.env, null, 2));
 	throw 114514;
 }
 if (VITE_BASE_URL === "/" && PROD_MODE) {
-	logWarning("本番ビルド用のVITE_BASE_URLじゃなさそう");
+	console.warn(chalk.bgYellow.black("本番ビルド用のVITE_BASE_URLじゃなさそう"));
 }
 
 export default defineConfig({

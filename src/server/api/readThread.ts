@@ -27,6 +27,7 @@ import {
 } from "../mylib/cache.js";
 import { unjDefaultUserName } from "../mylib/cc.js";
 import { DEV_MODE, NEON_DATABASE_URL, PROD_MODE } from "../mylib/env.js";
+import { logger } from "../mylib/log.js";
 import nonce from "../mylib/nonce.js";
 
 const api = "readThread";
@@ -59,6 +60,7 @@ export default ({ socket }: { socket: Socket }) => {
 
 		// Nonce値の完全一致チェック
 		if (!nonce.isValid(socket, readThread.output.nonce)) {
+			logger.info(`🔒 ${readThread.output.nonce}`);
 			return;
 		}
 
@@ -101,6 +103,7 @@ export default ({ socket }: { socket: Socket }) => {
 			}
 
 			if (isExpired(threadId)) {
+				logger.info(`🪦 ${threadId}`);
 				return;
 			}
 
@@ -177,10 +180,9 @@ export default ({ socket }: { socket: Socket }) => {
 				ok: true,
 				thread,
 			});
+			logger.verbose(api);
 		} catch (error) {
-			if (DEV_MODE || PROD_MODE) {
-				console.error(error);
-			}
+			logger.error(error);
 		} finally {
 			nonce.unlock(socket);
 		}

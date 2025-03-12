@@ -5,6 +5,7 @@ import { decodeThreadId } from "../mylib/anti-debug.js";
 import auth from "../mylib/auth.js";
 import { badCountCache, goodCountCache, isExpired } from "../mylib/cache.js";
 import { DEV_MODE } from "../mylib/env.js";
+import { logger } from "../mylib/log.js";
 import nonce from "../mylib/nonce.js";
 import { exist, getThreadRoom, joined } from "../mylib/socket.js";
 
@@ -62,6 +63,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 
 		// Nonce値の完全一致チェック
 		if (!nonce.isValid(socket, like.output.nonce)) {
+			logger.info(`🔒 ${like.output.nonce}`);
 			return;
 		}
 
@@ -90,7 +92,9 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 				yours: false,
 			});
 			lazyUpdate();
+			logger.verbose(api);
 		} catch (error) {
+			logger.error(error);
 		} finally {
 			nonce.unlock(socket);
 		}

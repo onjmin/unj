@@ -2,7 +2,7 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import type { Request, Response, Router } from "express";
 import * as v from "valibot";
-import { validate1 } from "../../common/request/util.js";
+import { getFirstError } from "../../common/request/util.js";
 import { ROOT_PATH } from "../mylib/env.js";
 
 const api = "/blacklist";
@@ -58,7 +58,7 @@ export default (router: Router) => {
 	router.put(api, async (req: Request, res: Response) => {
 		try {
 			const ip: string = req.body.ip;
-			const error = validate1(IpAddressSchema, ip);
+			const error = getFirstError(IpAddressSchema, ip);
 			if (error) {
 				res.status(400).json({ error });
 				return;
@@ -86,7 +86,7 @@ export default (router: Router) => {
 	router.delete(api, async (req: Request, res: Response) => {
 		try {
 			const ip: string = req.body.ip;
-			const error = validate1(IpAddressSchema, ip);
+			const error = getFirstError(IpAddressSchema, ip);
 			if (error) {
 				res.status(400).json({ error });
 				return;

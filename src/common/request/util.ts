@@ -6,9 +6,10 @@ import * as v from "valibot";
 export const NeverSchema = v.custom(() => false);
 
 /**
- * 単体バリデーション
+ * 1つ目のエラーメッセージだけを返したいとき
+ * safeParseよりもシンプルな関数
  */
-export const validate1 = <TInput, TOutput>(
+export const getFirstError = <TInput, TOutput>(
 	schema: v.BaseSchema<TInput, TOutput, v.BaseIssue<unknown>>,
 	input: TInput,
 ) => {

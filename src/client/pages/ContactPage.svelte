@@ -17,7 +17,7 @@
     import { addHours, differenceInHours, format } from "date-fns";
     import { ja } from "date-fns/locale";
     import * as v from "valibot";
-    import { validate1 } from "../../common/request/util.js";
+    import { getFirstError } from "../../common/request/util.js";
     import { load, save } from "../mylib/idb/keyval.js";
     import {
         contactAGPL3,
@@ -77,7 +77,7 @@
             snackbar.open();
             return;
         }
-        const err = validate1(emailSchema, replyEmail);
+        const err = getFirstError(emailSchema, replyEmail);
         if (err) {
             snackbarText = "不正なメールアドレスです。";
             snackbar.open();

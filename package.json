@@ -77,7 +77,9 @@
 		"svelte": "^5.20.5",
 		"svelte-portal": "^2.2.1",
 		"valibot": "1.0.0-rc.2",
-		"vite": "^6.2.0"
+		"vite": "^6.2.0",
+		"winston": "^3.17.0",
+		"winston-daily-rotate-file": "^5.0.0"
 	},
 	"type": "module"
 }

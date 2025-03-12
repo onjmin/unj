@@ -5,6 +5,7 @@ import { HeadlineSchema } from "../../common/request/schema.js";
 import type { HeadlineThread } from "../../common/response/schema.js";
 import { decodeThreadId, encodeThreadId } from "../mylib/anti-debug.js";
 import { DEV_MODE, NEON_DATABASE_URL, PROD_MODE } from "../mylib/env.js";
+import { logger } from "../mylib/log.js";
 import nonce from "../mylib/nonce.js";
 import { sizeOf } from "../mylib/socket.js";
 
@@ -29,6 +30,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 
 		// Nonce値の完全一致チェック
 		if (!nonce.isValid(socket, headline.output.nonce)) {
+			logger.info(`🔒 ${headline.output.nonce}`);
 			return;
 		}
 
@@ -76,10 +78,9 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 				ok: true,
 				list,
 			});
+			logger.verbose(api);
 		} catch (error) {
-			if (DEV_MODE || PROD_MODE) {
-				console.error(error);
-			}
+			logger.error(error);
 		} finally {
 			nonce.unlock(socket);
 		}

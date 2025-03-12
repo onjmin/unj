@@ -10,13 +10,7 @@ export let socket: Socket;
 export let nonceKey = "";
 let isOK = false;
 let retry: (() => void) | null;
-
 const getNonceKey = () => socket.emit("getNonceKey", {});
-const areYouOk = () => {
-	if (isOK) {
-		throw "OK, OK! Copy that!";
-	}
-};
 
 /**
  * サーバーと対話が成立したのでNonce値を更新する
@@ -63,17 +57,15 @@ export const hello = (callback: (() => void) | null = null) => {
 		if (!retry) {
 			return;
 		}
-		try {
-			retry();
-			await sleep(2048);
-			areYouOk();
-			getNonceKey();
-			await sleep(4096);
-			areYouOk();
-			getNonceKey();
-			await sleep(8192);
-			areYouOk();
-			getNonceKey();
-		} catch (err) {}
+		retry();
+		await sleep(2048);
+		if (isOK) return;
+		getNonceKey();
+		await sleep(4096);
+		if (isOK) return;
+		getNonceKey();
+		await sleep(8192);
+		if (isOK) return;
+		getNonceKey();
 	})();
 };

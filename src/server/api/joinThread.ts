@@ -10,7 +10,7 @@ const api = "joinThread";
 export const pvCache: Map<number, number> = new Map();
 
 /**
- * Nonce値の検証なしで叩けるため、脆弱性にさせないためにpvCacheはDBに反映しない
+ * Nonce値の検証なしで叩けるため、脆弱にさせないためにpvCacheはDBに反映しない
  */
 export default ({ socket, io }: { socket: Socket; io: Server }) => {
 	socket.data.prevRoom = "";

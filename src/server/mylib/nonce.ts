@@ -22,13 +22,10 @@ export const update = (socket: Socket) =>
 	nonces.set(auth.get(socket), genNonceKey());
 export const get = (socket: Socket): string | null =>
 	locks.get(auth.get(socket)) ? null : (nonces.get(auth.get(socket)) ?? null);
-export const isValid = (socket: Socket, nonce: string) => {
-	const result = locks.get(auth.get(socket))
+export const isValid = (socket: Socket, nonce: string) =>
+	locks.get(auth.get(socket))
 		? false
 		: genNonce(nonces.get(auth.get(socket)) ?? "") === nonce;
-	console.log("🔑", result);
-	return result;
-};
 
 export default {
 	lock,

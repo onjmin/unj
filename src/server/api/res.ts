@@ -19,6 +19,7 @@ import {
 } from "../mylib/cache.js";
 import { makeCcUserAvatar, makeCcUserId, makeCcUserName } from "../mylib/cc.js";
 import { DEV_MODE, NEON_DATABASE_URL, PROD_MODE } from "../mylib/env.js";
+import { logger } from "../mylib/log.js";
 import nonce from "../mylib/nonce.js";
 import { exist, getThreadRoom, joined } from "../mylib/socket.js";
 
@@ -93,6 +94,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 
 		// Nonce値の完全一致チェック
 		if (!nonce.isValid(socket, res.output.nonce)) {
+			logger.info(`🔒 ${res.output.nonce}`);
 			return;
 		}
 
@@ -191,11 +193,10 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			});
 
 			await sql("COMMIT"); // 問題なければコミット
+			logger.verbose(api);
 		} catch (error) {
 			await sql("ROLLBACK"); // エラーが発生した場合はロールバック
-			if (DEV_MODE || PROD_MODE) {
-				console.error(error);
-			}
+			logger.error(error);
 		} finally {
 			nonce.unlock(socket);
 		}

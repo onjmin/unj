@@ -10,6 +10,7 @@ import { encodeThreadId } from "../mylib/anti-debug.js";
 import auth from "../mylib/auth.js";
 import { makeCcUserAvatar, makeCcUserId, makeCcUserName } from "../mylib/cc.js";
 import { DEV_MODE, NEON_DATABASE_URL, PROD_MODE } from "../mylib/env.js";
+import { logger } from "../mylib/log.js";
 import nonce from "../mylib/nonce.js";
 import { headlineRoom } from "../mylib/socket.js";
 
@@ -47,6 +48,7 @@ export default ({ socket }: { socket: Socket }) => {
 
 		// Nonce値の完全一致チェック
 		if (!nonce.isValid(socket, makeThread.output.nonce)) {
+			logger.info(`🔒 ${makeThread.output.nonce}`);
 			return;
 		}
 
@@ -130,11 +132,10 @@ export default ({ socket }: { socket: Socket }) => {
 			socket.to(headlineRoom).emit(api, { ok: true, new: newThread });
 
 			await sql("COMMIT"); // 問題なければコミット
+			logger.verbose(api);
 		} catch (error) {
 			await sql("ROLLBACK"); // エラーが発生した場合はロールバック
-			if (DEV_MODE || PROD_MODE) {
-				console.error(error);
-			}
+			logger.error(error);
 		} finally {
 			nonce.unlock(socket);
 		}

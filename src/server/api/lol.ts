@@ -4,6 +4,7 @@ import { lolSchema } from "../../common/request/schema.js";
 import { decodeThreadId } from "../mylib/anti-debug.js";
 import auth from "../mylib/auth.js";
 import { isExpired, lolCountCache } from "../mylib/cache.js";
+import { logger } from "../mylib/log.js";
 import nonce from "../mylib/nonce.js";
 import { exist, getThreadRoom, joined } from "../mylib/socket.js";
 
@@ -54,6 +55,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 
 		// Nonce値の完全一致チェック
 		if (!nonce.isValid(socket, lol.output.nonce)) {
+			logger.info(`🔒 ${lol.output.nonce}`);
 			return;
 		}
 
@@ -75,7 +77,9 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 				yours: false,
 			});
 			lazyUpdate();
+			logger.verbose(api);
 		} catch (error) {
+			logger.error(error);
 		} finally {
 			nonce.unlock(socket);
 		}

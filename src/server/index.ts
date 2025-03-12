@@ -10,10 +10,11 @@ import express, {
 import { sha256 } from "js-sha256";
 import { Server, type Socket } from "socket.io";
 import * as v from "valibot";
-import { validate1 } from "../common/request/util.js";
-import registerBlacklist, { blacklist } from "./admin/blacklist.js";
-import registerTor, { torIPList } from "./admin/tor.js";
-import registerVpngate, { vpngateIPList } from "./admin/vpngate.js";
+import { getFirstError } from "../common/request/util.js";
+import registerBlacklist from "./admin/blacklist.js";
+import registerLog from "./admin/log.js";
+import registerTor from "./admin/tor.js";
+import registerVpngate from "./admin/vpngate.js";
 import handleGetNonceKey from "./api/getNonceKey.js";
 import handleHeadline from "./api/headline.js";
 import handleJoinHeadline from "./api/joinHeadline.js";
@@ -26,6 +27,7 @@ import handleRes from "./api/res.js";
 import { flaky } from "./mylib/anti-debug.js";
 import auth from "./mylib/auth.js";
 import { detectFastlyClientIp, isBannedIP } from "./mylib/ip.js";
+import { logger } from "./mylib/log.js";
 import nonce from "./mylib/nonce.js";
 
 const bannedCheckMiddleware = (
@@ -35,9 +37,9 @@ const bannedCheckMiddleware = (
 ): void => {
 	const ip =
 		detectFastlyClientIp(req.headers["fastly-client-ip"]) ?? req.ip ?? "";
-	console.log("👀", ip);
+	logger.http(`👁️ ${ip}`);
 	if (isBannedIP(ip)) {
-		console.log("❌", ip);
+		logger.http(`❌ ${ip}`);
 		return;
 	}
 	next();
@@ -52,7 +54,7 @@ const adminAuthMiddleware = (
 	next: NextFunction,
 ): void => {
 	const input = req.headers.authorization;
-	const error = validate1(authorizationSchema, input);
+	const error = getFirstError(authorizationSchema, input);
 	if (error) {
 		res.status(400).json({ error });
 		return;
@@ -62,6 +64,7 @@ const adminAuthMiddleware = (
 		return;
 	}
 	next();
+	logger.verbose(req.path);
 };
 
 const app = express();
@@ -72,7 +75,8 @@ const io = new Server(server, {
 			new URL(String(process.env.VITE_BASE_URL)).origin,
 			"https://onjmin.github.io",
 			"https://unj-i1v.pages.dev",
-			"https://unjupiter.pages.dev",
+			"https://unj.netlify.app",
+			"https://unj.on-fleek.app",
 		],
 		methods: ["GET", "POST"],
 		credentials: true,
@@ -87,6 +91,7 @@ app.get("/ping", bannedCheckMiddleware, (req, res) => {
 
 const router = express.Router();
 router.use(bannedCheckMiddleware, adminAuthMiddleware);
+registerLog(router);
 registerBlacklist(router);
 registerTor(router);
 registerVpngate(router);
@@ -126,9 +131,9 @@ io.on("connection", async (socket) => {
 	const ip =
 		detectFastlyClientIp(socket.handshake.headers["fastly-client-ip"]) ??
 		socket.conn.remoteAddress;
-	console.log("👀", ip);
+	logger.http(`👀 ${ip}`);
 	if (isBannedIP(ip)) {
-		console.log("❌", ip);
+		logger.http(`❌ ${ip}`);
 		kick(socket, "banned");
 		socket.disconnect();
 		return;
@@ -161,5 +166,7 @@ io.on("connection", async (socket) => {
 
 const PORT = process.env.PORT || process.env.VITE_LOCALHOST_PORT;
 server.listen(PORT, () => {
-	console.log(`サーバー起動: ポート ${PORT}`);
+	const msg = `🟢 listening on ${PORT}...`;
+	console.log(msg);
+	logger.info(msg);
 });

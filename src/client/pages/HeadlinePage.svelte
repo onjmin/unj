@@ -200,7 +200,7 @@
                                 class="material-icons"
                                 onclick={() =>
                                     navigate(base(`/thread/${thread.id}`))}
-                                >open_in_new</IconButton
+                                >arrow_forward</IconButton
                             >
                         </span>
                     </Content>
