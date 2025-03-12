@@ -5,11 +5,11 @@ import { fileURLToPath } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const dir = path.resolve(__dirname, "..", "..");
-const sourcePath = path.join(dir, "unj/dist/client");
-const sourcePath2 = path.join(dir, "unj/static");
-const sourcePath3 = path.join(dir, "unj/dist/server.cjs");
-const destPathClient = path.join(dir, "unjupiter/docs");
-const destPathServer = path.join(dir, "onjmin/dist/server.cjs");
+const sourcePath = path.join(dir, "unj", "dist", "client");
+const sourcePath2 = path.join(dir, "unj", "static");
+const sourcePath3 = path.join(dir, "unj", "dist", "server.cjs");
+const destPathClient = path.join(dir, "unjupiter", "docs");
+const destPathServer = path.join(dir, "onjmin", "dist", "server.cjs");
 
 try {
 	console.log("🤖", "別のリポジトリにファイル転送");

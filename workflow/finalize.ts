@@ -5,13 +5,17 @@ import { fileURLToPath } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const dir = path.resolve(__dirname, "..");
-const sourcePath = path.join(dir, "static");
-const destPath = path.join(dir, "dist/client");
+const sourcePath1 = path.join(dir, "static");
+const sourcePath2 = path.join(dir, "src", "client", "_redirects");
+const destPath = path.join(dir, "dist", "client");
 
 try {
-	console.log("🤖", "dist/clientにstaticを転送");
+	console.log("🤖", "dist/clientにstaticと_redirectsを転送");
 
-	await cp(sourcePath, path.join(destPath, "static"), {
+	await cp(sourcePath1, path.join(destPath, "static"), {
+		recursive: true,
+	});
+	await cp(sourcePath2, destPath, {
 		recursive: true,
 	});
 	console.log("✅", "Folder copied successfully!");
