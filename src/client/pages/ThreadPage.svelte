@@ -9,10 +9,17 @@
     import Button from "@smui/button";
     import Chip, { Set as ChipSet, LeadingIcon, Text } from "@smui/chips";
     import Paper, { Title, Content, Subtitle } from "@smui/paper";
+    import {
+        differenceInDays,
+        differenceInSeconds,
+        intervalToDuration,
+    } from "date-fns";
     import { Howl } from "howler";
+    import { navigate } from "svelte-routing";
     import type { Res, Thread } from "../../common/response/schema.js";
     import { genNonce } from "../mylib/anti-debug.js";
     import { visible } from "../mylib/dom.js";
+    import { base } from "../mylib/env.js";
     import { goodbye, hello, nonceKey, ok, socket } from "../mylib/socket.js";
     import {
         loadNewResSound,
@@ -66,6 +73,12 @@
             goodVotes = thread.goodCount;
             badVotes = thread.badCount;
             chips = [];
+            if (thread.resLimit < 1000) {
+                chips.push(`上限${thread.resLimit}スレ`);
+            }
+            if (thread.deletedAt) {
+                chips.push("時間制限スレ");
+            }
             if ((thread.ccBitmask & 3) === 0) {
                 chips.push("ID非表示");
             }
@@ -190,7 +203,34 @@
         badRatio = (badVotes / denominator) * 100;
     });
 
+    let remaining = $state("");
+    const countdown = (date: Date): string => {
+        const now = new Date();
+        const diffSeconds = differenceInSeconds(date, now);
+        if (diffSeconds < 0) {
+            navigate(base("/headline"), { replace: true });
+            return "期限切れ";
+        }
+        if (diffSeconds <= 359999) {
+            const duration = intervalToDuration({ start: now, end: date });
+            const hours = String(
+                (duration.hours ?? 0) + (duration.days ?? 0) * 24,
+            ).padStart(2, "0");
+            const minutes = String(duration.minutes ?? 0).padStart(2, "0");
+            const seconds = String(duration.seconds ?? 0).padStart(2, "0");
+            return `${hours}:${minutes}:${seconds}`;
+        }
+        const days = differenceInDays(date, now);
+        return `あと${days}日`;
+    };
+
+    let id: NodeJS.Timeout;
     $effect(() => {
+        id = setInterval(() => {
+            if (!thread) return;
+            if (!thread.deletedAt) return;
+            remaining = countdown(thread.deletedAt);
+        }, 512);
         hello(() => {
             socket.emit("joinThread", {
                 threadId,
@@ -209,6 +249,7 @@
         socket.on("lol", handleLoL);
         socket.on("like", handleLike);
         return () => {
+            clearInterval(id);
             goodbye();
             socket.off("joinThread", handleJoinThread);
             socket.off("readThread", handleReadThread);
@@ -316,6 +357,16 @@
                     </Chip>
                 {/snippet}
             </ChipSet>
+            {#if remaining !== ""}
+                <div style="text-align:center">
+                    <Chip>
+                        <LeadingIcon class="material-icons"
+                            >schedule</LeadingIcon
+                        >
+                        <Text tabindex={0}>{remaining}</Text>
+                    </Chip>
+                </div>
+            {/if}
             <div class="lol-button-container">
                 <Button class="lol" onclick={tryLoL}>草</Button>
                 <span>×{lolCount}草</span>

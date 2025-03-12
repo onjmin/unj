@@ -52,6 +52,8 @@
         { key: 24, label: "1日" },
         { key: 72, label: "3日" },
         { key: 168, label: "1週間" },
+        { key: 4380, label: "半年" },
+        { key: 8760, label: "1年間" },
     ];
     let timer = $state(0);
 

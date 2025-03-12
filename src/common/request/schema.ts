@@ -91,7 +91,7 @@ export const MakeThreadSchema = v.strictObject({
 	ccBitmask: SMALLINT,
 	contentTypesBitmask: SMALLSERIAL,
 	max: v.pipe(v.number(), v.integer(), v.minValue(10), v.maxValue(1000)),
-	timer: v.pipe(v.number(), v.integer(), v.minValue(0), v.maxValue(168)),
+	timer: v.pipe(v.number(), v.integer(), v.minValue(0), v.maxValue(8760)),
 	// 書き込み内容
 	userName: USER_NAME,
 	userAvatar: USER_AVATAR,
