@@ -47,7 +47,7 @@
             >
               {#if avatar.src}
                 <Graphic
-                  class="favicon-item-graphic"
+                  class="avatar-item-graphic"
                   style="background-image: url({avatar.src});"
                 />
               {/if}
@@ -82,8 +82,9 @@
   * :global(.demo-list) {
     text-align: left;
   }
-  :global(.favicon-item-graphic) {
+  :global(.avatar-item-graphic) {
     background-repeat: no-repeat;
-    background-size: 100% 100%;
+    background-size: cover;
+    background-position: center;
   }
 </style>

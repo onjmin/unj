@@ -1,6 +1,6 @@
 import { encodeUserId } from "./anti-debug.js";
 
-export const makeCcUserId = (ccBitmask: number, userId: number) => {
+export const makeCcUserId = (ccBitmask: number, userId: number): string => {
 	if ((ccBitmask & 2) === 2) {
 		// 2: 自演防止ID表示 # （ID:8z.8u.L60）
 		const result = encodeUserId(userId, new Date());
@@ -16,22 +16,23 @@ export const makeCcUserId = (ccBitmask: number, userId: number) => {
 		}
 	}
 	// 0: ID非表示
-	return "???";
+	return "";
 };
-
-export const unjDefaultUserName = "月沈めば名無し";
 
 /**
  * 名前に付加される系のコマンドもここで作成する
  */
-export const makeCcUserName = (ccBitmask: number, userName: string) => {
+export const makeCcUserName = (ccBitmask: number, userName: string): string => {
 	if ((ccBitmask & 4) === 4) {
 		return userName;
 	}
 	return "";
 };
 
-export const makeCcUserAvatar = (ccBitmask: number, userAvatar: number) => {
+export const makeCcUserAvatar = (
+	ccBitmask: number,
+	userAvatar: number,
+): number => {
 	if ((ccBitmask & 8) === 8) {
 		return userAvatar;
 	}

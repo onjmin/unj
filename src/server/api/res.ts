@@ -18,7 +18,7 @@ import {
 	varsanCache,
 } from "../mylib/cache.js";
 import { makeCcUserAvatar, makeCcUserId, makeCcUserName } from "../mylib/cc.js";
-import { DEV_MODE, NEON_DATABASE_URL, PROD_MODE } from "../mylib/env.js";
+import { NEON_DATABASE_URL } from "../mylib/env.js";
 import { logger } from "../mylib/log.js";
 import nonce from "../mylib/nonce.js";
 import { exist, getThreadRoom, joined } from "../mylib/socket.js";

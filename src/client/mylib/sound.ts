@@ -4,7 +4,7 @@ import { load, save } from "./idb/keyval.js";
 
 export const loadSoundVolume = async () => {
 	const result = await load("soundVolume");
-	const volume = result ? Number.parseFloat(result) : 0.0721;
+	const volume = result ? Number.parseFloat(result) : 0.3777;
 	Howler.volume(volume);
 	return volume;
 };

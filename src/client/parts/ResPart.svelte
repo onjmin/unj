@@ -19,11 +19,11 @@
 <div class="res">
   <!-- 上段: 名前欄 -->
   <div class="name-row">
-    {num}：<span class="user-name">{ccUserName}</span>：
+    {num}：<span class="user-name">{ccUserName || "月沈めば名無し"}</span>：
     {format(createdAt, "yy/MM/dd(EEE) HH:mm:ss", {
       locale: ja,
     })}
-    ID:{ccUserId}
+    ID:{ccUserId || "???"}
     {#if isOwner}
       <span class="thread-owner">主</span>
     {/if}
@@ -85,21 +85,20 @@
   .avatar {
     flex: 0 0 auto;
     width: 64px;
-    height: auto;
-    margin-right: 8px;
-  }
-  .avatar img {
+    height: 64px;
     border-radius: 50%;
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+    margin-right: 8px;
+    overflow: hidden;
+    display: flex; /* 中央寄せするならflexが楽 */
+    justify-content: center;
+    align-items: center;
+    background-color: #333; /* 透明な画像の場合の背景 */
   }
   .avatar img {
-    display: block;
     width: 100%;
-    height: 100%;
+    height: auto;
     object-fit: cover;
+    object-position: center center;
   }
   /* content は縦並びに、右側の残りスペースを使用 */
   .content {

@@ -25,8 +25,7 @@ import {
 	sageCache,
 	varsanCache,
 } from "../mylib/cache.js";
-import { unjDefaultUserName } from "../mylib/cc.js";
-import { DEV_MODE, NEON_DATABASE_URL, PROD_MODE } from "../mylib/env.js";
+import { NEON_DATABASE_URL } from "../mylib/env.js";
 import { logger } from "../mylib/log.js";
 import nonce from "../mylib/nonce.js";
 
@@ -130,8 +129,8 @@ export default ({ socket }: { socket: Socket }) => {
 				list.push({
 					yours: record.user_id === userId,
 					// 書き込み内容
-					ccUserId: record.cc_user_id || "???",
-					ccUserName: record.cc_user_name || unjDefaultUserName,
+					ccUserId: record.cc_user_id,
+					ccUserName: record.cc_user_name,
 					ccUserAvatar: record.cc_user_avatar,
 					content: record.content,
 					contentUrl: record.content_url,

@@ -93,6 +93,7 @@
   }
   :global(.favicon-item-graphic) {
     background-repeat: no-repeat;
-    background-size: 100% 100%;
+    background-size: cover;
+    background-position: center;
   }
 </style>
