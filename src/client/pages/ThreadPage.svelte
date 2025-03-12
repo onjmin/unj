@@ -136,15 +136,16 @@
                 openNewResNotice = true;
                 newResCount++;
                 isAlreadyScrollEnd = false;
-                const m = data.new.content.match(/>>([0-9]+)/);
-                if (m) {
-                    const num = Number(m[1]);
-                    const replyTo = thread.resList.find(
-                        (v) => v.yours && v.num === num,
-                    );
-                    if (replyTo) {
-                        replyResSound.play();
-                    }
+            }
+            const m = data.new.content.match(/>>([0-9]+)/);
+            if (m) {
+                const num = Number(m[1]);
+                const replyTo = thread.resList.find(
+                    (v) => v.yours && v.num === num,
+                );
+                if (replyTo) {
+                    await sleep(512);
+                    replyResSound.play();
                 }
             }
         }
