@@ -15,7 +15,7 @@ try {
 	await cp(sourcePath1, path.join(destPath, "static"), {
 		recursive: true,
 	});
-	await cp(sourcePath2, destPath, {
+	await cp(sourcePath2, path.join(destPath, "_redirects"), {
 		recursive: true,
 	});
 	console.log("✅", "Folder copied successfully!");
