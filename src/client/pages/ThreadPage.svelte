@@ -324,6 +324,7 @@
         </div>
         <div class="res-list">
             <ResPart
+                bind:input={content}
                 num={1}
                 isOwner={true}
                 createdAt={thread.createdAt}
@@ -352,6 +353,7 @@
             </ResPart>
             {#each thread.resList as res}
                 <ResPart
+                    bind:input={content}
                     num={res.num}
                     isOwner={res.isOwner}
                     createdAt={res.createdAt}

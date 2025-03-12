@@ -5,6 +5,7 @@
 
   let {
     children = null,
+    input = $bindable(""),
     num,
     isOwner,
     createdAt,
@@ -19,8 +20,18 @@
 <div class="res">
   <!-- 上段: 名前欄 -->
   <div class="name-row">
-    {num}：<span class="user-name">{ccUserName || "月沈めば名無し"}</span>：
-    {format(createdAt, "yy/MM/dd(EEE) HH:mm:ss", {
+    <button
+      class="reply"
+      onclick={() => {
+        const m = input.match(/>>([0-9]+)/);
+        if (m) {
+          input = input.replace(/>>([0-9]+)/, `>>${num}`);
+        } else {
+          input = input.replace(/^[^\S]*/, `>>${num}\n`);
+        }
+      }}
+      >{num}：<span class="user-name">{ccUserName || "月沈めば名無し"}</span>
+    </button>：{format(createdAt, "yy/MM/dd(EEE) HH:mm:ss", {
       locale: ja,
     })}
     ID:{ccUserId || "???"}
@@ -55,6 +66,17 @@
 </div>
 
 <style>
+  .reply {
+    background-color: transparent; /* 背景を透明に */
+    border: none; /* 枠線をなくす（必要に応じて） */
+    color: inherit; /* 親要素の文字色を継承 */
+    font-size: inherit; /* 親要素のフォントサイズを継承 */
+    cursor: pointer;
+    padding-right: 0;
+  }
+  .reply:hover {
+    opacity: 0.8; /* ホバー時の透明度を変更（任意） */
+  }
   .res {
     border: 2mm ridge rgba(255, 255, 255, 0.1);
     padding: 8px;
