@@ -1,9 +1,11 @@
+import { neon } from "@neondatabase/serverless";
 import type { Server, Socket } from "socket.io";
 import * as v from "valibot";
 import { lolSchema } from "../../common/request/schema.js";
 import { decodeThreadId } from "../mylib/anti-debug.js";
 import auth from "../mylib/auth.js";
 import { isExpired, lolCountCache } from "../mylib/cache.js";
+import { NEON_DATABASE_URL } from "../mylib/env.js";
 import { logger } from "../mylib/log.js";
 import nonce from "../mylib/nonce.js";
 import { exist, getThreadRoom, joined } from "../mylib/socket.js";
@@ -14,10 +16,14 @@ const done: Set<string> = new Set();
 
 let id: NodeJS.Timeout;
 const delay = 1000 * 60 * 4;
-const lazyUpdate = () => {
+const lazyUpdate = (threadId: number, lolCount: number) => {
 	clearTimeout(id);
-	id = setTimeout(() => {
-		// DB書き込み
+	id = setTimeout(async () => {
+		const sql = neon(NEON_DATABASE_URL);
+		await sql("UPDATE threads SET lol_count = $1 WHERE id = $2", [
+			lolCount,
+			threadId,
+		]);
 	}, delay);
 };
 
@@ -76,7 +82,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 				lolCount,
 				yours: false,
 			});
-			lazyUpdate();
+			lazyUpdate(threadId, lolCount);
 			logger.verbose(api);
 		} catch (error) {
 			logger.error(error);

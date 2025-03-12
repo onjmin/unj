@@ -1,10 +1,11 @@
+import { neon } from "@neondatabase/serverless";
 import type { Server, Socket } from "socket.io";
 import * as v from "valibot";
 import { likeSchema } from "../../common/request/schema.js";
 import { decodeThreadId } from "../mylib/anti-debug.js";
 import auth from "../mylib/auth.js";
 import { badCountCache, goodCountCache, isExpired } from "../mylib/cache.js";
-import { DEV_MODE } from "../mylib/env.js";
+import { NEON_DATABASE_URL } from "../mylib/env.js";
 import { logger } from "../mylib/log.js";
 import nonce from "../mylib/nonce.js";
 import { exist, getThreadRoom, joined } from "../mylib/socket.js";
@@ -15,17 +16,16 @@ const done: Set<string> = new Set();
 
 let id: NodeJS.Timeout;
 const delay = 1000 * 60 * 4;
-const lazyUpdate = () => {
+const lazyUpdate = (threadId: number, goodCount: number, badCount: number) => {
 	clearTimeout(id);
-	id = setTimeout(() => {
-		// 危険な処理
-		// try {
-		// } catch (error) {
-		// 	if (DEV_MODE) {
-		// 		console.error(error);
-		// 	}
-		// } finally {
-		// }
+	id = setTimeout(async () => {
+		const n = badCountCache.get(threadId);
+		if (!n) return;
+		const sql = neon(NEON_DATABASE_URL);
+		await sql(
+			"UPDATE threads SET good_count = $1, bad_count = $2 WHERE id = $3",
+			[goodCount, badCount, threadId],
+		);
 	}, delay);
 };
 
@@ -91,7 +91,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 				badCount,
 				yours: false,
 			});
-			lazyUpdate();
+			lazyUpdate(threadId, goodCount, badCount);
 			logger.verbose(api);
 		} catch (error) {
 			logger.error(error);
