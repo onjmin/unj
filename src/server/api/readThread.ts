@@ -1,4 +1,9 @@
-import { neon } from "@neondatabase/serverless";
+// pool
+import { Pool, type PoolClient, neonConfig } from "@neondatabase/serverless";
+import ws from "ws";
+import { NEON_DATABASE_URL } from "../mylib/env.js";
+neonConfig.webSocketConstructor = ws;
+
 import type { Socket } from "socket.io";
 import * as v from "valibot";
 import { ReadThreadSchema } from "../../common/request/schema.js";
@@ -25,7 +30,6 @@ import {
 	sageCache,
 	varsanCache,
 } from "../mylib/cache.js";
-import { NEON_DATABASE_URL } from "../mylib/env.js";
 import { logger } from "../mylib/log.js";
 import nonce from "../mylib/nonce.js";
 
@@ -64,19 +68,27 @@ export default ({ socket }: { socket: Socket }) => {
 		}
 
 		// 危険な処理
-		const sql = neon(NEON_DATABASE_URL);
+		let poolClient: PoolClient | null = null;
 		try {
 			nonce.lock(socket);
 			nonce.update(socket);
 
+			// pool
+			const pool = new Pool({ connectionString: NEON_DATABASE_URL });
+			pool.on("error", (error) => {
+				throw error;
+			});
+			poolClient = await pool.connect();
+
 			// スレッドの取得
-			const records = await sql("SELECT * FROM threads WHERE id = $1", [
-				threadId,
-			]);
-			if (!records.length) {
+			const { rows, rowCount } = await poolClient.query(
+				"SELECT * FROM threads WHERE id = $1",
+				[threadId],
+			);
+			if (rowCount === 0) {
 				return;
 			}
-			const threadRecord = records[0];
+			const threadRecord = rows[0];
 
 			// キャッシュの登録
 			if (!cached.has(threadId)) {
@@ -121,7 +133,7 @@ export default ({ socket }: { socket: Socket }) => {
 
 			const userId = auth.getUserId(socket);
 			const list: Res[] = [];
-			for (const record of await sql(query.join(" "))) {
+			for (const record of (await poolClient.query(query.join(" "))).rows) {
 				const resId = encodeResId(record.id);
 				if (resId === null) {
 					return;

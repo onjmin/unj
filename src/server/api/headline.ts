@@ -1,10 +1,14 @@
-import { neon } from "@neondatabase/serverless";
+// pool
+import { Pool, type PoolClient, neonConfig } from "@neondatabase/serverless";
+import ws from "ws";
+import { NEON_DATABASE_URL } from "../mylib/env.js";
+neonConfig.webSocketConstructor = ws;
+
 import type { Server, Socket } from "socket.io";
 import * as v from "valibot";
 import { HeadlineSchema } from "../../common/request/schema.js";
 import type { HeadlineThread } from "../../common/response/schema.js";
 import { decodeThreadId, encodeThreadId } from "../mylib/anti-debug.js";
-import { NEON_DATABASE_URL } from "../mylib/env.js";
 import { logger } from "../mylib/log.js";
 import nonce from "../mylib/nonce.js";
 import { sizeOf } from "../mylib/socket.js";
@@ -35,10 +39,17 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		}
 
 		// 危険な処理
-		const sql = neon(NEON_DATABASE_URL);
+		let poolClient: PoolClient | null = null;
 		try {
 			nonce.lock(socket);
 			nonce.update(socket);
+
+			// pool
+			const pool = new Pool({ connectionString: NEON_DATABASE_URL });
+			pool.on("error", (error) => {
+				throw error;
+			});
+			poolClient = await pool.connect();
 
 			const query = [
 				"SELECT * FROM threads WHERE deleted_at IS NULL OR deleted_at > CURRENT_TIMESTAMP",
@@ -53,7 +64,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			query.push(`ORDER BY latest_res_at ${desc ? "DESC" : "ASC"}`);
 			query.push(`LIMIT ${size}`);
 			const list: HeadlineThread[] = [];
-			for (const record of await sql(query.join(" "))) {
+			for (const record of (await poolClient.query(query.join(" "))).rows) {
 				const latestResAt = new Date(record.latest_res_at);
 				const resCount = record.res_count;
 				list.push({

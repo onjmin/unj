@@ -1,4 +1,9 @@
-import { neon } from "@neondatabase/serverless";
+// pool
+import { Pool, type PoolClient, neonConfig } from "@neondatabase/serverless";
+import ws from "ws";
+import { NEON_DATABASE_URL } from "../mylib/env.js";
+neonConfig.webSocketConstructor = ws;
+
 import { addHours } from "date-fns";
 import type { Socket } from "socket.io";
 import * as v from "valibot";
@@ -9,7 +14,6 @@ import type { HeadlineThread } from "../../common/response/schema.js";
 import { encodeThreadId } from "../mylib/anti-debug.js";
 import auth from "../mylib/auth.js";
 import { makeCcUserAvatar, makeCcUserId, makeCcUserName } from "../mylib/cc.js";
-import { NEON_DATABASE_URL } from "../mylib/env.js";
 import { logger } from "../mylib/log.js";
 import nonce from "../mylib/nonce.js";
 import { headlineRoom } from "../mylib/socket.js";
@@ -53,15 +57,22 @@ export default ({ socket }: { socket: Socket }) => {
 		}
 
 		// 危険な処理
-		const sql = neon(NEON_DATABASE_URL);
+		let poolClient: PoolClient | null = null;
 		try {
 			nonce.lock(socket);
 			nonce.update(socket);
 
-			await sql("BEGIN"); // トランザクション開始
+			// pool
+			const pool = new Pool({ connectionString: NEON_DATABASE_URL });
+			pool.on("error", (error) => {
+				throw error;
+			});
+			poolClient = await pool.connect();
+
+			await poolClient.query("BEGIN"); // トランザクション開始
 
 			// スレッドの作成
-			const result = await sql(
+			const { rows, rowCount } = await poolClient.query(
 				[
 					`INSERT INTO threads (${[
 						// 書き込み内容
@@ -107,10 +118,10 @@ export default ({ socket }: { socket: Socket }) => {
 					deletedAt,
 				],
 			);
-			if (!result.length) {
+			if (rowCount === 0) {
 				return;
 			}
-			const { id } = result[0];
+			const { id } = rows[0];
 
 			const newThread: HeadlineThread = {
 				// 書き込み内容
@@ -131,10 +142,10 @@ export default ({ socket }: { socket: Socket }) => {
 			socket.emit(api, { ok: true, new: newThread });
 			socket.to(headlineRoom).emit(api, { ok: true, new: newThread });
 
-			await sql("COMMIT"); // 問題なければコミット
+			await poolClient.query("COMMIT"); // 問題なければコミット
 			logger.verbose(api);
 		} catch (error) {
-			await sql("ROLLBACK"); // エラーが発生した場合はロールバック
+			await poolClient?.query("ROLLBACK"); // エラーが発生した場合はロールバック
 			logger.error(error);
 		} finally {
 			nonce.unlock(socket);

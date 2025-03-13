@@ -1,4 +1,9 @@
-import { neon } from "@neondatabase/serverless";
+// pool
+import { Pool, type PoolClient, neonConfig } from "@neondatabase/serverless";
+import ws from "ws";
+import { NEON_DATABASE_URL } from "../mylib/env.js";
+neonConfig.webSocketConstructor = ws;
+
 import type { Server, Socket } from "socket.io";
 import * as v from "valibot";
 import { contentSchemaMap } from "../../common/request/content-schema.js";
@@ -18,7 +23,6 @@ import {
 	varsanCache,
 } from "../mylib/cache.js";
 import { makeCcUserAvatar, makeCcUserId, makeCcUserName } from "../mylib/cc.js";
-import { NEON_DATABASE_URL } from "../mylib/env.js";
 import { logger } from "../mylib/log.js";
 import nonce from "../mylib/nonce.js";
 import { exist, getThreadRoom, joined } from "../mylib/socket.js";
@@ -99,18 +103,25 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		}
 
 		// 危険な処理
-		const sql = neon(NEON_DATABASE_URL);
+		let poolClient: PoolClient | null = null;
 		try {
 			nonce.lock(socket);
 			nonce.update(socket);
 
-			await sql("BEGIN"); // トランザクション開始
+			// pool
+			const pool = new Pool({ connectionString: NEON_DATABASE_URL });
+			pool.on("error", (error) => {
+				throw error;
+			});
+			poolClient = await pool.connect();
+
+			await poolClient.query("BEGIN"); // トランザクション開始
 
 			const next = resCount + 1;
 			resCountCache.set(threadId, next);
 
 			// レスの作成
-			const records = await sql(
+			const { rows, rowCount } = await poolClient.query(
 				[
 					`INSERT INTO res (${[
 						// 書き込み内容
@@ -144,18 +155,18 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 					isOwner,
 				],
 			);
-			if (!records.length) {
+			if (rowCount === 0) {
 				return;
 			}
-			const { id, created_at } = records[0];
+			const { id, created_at } = rows[0];
 			const resId = encodeResId(id);
 			if (resId === null) {
 				return;
 			}
 
 			// スレッドの更新
-			// TODO: スレ主による高度な設定の更新などここで行う
-			await sql(
+			// TODO: スレ主による高度な設定の更新なども
+			await poolClient.query(
 				[
 					`UPDATE threads SET${sageCache.get(threadId) ? "" : " latest_res_at = NOW(),"}`,
 					"res_count = $1",
@@ -192,10 +203,10 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 				yours: false,
 			});
 
-			await sql("COMMIT"); // 問題なければコミット
+			await poolClient.query("COMMIT"); // 問題なければコミット
 			logger.verbose(api);
 		} catch (error) {
-			await sql("ROLLBACK"); // エラーが発生した場合はロールバック
+			await poolClient?.query("ROLLBACK"); // エラーが発生した場合はロールバック
 			logger.error(error);
 		} finally {
 			nonce.unlock(socket);

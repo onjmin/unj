@@ -1,11 +1,15 @@
-import { neon } from "@neondatabase/serverless";
+// pool
+import { Pool, neonConfig } from "@neondatabase/serverless";
+import ws from "ws";
+import { NEON_DATABASE_URL } from "../mylib/env.js";
+neonConfig.webSocketConstructor = ws;
+
 import type { Server, Socket } from "socket.io";
 import * as v from "valibot";
 import { lolSchema } from "../../common/request/schema.js";
 import { decodeThreadId } from "../mylib/anti-debug.js";
 import auth from "../mylib/auth.js";
 import { isExpired, lolCountCache } from "../mylib/cache.js";
-import { NEON_DATABASE_URL } from "../mylib/env.js";
 import { logger } from "../mylib/log.js";
 import nonce from "../mylib/nonce.js";
 import { exist, getThreadRoom, joined } from "../mylib/socket.js";
@@ -14,17 +18,23 @@ const api = "lol";
 const delimiter = "###";
 const done: Set<string> = new Set();
 
-let id: NodeJS.Timeout;
-const delay = 1000 * 60 * 4;
+const delay = 1000 * 60 * 4; // Glitchは5分放置でスリープする
+const neet: Map<number, NodeJS.Timeout> = new Map();
 const lazyUpdate = (threadId: number, lolCount: number) => {
-	clearTimeout(id);
-	id = setTimeout(async () => {
-		const sql = neon(NEON_DATABASE_URL);
-		await sql("UPDATE threads SET lol_count = $1 WHERE id = $2", [
+	clearTimeout(neet.get(threadId));
+	const id = setTimeout(async () => {
+		// pool
+		const pool = new Pool({ connectionString: NEON_DATABASE_URL });
+		pool.on("error", (error) => {
+			logger.error(error);
+		});
+		const poolClient = await pool.connect();
+		await poolClient.query("UPDATE threads SET lol_count = $1 WHERE id = $2", [
 			lolCount,
 			threadId,
 		]);
 	}, delay);
+	neet.set(threadId, id);
 };
 
 export default ({ socket, io }: { socket: Socket; io: Server }) => {
@@ -53,7 +63,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		}
 
 		// 連投規制
-		const key = [auth.get(socket), id].join(delimiter);
+		const key = [auth.get(socket), threadId].join(delimiter);
 		if (done.has(key)) {
 			return;
 		}

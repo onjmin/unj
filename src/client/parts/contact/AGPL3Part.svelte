@@ -15,11 +15,9 @@
   export const getInputArray = () => [`ユーザ名：${username}`];
 </script>
 
+<p>AGPL3.0の条件に基づき、難読化前のソースコードをご提供いたします。</p>
 <p>
-  本プロジェクトでは、AGPL3.0の条件に基づき、難読化前のソースコードをご提供いたします。
-</p>
-<p>
-  また、プライベートリポジトリへのアクセス権を付与いたしますので、GitHubのユーザー名をご連絡ください。
+  プライベートリポジトリへのアクセス権を付与いたしますので、GitHubのユーザー名をご連絡ください。
 </p>
 <Textfield label="GitHubのユーザ名" bind:value={username} input$maxlength={39}>
   {#snippet helper()}
@@ -40,7 +38,7 @@
     />
   {/if}
 </div>
-<p>なお、コントリビュートも歓迎いたします。</p>
+<p>コントリビュートも募集しています。</p>
 
 <style>
   .github-profile-embed img {

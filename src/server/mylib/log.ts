@@ -15,9 +15,14 @@ const transport = new winston.transports.DailyRotateFile({
 
 export const logger = winston.createLogger({
 	level: PROD_MODE ? "error" : "debug",
-	format: winston.format.printf((info) => {
-		const time = format(new Date(), "HH:mm:ss");
-		return `[${time}] ${info.level.toUpperCase()}: ${info.message}`;
-	}),
+	format: winston.format.combine(
+		winston.format.errors({ stack: true }),
+		winston.format.printf((info) => {
+			const time = format(new Date(), "HH:mm:ss");
+			const level = info.level.toUpperCase();
+			const message = info.stack || info.message;
+			return `[${time}] ${level}: ${message}`;
+		}),
+	),
 	transports: [transport],
 });
