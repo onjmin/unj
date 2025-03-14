@@ -9,6 +9,8 @@ export const nonceLength = 16;
 export const userIdLength = 16;
 export const threadIdLength = 16;
 export const resIdLength = 16;
+export const authSignLength = 16;
+export const authLimitLength = 16;
 export const hashidsRegex = /^[0-9A-Za-z]+$/;
 
 const SMALLINT = v.pipe(
@@ -36,6 +38,13 @@ const THREAD_ID = v.pipe(
 	v.regex(hashidsRegex),
 );
 const RES_ID = v.pipe(v.string(), v.length(resIdLength), v.regex(hashidsRegex));
+
+const AUTH_SIGN = v.pipe(v.string(), v.length(nonceLength), v.hexadecimal());
+const AUTH_LIMIT = v.pipe(
+	v.string(),
+	v.length(authLimitLength),
+	v.regex(hashidsRegex),
+);
 
 const USER_NAME = v.pipe(SAFE_TEXT_SINGLELINE, v.maxLength(32));
 const USER_AVATAR = v.pipe(
@@ -168,4 +177,13 @@ export const SearchResSchema = v.strictObject({
 	userName: USER_NAME,
 	userAvatar: USER_AVATAR,
 	contentTypesBitmask: SMALLSERIAL,
+});
+
+/**
+ * JWT風トークンのスキーマ
+ */
+export const AuthSchema = v.strictObject({
+	sign: AUTH_SIGN,
+	userId: USER_ID,
+	limit: AUTH_LIMIT,
 });

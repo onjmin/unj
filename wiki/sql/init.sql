@@ -5,7 +5,8 @@ DROP TABLE IF EXISTS res CASCADE;
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    auth TEXT NOT NULL UNIQUE, -- 別端末で引き継ぎ可能な認可トークン
+    ip INET NOT NULL,
+    auth TEXT NOT NULL DEFAULT '', -- JWT風トークン
     ninja_pokemon SMALLINT NOT NULL DEFAULT 0, -- 忍法帖ポケモンのID「■忍【LV38,ピカチュウ,9S】◆KOSOVO//9k」
     ninja_score SMALLINT NOT NULL DEFAULT 0 -- 忍法帖スコア
 );

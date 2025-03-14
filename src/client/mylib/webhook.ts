@@ -11,8 +11,8 @@ const VITE_DISCORD_WEBHOOK_URL_OF_USER_REPORT = import.meta.env
 	.VITE_DISCORD_WEBHOOK_URL_OF_USER_REPORT;
 const VITE_DISCORD_WEBHOOK_URL_OF_REPORT_TRAVERSAL = import.meta.env
 	.VITE_DISCORD_WEBHOOK_URL_OF_REPORT_TRAVERSAL;
-const VITE_DISCORD_WEBHOOK_URL_OF_REPORT_UNKNOWN_IP = import.meta.env
-	.VITE_DISCORD_WEBHOOK_URL_OF_REPORT_UNKNOWN_IP;
+const VITE_DISCORD_WEBHOOK_URL_OF_REPORT_BANNED_IP = import.meta.env
+	.VITE_DISCORD_WEBHOOK_URL_OF_REPORT_BANNED_IP;
 
 /**
  * DiscordのWebhookは符号化のしようがないので素の状態で使う
@@ -30,6 +30,9 @@ const sendDiscordWebhook = (url: string, array: string[]) =>
 				array.join("\n").replace(/`/g, ""),
 				"```",
 			].join("\n"),
+			allowed_mentions: {
+				parse: [],
+			},
 		}),
 	});
 
@@ -66,5 +69,5 @@ export const reportTraversal = (array: string[]) =>
 /**
  * Socket.IOでIPが不明だった時に送信する
  */
-export const reportUnknownIP = (array: string[]) =>
-	sendDiscordWebhook(VITE_DISCORD_WEBHOOK_URL_OF_REPORT_UNKNOWN_IP, array);
+export const reportBannedIP = (array: string[]) =>
+	sendDiscordWebhook(VITE_DISCORD_WEBHOOK_URL_OF_REPORT_BANNED_IP, array);

@@ -1,10 +1,21 @@
 import { type Socket, io } from "socket.io-client";
+import { navigate } from "svelte-routing";
 import { sleep } from "../mylib/util.js";
-import { PROD_MODE } from "./env.js";
+import { PROD_MODE, base } from "./env.js";
+import { save } from "./idb/keyval.js";
 
 const uri = PROD_MODE
 	? import.meta.env.VITE_GLITCH_URL
 	: `http://localhost:${import.meta.env.VITE_LOCALHOST_PORT}`;
+
+export let errorReason = "";
+let authToken = "";
+const getAuthToken = () => {
+	return authToken;
+};
+export const setAuthToken = (token: string) => {
+	authToken = token;
+};
 
 export let socket: Socket;
 export let nonceKey = "";
@@ -36,9 +47,39 @@ export const hello = (callback: (() => void) | null = null) => {
 	if (!socket) {
 		socket = io(uri, {
 			withCredentials: true,
+			auth: {
+				token: getAuthToken(),
+			},
 		});
 		window.addEventListener("beforeunload", () => {
 			socket.disconnect();
+		});
+		socket.on("kicked", async (data: { ok: boolean; reason: string }) => {
+			if (data.ok && data.reason) {
+				errorReason = data.reason;
+				switch (data.reason) {
+					case "bannedIP":
+						await Promise.all([
+							save("banStatus", "ban"),
+							save("banReason", "bannedIP"),
+						]);
+						navigate(base("/akukin"), { replace: true });
+						break;
+					case "multipleConnections":
+						navigate(base("/error"), { replace: true });
+						break;
+					case "newUserRateLimit":
+						navigate(base("/error"), { replace: true });
+						break;
+					default:
+						break;
+				}
+			}
+		});
+		socket.on("updateAuthToken", (data: { ok: boolean; token: string }) => {
+			if (data.ok && data.token) {
+				save("authToken", data.token);
+			}
 		});
 		socket.on(
 			"getNonceKey",

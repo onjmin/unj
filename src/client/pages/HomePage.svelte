@@ -6,9 +6,7 @@
   ///////////////
 
   import Button from "@smui/button";
-  import { navigate } from "svelte-routing";
-  import { base } from "../mylib/env.js";
-  import { load } from "../mylib/idb/keyval.js";
+  import { tryEnter } from "../mylib/enter.js";
   import { topIllusts } from "../mylib/top-illusts.js";
   import { randArray } from "../mylib/util.js";
   import TermsConfirmPart from "../parts/TermsConfirmPart.svelte";
@@ -26,15 +24,21 @@
     onjKeyWords.filter((v) => v !== randomOnjKeyWord1),
   );
 
+  const whitelist = [
+    "/new",
+    "/headline",
+    "/history",
+    "/bookmark",
+    "/config",
+    "/terms",
+    "/contact",
+    "/update",
+    "/art",
+    "/links",
+    "/thread",
+  ];
+
   let openConfirm = $state(false);
-  const tryEnter = async () => {
-    if ("yes" === (await load("termsAgreement"))) {
-      openConfirm = false;
-      navigate(base("/headline"));
-    } else {
-      openConfirm = true;
-    }
-  };
 
   const randomIllust = randArray(topIllusts.map((v) => v.src));
 </script>
@@ -50,7 +54,12 @@
     「{randomOnjKeyWord1}」から「{randomOnjKeyWord2}」までを手広くカバーする匿名掲示板
   </p>
   <p>『うんｊ』へようこそ！</p>
-  <Button onclick={tryEnter} variant="raised">入る</Button>
+  <Button
+    onclick={async () => {
+      openConfirm = !(await tryEnter());
+    }}
+    variant="raised">入る</Button
+  >
   <p>しばらくしても、自動的に移動しません。</p>
 </MainPart>
 

@@ -117,10 +117,9 @@ if (DEV_MODE || STG_MODE) {
 
 const online: Set<string> = new Set();
 const kick = (socket: Socket, reason: string) =>
-	flaky(() => {
-		socket.emit("kicked", {
-			reason,
-		});
+	socket.emit("kicked", {
+		ok: true,
+		reason,
 	});
 
 let accessCount = 0;
@@ -134,7 +133,10 @@ io.on("connection", async (socket) => {
 	logger.http(`👀 ${ip}`);
 	if (isBannedIP(ip)) {
 		logger.http(`❌ ${ip}`);
-		kick(socket, "banned");
+		// どのIPがBANされているのか悟られ難くするため
+		flaky(() => {
+			kick(socket, "bannedIP");
+		});
 		socket.disconnect();
 		return;
 	}
@@ -148,9 +150,14 @@ io.on("connection", async (socket) => {
 		online.delete(ip);
 	});
 
-	accessCount++;
-
-	auth.init(socket);
+	if (!auth.verify(socket)) {
+		if (!(await auth.init(socket, ip))) {
+			// DBに問い合わせる認証の制限
+			kick(socket, "newUserRateLimit");
+			socket.disconnect();
+			return;
+		}
+	}
 	nonce.init(socket);
 
 	handleGetNonceKey({ socket });
@@ -162,6 +169,8 @@ io.on("connection", async (socket) => {
 	handleMakeThread({ socket });
 	handleReadThread({ socket });
 	handleRes({ socket, io });
+
+	accessCount++;
 });
 
 const PORT = process.env.PORT || process.env.VITE_LOCALHOST_PORT;

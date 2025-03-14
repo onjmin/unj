@@ -30,6 +30,7 @@
     import AccessCounterPart from "../parts/AccessCounterPart.svelte";
     import ResFormPart from "../parts/ResFormPart.svelte";
     import ResPart from "../parts/ResPart.svelte";
+    import TwemojiPart from "../parts/TwemojiPart.svelte";
 
     let { threadId = "", resNum = "" } = $props();
 
@@ -346,7 +347,11 @@
     {/if}
     {#if thread}
         <div class="thread-header">
-            <p class="thread-title">{thread.title}</p>
+            <p class="thread-title">
+                <TwemojiPart seed={thread.id} height="16" /><span
+                    style="padding-left: 5px;">{thread.title}</span
+                >
+            </p>
             <ChipSet {chips}>
                 {#snippet chip(chip: string)}
                     <Chip {chip}>

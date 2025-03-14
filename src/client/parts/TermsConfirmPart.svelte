@@ -7,6 +7,7 @@
   import IconButton from "@smui/icon-button";
   import { navigate } from "svelte-routing";
   import { visible } from "../mylib/dom.js";
+  import { tryEnter } from "../mylib/enter.js";
   import { base } from "../mylib/env.js";
   import { load, save } from "../mylib/idb/keyval.js";
   import TermsPart from "./TermsPart.svelte";
@@ -27,12 +28,7 @@
         break;
       case "accept":
         await save("termsAgreement", "yes");
-        if ("yes" === (await load("termsAgreement"))) {
-          openConfirm = false;
-          navigate(base("/headline"));
-        } else {
-          openConfirm = true;
-        }
+        openConfirm = !(await tryEnter());
         break;
     }
   };

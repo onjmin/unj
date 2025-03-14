@@ -63,7 +63,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		}
 
 		// 連投規制
-		const key = [auth.get(socket), threadId].join(delimiter);
+		const key = [auth.getUserId(socket), threadId].join(delimiter);
 		if (done.has(key)) {
 			return;
 		}

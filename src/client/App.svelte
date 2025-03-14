@@ -8,6 +8,7 @@
   import BookmarkPage from "./pages/BookmarkPage.svelte";
   import ConfigPage from "./pages/ConfigPage.svelte";
   import ContactPage from "./pages/ContactPage.svelte";
+  import ErrorPage from "./pages/ErrorPage.svelte";
   import HeadlinePage from "./pages/HeadlinePage.svelte";
   import HistoryPage from "./pages/HistoryPage.svelte";
   import HomePage from "./pages/HomePage.svelte";
@@ -23,11 +24,19 @@
 </script>
 
 <Router>
+  <!-- 404ページ -->
   <Route path={base("/*")}>
     <BannedCheck>
       <TraversalCheck>
         <NotFoundPage />
       </TraversalCheck>
+    </BannedCheck>
+  </Route>
+
+  <!-- エラーページ -->
+  <Route path={base("/error")}>
+    <BannedCheck>
+      <ErrorPage />
     </BannedCheck>
   </Route>
 

@@ -25,6 +25,7 @@
     import { base } from "../mylib/env.js";
     import { goodbye, hello, nonceKey, ok, socket } from "../mylib/socket.js";
     import AccessCounterPart from "../parts/AccessCounterPart.svelte";
+    import TwemojiPart from "../parts/TwemojiPart.svelte";
 
     const formatTimeAgo = (date: Date): string => {
         const now = new Date();
@@ -143,6 +144,7 @@
                             <span class="res-count">{thread.resCount}レス</span>
                         </div>
                         {#snippet description()}
+                            <TwemojiPart seed={thread.id} height="16" />
                             <span class="thread-title">{thread.title}</span>
                         {/snippet}
                         {#snippet icon()}
@@ -155,7 +157,11 @@
                         {/snippet}
                     </Header>
                     <Content style="text-align: center;">
-                        <div>{thread.title}</div>
+                        <div>
+                            <TwemojiPart seed={thread.id} height="16" /><span
+                                style="padding-left: 5px;">{thread.title}</span
+                            >
+                        </div>
                         <DataTable
                             table$aria-label="People list"
                             style="max-width: 100%;"

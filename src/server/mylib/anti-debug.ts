@@ -1,8 +1,9 @@
 import { differenceInDays } from "date-fns";
 import Hashids from "hashids";
 import { sha256 } from "js-sha256";
-import * as v from "valibot";
 import {
+	authLimitLength,
+	authSignLength,
 	isSerial,
 	nonceLength,
 	resIdLength,
@@ -48,7 +49,7 @@ export const encodeUserId = (userId: number, date: Date): string | null => {
 	}
 	const basedTime = differenceInDays(date, new Date(0));
 	const hashids = new Hashids(
-		[HASHIDS_SECRET_PEPPER, basedTime].join(delimiter),
+		[basedTime, HASHIDS_SECRET_PEPPER].join(delimiter), // Hashidsのsaltは47文字以降無視される
 		userIdLength,
 	);
 	return hashids.encode(userId);
@@ -60,7 +61,7 @@ export const encodeUserId = (userId: number, date: Date): string | null => {
 export const decodeUserId = (userId: string, date: Date): number | null => {
 	const basedTime = differenceInDays(date, new Date(0));
 	const hashids = new Hashids(
-		[HASHIDS_SECRET_PEPPER, basedTime].join(delimiter),
+		[basedTime, HASHIDS_SECRET_PEPPER].join(delimiter), // Hashidsのsaltは47文字以降無視される
 		userIdLength,
 	);
 	const n = hashids.decode(userId)?.[0];
@@ -116,5 +117,45 @@ export const decodeResId = (resId: string): number | null => {
 		resIdLength,
 	);
 	const n = hashids.decode(resId)?.[0];
+	return isSerial(Number(n)) ? Number(n) : null;
+};
+
+const VITE_UNJ_AUTH_SECRET_PEPPER = String(
+	process.env.VITE_UNJ_AUTH_SECRET_PEPPER,
+);
+
+/**
+ * JWT風トークンの署名
+ */
+export const signAuth = (userId: string, limit: string): string => {
+	const str = sha256(
+		[VITE_UNJ_AUTH_SECRET_PEPPER, userId, limit].join(delimiter),
+	);
+	return str.slice(0, authSignLength);
+};
+
+/**
+ * JWT風トークンの期限を符号化する
+ */
+export const encodeLimit = (limit: number, userId: string): string | null => {
+	if (!isSerial(limit)) {
+		return null;
+	}
+	const hashids = new Hashids(
+		[userId, HASHIDS_SECRET_PEPPER].join(delimiter),
+		authLimitLength,
+	);
+	return hashids.encode(limit);
+};
+
+/**
+ * JWT風トークンの期限を復号する
+ */
+export const decodeLimit = (limit: string, userId: string): number | null => {
+	const hashids = new Hashids(
+		[userId, HASHIDS_SECRET_PEPPER].join(delimiter),
+		authLimitLength,
+	);
+	const n = hashids.decode(limit)?.[0];
 	return isSerial(Number(n)) ? Number(n) : null;
 };
