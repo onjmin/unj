@@ -4,6 +4,7 @@ import ws from "ws";
 import { NEON_DATABASE_URL } from "../mylib/env.js";
 neonConfig.webSocketConstructor = ws;
 
+import { addSeconds, isBefore } from "date-fns";
 import type { Server, Socket } from "socket.io";
 import * as v from "valibot";
 import { contentSchemaMap } from "../../common/request/content-schema.js";
@@ -28,6 +29,8 @@ import nonce from "../mylib/nonce.js";
 import { exist, getThreadRoom, joined } from "../mylib/socket.js";
 
 const api = "res";
+const delimiter = "###";
+const latestResAtCache: Map<number, Date> = new Map();
 
 export default ({ socket, io }: { socket: Socket; io: Server }) => {
 	socket.on(api, async (data) => {
@@ -91,6 +94,18 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			return;
 		}
 
+		const rateLimitSec = 33.4;
+
+		// レートリミット
+		if (
+			isBefore(
+				new Date(),
+				addSeconds(latestResAtCache.get(userId) ?? 0, rateLimitSec),
+			)
+		) {
+			return;
+		}
+
 		const ccBitmask = ccBitmaskCache.get(threadId) ?? 0;
 		const ccUserId = makeCcUserId(ccBitmask, userId);
 		const ccUserName = makeCcUserName(ccBitmask, res.output.userName);
@@ -107,6 +122,8 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		try {
 			nonce.lock(socket);
 			nonce.update(socket);
+
+			latestResAtCache.set(userId, new Date());
 
 			// pool
 			const pool = new Pool({ connectionString: NEON_DATABASE_URL });

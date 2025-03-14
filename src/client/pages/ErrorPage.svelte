@@ -41,7 +41,7 @@
         height: 76vh;
         overflow: hidden;
         margin: 0;
-        padding: 0;
+        padding-top: 16px;
     }
     .iframe-container iframe {
         border: none;

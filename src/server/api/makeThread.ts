@@ -4,7 +4,7 @@ import ws from "ws";
 import { NEON_DATABASE_URL } from "../mylib/env.js";
 neonConfig.webSocketConstructor = ws;
 
-import { addHours } from "date-fns";
+import { addHours, addSeconds, isBefore } from "date-fns";
 import type { Socket } from "socket.io";
 import * as v from "valibot";
 import { contentSchemaMap } from "../../common/request/content-schema.js";
@@ -19,6 +19,8 @@ import nonce from "../mylib/nonce.js";
 import { headlineRoom } from "../mylib/socket.js";
 
 const api = "makeThread";
+const delimiter = "###";
+const latestMakeThreadAtCache: Map<number, Date> = new Map();
 
 export default ({ socket }: { socket: Socket }) => {
 	socket.on(api, async (data) => {
@@ -45,6 +47,17 @@ export default ({ socket }: { socket: Socket }) => {
 		const userId = auth.getUserId(socket);
 		const ccUserId = makeCcUserId(ccBitmask, userId);
 
+		const rateLimitSec = 93.1;
+
+		// レートリミット
+		if (
+			isBefore(
+				new Date(),
+				addSeconds(latestMakeThreadAtCache.get(userId) ?? 0, rateLimitSec),
+			)
+		) {
+			return;
+		}
 		let deletedAt: Date | null = null;
 		if (makeThread.output.timer) {
 			deletedAt = addHours(new Date(), makeThread.output.timer);
@@ -61,6 +74,8 @@ export default ({ socket }: { socket: Socket }) => {
 		try {
 			nonce.lock(socket);
 			nonce.update(socket);
+
+			latestMakeThreadAtCache.set(userId, new Date());
 
 			// pool
 			const pool = new Pool({ connectionString: NEON_DATABASE_URL });
