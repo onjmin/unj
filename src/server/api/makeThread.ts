@@ -58,6 +58,7 @@ export default ({ socket }: { socket: Socket }) => {
 		) {
 			return;
 		}
+
 		let deletedAt: Date | null = null;
 		if (makeThread.output.timer) {
 			deletedAt = addHours(new Date(), makeThread.output.timer);
