@@ -2,6 +2,7 @@ import { DEV_MODE, PROD_MODE, ROOT_PATH, STG_MODE } from "./mylib/env.js";
 
 import http from "node:http";
 import path from "node:path";
+import { isBefore } from "date-fns";
 import express, {
 	type NextFunction,
 	type Request,
@@ -163,10 +164,18 @@ io.on("connection", async (socket) => {
 
 	const claims = auth.parseClaims(socket);
 	if (claims) {
+		logger.verbose(`🪪 ${JSON.stringify(claims)}`);
 		const userId = claims.userId;
 		verifyUserId(socket, userId);
-		auth.grant(socket, userId, claims.expiryDate);
+		if (isBefore(new Date(), claims.expiryDate)) {
+			logger.verbose(`✅ ${JSON.stringify(claims)}`);
+			auth.grant(socket, userId, claims.expiryDate);
+		} else {
+			logger.verbose(`🗑️ ${JSON.stringify(claims)}`);
+			await auth.init(socket);
+		}
 	} else {
+		logger.verbose(`✨ ${JSON.stringify(claims)}`);
 		await auth.init(socket);
 	}
 

@@ -63,7 +63,7 @@ export default ({ socket }: { socket: Socket }) => {
 
 		// Nonce値の完全一致チェック
 		if (!nonce.isValid(socket, readThread.output.nonce)) {
-			logger.info(`🔒 ${readThread.output.nonce}`);
+			logger.verbose(`🔒 ${readThread.output.nonce}`);
 			return;
 		}
 
@@ -114,7 +114,7 @@ export default ({ socket }: { socket: Socket }) => {
 			}
 
 			if (isExpired(threadId)) {
-				logger.info(`🪦 ${threadId}`);
+				logger.verbose(`🪦 ${threadId}`);
 				return;
 			}
 

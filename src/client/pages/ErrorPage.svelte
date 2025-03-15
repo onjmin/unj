@@ -20,24 +20,27 @@
         <Paper color="primary" variant="outlined">
             <Title>不自然な操作を感知しました。</Title>
             <Subtitle>うんｊは同じIPからの多窓を禁止しています。。</Subtitle>
-            <Content>
-                <div>まずはこのタブを閉じようね。</div>
-            </Content>
+            <Content>まずはこのタブを閉じようね。</Content>
         </Paper>
     {:else if errorReason === "newUsersRateLimit"}
         <Paper color="primary" variant="outlined">
             <Title>不自然な操作を感知しました。</Title>
             <Subtitle>新人さん接続規制中。。</Subtitle>
-            <Content>
-                <div>しばらくしてからリロードしてみてね。</div>
-                <br />
-                <Button
-                    onclick={() => {
-                        location.href = base("/");
-                    }}
-                    variant="raised">リロード</Button
-                >
-            </Content>
+            <Content>しばらくしてからリロードしてみてね。</Content>
+            <Button
+                onclick={() => {
+                    location.href = base("/");
+                }}
+                variant="raised">リロード</Button
+            >
+        </Paper>
+    {:else if errorReason === "grantFailed"}
+        <Paper color="primary" variant="outlined">
+            <Title>致命的なエラーが発生しました。</Title>
+            <Subtitle>認証情報に不整合が起きています。</Subtitle>
+            <Content
+                >リロードしても直らないので管理人に復旧依頼をお願いします。</Content
+            >
         </Paper>
     {/if}
     <div class="iframe-container">

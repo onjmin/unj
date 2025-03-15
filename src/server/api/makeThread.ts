@@ -48,10 +48,9 @@ export default ({ socket }: { socket: Socket }) => {
 		const userId = auth.getUserId(socket);
 		const ccUserId = makeCcUserId(ccBitmask, userId);
 
-		const rateLimitSec = 93.1;
-
 		// レートリミット
 		if (isBefore(new Date(), coolTimes.get(userId) ?? 0)) {
+			logger.verbose(`⌛ ${coolTimes.get(userId)}`);
 			return;
 		}
 
@@ -62,7 +61,7 @@ export default ({ socket }: { socket: Socket }) => {
 
 		// Nonce値の完全一致チェック
 		if (!nonce.isValid(socket, makeThread.output.nonce)) {
-			logger.info(`🔒 ${makeThread.output.nonce}`);
+			logger.verbose(`🔒 ${makeThread.output.nonce}`);
 			return;
 		}
 

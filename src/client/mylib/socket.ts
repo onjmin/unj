@@ -73,6 +73,10 @@ export const hello = (callback: (() => void) | null = null) => {
 						savePathname(pathname());
 						navigate(base("/error"), { replace: true });
 						break;
+					case "grantFailed":
+						savePathname(pathname());
+						navigate(base("/error"), { replace: true });
+						break;
 					default:
 						break;
 				}

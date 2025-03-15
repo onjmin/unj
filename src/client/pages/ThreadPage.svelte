@@ -381,14 +381,16 @@
         <div class="res-list">
             <ResPart
                 bind:input={content}
-                num={1}
-                isOwner={true}
-                createdAt={thread.createdAt}
                 ccUserId={thread.ccUserId}
                 ccUserName={thread.ccUserName}
                 ccUserAvatar={thread.ccUserAvatar}
                 content={thread.content}
                 contentUrl={thread.contentUrl}
+                contentType={thread.contentType}
+                id=""
+                num={1}
+                isOwner={true}
+                createdAt={thread.createdAt}
             >
                 <div class="unj-like-vote-container">
                     <div class="vote-buttons">
@@ -410,14 +412,16 @@
             {#each thread.resList as res}
                 <ResPart
                     bind:input={content}
-                    num={res.num}
-                    isOwner={res.isOwner}
-                    createdAt={res.createdAt}
                     ccUserId={res.ccUserId}
                     ccUserName={res.ccUserName}
                     ccUserAvatar={res.ccUserAvatar}
                     content={res.content}
                     contentUrl={res.contentUrl}
+                    contentType={res.contentType}
+                    id={res.id}
+                    num={res.num}
+                    isOwner={res.isOwner}
+                    createdAt={res.createdAt}
                 />
             {/each}
         </div>

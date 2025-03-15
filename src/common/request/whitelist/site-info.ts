@@ -24,3 +24,19 @@ export class SiteInfo {
 		this.hostnames.add(hostname);
 	}
 }
+
+export const findIn = (() => {
+	const map: Map<SiteInfo[], Map<string, SiteInfo>> = new Map();
+	return (arr: SiteInfo[], hostname: string): SiteInfo | null => {
+		if (!map.has(arr)) {
+			const m: Map<string, SiteInfo> = new Map();
+			for (const siteInfo of arr) {
+				for (const hostname of siteInfo.hostnames) {
+					m.set(hostname, siteInfo);
+				}
+			}
+			map.set(arr, m);
+		}
+		return map.get(arr)?.get(hostname) ?? null;
+	};
+})();

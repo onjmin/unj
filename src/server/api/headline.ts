@@ -34,7 +34,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 
 		// Nonce値の完全一致チェック
 		if (!nonce.isValid(socket, headline.output.nonce)) {
-			logger.info(`🔒 ${headline.output.nonce}`);
+			logger.verbose(`🔒 ${headline.output.nonce}`);
 			return;
 		}
 

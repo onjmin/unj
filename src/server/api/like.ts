@@ -71,7 +71,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 
 		// Nonce値の完全一致チェック
 		if (!nonce.isValid(socket, like.output.nonce)) {
-			logger.info(`🔒 ${like.output.nonce}`);
+			logger.verbose(`🔒 ${like.output.nonce}`);
 			return;
 		}
 

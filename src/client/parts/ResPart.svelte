@@ -1,20 +1,37 @@
 <script lang="ts">
+  import IconButton from "@smui/icon-button";
+  import List, {
+    Item,
+    Graphic,
+    Text,
+    PrimaryText,
+    SecondaryText,
+  } from "@smui/list";
   import { format } from "date-fns";
   import { ja } from "date-fns/locale";
   import { avatarMap } from "../../common/request/avatar.js";
+  import { contentTemplateMap } from "../../common/request/content-schema.js";
+  import { findIn } from "../../common/request/whitelist/site-info.js";
 
   let {
     children = null,
     input = $bindable(""),
-    num,
-    isOwner,
-    createdAt,
-    ccUserId,
-    ccUserName,
-    ccUserAvatar,
-    content,
-    contentUrl,
+    ccUserId = "",
+    ccUserName = "",
+    ccUserAvatar = 0,
+    content = "",
+    contentUrl = "",
+    contentType = 0,
+    id = "",
+    num = 0,
+    isOwner = false,
+    createdAt = new Date(),
   } = $props();
+
+  const temp = contentTemplateMap.get(contentType) ?? [];
+  const siteInfo = temp.length
+    ? findIn(temp, new URL(contentUrl).hostname)
+    : null;
 </script>
 
 <div class="res">
@@ -30,11 +47,13 @@
           input = input.replace(/^[^\S]*/, `>>${num}\n`);
         }
       }}
-      >{num}：<span class="user-name">{ccUserName || "月沈めば名無し"}</span>
+      >{num}：<span class="user-name"
+        >{ccUserName !== "" ? ccUserName : "月沈めば名無し"}</span
+      >
     </button>：{format(createdAt, "yy/MM/dd(EEE) HH:mm:ss", {
       locale: ja,
     })}
-    ID:{ccUserId || "???"}
+    ID:{ccUserId !== "" ? ccUserId : "???"}
     {#if isOwner}
       <span class="thread-owner">主</span>
     {/if}
@@ -51,15 +70,43 @@
     {/if}
     <!-- 右側のコンテンツ領域 -->
     <div class="content">
-      <div class="content-text">
-        {content}
-      </div>
-      <div class="content-url">
-        <a href={contentUrl} target="_blank" rel="noopener noreferrer">
-          {contentUrl}
-        </a>
-      </div>
-      <div class="content-embed">youtube embed</div>
+      {#if content !== ""}
+        <div class="content-text">
+          {content}
+        </div>
+      {/if}
+      {#if contentUrl !== ""}
+        <div class="content-url">
+          <a href={contentUrl} target="_blank" rel="noopener noreferrer">
+            {contentUrl}
+          </a>
+        </div>
+      {/if}
+      {#if siteInfo}
+        {#if contentType === 4}
+          <div class="content-embed">
+            <List twoLine
+              ><Item>
+                <Graphic
+                  class="favicon-item-graphic"
+                  style="background-image: url({siteInfo.favicon});"
+                />
+                <Text>
+                  <PrimaryText>{siteInfo.name}</PrimaryText>
+                  <SecondaryText>{siteInfo.description}</SecondaryText>
+                </Text>
+                <IconButton
+                  class="material-icons"
+                  onclick={() => window.open(contentUrl, "_blank")}
+                  >open_in_new</IconButton
+                >
+              </Item>
+            </List>
+          </div>
+        {:else if contentType === 8 || contentType === 16 || contentType === 32 || contentType === 64}
+          <div class="content-embed">youtube embed</div>
+        {/if}
+      {/if}
     </div>
   </div>
   {@render children?.()}

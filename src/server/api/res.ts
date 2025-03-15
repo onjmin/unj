@@ -97,6 +97,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 
 		// レートリミット
 		if (isBefore(new Date(), coolTimes.get(userId) ?? 0)) {
+			logger.verbose(`⌛ ${coolTimes.get(userId)}`);
 			return;
 		}
 
@@ -107,7 +108,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 
 		// Nonce値の完全一致チェック
 		if (!nonce.isValid(socket, res.output.nonce)) {
-			logger.info(`🔒 ${res.output.nonce}`);
+			logger.verbose(`🔒 ${res.output.nonce}`);
 			return;
 		}
 

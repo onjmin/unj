@@ -5,7 +5,7 @@ import blacklistShortenedUrl3 from "./blacklist/shortened-url/domain3.js";
 import whitelistAudio from "./whitelist/audio.js";
 import whitelistGif from "./whitelist/gif.js";
 import whitelistImage from "./whitelist/image.js";
-import type { SiteInfo } from "./whitelist/site-info.js";
+import { findIn } from "./whitelist/site-info.js";
 import whitelistUnjGames from "./whitelist/unj-games.js";
 import whitelistVideo from "./whitelist/video.js";
 
@@ -75,32 +75,13 @@ const UrlSchema = v.object({
 		v.check((input) => !blacklistDarkWeb1.has(sliceDomain(input, 1))),
 		v.check((input) => !blacklistShortenedUrl2.has(sliceDomain(input, 2))),
 		v.check((input) => !blacklistShortenedUrl3.has(sliceDomain(input, 3))),
-		v.check((input) => setOf(whitelistUnjGames).has(new URL(input).hostname)),
-		v.check((input) => setOf(whitelistImage).has(new URL(input).hostname)),
-		v.check((input) => setOf(whitelistGif).has(new URL(input).hostname)),
-		v.check((input) => setOf(whitelistVideo).has(new URL(input).hostname)),
-		v.check((input) => setOf(whitelistAudio).has(new URL(input).hostname)),
+		v.check((input) => !findIn(whitelistUnjGames, new URL(input).hostname)),
+		v.check((input) => !findIn(whitelistImage, new URL(input).hostname)),
+		v.check((input) => !findIn(whitelistGif, new URL(input).hostname)),
+		v.check((input) => !findIn(whitelistVideo, new URL(input).hostname)),
+		v.check((input) => !findIn(whitelistAudio, new URL(input).hostname)),
 	),
 });
-
-/**
- * 各モジュールにSetオブジェクトを定義するのは冗長なので。
- */
-const setOf = (() => {
-	const map: Map<SiteInfo[], Set<string>> = new Map();
-	const empty: Set<string> = new Set();
-	return (arr: SiteInfo[]): Set<string> => {
-		if (map.has(arr)) {
-			return map.get(arr) ?? empty;
-		}
-		const sum = [];
-		for (const v of arr) {
-			sum.push(...v.hostnames);
-		}
-		map.set(arr, new Set(sum));
-		return map.get(arr) ?? empty;
-	};
-})();
 
 /**
  * 4: url_of_unj_games
@@ -110,7 +91,7 @@ const UrlOfUnjGamesSchema = v.object({
 	content: SAFE_TEXT_MULTILINE,
 	contentUrl: v.pipe(
 		SAFE_URL,
-		v.check((input) => setOf(whitelistUnjGames).has(new URL(input).hostname)),
+		v.check((input) => !!findIn(whitelistUnjGames, new URL(input).hostname)),
 	),
 });
 
@@ -122,7 +103,7 @@ const UrlOfImageSchema = v.object({
 	content: SAFE_TEXT_MULTILINE,
 	contentUrl: v.pipe(
 		SAFE_URL,
-		v.check((input) => setOf(whitelistImage).has(sliceDomain(input, 2))),
+		v.check((input) => !!findIn(whitelistImage, new URL(input).hostname)),
 	),
 });
 
@@ -134,7 +115,7 @@ const UrlOfGifSchema = v.object({
 	content: SAFE_TEXT_MULTILINE,
 	contentUrl: v.pipe(
 		SAFE_URL,
-		v.check((input) => setOf(whitelistGif).has(sliceDomain(input, 2))),
+		v.check((input) => !!findIn(whitelistGif, new URL(input).hostname)),
 	),
 });
 
@@ -146,7 +127,7 @@ const UrlOfVideoSchema = v.object({
 	content: SAFE_TEXT_MULTILINE,
 	contentUrl: v.pipe(
 		SAFE_URL,
-		v.check((input) => setOf(whitelistVideo).has(sliceDomain(input, 2))),
+		v.check((input) => !!findIn(whitelistVideo, new URL(input).hostname)),
 	),
 });
 
@@ -158,7 +139,7 @@ const UrlOfAudioSchema = v.object({
 	content: SAFE_TEXT_MULTILINE,
 	contentUrl: v.pipe(
 		SAFE_URL,
-		v.check((input) => setOf(whitelistAudio).has(sliceDomain(input, 2))),
+		v.check((input) => !!findIn(whitelistAudio, new URL(input).hostname)),
 	),
 });
 
