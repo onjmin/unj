@@ -3,7 +3,7 @@ import * as v from "valibot";
 import { getFirstError } from "../../../common/request/util.js";
 import { levels, logger } from "../../mylib/log.js";
 
-const api = "/logs/level";
+const api = "/log/level";
 
 const logLevelSchema = v.pipe(
 	v.string("Log level is required."),

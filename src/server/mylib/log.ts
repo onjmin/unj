@@ -25,7 +25,7 @@ const transport = new winston.transports.DailyRotateFile({
 });
 
 export const logger = winston.createLogger({
-	level: PROD_MODE ? "error" : "debug",
+	level: PROD_MODE ? "info" : "debug",
 	format: winston.format.combine(
 		winston.format.errors({ stack: true }),
 		winston.format.printf((info) => {

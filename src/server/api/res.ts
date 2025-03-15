@@ -27,10 +27,11 @@ import { makeCcUserAvatar, makeCcUserId, makeCcUserName } from "../mylib/cc.js";
 import { logger } from "../mylib/log.js";
 import nonce from "../mylib/nonce.js";
 import { exist, getThreadRoom, joined } from "../mylib/socket.js";
+import { randInt } from "../mylib/util.js";
 
 const api = "res";
 const delimiter = "###";
-const latestResAtCache: Map<number, Date> = new Map();
+const coolTimes: Map<number, Date> = new Map();
 
 export default ({ socket, io }: { socket: Socket; io: Server }) => {
 	socket.on(api, async (data) => {
@@ -94,15 +95,8 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			return;
 		}
 
-		const rateLimitSec = 33.4;
-
 		// レートリミット
-		if (
-			isBefore(
-				new Date(),
-				addSeconds(latestResAtCache.get(userId) ?? 0, rateLimitSec),
-			)
-		) {
+		if (isBefore(new Date(), coolTimes.get(userId) ?? 0)) {
 			return;
 		}
 
@@ -123,7 +117,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			nonce.lock(socket);
 			nonce.update(socket);
 
-			latestResAtCache.set(userId, new Date());
+			coolTimes.set(userId, addSeconds(new Date(), randInt(8, 128)));
 
 			// pool
 			const pool = new Pool({ connectionString: NEON_DATABASE_URL });

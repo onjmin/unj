@@ -1,6 +1,5 @@
 import * as fs from "node:fs";
 import path from "node:path";
-import * as readline from "node:readline";
 import { format } from "date-fns";
 import type { Request, Response, Router } from "express";
 import readLastLines from "read-last-lines";
@@ -9,7 +8,7 @@ import { getFirstError } from "../../../common/request/util.js";
 import { ROOT_PATH } from "../../mylib/env.js";
 import { levels } from "../../mylib/log.js";
 
-const api = "/logs/grep";
+const api = "/log/grep";
 const tooManyThreshold = 65536;
 
 const logLevelSchema = v.pipe(

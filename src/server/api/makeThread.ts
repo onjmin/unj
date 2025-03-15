@@ -17,10 +17,11 @@ import { makeCcUserAvatar, makeCcUserId, makeCcUserName } from "../mylib/cc.js";
 import { logger } from "../mylib/log.js";
 import nonce from "../mylib/nonce.js";
 import { headlineRoom } from "../mylib/socket.js";
+import { randInt } from "../mylib/util.js";
 
 const api = "makeThread";
 const delimiter = "###";
-const latestMakeThreadAtCache: Map<number, Date> = new Map();
+const coolTimes: Map<number, Date> = new Map();
 
 export default ({ socket }: { socket: Socket }) => {
 	socket.on(api, async (data) => {
@@ -50,12 +51,7 @@ export default ({ socket }: { socket: Socket }) => {
 		const rateLimitSec = 93.1;
 
 		// レートリミット
-		if (
-			isBefore(
-				new Date(),
-				addSeconds(latestMakeThreadAtCache.get(userId) ?? 0, rateLimitSec),
-			)
-		) {
+		if (isBefore(new Date(), coolTimes.get(userId) ?? 0)) {
 			return;
 		}
 
@@ -76,7 +72,7 @@ export default ({ socket }: { socket: Socket }) => {
 			nonce.lock(socket);
 			nonce.update(socket);
 
-			latestMakeThreadAtCache.set(userId, new Date());
+			coolTimes.set(userId, addSeconds(new Date(), randInt(32, 1024)));
 
 			// pool
 			const pool = new Pool({ connectionString: NEON_DATABASE_URL });
