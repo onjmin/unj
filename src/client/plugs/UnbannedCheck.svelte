@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { onMount } from "svelte";
     import { navigate } from "svelte-routing";
     import { base } from "../mylib/env.js";
     import { load } from "../mylib/idb/keyval.js";
@@ -14,7 +15,7 @@
         }
     };
 
-    $effect(() => {
+    onMount(() => {
         main();
     });
 </script>

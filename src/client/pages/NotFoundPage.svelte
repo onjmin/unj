@@ -5,11 +5,12 @@
     import MainPart from "../parts/MainPart.svelte";
     ///////////////
 
+    import { onMount } from "svelte";
     import { navigate } from "svelte-routing";
     import { base } from "../mylib/env.js";
-    import { randArray, sleep } from "../mylib/util.js";
+    import { randArray } from "../mylib/util.js";
 
-    $effect(() => {
+    onMount(() => {
         const id = setTimeout(() => {
             navigate(base("/"), { replace: true });
         }, 4096);

@@ -15,6 +15,7 @@
         intervalToDuration,
     } from "date-fns";
     import { Howl } from "howler";
+    import { onMount } from "svelte";
     import { navigate } from "svelte-routing";
     import type { Res, Thread } from "../../common/response/schema.js";
     import { genNonce } from "../mylib/anti-debug.js";
@@ -103,7 +104,7 @@
 
     let newResSound: Howl;
     let replyResSound: Howl;
-    $effect(() => {
+    onMount(() => {
         loadSoundVolume();
         loadNewResSound().then((sound) => {
             if (sound && sound.src !== null) {
@@ -226,7 +227,7 @@
     };
 
     let id: NodeJS.Timeout;
-    $effect(() => {
+    onMount(() => {
         id = setInterval(() => {
             if (!thread) return;
             if (!thread.deletedAt) return;
@@ -261,7 +262,7 @@
     });
 
     let laaaaaaaag = $state(false);
-    $effect(() => {
+    onMount(() => {
         const id = setTimeout(() => {
             laaaaaaaag = true;
         }, 4096);

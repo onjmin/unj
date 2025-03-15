@@ -13,6 +13,7 @@
     import Select, { Option } from "@smui/select";
     import Textfield from "@smui/textfield";
     import CharacterCounter from "@smui/textfield/character-counter";
+    import { onMount } from "svelte";
     import { navigate } from "svelte-routing";
     import {
         ccOptions,
@@ -66,7 +67,7 @@
         }
     };
 
-    $effect(() => {
+    onMount(() => {
         hello();
         socket.on("makeThread", handleMakeThread);
         return () => {
@@ -101,7 +102,7 @@
     };
 
     if (isRef) {
-        $effect(() => {
+        onMount(() => {
             // 次スレの場合はkeyvalから次スレ情報を取ってくる
         });
     }

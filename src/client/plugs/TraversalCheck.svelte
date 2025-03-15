@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { onMount } from "svelte";
     import { navigate } from "svelte-routing";
     import { flaky } from "../mylib/anti-debug.js";
     import { base, pathname } from "../mylib/env.js";
@@ -52,7 +53,7 @@
         }
     };
 
-    $effect(() => {
+    onMount(() => {
         main();
     });
 </script>
