@@ -26,7 +26,7 @@
     let selectedNewResSound: string = $state("");
     let selectedReplyResSound: string = $state("");
 
-    const main = () => {
+    const main = async () => {
         loadSoundVolume().then((volume) => {
             soundVolume = volume;
         });
