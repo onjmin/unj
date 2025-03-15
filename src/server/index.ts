@@ -28,7 +28,7 @@ import handleReadThread from "./api/readThread.js";
 import handleRes from "./api/res.js";
 import { flaky } from "./mylib/anti-debug.js";
 import auth from "./mylib/auth.js";
-import { detectFastlyClientIp, isBannedIP } from "./mylib/ip.js";
+import { detectFastlyClientIp, getIP, isBannedIP, setIP } from "./mylib/ip.js";
 import { logger } from "./mylib/log.js";
 import nonce from "./mylib/nonce.js";
 
@@ -123,9 +123,9 @@ const online: Set<string> = new Set();
 let accessCount = 0;
 const accessCounter = () => accessCount;
 
-const verifyUserId = (socket: Socket, ip: string, userId: number) => {
+const verifyUserId = (socket: Socket, userId: number) => {
 	if (blacklist.has(userId)) {
-		logger.http(`❌ ${ip} ${userId}`);
+		logger.http(`❌ ${getIP(socket)} ${userId}`);
 		// どのusers.idがBANされているのか悟られ難くするため
 		flaky(() => {
 			auth.kick(socket, "banned");
@@ -159,19 +159,21 @@ io.on("connection", async (socket) => {
 		online.delete(ip);
 	});
 
+	setIP(socket, ip);
+
 	const claims = auth.parseClaims(socket);
 	if (claims) {
 		const userId = claims.userId;
-		verifyUserId(socket, ip, userId);
+		verifyUserId(socket, userId);
 		auth.grant(socket, userId, claims.expiryDate);
 	} else {
-		await auth.init(socket, ip);
+		await auth.init(socket);
 	}
 
 	nonce.init(socket);
 
 	socket.use((_, next) => {
-		verifyUserId(socket, ip, auth.getUserId(socket));
+		verifyUserId(socket, auth.getUserId(socket));
 		if (auth.isAuthExpired(socket)) {
 			auth.updateAuthToken(socket);
 		}

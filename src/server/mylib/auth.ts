@@ -14,7 +14,6 @@ import {
 import type { Socket } from "socket.io";
 import * as v from "valibot";
 import { AuthSchema, isSerial } from "../../common/request/schema.js";
-import { blacklist } from "../admin/blacklist/id.js";
 import {
 	decodeLimit,
 	decodeUserId,
@@ -22,6 +21,7 @@ import {
 	encodeUserId,
 	signAuth,
 } from "./anti-debug.js";
+import { getIP } from "./ip.js";
 import { logger } from "./log.js";
 import { randInt } from "./util.js";
 
@@ -78,7 +78,7 @@ const parseClaims = (socket: Socket): Claims | null => {
 
 const delay = 1000 * 60 * 4; // Glitchは5分放置でスリープする
 const neet: Map<number, NodeJS.Timeout> = new Map();
-const lazyUpdate = (userId: number, auth: string) => {
+const lazyUpdate = (ip: string, auth: string, userId: number) => {
 	clearTimeout(neet.get(userId));
 	const id = setTimeout(async () => {
 		// pool
@@ -88,8 +88,8 @@ const lazyUpdate = (userId: number, auth: string) => {
 		});
 		const poolClient = await pool.connect();
 		await poolClient.query(
-			"UPDATE users SET updated_at = NOW(), auth = $1 WHERE id = $2",
-			[auth, userId],
+			"UPDATE users SET updated_at = NOW(), ip = $1, auth = $2 WHERE id = $3",
+			[ip, auth, userId],
 		);
 	}, delay);
 	neet.set(userId, id);
@@ -114,7 +114,7 @@ const updateAuthToken = (socket: Socket) => {
 		ok: true,
 		token,
 	});
-	lazyUpdate(rawUserId, token);
+	lazyUpdate(getIP(socket), token, rawUserId);
 };
 
 const initFIFO = [new Date()];
@@ -124,7 +124,7 @@ const rateLimitSec = 45.45;
 /**
  * userの探索と新規発行
  */
-const init = async (socket: Socket, ip: string): Promise<boolean> => {
+const init = async (socket: Socket): Promise<boolean> => {
 	// 実質誰でも叩けるので制限を設ける
 	if (initFIFO.length > rateLimitCount) {
 		if (isAfter(new Date(), addSeconds(initFIFO[0], rateLimitSec))) {
@@ -161,7 +161,7 @@ const init = async (socket: Socket, ip: string): Promise<boolean> => {
 		// 新規ユーザー発行
 		const { rows, rowCount } = await poolClient.query(
 			"INSERT INTO users (ip, ninja_pokemon) VALUES ($1, $2) RETURNING id",
-			[ip, randInt(1, 151)],
+			[getIP(socket), randInt(1, 151)],
 		);
 		if (rowCount) {
 			setUserId(socket, rows[0].id);
