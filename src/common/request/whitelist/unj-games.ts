@@ -3,7 +3,7 @@ import { SiteInfo } from "./site-info.js";
 export default [
 	new SiteInfo({
 		name: "magma",
-		description: "ログイン必須の絵チャ",
+		description: "ログイン制の絵チャ",
 		href: "https://magma.com/d/p6my7d2057",
 	}),
 	new SiteInfo({

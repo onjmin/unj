@@ -1,22 +1,16 @@
 import type { Request, Response, Router } from "express";
 import * as v from "valibot";
-import { getFirstError } from "../../common/request/util.js";
-import { logger } from "../mylib/log.js";
+import { getFirstError } from "../../../common/request/util.js";
+import { levels, logger } from "../../mylib/log.js";
 
-const api = "/log";
-const allowedLevels = [
-	"error",
-	"warn",
-	"info",
-	"http",
-	"verbose",
-	"debug",
-	"silly",
-];
+const api = "/logs/level";
 
 const logLevelSchema = v.pipe(
 	v.string("Log level is required."),
-	v.check((input) => allowedLevels.includes(input), "Invalid log level."),
+	v.check(
+		(input) => levels.includes(input.toLocaleLowerCase()),
+		"Invalid log level.",
+	),
 );
 
 export default (router: Router) => {
@@ -34,7 +28,7 @@ export default (router: Router) => {
 			res.status(400).json({ error });
 			return;
 		}
-		logger.level = level;
+		logger.level = level === "*" ? "silly" : level;
 		res.status(200).json({
 			message: "Log level changed successfully",
 			level,

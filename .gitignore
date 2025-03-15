@@ -1,7 +1,7 @@
 # Unj
 404.html
-blacklist
-log
+blacklist/id.txt
+blacklist/ip.txt
 
 # Logs
 logs

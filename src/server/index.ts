@@ -15,7 +15,8 @@ import registerBlacklistID, { blacklist } from "./admin/blacklist/id.js";
 import registerBlacklistIP from "./admin/blacklist/ip.js";
 import registerBlacklistTor from "./admin/blacklist/tor.js";
 import registerBlacklistVpngate from "./admin/blacklist/vpngate.js";
-import registerLog from "./admin/log.js";
+import registerLogGrep from "./admin/log/grep.js";
+import registerLogLevel from "./admin/log/level.js";
 import handleGetNonceKey from "./api/getNonceKey.js";
 import handleHeadline from "./api/headline.js";
 import handleJoinHeadline from "./api/joinHeadline.js";
@@ -92,7 +93,8 @@ app.get("/ping", bannedCheckMiddleware, (req, res) => {
 
 const router = express.Router();
 router.use(bannedCheckMiddleware, adminAuthMiddleware);
-registerLog(router);
+registerLogGrep(router);
+registerLogLevel(router);
 registerBlacklistID(router);
 registerBlacklistIP(router);
 registerBlacklistTor(router);

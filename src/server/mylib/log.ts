@@ -2,9 +2,20 @@ import * as winston from "winston";
 import "winston-daily-rotate-file";
 import path from "node:path";
 import { format } from "date-fns";
-import { PROD_MODE, ROOT_PATH } from "../mylib/env.js";
+import { PROD_MODE, ROOT_PATH } from "./env.js";
 
-const filename = path.resolve(ROOT_PATH, "log", "%DATE%.log");
+export const levels = [
+	"error",
+	"warn",
+	"info",
+	"http",
+	"verbose",
+	"debug",
+	"silly",
+	"*",
+];
+
+const filename = path.resolve(ROOT_PATH, "logs", "%DATE%.log");
 const transport = new winston.transports.DailyRotateFile({
 	filename,
 	datePattern: "YYYY-MM-DD",
@@ -21,7 +32,7 @@ export const logger = winston.createLogger({
 			const time = format(new Date(), "HH:mm:ss");
 			const level = info.level.toUpperCase();
 			const message = info.stack || info.message;
-			return `[${time}] ${level}: ${message}`;
+			return JSON.stringify([time, level, message]);
 		}),
 	),
 	transports: [transport],
