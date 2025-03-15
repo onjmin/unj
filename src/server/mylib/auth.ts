@@ -4,10 +4,17 @@ import ws from "ws";
 import { NEON_DATABASE_URL } from "../mylib/env.js";
 neonConfig.webSocketConstructor = ws;
 
-import { addDays, addSeconds, differenceInDays, isAfter } from "date-fns";
+import {
+	addDays,
+	addSeconds,
+	differenceInDays,
+	isAfter,
+	isBefore,
+} from "date-fns";
 import type { Socket } from "socket.io";
 import * as v from "valibot";
 import { AuthSchema, isSerial } from "../../common/request/schema.js";
+import { blacklist } from "../admin/blacklist/id.js";
 import {
 	decodeLimit,
 	decodeUserId,
@@ -24,7 +31,7 @@ import { randInt } from "./util.js";
  */
 
 const bigDay = new Date(2025, 2, 14);
-const finalDate = 114514;
+const finalDay = addDays(bigDay, 114514);
 
 const getTokenParam = (socket: Socket) => {
 	const token = socket.handshake.auth.token;
@@ -34,38 +41,39 @@ const getTokenParam = (socket: Socket) => {
 	return token;
 };
 
-export const verify = (socket: Socket): boolean => {
+type Claims = {
+	signature: string;
+	userId: number;
+	expiryDate: Date;
+};
+
+const parseClaims = (socket: Socket): Claims | null => {
 	const token = getTokenParam(socket);
 	if (!token) {
-		return false;
+		return null;
 	}
 	const claims = token.split(".");
 	if (claims.length !== 3) {
-		return false;
+		return null;
 	}
 	const [sign, userId, limit] = claims;
 	const auth = v.safeParse(AuthSchema, { sign, userId, limit });
 	if (!auth.success) {
-		return false;
+		return null;
 	}
 	if (signAuth(auth.output.userId, auth.output.limit) !== auth.output.sign) {
-		return false;
+		return null;
 	}
+	const rawUserId = decodeUserId(auth.output.userId, bigDay);
 	const rawLimit = decodeLimit(auth.output.limit, auth.output.userId);
-	if (
-		!rawLimit ||
-		rawLimit > finalDate ||
-		isAfter(new Date(), addDays(bigDay, rawLimit))
-	) {
-		return false;
+	if (!rawUserId || !rawLimit) {
+		return null;
 	}
-	const rawUserId = decodeUserId(userId, bigDay);
-	if (!rawUserId) {
-		return false;
-	}
-	setAuth(socket, token);
-	setUserId(socket, rawUserId);
-	return true;
+	return {
+		signature: auth.output.sign,
+		userId: rawUserId,
+		expiryDate: addDays(bigDay, rawLimit),
+	};
 };
 
 const delay = 1000 * 60 * 4; // Glitchは5分放置でスリープする
@@ -87,19 +95,21 @@ const lazyUpdate = (userId: number, auth: string) => {
 	neet.set(userId, id);
 };
 
-export const updateAuthToken = (socket: Socket) => {
+const updateAuthToken = (socket: Socket) => {
 	const rawUserId = getUserId(socket);
 	const userId = encodeUserId(rawUserId, bigDay);
 	if (!userId) {
 		return;
 	}
-	const limit = encodeLimit(differenceInDays(new Date(), bigDay) + 3, userId); // JWT風認証は3日で失効
+	const rawLimit = differenceInDays(new Date(), bigDay) + 3;
+	const limit = encodeLimit(rawLimit, userId); // JWT風認証は3日で失効
 	if (!limit) {
 		return;
 	}
+	const expiryDate = addDays(bigDay, rawLimit);
 	const sign = signAuth(userId, limit);
 	const token = [sign, userId, limit].join(".");
-	setAuth(socket, token);
+	grant(socket, rawUserId, expiryDate);
 	socket.emit("updateAuthToken", {
 		ok: true,
 		token,
@@ -114,13 +124,15 @@ const rateLimitSec = 45.45;
 /**
  * userの探索と新規発行
  */
-export const init = async (socket: Socket, ip: string): Promise<boolean> => {
+const init = async (socket: Socket, ip: string): Promise<boolean> => {
 	// 実質誰でも叩けるので制限を設ける
 	if (initFIFO.length > rateLimitCount) {
 		if (isAfter(new Date(), addSeconds(initFIFO[0], rateLimitSec))) {
 			initFIFO.shift();
 			initFIFO.push(new Date());
 		} else {
+			kick(socket, "newUsersRateLimit");
+			socket.disconnect();
 			return false;
 		}
 	} else {
@@ -162,24 +174,51 @@ export const init = async (socket: Socket, ip: string): Promise<boolean> => {
 	return false;
 };
 
-export const getAuth = (socket: Socket): string => socket.data.auth;
-const setAuth = (socket: Socket, auth: string) => {
-	if (auth.length !== 50) {
-		return;
+/**
+ * 承認
+ */
+export const grant = (socket: Socket, userId: number, expiryDate: Date) => {
+	if (setExpiryDate(socket, expiryDate) && setUserId(socket, userId)) {
+		return true;
 	}
-	socket.data.auth = auth;
-};
-export const getUserId = (socket: Socket): number => socket.data.userId;
-const setUserId = (socket: Socket, userId: number) => {
-	if (!isSerial(userId)) {
-		return;
-	}
-	socket.data.userId = userId;
+	kick(socket, "grantFailed");
+	socket.disconnect();
+	logger.warn("⚠️ grantFailed");
+	return false;
 };
 
+const getUserId = (socket: Socket): number => socket.data.userId;
+const setUserId = (socket: Socket, userId: number): boolean => {
+	if (!isSerial(userId)) {
+		return false;
+	}
+	socket.data.userId = userId;
+	return true;
+};
+const getExpiryDate = (socket: Socket): Date => socket.data.expiryDate;
+const setExpiryDate = (socket: Socket, date: Date): boolean => {
+	if (isBefore(date, bigDay) || isAfter(date, finalDay)) {
+		return false;
+	}
+	socket.data.expiryDate = date;
+	return true;
+};
+
+const isAuthExpired = (socket: Socket): boolean =>
+	isAfter(new Date(), getExpiryDate(socket));
+
+const kick = (socket: Socket, reason: string) =>
+	socket.emit("kicked", {
+		ok: true,
+		reason,
+	});
+
 export default {
-	verify,
+	parseClaims,
+	updateAuthToken,
 	init,
-	getAuth,
+	grant,
 	getUserId,
+	isAuthExpired,
+	kick,
 };

@@ -120,17 +120,13 @@ export const decodeResId = (resId: string): number | null => {
 	return isSerial(Number(n)) ? Number(n) : null;
 };
 
-const VITE_UNJ_AUTH_SECRET_PEPPER = String(
-	process.env.VITE_UNJ_AUTH_SECRET_PEPPER,
-);
+const UNJ_AUTH_SECRET_PEPPER = String(process.env.UNJ_AUTH_SECRET_PEPPER);
 
 /**
  * JWT風トークンの署名
  */
 export const signAuth = (userId: string, limit: string): string => {
-	const str = sha256(
-		[VITE_UNJ_AUTH_SECRET_PEPPER, userId, limit].join(delimiter),
-	);
+	const str = sha256([UNJ_AUTH_SECRET_PEPPER, userId, limit].join(delimiter));
 	return str.slice(0, authSignLength);
 };
 

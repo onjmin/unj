@@ -69,5 +69,5 @@ export const reportTraversal = (array: string[]) =>
 /**
  * Socket.IOでIPが不明だった時に送信する
  */
-export const reportBannedIP = (array: string[]) =>
+export const reportBanned = (array: string[]) =>
 	sendDiscordWebhook(VITE_DISCORD_WEBHOOK_URL_OF_REPORT_BANNED_IP, array);

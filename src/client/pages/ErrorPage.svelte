@@ -24,7 +24,7 @@
                 <div>まずはこのタブを閉じようね。</div>
             </Content>
         </Paper>
-    {:else if errorReason === "newUserRateLimit"}
+    {:else if errorReason === "newUsersRateLimit"}
         <Paper color="primary" variant="outlined">
             <Title>不自然な操作を感知しました。</Title>
             <Subtitle>新人さん接続規制中。。</Subtitle>

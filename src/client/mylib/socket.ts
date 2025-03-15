@@ -59,17 +59,17 @@ export const hello = (callback: (() => void) | null = null) => {
 			if (data.ok && data.reason) {
 				errorReason = data.reason;
 				switch (data.reason) {
-					case "bannedIP":
+					case "banned":
 						await Promise.all([
 							save("banStatus", "ban"),
-							save("banReason", "bannedIP"),
+							save("banReason", "banned"),
 						]);
 						navigate(base("/akukin"), { replace: true });
 						break;
 					case "multipleConnections":
 						navigate(base("/error"), { replace: true });
 						break;
-					case "newUserRateLimit":
+					case "newUsersRateLimit":
 						savePathname(pathname());
 						navigate(base("/error"), { replace: true });
 						break;

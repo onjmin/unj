@@ -8,7 +8,7 @@
     import { genBanVerifyCode } from "../mylib/anti-debug.js";
     import { VITE_ADMIN_EMAIL, VITE_ADMIN_TWITTER } from "../mylib/env.js";
     import { load, save } from "../mylib/idb/keyval.js";
-    import { reportBannedIP, reportTraversal } from "../mylib/webhook.js";
+    import { reportBanned, reportTraversal } from "../mylib/webhook.js";
 
     let ip = $state("");
 
@@ -46,8 +46,8 @@
                         ]);
                         save("banReport", "done");
                         break;
-                    case "bannedIP":
-                        await reportBannedIP([
+                    case "banned":
+                        await reportBanned([
                             banVerifyCode,
                             ipInfoJson,
                             window.navigator.userAgent,

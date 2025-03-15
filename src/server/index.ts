@@ -11,10 +11,11 @@ import { sha256 } from "js-sha256";
 import { Server, type Socket } from "socket.io";
 import * as v from "valibot";
 import { getFirstError } from "../common/request/util.js";
-import registerBlacklist from "./admin/blacklist.js";
+import registerBlacklistID, { blacklist } from "./admin/blacklist/id.js";
+import registerBlacklistIP from "./admin/blacklist/ip.js";
+import registerBlacklistTor from "./admin/blacklist/tor.js";
+import registerBlacklistVpngate from "./admin/blacklist/vpngate.js";
 import registerLog from "./admin/log.js";
-import registerTor from "./admin/tor.js";
-import registerVpngate from "./admin/vpngate.js";
 import handleGetNonceKey from "./api/getNonceKey.js";
 import handleHeadline from "./api/headline.js";
 import handleJoinHeadline from "./api/joinHeadline.js";
@@ -92,9 +93,10 @@ app.get("/ping", bannedCheckMiddleware, (req, res) => {
 const router = express.Router();
 router.use(bannedCheckMiddleware, adminAuthMiddleware);
 registerLog(router);
-registerBlacklist(router);
-registerTor(router);
-registerVpngate(router);
+registerBlacklistID(router);
+registerBlacklistIP(router);
+registerBlacklistTor(router);
+registerBlacklistVpngate(router);
 // TODO: 自動BANの基準を変更
 // TODO: 一律Socket新規発行停止
 // TODO: 一律スレ立て禁止
@@ -116,14 +118,19 @@ if (DEV_MODE || STG_MODE) {
 }
 
 const online: Set<string> = new Set();
-const kick = (socket: Socket, reason: string) =>
-	socket.emit("kicked", {
-		ok: true,
-		reason,
-	});
-
 let accessCount = 0;
 const accessCounter = () => accessCount;
+
+const verifyUserId = (socket: Socket, ip: string, userId: number) => {
+	if (blacklist.has(userId)) {
+		logger.http(`❌ ${ip} ${userId}`);
+		// どのusers.idがBANされているのか悟られ難くするため
+		flaky(() => {
+			auth.kick(socket, "banned");
+		});
+		socket.disconnect();
+	}
+};
 
 // socket.io
 io.on("connection", async (socket) => {
@@ -135,13 +142,13 @@ io.on("connection", async (socket) => {
 		logger.http(`❌ ${ip}`);
 		// どのIPがBANされているのか悟られ難くするため
 		flaky(() => {
-			kick(socket, "bannedIP");
+			auth.kick(socket, "banned");
 		});
 		socket.disconnect();
 		return;
 	}
 	if (online.has(ip)) {
-		kick(socket, "multipleConnections");
+		auth.kick(socket, "multipleConnections");
 		socket.disconnect();
 		return;
 	}
@@ -150,15 +157,24 @@ io.on("connection", async (socket) => {
 		online.delete(ip);
 	});
 
-	if (!auth.verify(socket)) {
-		if (!(await auth.init(socket, ip))) {
-			// DBに問い合わせる認証の制限
-			kick(socket, "newUserRateLimit");
-			socket.disconnect();
-			return;
-		}
+	const claims = auth.parseClaims(socket);
+	if (claims) {
+		const userId = claims.userId;
+		verifyUserId(socket, ip, userId);
+		auth.grant(socket, userId, claims.expiryDate);
+	} else {
+		await auth.init(socket, ip);
 	}
+
 	nonce.init(socket);
+
+	socket.use((_, next) => {
+		verifyUserId(socket, ip, auth.getUserId(socket));
+		if (auth.isAuthExpired(socket)) {
+			auth.updateAuthToken(socket);
+		}
+		next();
+	});
 
 	handleGetNonceKey({ socket });
 	handleJoinHeadline({ socket, io, online, accessCounter });
