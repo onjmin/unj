@@ -30,7 +30,6 @@ import { exist, getThreadRoom, joined } from "../mylib/socket.js";
 import { randInt } from "../mylib/util.js";
 
 const api = "res";
-const delimiter = "###";
 const coolTimes: Map<number, Date> = new Map();
 
 export default ({ socket, io }: { socket: Socket; io: Server }) => {

@@ -32,14 +32,8 @@
   <Dialog class="unj-dialog-part" bind:open onSMUIDialogClosed={closeHandler}>
     <Title>アイコン機能</Title>
     <Content>
-      <div>
-        <List
-          class="demo-list"
-          twoLine
-          avatarList
-          singleSelection
-          selectedIndex={selectionIndex}
-        >
+      <div style="text-align:left;">
+        <List twoLine avatarList singleSelection selectedIndex={selectionIndex}>
           {#each avatarMap as [key, avatar], i}
             <Item
               onSMUIAction={() => (selectionIndex = i)}
@@ -79,9 +73,6 @@
 </Portal>
 
 <style>
-  * :global(.demo-list) {
-    text-align: left;
-  }
   :global(.avatar-item-graphic) {
     background-repeat: no-repeat;
     background-size: cover;

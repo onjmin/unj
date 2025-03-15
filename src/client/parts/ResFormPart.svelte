@@ -3,11 +3,7 @@
   import Select, { Option } from "@smui/select";
   import Textfield from "@smui/textfield";
   import CharacterCounter from "@smui/textfield/character-counter";
-  import {
-    contentTemplateMap,
-    contentTypeOptions,
-  } from "../../common/request/content-schema.js";
-  import type { SiteInfo } from "../../common/request/whitelist/site-info.js";
+  import { contentTypeOptions } from "../../common/request/content-schema.js";
   import AvatarPart from "./AvatarPart.svelte";
   import UrlTemplatePart from "./UrlTemplatePart.svelte";
 
@@ -17,31 +13,14 @@
     userAvatar = $bindable(0),
     content = $bindable(""),
     contentUrl = $bindable(""),
-    contentType = $bindable(1),
+    contentType = $bindable(0),
   } = $props();
 
   let openUrlTemplate = $state(false);
   let openAvatar = $state(false);
-  let list: SiteInfo[] = $state([]);
-
-  $effect(() => {
-    list = contentTemplateMap.get(contentType) ?? [];
-  });
 </script>
 
-<UrlTemplatePart bind:open={openUrlTemplate} bind:contentUrl {list}>
-  {#if contentType === 4}
-    <p>みんなで遊べるブラウザゲームを集めました。</p>
-  {:else if contentType === 8}
-    <p>画像が埋め込まれます。</p>
-  {:else if contentType === 16}
-    <p>GIF画像が埋め込まれます。</p>
-  {:else if contentType === 32}
-    <p>動画再生プレイヤーが埋め込まれます。</p>
-  {:else if contentType === 64}
-    <p>音楽再生プレイヤーが埋め込まれます。</p>
-  {/if}
-</UrlTemplatePart>
+<UrlTemplatePart bind:open={openUrlTemplate} bind:contentUrl {contentType} />
 
 <AvatarPart bind:open={openAvatar} bind:userAvatar />
 

@@ -22,21 +22,15 @@
 
 <MainPart>
     <p>おんｊ発の掲示板群</p>
-    <div>
-        <List
-            class="demo-list"
-            twoLine
-            avatarList
-            singleSelection
-            selectedIndex={selectionIndex}
-        >
+    <div style="text-align: left;">
+        <List twoLine avatarList singleSelection selectedIndex={selectionIndex}>
             {#each links as siteInfo, i}
                 <Item
                     onSMUIAction={() => (selectionIndex = i)}
                     selected={selectionIndex === i}
                 >
                     <Graphic
-                        class="unj-playground-item-graphic"
+                        class="unj-links-item-graphic"
                         style="background-image: url({siteInfo.favicon});"
                     />
                     <Text>
@@ -57,10 +51,7 @@
 <FooterPart />
 
 <style>
-    * :global(.demo-list) {
-        text-align: left;
-    }
-    :global(.unj-playground-item-graphic) {
+    :global(.unj-links-item-graphic) {
         background-repeat: no-repeat;
         background-size: 100% 100%;
     }

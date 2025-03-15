@@ -10,20 +10,26 @@
     SecondaryText,
   } from "@smui/list";
   import Portal from "svelte-portal";
+  import { contentTemplateMap } from "../../common/request/content-schema.js";
+  import type { SiteInfo } from "../../common/request/whitelist/site-info.js";
 
   let {
-    children = null,
     open = $bindable(false),
     contentUrl = $bindable(""),
-    list = [],
+    contentType = 0,
   } = $props();
 
   let selectionIndex = $state(0);
   let href = $state("");
+  let temp: SiteInfo[] = $state([]);
 
   $effect(() => {
-    href = list[selectionIndex] ? list[selectionIndex].href : "";
-    if (open && list.length <= selectionIndex) {
+    temp = contentTemplateMap.get(contentType) ?? [];
+  });
+
+  $effect(() => {
+    href = temp[selectionIndex] ? temp[selectionIndex].href : "";
+    if (open && temp.length <= selectionIndex) {
       selectionIndex = 0;
     }
   });
@@ -33,20 +39,22 @@
   <Dialog class="unj-dialog-part" bind:open>
     <Title>URLテンプレ機能</Title>
     <Content>
-      {#if children !== null}
-        <div>
-          {@render children?.()}
-        </div>
-      {/if}
       <div>
-        <List
-          class="demo-list"
-          twoLine
-          avatarList
-          singleSelection
-          selectedIndex={selectionIndex}
-        >
-          {#each list as siteInfo, i}
+        {#if contentType === 4}
+          <p>みんなで遊べるブラウザゲームを集めました。</p>
+        {:else if contentType === 8}
+          <p>画像が埋め込まれます。</p>
+        {:else if contentType === 16}
+          <p>GIF画像が埋め込まれます。</p>
+        {:else if contentType === 32}
+          <p>動画再生プレイヤーが埋め込まれます。</p>
+        {:else if contentType === 64}
+          <p>音楽再生プレイヤーが埋め込まれます。</p>
+        {/if}
+      </div>
+      <div style="text-align:left;">
+        <List twoLine avatarList singleSelection selectedIndex={selectionIndex}>
+          {#each temp as siteInfo, i}
             <Item
               onSMUIAction={() => (selectionIndex = i)}
               selected={selectionIndex === i}
@@ -88,9 +96,6 @@
 </Portal>
 
 <style>
-  * :global(.demo-list) {
-    text-align: left;
-  }
   :global(.favicon-item-graphic) {
     background-repeat: no-repeat;
     background-size: cover;

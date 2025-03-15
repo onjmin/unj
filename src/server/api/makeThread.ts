@@ -20,7 +20,6 @@ import { headlineRoom } from "../mylib/socket.js";
 import { randInt } from "../mylib/util.js";
 
 const api = "makeThread";
-const delimiter = "###";
 const coolTimes: Map<number, Date> = new Map();
 
 export default ({ socket }: { socket: Socket }) => {
