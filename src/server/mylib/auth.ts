@@ -79,10 +79,10 @@ const lazyUpdate = (userId: number, auth: string) => {
 			logger.error(error);
 		});
 		const poolClient = await pool.connect();
-		await poolClient.query("UPDATE users SET auth = $1 WHERE id = $2", [
-			auth,
-			userId,
-		]);
+		await poolClient.query(
+			"UPDATE users SET updated_at = NOW(), auth = $1 WHERE id = $2",
+			[auth, userId],
+		);
 	}, delay);
 	neet.set(userId, id);
 };
