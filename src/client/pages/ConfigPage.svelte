@@ -26,24 +26,17 @@
     let selectedNewResSound: string = $state("");
     let selectedReplyResSound: string = $state("");
 
-    const main = async () => {
-        loadSoundVolume().then((volume) => {
-            soundVolume = volume;
-        });
-        loadNewResSound().then((sound) => {
-            if (sound) {
-                selectedNewResSound = sound.key;
-            }
-        });
-        loadReplyResSound().then((sound) => {
-            if (sound) {
-                selectedReplyResSound = sound.key;
-            }
-        });
-    };
-
     $effect(() => {
-        main();
+        (async () => {
+            const [volume, newResSound, replyResSound] = await Promise.all([
+                loadSoundVolume(),
+                loadNewResSound(),
+                loadReplyResSound(),
+            ]);
+            soundVolume = volume;
+            selectedNewResSound = newResSound ? newResSound.key : "";
+            selectedReplyResSound = replyResSound ? replyResSound.key : "";
+        })();
     });
 </script>
 
