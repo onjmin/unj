@@ -41,22 +41,6 @@
             }
         });
     });
-
-    $effect(() => {
-        saveSoundVolume(soundVolume);
-    });
-    $effect(() => {
-        const sound = soundMap.get(selectedNewResSound);
-        if (sound) {
-            saveNewResSound(sound);
-        }
-    });
-    $effect(() => {
-        const sound = soundMap.get(selectedReplyResSound);
-        if (sound) {
-            saveReplyResSound(sound);
-        }
-    });
 </script>
 
 <HeaderPart title="個人設定">
@@ -78,6 +62,7 @@
                             min={0}
                             max={1}
                             step={0.01}
+                            onchange={() => saveSoundVolume(soundVolume)}
                         />
                         <div>音量：{(soundVolume * 100) | 0}%</div>
                     </FormField>
@@ -93,6 +78,15 @@
                                     <Radio
                                         bind:group={selectedNewResSound}
                                         value={id}
+                                        onchange={() => {
+                                            const sound =
+                                                soundMap.get(
+                                                    selectedNewResSound,
+                                                );
+                                            if (sound) {
+                                                saveNewResSound(sound);
+                                            }
+                                        }}
                                     />
                                 </Graphic>
                                 <Label>{sound.label}</Label>
@@ -121,6 +115,14 @@
                                     <Radio
                                         bind:group={selectedReplyResSound}
                                         value={id}
+                                        onchange={() => {
+                                            const sound = soundMap.get(
+                                                selectedReplyResSound,
+                                            );
+                                            if (sound) {
+                                                saveReplyResSound(sound);
+                                            }
+                                        }}
                                     />
                                 </Graphic>
                                 <Label>{sound.label}</Label>
