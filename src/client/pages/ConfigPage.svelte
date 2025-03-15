@@ -26,7 +26,7 @@
     let selectedNewResSound: string = $state("");
     let selectedReplyResSound: string = $state("");
 
-    $effect(() => {
+    const main = () => {
         loadSoundVolume().then((volume) => {
             soundVolume = volume;
         });
@@ -40,6 +40,10 @@
                 selectedReplyResSound = sound.key;
             }
         });
+    };
+
+    $effect(() => {
+        main();
     });
 </script>
 
