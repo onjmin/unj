@@ -19,7 +19,6 @@
         differenceInWeeks,
         differenceInYears,
     } from "date-fns";
-    import { onMount } from "svelte";
     import { navigate } from "svelte-routing";
     import type { HeadlineThread } from "../../common/response/schema.js";
     import { genNonce } from "../mylib/anti-debug.js";
@@ -80,7 +79,7 @@
         }
     };
 
-    onMount(() => {
+    $effect(() => {
         hello(() => {
             socket.emit("joinHeadline", {});
             socket.emit("headline", {
@@ -102,7 +101,7 @@
     });
 
     let laaaaaaaag = $state(false);
-    onMount(() => {
+    $effect(() => {
         const id = setTimeout(() => {
             laaaaaaaag = true;
         }, 4096);

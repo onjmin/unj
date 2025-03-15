@@ -5,7 +5,6 @@
     import MainPart from "../parts/MainPart.svelte";
     ///////////////
 
-    import { onMount } from "svelte";
     import { genBanVerifyCode } from "../mylib/anti-debug.js";
     import { VITE_ADMIN_EMAIL, VITE_ADMIN_TWITTER } from "../mylib/env.js";
     import { load, save } from "../mylib/idb/keyval.js";
@@ -60,7 +59,7 @@
         } catch (err) {}
     };
 
-    onMount(() => {
+    $effect(() => {
         main();
     });
 </script>

@@ -12,7 +12,6 @@
     import Radio from "@smui/radio";
     import Slider from "@smui/slider";
     import { Howl } from "howler";
-    import { onMount } from "svelte";
     import {
         loadNewResSound,
         loadReplyResSound,
@@ -27,7 +26,7 @@
     let selectedNewResSound: string = $state("");
     let selectedReplyResSound: string = $state("");
 
-    onMount(() => {
+    $effect(() => {
         loadSoundVolume().then((volume) => {
             soundVolume = volume;
         });

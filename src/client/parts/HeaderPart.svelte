@@ -2,7 +2,6 @@
   import IconButton from "@smui/icon-button";
   import Snackbar, { Label } from "@smui/snackbar";
   import TopAppBar, { Title, Row, Section } from "@smui/top-app-bar";
-  import { onMount } from "svelte";
   import { DEV_MODE, STG_MODE, pathname } from "../mylib/env.js";
   import LeftMenuPart from "./LeftMenuPart.svelte";
   import RightMenuPart from "./RightMenuPart.svelte";
@@ -28,7 +27,7 @@
   let openRight = $state(false);
   let isMobile = $state(false);
 
-  onMount(() => {
+  $effect(() => {
     // ソフトウェアキーボードが出現すると画面幅が変わるため、最初の1回だけ実行する
     isMobile = calcIsMobile();
     const isPC = !isMobile;

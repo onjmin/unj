@@ -16,7 +16,6 @@
     import CharacterCounter from "@smui/textfield/character-counter";
     import { addHours, differenceInHours, format } from "date-fns";
     import { ja } from "date-fns/locale";
-    import { onMount } from "svelte";
     import * as v from "valibot";
     import { getFirstError } from "../../common/request/util.js";
     import { load, save } from "../mylib/idb/keyval.js";
@@ -140,7 +139,7 @@
         }
     };
 
-    onMount(() => {
+    $effect(() => {
         main();
     });
 </script>

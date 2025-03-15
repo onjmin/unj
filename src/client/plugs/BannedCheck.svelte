@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { onMount } from "svelte";
     import { navigate } from "svelte-routing";
     import { savePathname } from "../mylib/enter.js";
     import { base, pathname } from "../mylib/env.js";
@@ -26,7 +25,7 @@
         ready = true;
     };
 
-    onMount(() => {
+    $effect(() => {
         main();
     });
 </script>
