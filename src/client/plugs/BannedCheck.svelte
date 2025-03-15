@@ -1,7 +1,8 @@
 <script lang="ts">
     import { navigate } from "svelte-routing";
+    import { savePathname } from "../mylib/enter.js";
     import { base, pathname } from "../mylib/env.js";
-    import { load, save } from "../mylib/idb/keyval.js";
+    import { load } from "../mylib/idb/keyval.js";
     import { setAuthToken } from "../mylib/socket.js";
 
     let { children } = $props();
@@ -16,7 +17,7 @@
         if ("ban" === banStatus) {
             navigate(base("/akukin"), { replace: true });
         } else if ("yes" !== termsAgreement && pathname() !== "/") {
-            save("destinationPathname", pathname());
+            savePathname(pathname());
             navigate(base("/"), { replace: true });
         } else if (authToken) {
             setAuthToken(authToken);

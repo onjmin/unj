@@ -5,8 +5,10 @@
     import MainPart from "../parts/MainPart.svelte";
     ///////////////
 
+    import Button from "@smui/button";
     import LayoutGrid, { Cell } from "@smui/layout-grid";
     import Paper, { Title, Content, Subtitle } from "@smui/paper";
+    import { base } from "../mylib/env.js";
     import { errorReason } from "../mylib/socket.js";
 </script>
 
@@ -18,13 +20,24 @@
         <Paper color="primary" variant="outlined">
             <Title>不自然な操作を感知しました。</Title>
             <Subtitle>うんｊは同じIPからの多窓を禁止しています。。</Subtitle>
-            <Content>まずはこのタブを閉じようね。</Content>
+            <Content>
+                <div>まずはこのタブを閉じようね。</div>
+            </Content>
         </Paper>
     {:else if errorReason === "newUserRateLimit"}
         <Paper color="primary" variant="outlined">
             <Title>不自然な操作を感知しました。</Title>
             <Subtitle>新人さん接続規制中。。</Subtitle>
-            <Content>しばらくしてからページ更新してみてね。</Content>
+            <Content>
+                <div>しばらくしてからリロードしてみてね。</div>
+                <br />
+                <Button
+                    onclick={() => {
+                        location.href = base("/");
+                    }}
+                    variant="raised">リロード</Button
+                >
+            </Content>
         </Paper>
     {/if}
     <div class="iframe-container">

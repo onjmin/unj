@@ -1,7 +1,8 @@
 import { type Socket, io } from "socket.io-client";
 import { navigate } from "svelte-routing";
 import { sleep } from "../mylib/util.js";
-import { PROD_MODE, base } from "./env.js";
+import { savePathname } from "./enter.js";
+import { PROD_MODE, base, pathname } from "./env.js";
 import { save } from "./idb/keyval.js";
 
 const uri = PROD_MODE
@@ -69,6 +70,7 @@ export const hello = (callback: (() => void) | null = null) => {
 						navigate(base("/error"), { replace: true });
 						break;
 					case "newUserRateLimit":
+						savePathname(pathname());
 						navigate(base("/error"), { replace: true });
 						break;
 					default:
