@@ -17,6 +17,7 @@
     import { Howl } from "howler";
     import { navigate } from "svelte-routing";
     import type { Res, Thread } from "../../common/response/schema.js";
+    import { sleep } from "../../common/util.js";
     import { genNonce } from "../mylib/anti-debug.js";
     import { visible } from "../mylib/dom.js";
     import { base } from "../mylib/env.js";
@@ -26,7 +27,6 @@
         loadReplyResSound,
         loadSoundVolume,
     } from "../mylib/sound.js";
-    import { sleep } from "../mylib/util.js";
     import AccessCounterPart from "../parts/AccessCounterPart.svelte";
     import ResFormPart from "../parts/ResFormPart.svelte";
     import ResPart from "../parts/ResPart.svelte";
@@ -391,6 +391,7 @@
                 num={1}
                 isOwner={true}
                 createdAt={thread.createdAt}
+                threadId={thread.id}
             >
                 <div class="unj-like-vote-container">
                     <div class="vote-buttons">
@@ -422,6 +423,7 @@
                     num={res.num}
                     isOwner={res.isOwner}
                     createdAt={res.createdAt}
+                    threadId={thread.id}
                 />
             {/each}
         </div>

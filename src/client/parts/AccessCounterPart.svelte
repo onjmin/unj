@@ -1,6 +1,6 @@
 <script lang="ts">
   import List, { Item, Graphic, Text } from "@smui/list";
-  import { sleep } from "../mylib/util.js";
+  import { sleep } from "../../common/util.js";
 
   let { online, pv } = $props();
 

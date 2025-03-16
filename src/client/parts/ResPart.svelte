@@ -2,21 +2,26 @@
   import { format } from "date-fns";
   import { ja } from "date-fns/locale";
   import { avatarMap } from "../../common/request/avatar.js";
+  import { seededRandArray } from "../../common/util.js";
   import EmbedPart from "./EmbedPart.svelte";
 
   let {
     children = null,
     input = $bindable(""),
+    // 書き込み内容
     ccUserId = "",
     ccUserName = "",
     ccUserAvatar = 0,
     content = "",
     contentUrl = "",
     contentType = 0,
+    // メタ情報
     id = "",
     num = 0,
     isOwner = false,
     createdAt = new Date(),
+    // メタ情報
+    threadId = "",
   } = $props();
 </script>
 
@@ -34,7 +39,17 @@
         }
       }}
       >{num}：<span class="user-name"
-        >{ccUserName !== "" ? ccUserName : "月沈めば名無し"}</span
+        >{ccUserName !== ""
+          ? ccUserName
+          : seededRandArray(
+              [
+                "花散れば名無し",
+                "鳥啼けば名無し",
+                "風吹けば名無し",
+                "月沈めば名無し",
+              ],
+              threadId,
+            )}</span
       >
     </button>：{format(createdAt, "yy/MM/dd(EEE) HH:mm:ss", {
       locale: ja,

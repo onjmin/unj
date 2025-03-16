@@ -19,10 +19,10 @@
         contentTypeOptions,
     } from "../../common/request/content-schema.js";
     import type { HeadlineThread } from "../../common/response/schema.js";
+    import { sleep } from "../../common/util.js";
     import { genNonce } from "../mylib/anti-debug.js";
     import { base } from "../mylib/env.js";
     import { goodbye, hello, nonceKey, ok, socket } from "../mylib/socket.js";
-    import { sleep } from "../mylib/util.js";
     import ResFormPart from "../parts/ResFormPart.svelte";
 
     let { isRef = false } = $props();

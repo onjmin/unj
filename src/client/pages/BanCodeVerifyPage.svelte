@@ -19,10 +19,10 @@
     import Textfield from "@smui/textfield";
     import { DateInput } from "date-picker-svelte";
     import { navigate } from "svelte-routing";
+    import { sleep } from "../../common/util.js";
     import { genBanVerifyCode } from "../mylib/anti-debug.js";
     import { base } from "../mylib/env.js";
     import { load, save } from "../mylib/idb/keyval.js";
-    import { sleep } from "../mylib/util.js";
 
     const handleSubmit = async () => {
         loading = true;

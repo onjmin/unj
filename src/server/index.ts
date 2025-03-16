@@ -11,7 +11,6 @@ import express, {
 import { sha256 } from "js-sha256";
 import { Server, type Socket } from "socket.io";
 import * as v from "valibot";
-import { getFirstError } from "../common/request/util.js";
 import registerBlacklistID, { blacklist } from "./admin/blacklist/id.js";
 import registerBlacklistIP from "./admin/blacklist/ip.js";
 import registerBlacklistTor from "./admin/blacklist/tor.js";
@@ -57,9 +56,9 @@ const adminAuthMiddleware = (
 	next: NextFunction,
 ): void => {
 	const input = req.headers.authorization;
-	const error = getFirstError(authorizationSchema, input);
-	if (error) {
-		res.status(400).json({ error });
+	const result = v.safeParse(authorizationSchema, input);
+	if (!result.success) {
+		res.status(400).json({ error: v.flatten(result.issues) });
 		return;
 	}
 	if (sha256(input ?? "") !== sha256(UNJ_ADMIN_API_KEY)) {

@@ -1,6 +1,5 @@
 import type { Request, Response, Router } from "express";
 import * as v from "valibot";
-import { getFirstError } from "../../../common/request/util.js";
 import { levels, logger } from "../../mylib/log.js";
 
 const api = "/log/level";
@@ -23,9 +22,9 @@ export default (router: Router) => {
 	});
 	router.post(api, async (req: Request, res: Response) => {
 		const level: string = req.body.level;
-		const error = getFirstError(logLevelSchema, level);
-		if (error) {
-			res.status(400).json({ error });
+		const result = v.safeParse(logLevelSchema, level);
+		if (!result.success) {
+			res.status(400).json({ error: v.flatten(result.issues) });
 			return;
 		}
 		logger.level = level === "*" ? "silly" : level;

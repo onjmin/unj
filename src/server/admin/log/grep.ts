@@ -4,7 +4,6 @@ import { format } from "date-fns";
 import type { Request, Response, Router } from "express";
 import readLastLines from "read-last-lines";
 import * as v from "valibot";
-import { getFirstError } from "../../../common/request/util.js";
 import { ROOT_PATH } from "../../mylib/env.js";
 import { levels } from "../../mylib/log.js";
 
@@ -23,9 +22,9 @@ export default (router: Router) => {
 	router.post(api, async (req: Request, res: Response) => {
 		const level: string = req.body.level;
 		const max: number = Math.min(req.body.max ?? 32, tooManyThreshold);
-		const error = getFirstError(logLevelSchema, level);
-		if (error) {
-			res.status(400).json({ error });
+		const result = v.safeParse(logLevelSchema, level);
+		if (!result.success) {
+			res.status(400).json({ error: v.flatten(result.issues) });
 			return;
 		}
 		if (Number.isNaN(max)) {

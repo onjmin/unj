@@ -2,6 +2,11 @@ import * as v from "valibot";
 import { avatarMap } from "./avatar.js";
 import { SAFE_TEXT_SINGLELINE } from "./content-schema.js";
 
+/**
+ * 検証を必ず失敗させるスキーマ
+ */
+export const NeverSchema = v.custom(() => false);
+
 const smallintMax = 2 ** 15 - 1;
 const intMax = 2 ** 31 - 1;
 

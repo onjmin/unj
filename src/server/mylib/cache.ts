@@ -16,6 +16,9 @@ export const goodCountCache: Map<number, number> = new Map();
 export const badCountCache: Map<number, number> = new Map();
 // スレ主
 export const ownerIdCache: Map<number, number> = new Map();
+// 忍法帖スコア
+export const ninjaPokemonCache: Map<number, number> = new Map();
+export const ninjaScoreCache: Map<number, number> = new Map();
 
 /**
  * !timer満了

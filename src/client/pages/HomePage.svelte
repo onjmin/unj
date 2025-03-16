@@ -6,9 +6,9 @@
   ///////////////
 
   import Button from "@smui/button";
+  import { randArray } from "../../common/util.js";
   import { tryEnter } from "../mylib/enter.js";
   import { topIllusts } from "../mylib/top-illusts.js";
-  import { randArray } from "../mylib/util.js";
   import TermsConfirmPart from "../parts/TermsConfirmPart.svelte";
 
   const onjKeyWords = [
@@ -23,20 +23,6 @@
   const randomOnjKeyWord2 = randArray(
     onjKeyWords.filter((v) => v !== randomOnjKeyWord1),
   );
-
-  const whitelist = [
-    "/new",
-    "/headline",
-    "/history",
-    "/bookmark",
-    "/config",
-    "/terms",
-    "/contact",
-    "/update",
-    "/art",
-    "/links",
-    "/thread",
-  ];
 
   let openConfirm = $state(false);
 

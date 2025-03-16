@@ -2,7 +2,6 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import type { Request, Response, Router } from "express";
 import * as v from "valibot";
-import { getFirstError } from "../../../common/request/util.js";
 import { ROOT_PATH } from "../../mylib/env.js";
 
 const api = "/blacklist/ip";
@@ -59,9 +58,9 @@ export default (router: Router) => {
 		try {
 			const ip: string = req.body.ip;
 			const force: string = req.body.force;
-			const error = getFirstError(IpAddressSchema, ip);
-			if (error) {
-				res.status(400).json({ error });
+			const result = v.safeParse(IpAddressSchema, ip);
+			if (!result.success) {
+				res.status(400).json({ error: v.flatten(result.issues) });
 				return;
 			}
 			if (!blacklist.size && !force) {
@@ -94,9 +93,9 @@ export default (router: Router) => {
 		try {
 			const ip: string = req.body.ip;
 			const force: string = req.body.force;
-			const error = getFirstError(IpAddressSchema, ip);
-			if (error) {
-				res.status(400).json({ error });
+			const result = v.safeParse(IpAddressSchema, ip);
+			if (!result.success) {
+				res.status(400).json({ error: v.flatten(result.issues) });
 				return;
 			}
 			if (!blacklist.size && !force) {

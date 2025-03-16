@@ -1,6 +1,6 @@
 import { type Socket, io } from "socket.io-client";
 import { navigate } from "svelte-routing";
-import { sleep } from "../mylib/util.js";
+import { sleep } from "../../common/util.js";
 import { savePathname } from "./enter.js";
 import { PROD_MODE, base, pathname } from "./env.js";
 import { save } from "./idb/keyval.js";

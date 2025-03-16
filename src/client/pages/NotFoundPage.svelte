@@ -6,8 +6,8 @@
     ///////////////
 
     import { navigate } from "svelte-routing";
+    import { randArray } from "../../common/util.js";
     import { base } from "../mylib/env.js";
-    import { randArray } from "../mylib/util.js";
 
     $effect(() => {
         const id = setTimeout(() => {

@@ -14,6 +14,7 @@ import {
 import type { Socket } from "socket.io";
 import * as v from "valibot";
 import { AuthSchema, isSerial } from "../../common/request/schema.js";
+import { randInt } from "../../common/util.js";
 import {
 	decodeLimit,
 	decodeUserId,
@@ -23,7 +24,6 @@ import {
 } from "./anti-debug.js";
 import { getIP } from "./ip.js";
 import { logger } from "./log.js";
-import { randInt } from "./util.js";
 
 /**
  * JWT風トークン

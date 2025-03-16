@@ -9,15 +9,15 @@ import type { Socket } from "socket.io";
 import * as v from "valibot";
 import { contentSchemaMap } from "../../common/request/content-schema.js";
 import { MakeThreadSchema } from "../../common/request/schema.js";
-import { NeverSchema } from "../../common/request/util.js";
+import { NeverSchema } from "../../common/request/schema.js";
 import type { HeadlineThread } from "../../common/response/schema.js";
+import { randInt } from "../../common/util.js";
 import { encodeThreadId } from "../mylib/anti-debug.js";
 import auth from "../mylib/auth.js";
 import { makeCcUserAvatar, makeCcUserId, makeCcUserName } from "../mylib/cc.js";
 import { logger } from "../mylib/log.js";
 import nonce from "../mylib/nonce.js";
 import { headlineRoom } from "../mylib/socket.js";
-import { randInt } from "../mylib/util.js";
 
 const api = "makeThread";
 const coolTimes: Map<number, Date> = new Map();

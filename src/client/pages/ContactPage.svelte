@@ -17,7 +17,6 @@
     import { addHours, differenceInHours, format } from "date-fns";
     import { ja } from "date-fns/locale";
     import * as v from "valibot";
-    import { getFirstError } from "../../common/request/util.js";
     import { load, save } from "../mylib/idb/keyval.js";
     import {
         contactAGPL3,
@@ -66,7 +65,6 @@
         enabledSubmit = replyEmail !== "" && fill && !!deadline && !isSuspend;
     });
 
-    const emailSchema = v.pipe(v.string(), v.email());
     let snackbar: Snackbar;
     let snackbarText = $state("");
 
@@ -77,8 +75,8 @@
             snackbar.open();
             return;
         }
-        const err = getFirstError(emailSchema, replyEmail);
-        if (err) {
+        const emailSchema = v.pipe(v.string(), v.email());
+        if (!v.safeParse(emailSchema, replyEmail).success) {
             snackbarText = "不正なメールアドレスです。";
             snackbar.open();
             return;
