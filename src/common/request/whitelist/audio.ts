@@ -8,4 +8,10 @@ export default [
 		href: "https://soundcloud.com/user-223103658/j-125",
 		hostnames: ["api.soundcloud.com"],
 	}),
+	new SiteInfo({
+		id: 6402,
+		name: "Spotify",
+		description: "音楽ストリーミングサービス",
+		href: "https://open.spotify.com/intl-ja/track/5cuzTmu7d829jHMRjaVCLy",
+	}),
 ];

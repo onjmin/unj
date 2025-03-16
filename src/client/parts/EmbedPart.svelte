@@ -16,6 +16,7 @@
   import unjGames from "../../common/request/whitelist/unj-games.js";
   import {
     parseAudioEmbedSoundCloud,
+    parseAudioEmbedSpotify,
     parseGifEmbedImgur,
     parseImageEmbedImgur,
     parseImageEmbedNicoseiga,
@@ -38,6 +39,7 @@
   let videoEmbedYouTube = $state(false);
   let videoEmbedNicovideo = $state(false);
   let audioEmbedSoundCloud = $state(false);
+  let audioEmbedSpotify = $state(false);
   const tryEmbed = (siteInfo: SiteInfo) => {
     try {
       embedding = true;
@@ -71,6 +73,10 @@
         case 6401:
           audioEmbedSoundCloud = true;
           result = parseAudioEmbedSoundCloud(url);
+          break;
+        case 6402:
+          audioEmbedSpotify = true;
+          result = parseAudioEmbedSpotify(url);
           break;
       }
       if (result === null) {
@@ -179,6 +185,17 @@
         scrolling="no"
         frameborder="no"
       ></iframe>
+    {:else if audioEmbedSpotify}
+      <iframe
+        title="embed"
+        src={embedUrl}
+        {width}
+        {height}
+        frameBorder="0"
+        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+        allowfullscreen={null}
+        loading="lazy"
+      ></iframe>
     {/if}
   {/if}
 {/if}
@@ -201,6 +218,6 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* 軽い影で浮かせる */
   }
   iframe {
-    border: solid 1px #ccc;
+    border-radius: 12px;
   }
 </style>

@@ -47,17 +47,24 @@ export const parseVideoEmbedYouTube = (url: URL): string | null => {
 	}
 	// 動画 ID が抽出できた場合、埋め込み URL を返す
 	if (id) {
-		return `//www.youtube.com/embed/${id}?`;
+		return `https://www.youtube.com/embed/${id}?`;
 	}
 	return null;
 };
 export const parseVideoEmbedNicovideo = (url: URL): string | null => {
 	const id = url.pathname.match(/sm([0-9]+)/)?.[1];
 	if (id) {
-		return `//embed.nicovideo.jp/watch/sm${id}?jsapi=1&amp;from=0`;
+		return `https://embed.nicovideo.jp/watch/sm${id}?jsapi=1&amp;from=0`;
 	}
 	return null;
 };
 export const parseAudioEmbedSoundCloud = (url: URL): string | null => {
-	return `https://w.soundcloud.com/player/?url=${encodeURIComponent(url.href)}`;
+	return `https://w.soundcloud.com/player/?url=${encodeURIComponent(url.href)}&visual=true`;
+};
+export const parseAudioEmbedSpotify = (url: URL): string | null => {
+	const id = url.pathname.match(/track\/([a-zA-Z0-9]{22})/)?.[1];
+	if (id) {
+		return `https://open.spotify.com/embed/track/${id}?utm_source=generator`;
+	}
+	return null;
 };
