@@ -68,7 +68,9 @@
           </a>
         </div>
       {/if}
-      <div class="content-embed"><EmbedPart {contentUrl} {contentType} /></div>
+      <div class="content-embed">
+        <EmbedPart {ccUserAvatar} {contentUrl} {contentType} />
+      </div>
     </div>
   </div>
   {@render children?.()}

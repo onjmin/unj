@@ -24,7 +24,7 @@
     parseVideoEmbedYouTube,
   } from "../mylib/embed.js";
 
-  let { contentUrl = "", contentType = 0 } = $props();
+  let { ccUserAvatar = 0, contentUrl = "", contentType = 0 } = $props();
 
   const temp = contentTemplateMap.get(contentType) ?? [];
   const siteInfo = temp.length
@@ -86,7 +86,7 @@
   let width = $state(0);
   let height = $state(0);
   const onResize = () => {
-    const w = window.innerWidth * 0.7;
+    const w = window.innerWidth * 0.7 - (ccUserAvatar ? 32 : 0);
     const h = window.innerHeight * 0.7;
     let w2 = 0;
     let h2 = 0;
