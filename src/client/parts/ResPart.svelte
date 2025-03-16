@@ -15,6 +15,7 @@
     content = "",
     contentUrl = "",
     contentType = 0,
+    commandResult = "",
     // メタ情報
     id = "",
     num = 0,
@@ -76,6 +77,11 @@
           {content}
         </div>
       {/if}
+      {#if commandResult !== ""}
+        <div class="command-result">
+          {commandResult}
+        </div>
+      {/if}
       {#if contentUrl !== ""}
         <div class="content-url">
           <a href={contentUrl} target="_blank" rel="noopener noreferrer">
@@ -117,7 +123,7 @@
     font-weight: bold;
   }
   .thread-owner {
-    color: #aa0000;
+    color: #e57373;
     font-size: small;
   }
   /* content-row はアイコンと内容を横並びに */
@@ -159,6 +165,13 @@
   }
   /* content-text は改行を含むテキストを自動折り返し */
   .content-text {
+    display: block;
+    white-space: pre-wrap; /* 改行も反映、必要に応じて折り返す */
+    overflow-wrap: break-word; /* 長い単語も折り返し */
+    margin-bottom: 4px;
+  }
+  .command-result {
+    color: #e57373;
     display: block;
     white-space: pre-wrap; /* 改行も反映、必要に応じて折り返す */
     overflow-wrap: break-word; /* 長い単語も折り返し */

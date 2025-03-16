@@ -59,5 +59,6 @@ CREATE TABLE res (
     content TEXT NOT NULL DEFAULT '',
     content_url TEXT NOT NULL DEFAULT '',
     content_type SMALLINT NOT NULL DEFAULT 1,
+    command_result TEXT NOT NULL DEFAULT ''
     UNIQUE (thread_id, num)  -- スレッド内でのレス番号の一意性を保証
 );

@@ -9,7 +9,7 @@ import * as v from "valibot";
 import { lolSchema } from "../../common/request/schema.js";
 import { decodeThreadId } from "../mylib/anti-debug.js";
 import auth from "../mylib/auth.js";
-import { isExpired, lolCountCache } from "../mylib/cache.js";
+import { isDeleted, lolCountCache } from "../mylib/cache.js";
 import { logger } from "../mylib/log.js";
 import nonce from "../mylib/nonce.js";
 import { exist, getThreadRoom, joined } from "../mylib/socket.js";
@@ -50,7 +50,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			return;
 		}
 
-		if (isExpired(threadId)) {
+		if (isDeleted(threadId)) {
 			return;
 		}
 

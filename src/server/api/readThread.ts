@@ -22,7 +22,7 @@ import {
 	contentTypesBitmaskCache,
 	deletedAtCache,
 	goodCountCache,
-	isExpired,
+	isDeleted,
 	lolCountCache,
 	ownerIdCache,
 	resCountCache,
@@ -48,7 +48,7 @@ export default ({ socket }: { socket: Socket }) => {
 			return;
 		}
 
-		if (isExpired(threadId)) {
+		if (isDeleted(threadId)) {
 			return;
 		}
 
@@ -113,7 +113,7 @@ export default ({ socket }: { socket: Socket }) => {
 				ownerIdCache.set(threadId, threadRecord.user_id);
 			}
 
-			if (isExpired(threadId)) {
+			if (isDeleted(threadId)) {
 				logger.verbose(`🪦 ${threadId}`);
 				return;
 			}
@@ -147,6 +147,7 @@ export default ({ socket }: { socket: Socket }) => {
 					content: record.content,
 					contentUrl: record.content_url,
 					contentType: record.content_type,
+					commandResult: record.command_result,
 					// メタ情報
 					id: resId,
 					num: record.num,

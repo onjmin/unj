@@ -2,7 +2,7 @@ import type { Server, Socket } from "socket.io";
 import * as v from "valibot";
 import { joinThreadSchema } from "../../common/request/schema.js";
 import { decodeThreadId } from "../mylib/anti-debug.js";
-import { isExpired } from "../mylib/cache.js";
+import { isDeleted } from "../mylib/cache.js";
 import { getThreadRoom, sizeOf, switchTo } from "../mylib/socket.js";
 import headline from "./headline.js";
 
@@ -27,7 +27,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		}
 
 		// TODO: 未キャッシュ状態の削除済みスレに入れてしまう問題
-		if (isExpired(threadId)) {
+		if (isDeleted(threadId)) {
 			return;
 		}
 

@@ -23,12 +23,20 @@ export const ninjaScoreCache: Map<number, number> = new Map();
 /**
  * !timer満了
  */
-export const isExpired = (threadId: number) => {
+export const isDeleted = (threadId: number): boolean => {
 	const deletedAt = deletedAtCache.get(threadId);
 	if (deletedAt) {
-		if (new Date() > deletedAt) {
-			return true;
-		}
+		return new Date() > deletedAt;
 	}
 	return false;
+};
+
+/**
+ * 上限レス数到達
+ */
+export const isMax = (threadId: number, isOwner: boolean): boolean => {
+	const resCount = resCountCache.get(threadId) ?? 0;
+	const resLimit = resLimitCache.get(threadId) ?? 0;
+	// 次スレ誘導のためにスレ主は+5まで投稿可能
+	return resCount >= resLimit + (isOwner ? 5 : 0);
 };

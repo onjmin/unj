@@ -24,6 +24,7 @@ export type Res = {
 	content: string;
 	contentUrl: string;
 	contentType: number;
+	commandResult: string;
 	// メタ情報
 	id: string;
 	num: number;

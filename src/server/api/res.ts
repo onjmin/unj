@@ -16,7 +16,8 @@ import auth from "../mylib/auth.js";
 import {
 	ccBitmaskCache,
 	contentTypesBitmaskCache,
-	isExpired,
+	isDeleted,
+	isMax,
 	ownerIdCache,
 	resCountCache,
 	resLimitCache,
@@ -44,24 +45,15 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			return;
 		}
 
-		if (isExpired(threadId)) {
+		if (isDeleted(threadId)) {
 			return;
 		}
 
 		const userId = auth.getUserId(socket);
 		const isOwner = ownerIdCache.get(threadId) === userId;
 
-		const resCount = resCountCache.get(threadId) ?? 0;
-		const resLimit = resLimitCache.get(threadId) ?? 0;
-		if (isOwner) {
-			// 次スレ誘導のためにスレ主は+5まで投稿可能
-			if (resCount >= resLimit + 5) {
-				return;
-			}
-		} else {
-			if (resCount >= resLimit) {
-				return;
-			}
+		if (isMax(threadId, isOwner)) {
+			return;
 		}
 
 		// !バルサン
@@ -99,11 +91,6 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			return;
 		}
 
-		const ccBitmask = ccBitmaskCache.get(threadId) ?? 0;
-		const ccUserId = makeCcUserId(ccBitmask, userId);
-		const ccUserName = makeCcUserName(ccBitmask, res.output.userName);
-		const ccUserAvatar = makeCcUserAvatar(ccBitmask, res.output.userAvatar);
-
 		// Nonce値の完全一致チェック
 		if (!nonce.isValid(socket, res.output.nonce)) {
 			logger.verbose(`🔒 ${res.output.nonce}`);
@@ -120,6 +107,59 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 				coolTimes.set(userId, addSeconds(new Date(), randInt(8, 32)));
 			}
 
+			// コマンドの解釈
+			let commandResult = "";
+			const cmds = contentResult.output.content.match(/![^!\s]+/g);
+			if (cmds && cmds.length < 8) {
+				const results = [];
+				for (const cmd of new Set(cmds)) {
+					if (isOwner) {
+						switch (cmd) {
+							case "!aku":
+								break;
+							case "!kaijo":
+								break;
+							case "!reset":
+								break;
+							case "!バルサン":
+								break;
+							case "!sage":
+								break;
+							case "!jien":
+								break;
+							case "!ngk":
+								break;
+							case "!nopic":
+								break;
+							case "!add":
+								break;
+							case "!age":
+								break;
+							case "!バルス":
+								break;
+						}
+					}
+					switch (cmd) {
+						case "!ping":
+							results.push("pong");
+							break;
+					}
+				}
+				commandResult = results.map((v) => `★${v}`).join("\n");
+			}
+
+			const ccBitmask = ccBitmaskCache.get(threadId) ?? 0;
+			const ccUserId = makeCcUserId(ccBitmask, userId);
+			const ccUserName = makeCcUserName(ccBitmask, res.output.userName);
+			const ccUserAvatar = makeCcUserAvatar(ccBitmask, res.output.userAvatar);
+
+			if (isMax(threadId, isOwner)) {
+				return;
+			}
+
+			const next = (resCountCache.get(threadId) ?? 0) + 1;
+			resCountCache.set(threadId, next);
+
 			// pool
 			const pool = new Pool({ connectionString: NEON_DATABASE_URL });
 			pool.on("error", (error) => {
@@ -128,9 +168,6 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			poolClient = await pool.connect();
 
 			await poolClient.query("BEGIN"); // トランザクション開始
-
-			const next = resCount + 1;
-			resCountCache.set(threadId, next);
 
 			// レスの作成
 			const { rows, rowCount } = await poolClient.query(
@@ -144,12 +181,13 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 						"content",
 						"content_url",
 						"content_type",
+						"command_result",
 						// メタ情報
 						"thread_id",
 						"num",
 						"is_owner",
 					].join(",")})`,
-					"VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)",
+					"VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)",
 					"RETURNING *",
 				].join(" "),
 				[
@@ -161,6 +199,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 					contentResult.output.content,
 					contentResult.output.contentUrl,
 					contentResult.output.contentType,
+					commandResult,
 					// メタ情報
 					threadId,
 					next,
@@ -196,6 +235,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 				content: contentResult.output.content,
 				contentUrl: contentResult.output.contentUrl,
 				contentType: contentResult.output.contentType,
+				commandResult,
 				// メタ情報
 				id: resId,
 				num: next,

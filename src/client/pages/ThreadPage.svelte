@@ -387,6 +387,7 @@
                 content={thread.content}
                 contentUrl={thread.contentUrl}
                 contentType={thread.contentType}
+                commandResult=""
                 id=""
                 num={1}
                 isOwner={true}
@@ -419,6 +420,7 @@
                     content={res.content}
                     contentUrl={res.contentUrl}
                     contentType={res.contentType}
+                    commandResult={res.commandResult}
                     id={res.id}
                     num={res.num}
                     isOwner={res.isOwner}
