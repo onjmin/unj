@@ -6,7 +6,6 @@
     ///////////////
 
     import Button from "@smui/button";
-    import LayoutGrid, { Cell } from "@smui/layout-grid";
     import Paper, { Title, Content, Subtitle } from "@smui/paper";
     import { base } from "../mylib/env.js";
     import { errorReason } from "../mylib/socket.js";

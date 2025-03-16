@@ -2,6 +2,7 @@ import { SiteInfo } from "./site-info.js";
 
 export default [
 	new SiteInfo({
+		id: 6401,
 		name: "SoundCloud",
 		description: "ラッパーに人気の音楽アップロードサイト",
 		href: "https://soundcloud.com/user-223103658/j-125",

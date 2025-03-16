@@ -1,20 +1,24 @@
 export class SiteInfo {
+	id;
 	name;
 	description;
 	href;
 	hostnames;
 	favicon;
 	constructor({
-		name,
-		description,
+		id, // フロントで使う
+		name, // 表示用のラベル
+		description, // 一言説明
 		href, // URLテンプレ機能の対象
 		hostnames, // href以外の許容ホスト名
 	}: {
+		id?: number;
 		name: string;
 		description: string;
 		href: string;
 		hostnames?: string[];
 	}) {
+		this.id = id;
 		this.name = name;
 		this.description = description;
 		this.href = href;

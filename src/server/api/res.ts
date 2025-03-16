@@ -1,7 +1,7 @@
 // pool
 import { Pool, type PoolClient, neonConfig } from "@neondatabase/serverless";
 import ws from "ws";
-import { NEON_DATABASE_URL } from "../mylib/env.js";
+import { NEON_DATABASE_URL, PROD_MODE } from "../mylib/env.js";
 neonConfig.webSocketConstructor = ws;
 
 import { addSeconds, isBefore } from "date-fns";
@@ -117,7 +117,9 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			nonce.lock(socket);
 			nonce.update(socket);
 
-			coolTimes.set(userId, addSeconds(new Date(), randInt(8, 128)));
+			if (PROD_MODE) {
+				coolTimes.set(userId, addSeconds(new Date(), randInt(8, 32)));
+			}
 
 			// pool
 			const pool = new Pool({ connectionString: NEON_DATABASE_URL });
