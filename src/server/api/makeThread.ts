@@ -9,7 +9,6 @@ import type { Socket } from "socket.io";
 import * as v from "valibot";
 import { contentSchemaMap } from "../../common/request/content-schema.js";
 import { MakeThreadSchema } from "../../common/request/schema.js";
-import { NeverSchema } from "../../common/request/schema.js";
 import type { HeadlineThread } from "../../common/response/schema.js";
 import { randInt } from "../../common/util.js";
 import { encodeThreadId } from "../mylib/anti-debug.js";
@@ -36,10 +35,11 @@ export default ({ socket }: { socket: Socket }) => {
 		}
 
 		// 偽装されたコンテンツなのか
-		const contentResult = v.safeParse(
-			contentSchemaMap.get(contentType) ?? NeverSchema,
-			data,
-		);
+		const schema = contentSchemaMap.get(contentType);
+		if (!schema) {
+			return;
+		}
+		const contentResult = v.safeParse(schema, data);
 		if (!contentResult.success) {
 			return;
 		}
@@ -115,9 +115,9 @@ export default ({ socket }: { socket: Socket }) => {
 					ccUserId,
 					makeCcUserName(ccBitmask, makeThread.output.userName),
 					makeCcUserAvatar(ccBitmask, makeThread.output.userAvatar),
-					makeThread.output.content,
-					makeThread.output.contentUrl,
-					makeThread.output.contentType,
+					contentResult.output.content,
+					contentResult.output.contentUrl,
+					contentResult.output.contentType,
 					// 基本的な情報
 					makeThread.output.title,
 					0, // TODO

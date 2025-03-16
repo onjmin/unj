@@ -9,7 +9,6 @@ import type { Server, Socket } from "socket.io";
 import * as v from "valibot";
 import { contentSchemaMap } from "../../common/request/content-schema.js";
 import { ResSchema } from "../../common/request/schema.js";
-import { NeverSchema } from "../../common/request/schema.js";
 import type { Res } from "../../common/response/schema.js";
 import { randInt } from "../../common/util.js";
 import { decodeThreadId, encodeResId } from "../mylib/anti-debug.js";
@@ -79,17 +78,17 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		}
 
 		// 投稿許可されたコンテンツなのか
-		const { content, contentUrl, contentType } = res.output;
 		const contentTypesBitmask = contentTypesBitmaskCache.get(threadId) ?? 0;
-		if ((contentTypesBitmask & contentType) === 0) {
+		if ((contentTypesBitmask & res.output.contentType) === 0) {
 			return;
 		}
 
 		// 偽装されたコンテンツなのか
-		const contentResult = v.safeParse(
-			contentSchemaMap.get(contentType) ?? NeverSchema,
-			data,
-		);
+		const schema = contentSchemaMap.get(res.output.contentType);
+		if (!schema) {
+			return;
+		}
+		const contentResult = v.safeParse(schema, data);
 		if (!contentResult.success) {
 			return;
 		}
@@ -159,9 +158,9 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 					ccUserId,
 					ccUserName,
 					ccUserAvatar,
-					content,
-					contentUrl,
-					contentType,
+					contentResult.output.content,
+					contentResult.output.contentUrl,
+					contentResult.output.contentType,
 					// メタ情報
 					threadId,
 					next,
@@ -194,9 +193,9 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 				ccUserId,
 				ccUserName,
 				ccUserAvatar,
-				content,
-				contentUrl,
-				contentType,
+				content: contentResult.output.content,
+				contentUrl: contentResult.output.contentUrl,
+				contentType: contentResult.output.contentType,
 				// メタ情報
 				id: resId,
 				num: next,
