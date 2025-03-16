@@ -113,7 +113,9 @@
     <List twoLine
       ><Item>
         <Graphic
-          class="favicon-item-graphic2"
+          class="embed-favicon-item-graphic {siteInfo.id === 3202
+            ? 'nicovideo'
+            : ''}"
           style="background-image:url({siteInfo.favicon});"
         />
         <Text>
@@ -146,7 +148,7 @@
     >
     <br />
     {#if imageEmbed}
-      <img src={embedUrl} alt="embed" />
+      <img class="embed-image" src={embedUrl} alt="embed" />
     {:else if videoEmbedYouTube}
       <iframe
         title="embed"
@@ -182,12 +184,15 @@
 {/if}
 
 <style>
-  :global(.favicon-item-graphic2) {
+  :global(.embed-favicon-item-graphic) {
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
   }
-  img {
+  :global(.embed-favicon-item-graphic.nicovideo) {
+    background-color: black;
+  }
+  .embed-image {
     display: block; /* インライン要素ではなくブロックにする */
     max-width: 100%; /* 親要素の幅に収まる */
     height: auto; /* アスペクト比を保って高さを自動調整 */

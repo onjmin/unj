@@ -43,13 +43,13 @@
         {#if contentType === 4}
           <p>みんなで遊べるブラウザゲームを集めました。</p>
         {:else if contentType === 8}
-          <p>画像が埋め込まれます。</p>
+          <p>画像を貼れます。</p>
         {:else if contentType === 16}
-          <p>GIF画像が埋め込まれます。</p>
+          <p>GIFを貼れます。</p>
         {:else if contentType === 32}
-          <p>動画再生プレイヤーが埋め込まれます。</p>
+          <p>動画を貼れます。</p>
         {:else if contentType === 64}
-          <p>音楽再生プレイヤーが埋め込まれます。</p>
+          <p>音楽を貼れます。</p>
         {/if}
       </div>
       <div style="text-align:left;">
