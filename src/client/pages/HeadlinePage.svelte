@@ -128,7 +128,7 @@
             style="visibility:{laaaaaaaag ? 'visible' : 'hidden'};"
         >
             <Title>まだ終わらない？</Title>
-            <Subtitle>うんｊは同じIPからの多窓を禁止しています。</Subtitle>
+            <Subtitle>サーバーが落ちてるかも。。</Subtitle>
             <Content>ページ更新してみてね。</Content>
         </Paper>
     {/if}
