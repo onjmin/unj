@@ -19,7 +19,7 @@ import nonce from "../mylib/nonce.js";
 import { headlineRoom } from "../mylib/socket.js";
 
 const api = "makeThread";
-const coolTimes: Map<number, Date> = new Map();
+export const coolTimes: Map<number, Date> = new Map();
 
 export default ({ socket }: { socket: Socket }) => {
 	socket.on(api, async (data) => {

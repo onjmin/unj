@@ -4,7 +4,7 @@ import ws from "ws";
 import { NEON_DATABASE_URL, PROD_MODE } from "../mylib/env.js";
 neonConfig.webSocketConstructor = ws;
 
-import { addSeconds, isBefore } from "date-fns";
+import { addMinutes, addSeconds, isBefore } from "date-fns";
 import type { Server, Socket } from "socket.io";
 import * as v from "valibot";
 import { contentSchemaMap } from "../../common/request/content-schema.js";
@@ -14,6 +14,7 @@ import { randInt } from "../../common/util.js";
 import { decodeThreadId, encodeResId } from "../mylib/anti-debug.js";
 import auth from "../mylib/auth.js";
 import {
+	balseCache,
 	ccBitmaskCache,
 	contentTypesBitmaskCache,
 	isDeleted,
@@ -32,6 +33,7 @@ import { getIP } from "../mylib/ip.js";
 import { logger } from "../mylib/log.js";
 import nonce from "../mylib/nonce.js";
 import { exist, getThreadRoom, joined } from "../mylib/socket.js";
+import { coolTimes as makeThreadCoolTimes } from "./makeThread.js";
 
 const api = "res";
 const coolTimes: Map<number, Date> = new Map();
@@ -171,24 +173,51 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 							case "!reset":
 								break;
 							case "!バルサン":
+								results.push(
+									"！荒らし撃退呪文『バルサン』発動！\nしばらくの間、忍法帖lv4未満による投稿を禁ず。。",
+								);
+								varsanCache.set(threadId, true);
 								break;
 							case "!sage":
+								{
+									const sage = !sageCache.get(threadId);
+									sageCache.set(threadId, sage);
+									results.push(sage ? "強制sage" : "強制sage解除");
+								}
 								break;
 							case "!jien":
 								break;
 							case "!ngk":
 								break;
 							case "!nopic":
+								{
+									const contentTypesBitmask =
+										contentTypesBitmaskCache.get(threadId);
+									// sageCache.set(threadId, sage);
+									results.push(
+										"！画像禁止『nopic』発動！\nしばらくの間、画像投稿を禁ず。。",
+									);
+								}
 								break;
 							case "!add":
 								break;
 							case "!age":
 								break;
 							case "!バルス":
-								if (ninjaLv < 3) break;
+								if (ninjaLv < 3) {
+									results.push(
+										`禁断呪文バルス発動失敗。。忍法帖のレベル不足。(lv:${ninjaLv})`,
+									);
+									break;
+								}
 								ninjaLv -= 2;
 								results.push(
 									"！禁断呪文バルス発動！\nこのスレは崩壊しますた。。",
+								);
+								balseCache.set(threadId, true);
+								makeThreadCoolTimes.set(
+									userId,
+									addMinutes(new Date(), randInt(120, 180)),
 								);
 								break;
 						}
