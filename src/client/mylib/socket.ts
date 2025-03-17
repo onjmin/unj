@@ -3,21 +3,21 @@ import { navigate } from "svelte-routing";
 import { sleep } from "../../common/util.js";
 import { savePathname } from "./enter.js";
 import { PROD_MODE, base, pathname } from "./env.js";
-import { save } from "./idb/keyval.js";
+import { load, save } from "./idb/keyval.js";
 
 const uri = PROD_MODE
 	? import.meta.env.VITE_GLITCH_URL
 	: `http://localhost:${import.meta.env.VITE_LOCALHOST_PORT}`;
 
-export let errorReason = "";
-let authToken = "";
-const getAuthToken = () => {
-	return authToken;
-};
-export const setAuthToken = (token: string) => {
-	authToken = token;
-};
+/**
+ * authToken
+ */
+let authToken: string | null = null;
+export const authTokenPromise = load("authToken").then((v) => {
+	authToken = v;
+});
 
+export let errorReason = "";
 export let socket: Socket;
 export let nonceKey = "";
 let isOK = false;
@@ -49,7 +49,7 @@ export const hello = (callback: (() => void) | null = null) => {
 		socket = io(uri, {
 			withCredentials: true,
 			auth: {
-				token: getAuthToken(),
+				token: authToken,
 			},
 		});
 		window.addEventListener("beforeunload", () => {
@@ -84,6 +84,7 @@ export const hello = (callback: (() => void) | null = null) => {
 		});
 		socket.on("updateAuthToken", (data: { ok: boolean; token: string }) => {
 			if (data.ok && data.token) {
+				authToken = data.token;
 				save("authToken", data.token);
 			}
 		});

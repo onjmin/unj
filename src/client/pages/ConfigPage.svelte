@@ -11,32 +11,41 @@
     import List, { Item, Graphic, Label } from "@smui/list";
     import Radio from "@smui/radio";
     import Slider from "@smui/slider";
-    import { Howl } from "howler";
     import {
-        loadNewResSound,
-        loadReplyResSound,
-        loadSoundVolume,
+        newResSound,
+        newResSoundKey,
+        replyResSound,
+        replyResSoundKey,
         saveNewResSound,
         saveReplyResSound,
         saveSoundVolume,
         soundMap,
     } from "../mylib/sound.js";
 
-    let soundVolume = $state(0);
+    let soundVolume = $state(0.114514);
     let selectedNewResSound: string = $state("");
     let selectedReplyResSound: string = $state("");
-
     $effect(() => {
-        (async () => {
-            const [volume, newResSound, replyResSound] = await Promise.all([
-                loadSoundVolume(),
-                loadNewResSound(),
-                loadReplyResSound(),
-            ]);
-            soundVolume = volume;
-            selectedNewResSound = newResSound ? newResSound.key : "";
-            selectedReplyResSound = replyResSound ? replyResSound.key : "";
-        })();
+        setTimeout(() => {
+            soundVolume = Howler.volume();
+            selectedNewResSound = newResSoundKey;
+            selectedReplyResSound = replyResSoundKey;
+        }, 512);
+    });
+    $effect(() => {
+        if (soundVolume !== 0.114514) saveSoundVolume(soundVolume);
+    });
+    $effect(() => {
+        if (selectedNewResSound !== "") {
+            const sound = soundMap.get(selectedNewResSound);
+            saveNewResSound(sound ?? null);
+        }
+    });
+    $effect(() => {
+        if (selectedReplyResSound !== "") {
+            const sound = soundMap.get(selectedReplyResSound);
+            saveReplyResSound(sound ?? null);
+        }
     });
 </script>
 
@@ -58,8 +67,7 @@
                             bind:value={soundVolume}
                             min={0}
                             max={1}
-                            step={0.01}
-                            onchange={() => saveSoundVolume(soundVolume)}
+                            step={0.000001}
                         />
                         <div>音量：{(soundVolume * 100) | 0}%</div>
                     </FormField>
@@ -69,21 +77,12 @@
                 <Header>新着レスSE</Header>
                 <Content>
                     <List class="demo-list" radioList>
-                        {#each soundMap as [id, sound]}
+                        {#each soundMap as [key, sound]}
                             <Item>
                                 <Graphic>
                                     <Radio
                                         bind:group={selectedNewResSound}
-                                        value={id}
-                                        onchange={() => {
-                                            const sound =
-                                                soundMap.get(
-                                                    selectedNewResSound,
-                                                );
-                                            if (sound) {
-                                                saveNewResSound(sound);
-                                            }
-                                        }}
+                                        value={key}
                                     />
                                 </Graphic>
                                 <Label>{sound.label}</Label>
@@ -91,10 +90,9 @@
                                     <IconButton
                                         class="material-icons"
                                         onclick={() =>
-                                            new Howl({
-                                                src: [sound.src ?? ""],
-                                                html5: true,
-                                            }).play()}>play_arrow</IconButton
+                                            setTimeout(() =>
+                                                newResSound?.play(),
+                                            )}>play_arrow</IconButton
                                     >
                                 {/if}
                             </Item>
@@ -106,20 +104,12 @@
                 <Header>安価レスSE</Header>
                 <Content>
                     <List class="demo-list" radioList>
-                        {#each soundMap as [id, sound]}
+                        {#each soundMap as [key, sound]}
                             <Item>
                                 <Graphic>
                                     <Radio
                                         bind:group={selectedReplyResSound}
-                                        value={id}
-                                        onchange={() => {
-                                            const sound = soundMap.get(
-                                                selectedReplyResSound,
-                                            );
-                                            if (sound) {
-                                                saveReplyResSound(sound);
-                                            }
-                                        }}
+                                        value={key}
                                     />
                                 </Graphic>
                                 <Label>{sound.label}</Label>
@@ -127,10 +117,9 @@
                                     <IconButton
                                         class="material-icons"
                                         onclick={() =>
-                                            new Howl({
-                                                src: [sound.src ?? ""],
-                                                html5: true,
-                                            }).play()}>play_arrow</IconButton
+                                            setTimeout(() =>
+                                                replyResSound?.play(),
+                                            )}>play_arrow</IconButton
                                     >
                                 {/if}
                             </Item>

@@ -3,24 +3,22 @@
     import { savePathname } from "../mylib/enter.js";
     import { base, pathname } from "../mylib/env.js";
     import { load } from "../mylib/idb/keyval.js";
-    import { setAuthToken } from "../mylib/socket.js";
+    import { authTokenPromise } from "../mylib/socket.js";
 
     let { children } = $props();
     let ready = $state(false);
 
     const main = async () => {
-        const [banStatus, termsAgreement, authToken] = await Promise.all([
+        const [banStatus, termsAgreement] = await Promise.all([
             load("banStatus"),
             load("termsAgreement"),
-            load("authToken"),
+            authTokenPromise,
         ]);
         if ("ban" === banStatus) {
             navigate(base("/akukin"), { replace: true });
         } else if ("yes" !== termsAgreement && pathname() !== "/") {
             savePathname(pathname());
             navigate(base("/"), { replace: true });
-        } else if (authToken) {
-            setAuthToken(authToken);
         }
         ready = true;
     };

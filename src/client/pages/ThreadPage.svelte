@@ -22,11 +22,7 @@
     import { visible } from "../mylib/dom.js";
     import { base } from "../mylib/env.js";
     import { goodbye, hello, nonceKey, ok, socket } from "../mylib/socket.js";
-    import {
-        loadNewResSound,
-        loadReplyResSound,
-        loadSoundVolume,
-    } from "../mylib/sound.js";
+    import { newResSound, replyResSound } from "../mylib/sound.js";
     import AccessCounterPart from "../parts/AccessCounterPart.svelte";
     import ResFormPart from "../parts/ResFormPart.svelte";
     import ResPart from "../parts/ResPart.svelte";
@@ -101,28 +97,6 @@
         }
     };
 
-    let newResSound: Howl;
-    let replyResSound: Howl;
-    $effect(() => {
-        loadSoundVolume();
-        loadNewResSound().then((sound) => {
-            if (sound && sound.src !== null) {
-                newResSound = new Howl({
-                    src: [sound.src],
-                    html5: true,
-                });
-            }
-        });
-        loadReplyResSound().then((sound) => {
-            if (sound && sound.src !== null) {
-                replyResSound = new Howl({
-                    src: [sound.src],
-                    html5: true,
-                });
-            }
-        });
-    });
-
     let openNewResNotice = $state(false);
     let newResCount = $state(0);
     let isAlreadyScrollEnd = $state(false);
@@ -139,7 +113,7 @@
                 thread.resList.shift();
             }
             thread.resList.push(data.new);
-            newResSound.play();
+            newResSound?.play();
             if (data.yours) {
                 ok();
                 content = "";
@@ -159,7 +133,7 @@
                 );
                 if (replyTo) {
                     await sleep(512);
-                    replyResSound.play();
+                    replyResSound?.play();
                 }
             }
         }

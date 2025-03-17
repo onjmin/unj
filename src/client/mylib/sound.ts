@@ -2,38 +2,58 @@ import { Howler } from "howler";
 import { sha256 } from "js-sha256";
 import { load, save } from "./idb/keyval.js";
 
-export const loadSoundVolume = async () => {
-	const result = await load("soundVolume");
-	const volume = result ? Number.parseFloat(result) : 0.3777;
-	Howler.volume(volume);
-	return volume;
-};
+/**
+ * SE音量
+ */
 export const saveSoundVolume = (volume: number) => {
-	save("soundVolume", volume.toString());
 	Howler.volume(volume);
+	save("soundVolume", volume.toString());
 };
+load("soundVolume").then((v) => {
+	let volume = 0.3777;
+	if (v) volume = Number.parseFloat(v);
+	Howler.volume(volume);
+});
 
-export const loadNewResSound = async () => {
-	const result = await load("newResSound");
-	if (result) {
-		return soundMap.get(result);
-	}
-	return coin;
-};
-export const saveNewResSound = (sound: Sound) => {
-	save("newResSound", sound.key);
-};
+const make = (sound: Sound | null) =>
+	!sound?.src
+		? null
+		: new Howl({
+				src: [sound.src],
+				html5: true,
+			});
 
-export const loadReplyResSound = async () => {
-	const result = await load("replyResSound");
-	if (result) {
-		return soundMap.get(result);
-	}
-	return waf;
+/**
+ * 新着レスSE
+ */
+export let newResSound: Howl | null = null;
+export let newResSoundKey = "";
+export const saveNewResSound = (sound: Sound | null) => {
+	newResSoundKey = sound?.key ?? "";
+	newResSound = make(sound);
+	save("newResSound", sound?.key ?? null);
 };
-export const saveReplyResSound = (sound: Sound) => {
-	save("replyResSound", sound.key);
+load("newResSound").then((v) => {
+	newResSoundKey = v ?? "";
+	const sound = soundMap.get(newResSoundKey) ?? coin;
+	newResSound = make(sound);
+});
+
+/**
+ * 安価レスSE
+ */
+export let replyResSound: Howl | null = null;
+export let replyResSoundKey = "";
+export const saveReplyResSound = (sound: Sound | null) => {
+	replyResSoundKey = sound?.key ?? "";
+	replyResSound = make(sound);
+	save("replyResSound", sound?.key ?? null);
 };
+load("replyResSound").then((v) => {
+	replyResSoundKey = v ?? "";
+	const sound = soundMap.get(replyResSoundKey) ?? waf;
+	replyResSound = make(sound);
+});
 
 export const soundMap: Map<string, Sound> = new Map();
 class Sound {
