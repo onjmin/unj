@@ -31,6 +31,7 @@ CREATE TABLE threads (
     res_count SMALLINT NOT NULL DEFAULT 1, -- count()よりも軽量。レス投稿後に発行されるIDが真の値。
     ps TEXT NOT NULL DEFAULT '', -- !add機能で>>1の末尾に追記する内容
     age_res_num INT NOT NULL DEFAULT 0, -- !age機能で表示するレスのID（0の場合はage無し）
+    balse BOOLEAN NOT NULL DEFAULT FALSE, -- !バルス
     lol_count SMALLINT NOT NULL DEFAULT 0, -- 草ボタン
     good_count SMALLINT NOT NULL DEFAULT 0, -- ｲｲ!(・∀・)
     bad_count SMALLINT NOT NULL DEFAULT 0, -- (・Ａ・)ｲｸﾅｲ!
@@ -51,6 +52,7 @@ CREATE TABLE res (
     num SMALLINT NOT NULL DEFAULT 2, -- レス番号（各スレッド内で連番）
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     is_owner BOOLEAN NOT NULL DEFAULT FALSE, -- スレ主フラグ
+    sage BOOLEAN NOT NULL DEFAULT FALSE,
     -- 書き込み内容
     user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     cc_user_id TEXT NOT NULL DEFAULT '',

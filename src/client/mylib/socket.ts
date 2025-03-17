@@ -1,5 +1,6 @@
 import { type Socket, io } from "socket.io-client";
 import { navigate } from "svelte-routing";
+import type { Ninja } from "../../common/response/schema.js";
 import { sleep } from "../../common/util.js";
 import { PROD_MODE, base, pathname } from "./env.js";
 import {
@@ -7,6 +8,9 @@ import {
 	banReason,
 	banStatus,
 	destinationPathname,
+	ninjaPokemon,
+	ninjaScore,
+	nonceKey,
 } from "./idb/preload.js";
 
 const uri = PROD_MODE
@@ -15,7 +19,6 @@ const uri = PROD_MODE
 
 export let errorReason = "";
 export let socket: Socket;
-export let nonceKey = "";
 let isOK = false;
 let retry: (() => void) | null;
 const getNonceKey = () => socket.emit("getNonceKey", {});
@@ -81,11 +84,17 @@ export const hello = (callback: (() => void) | null = null) => {
 				authToken.save(data.token);
 			}
 		});
+		socket.on("ninja", (data: { ok: boolean; ninja: Ninja }) => {
+			if (data.ok) {
+				ninjaPokemon.save(String(data.ninja.pokemon));
+				ninjaScore.save(String(data.ninja.score));
+			}
+		});
 		socket.on(
 			"getNonceKey",
 			(data: { ok: boolean; nonceKey: string | null }) => {
 				if (data.ok && data.nonceKey) {
-					nonceKey = data.nonceKey;
+					nonceKey.save(data.nonceKey);
 					if (!isOK && retry) {
 						retry();
 					}

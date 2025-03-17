@@ -20,7 +20,8 @@
     import { genNonce } from "../mylib/anti-debug.js";
     import { visible } from "../mylib/dom.js";
     import { base } from "../mylib/env.js";
-    import { goodbye, hello, nonceKey, ok, socket } from "../mylib/socket.js";
+    import { nonceKey } from "../mylib/idb/preload.js";
+    import { goodbye, hello, ok, socket } from "../mylib/socket.js";
     import {
         changeNewResSound,
         changeReplyResSound,
@@ -220,7 +221,7 @@
                 threadId,
             });
             socket.emit("readThread", {
-                nonce: genNonce(nonceKey),
+                nonce: genNonce(nonceKey.value ?? ""),
                 cursor: null,
                 size: 64,
                 desc: false,
@@ -257,13 +258,14 @@
         // フロントエンドのバリデーション
         // バックエンドに送信
         socket.emit("res", {
-            nonce: genNonce(nonceKey),
+            nonce: genNonce(nonceKey.value ?? ""),
             threadId,
             userName,
             userAvatar,
             content,
             contentUrl,
             contentType,
+            sage: false, // TODO
         });
         await sleep(4096);
         ok();
@@ -272,14 +274,14 @@
 
     const tryLoL = () => {
         socket.emit("lol", {
-            nonce: genNonce(nonceKey),
+            nonce: genNonce(nonceKey.value ?? ""),
             threadId,
         });
     };
 
     const tryLike = (good: boolean) => {
         socket.emit("like", {
-            nonce: genNonce(nonceKey),
+            nonce: genNonce(nonceKey.value ?? ""),
             threadId,
             good,
         });
@@ -297,6 +299,7 @@
         bind:contentUrl
         bind:contentType
     />
+    <!-- ここにsage -->
     <Button disabled={emitting} onclick={tryRes} variant="raised"
         >投稿する</Button
     >

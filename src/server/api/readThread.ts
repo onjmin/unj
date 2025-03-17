@@ -17,7 +17,7 @@ import auth from "../mylib/auth.js";
 import {
 	ageResCache,
 	badCountCache,
-	cached,
+	balseCache,
 	ccBitmaskCache,
 	contentTypesBitmaskCache,
 	deletedAtCache,
@@ -28,6 +28,7 @@ import {
 	resCountCache,
 	resLimitCache,
 	sageCache,
+	threadCached,
 	varsanCache,
 } from "../mylib/cache.js";
 import { logger } from "../mylib/log.js";
@@ -91,8 +92,8 @@ export default ({ socket }: { socket: Socket }) => {
 			const threadRecord = rows[0];
 
 			// キャッシュの登録
-			if (!cached.has(threadId)) {
-				cached.set(threadId, true);
+			if (!threadCached.has(threadId)) {
+				threadCached.set(threadId, true);
 				// 高度な設定
 				varsanCache.set(threadId, threadRecord.varsan);
 				sageCache.set(threadId, threadRecord.sage);
@@ -105,7 +106,8 @@ export default ({ socket }: { socket: Socket }) => {
 				deletedAtCache.set(threadId, threadRecord.deleted_at);
 				// 動的なデータ
 				resCountCache.set(threadId, threadRecord.res_count);
-				ageResCache.set(threadId, threadRecord.age_res);
+				// ageResCache.set(threadId, threadRecord.age_res); TODO
+				balseCache.set(threadId, threadRecord.balse);
 				lolCountCache.set(threadId, threadRecord.lol_count);
 				goodCountCache.set(threadId, threadRecord.good_count);
 				badCountCache.set(threadId, threadRecord.bad_count);
@@ -151,8 +153,9 @@ export default ({ socket }: { socket: Socket }) => {
 					// メタ情報
 					id: resId,
 					num: record.num,
-					isOwner: record.is_owner,
 					createdAt: record.created_at,
+					isOwner: record.is_owner,
+					sage: record.sage,
 				});
 			}
 

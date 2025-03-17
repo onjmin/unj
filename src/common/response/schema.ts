@@ -28,8 +28,9 @@ export type Res = {
 	// メタ情報
 	id: string;
 	num: number;
-	isOwner: boolean;
 	createdAt: Date;
+	isOwner: boolean;
+	sage: boolean;
 };
 
 export type Thread = {
@@ -62,4 +63,9 @@ export type Thread = {
 	lolCount: number;
 	goodCount: number;
 	badCount: number;
+};
+
+export type Ninja = {
+	pokemon: number;
+	score: number;
 };

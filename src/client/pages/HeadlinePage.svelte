@@ -23,7 +23,8 @@
     import type { HeadlineThread } from "../../common/response/schema.js";
     import { genNonce } from "../mylib/anti-debug.js";
     import { base } from "../mylib/env.js";
-    import { goodbye, hello, nonceKey, ok, socket } from "../mylib/socket.js";
+    import { nonceKey } from "../mylib/idb/preload.js";
+    import { goodbye, hello, ok, socket } from "../mylib/socket.js";
     import AccessCounterPart from "../parts/AccessCounterPart.svelte";
     import TwemojiPart from "../parts/TwemojiPart.svelte";
 
@@ -83,7 +84,7 @@
         hello(() => {
             socket.emit("joinHeadline", {});
             socket.emit("headline", {
-                nonce: genNonce(nonceKey),
+                nonce: genNonce(nonceKey.value ?? ""),
                 cursor: null,
                 size: 16,
                 desc: true,

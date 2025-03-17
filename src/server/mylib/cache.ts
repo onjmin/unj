@@ -1,6 +1,8 @@
-import type { Res, Thread } from "../../common/response/schema.js";
+import type { Socket } from "socket.io";
+import type { Ninja, Res } from "../../common/response/schema.js";
+import auth from "./auth.js";
 
-export const cached: Map<number, boolean> = new Map();
+export const threadCached: Map<number, boolean> = new Map();
 // 高度な設定
 export const varsanCache: Map<number, boolean> = new Map();
 export const sageCache: Map<number, boolean> = new Map();
@@ -11,11 +13,17 @@ export const deletedAtCache: Map<number, Date | null> = new Map();
 // 動的なデータ
 export const resCountCache: Map<number, number> = new Map();
 export const ageResCache: Map<number, Res | null> = new Map();
+export const balseCache: Map<number, boolean> = new Map();
 export const lolCountCache: Map<number, number> = new Map();
 export const goodCountCache: Map<number, number> = new Map();
 export const badCountCache: Map<number, number> = new Map();
 // スレ主
 export const ownerIdCache: Map<number, number> = new Map();
+// アク禁＆副主
+export const bannedCache: Map<number, Set<number>> = new Map();
+export const subbedCache: Map<number, Set<number>> = new Map();
+
+export const userCached: Map<number, boolean> = new Map();
 // 忍法帖スコア
 export const ninjaPokemonCache: Map<number, number> = new Map();
 export const ninjaScoreCache: Map<number, number> = new Map();
@@ -39,4 +47,19 @@ export const isMax = (threadId: number, isOwner: boolean): boolean => {
 	const resLimit = resLimitCache.get(threadId) ?? 0;
 	// 次スレ誘導のためにスレ主は+5まで投稿可能
 	return resCount >= resLimit + (isOwner ? 5 : 0);
+};
+
+/**
+ * 忍法帖
+ */
+export const ninja = (socket: Socket) => {
+	const userId = auth.getUserId(socket);
+	const ninja: Ninja = {
+		pokemon: ninjaPokemonCache.get(userId) ?? 0,
+		score: ninjaScoreCache.get(userId) ?? 0,
+	};
+	socket.emit("ninja", {
+		ok: true,
+		ninja,
+	});
 };

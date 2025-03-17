@@ -37,5 +37,9 @@ export const replyResSound = new Preload("replyResSound");
 
 export const destinationPathname = new Preload("destinationPathname");
 export const termsAgreement = new Preload("termsAgreement");
-export const authToken = new Preload("authToken");
 export const contactedAt = new Preload("contactedAt");
+
+export const authToken = new Preload("authToken");
+export const nonceKey = new Preload("nonceKey");
+export const ninjaPokemon = new Preload("ninjaPokemon");
+export const ninjaScore = new Preload("ninjaScore");

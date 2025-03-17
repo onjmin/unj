@@ -22,6 +22,12 @@ import {
 	encodeUserId,
 	signAuth,
 } from "./anti-debug.js";
+import {
+	ninja,
+	ninjaPokemonCache,
+	ninjaScoreCache,
+	userCached,
+} from "./cache.js";
 import { getIP } from "./ip.js";
 import { logger } from "./log.js";
 
@@ -78,7 +84,7 @@ const parseClaims = (socket: Socket): Claims | null => {
 
 const delay = 1000 * 60 * 4; // Glitchは5分放置でスリープする
 const neet: Map<number, NodeJS.Timeout> = new Map();
-const lazyUpdate = (ip: string, auth: string, userId: number) => {
+const lazyUpdate = (userId: number, auth: string, ip: string) => {
 	clearTimeout(neet.get(userId));
 	const id = setTimeout(async () => {
 		// pool
@@ -114,7 +120,7 @@ const updateAuthToken = (socket: Socket) => {
 		ok: true,
 		token,
 	});
-	lazyUpdate(getIP(socket), token, rawUserId);
+	lazyUpdate(rawUserId, token, getIP(socket));
 };
 
 const initFIFO = [new Date()];
@@ -149,23 +155,34 @@ const init = async (socket: Socket): Promise<boolean> => {
 		// 既存ユーザー照合
 		if (token) {
 			const { rows, rowCount } = await poolClient.query(
-				"SELECT id FROM users WHERE auth = $1",
+				"SELECT id, ninja_pokemon, ninja_score FROM users WHERE auth = $1",
 				[token],
 			);
 			if (rowCount) {
-				setUserId(socket, rows[0].id);
+				const { id, ninja_pokemon, ninja_score } = rows[0];
+				setUserId(socket, id);
 				updateAuthToken(socket);
+				userCached.set(id, true);
+				ninjaPokemonCache.set(id, ninja_pokemon);
+				ninjaScoreCache.set(id, ninja_score);
+				ninja(socket);
 				return true;
 			}
 		}
 		// 新規ユーザー発行
+		const ninjaPokemon = randInt(1, 151);
 		const { rows, rowCount } = await poolClient.query(
 			"INSERT INTO users (ip, ninja_pokemon) VALUES ($1, $2) RETURNING id",
-			[getIP(socket), randInt(1, 151)],
+			[getIP(socket), ninjaPokemon],
 		);
 		if (rowCount) {
-			setUserId(socket, rows[0].id);
+			const { id } = rows[0];
+			setUserId(socket, id);
 			updateAuthToken(socket);
+			userCached.set(id, true);
+			ninjaPokemonCache.set(id, ninjaPokemon);
+			ninjaScoreCache.set(id, 0);
+			ninja(socket);
 			return true;
 		}
 	} catch (error) {

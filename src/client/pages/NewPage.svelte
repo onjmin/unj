@@ -22,7 +22,8 @@
     import { sleep } from "../../common/util.js";
     import { genNonce } from "../mylib/anti-debug.js";
     import { base } from "../mylib/env.js";
-    import { goodbye, hello, nonceKey, ok, socket } from "../mylib/socket.js";
+    import { nonceKey } from "../mylib/idb/preload.js";
+    import { goodbye, hello, ok, socket } from "../mylib/socket.js";
     import ResFormPart from "../parts/ResFormPart.svelte";
 
     let { isRef = false } = $props();
@@ -81,7 +82,7 @@
         // フロントエンドのバリデーション
         // バックエンドに送信
         socket.emit("makeThread", {
-            nonce: genNonce(nonceKey),
+            nonce: genNonce(nonceKey.value ?? ""),
             userName,
             userAvatar,
             title,

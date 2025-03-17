@@ -18,19 +18,42 @@ import {
 	contentTypesBitmaskCache,
 	isDeleted,
 	isMax,
+	ninja,
+	ninjaPokemonCache,
 	ninjaScoreCache,
 	ownerIdCache,
 	resCountCache,
 	sageCache,
+	userCached,
 	varsanCache,
 } from "../mylib/cache.js";
 import { makeCcUserAvatar, makeCcUserId, makeCcUserName } from "../mylib/cc.js";
+import { getIP } from "../mylib/ip.js";
 import { logger } from "../mylib/log.js";
 import nonce from "../mylib/nonce.js";
 import { exist, getThreadRoom, joined } from "../mylib/socket.js";
 
 const api = "res";
 const coolTimes: Map<number, Date> = new Map();
+
+const delay = 1000 * 60 * 4; // Glitchは5分放置でスリープする
+const neet: Map<number, NodeJS.Timeout> = new Map();
+const lazyUpdate = (userId: number, ninjaScore: number, ip: string) => {
+	clearTimeout(neet.get(userId));
+	const id = setTimeout(async () => {
+		// pool
+		const pool = new Pool({ connectionString: NEON_DATABASE_URL });
+		pool.on("error", (error) => {
+			logger.error(error);
+		});
+		const poolClient = await pool.connect();
+		await poolClient.query(
+			"UPDATE users SET updated_at = NOW(), ip = $1, ninja_score = $2 WHERE id = $3",
+			[ip, ninjaScore, userId],
+		);
+	}, delay);
+	neet.set(userId, id);
+};
 
 export default ({ socket, io }: { socket: Socket; io: Server }) => {
 	socket.on(api, async (data) => {
@@ -53,15 +76,6 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		const isOwner = ownerIdCache.get(threadId) === userId;
 
 		if (isMax(threadId, isOwner)) {
-			return;
-		}
-
-		// !バルサン
-		if (
-			!isOwner &&
-			varsanCache.get(threadId) &&
-			(ninjaScoreCache.get(threadId) ?? 0) < 256
-		) {
 			return;
 		}
 
@@ -111,6 +125,37 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 				coolTimes.set(userId, addSeconds(new Date(), randInt(8, 32)));
 			}
 
+			// pool
+			const pool = new Pool({ connectionString: NEON_DATABASE_URL });
+			pool.on("error", (error) => {
+				throw error;
+			});
+			poolClient = await pool.connect();
+
+			// 忍法帖の読み込み
+			if (!userCached.has(userId)) {
+				const { rows, rowCount } = await poolClient.query(
+					"SELECT ninja_pokemon, ninja_score FROM users WHERE id = $1",
+					[userId],
+				);
+				if (rowCount === 0) {
+					return;
+				}
+				const { ninja_pokemon, ninja_score } = rows[0];
+				userCached.set(userId, true);
+				ninjaPokemonCache.set(userId, ninja_pokemon);
+				ninjaScoreCache.set(userId, ninja_score);
+				ninja(socket);
+			}
+			let ninjaScore = ninjaScoreCache.get(userId) ?? 0;
+			const _ninjaLv = (ninjaScore ** (1 / 3)) | 0;
+			let ninjaLv = _ninjaLv;
+
+			// !バルサン
+			if (!isOwner && varsanCache.get(threadId) && ninjaScore < 256) {
+				return;
+			}
+
 			// コマンドの解釈
 			let commandResult = "";
 			const cmds = contentResult.output.content.match(/![^!\s]+/g);
@@ -140,6 +185,11 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 							case "!age":
 								break;
 							case "!バルス":
+								if (ninjaLv < 3) break;
+								ninjaLv -= 2;
+								results.push(
+									"！禁断呪文バルス発動！\nこのスレは崩壊しますた。。",
+								);
 								break;
 						}
 					}
@@ -147,10 +197,26 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 						case "!ping":
 							results.push("pong");
 							break;
+						case "!check":
+							if (ninjaLv < 2) break;
+							ninjaLv--;
+							break;
 					}
 				}
 				commandResult = results.map((v) => `★${v}`).join("\n");
 			}
+
+			if (_ninjaLv !== ninjaLv) {
+				ninjaScore = ninjaLv ** 3;
+				commandResult = `(lv:${_ninjaLv}→${ninjaLv})`;
+			} else {
+				ninjaScore++;
+			}
+
+			// コマンド実行後に反映
+			lazyUpdate(userId, ninjaScore, getIP(socket));
+			ninjaScoreCache.set(userId, ninjaScore);
+			ninja(socket);
 
 			const ccBitmask = ccBitmaskCache.get(threadId) ?? 0;
 			const ccUserId = makeCcUserId(ccBitmask, userId);
@@ -163,13 +229,6 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 
 			const next = (resCountCache.get(threadId) ?? 0) + 1;
 			resCountCache.set(threadId, next);
-
-			// pool
-			const pool = new Pool({ connectionString: NEON_DATABASE_URL });
-			pool.on("error", (error) => {
-				throw error;
-			});
-			poolClient = await pool.connect();
 
 			await poolClient.query("BEGIN"); // トランザクション開始
 
@@ -219,11 +278,13 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 				return;
 			}
 
+			const sage = sageCache.get(threadId) || res.output.sage;
+
 			// スレッドの更新
 			// TODO: スレ主による高度な設定の更新なども
 			await poolClient.query(
 				[
-					`UPDATE threads SET${sageCache.get(threadId) ? "" : " latest_res_at = NOW(),"}`,
+					`UPDATE threads SET${sage ? "" : " latest_res_at = NOW(),"}`,
 					"res_count = $1",
 					"WHERE id = $2",
 				].join(" "),
@@ -243,8 +304,9 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 				// メタ情報
 				id: resId,
 				num: next,
-				isOwner,
 				createdAt: created_at,
+				isOwner,
+				sage,
 			};
 
 			socket.emit(api, {

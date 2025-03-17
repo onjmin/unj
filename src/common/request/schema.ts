@@ -127,6 +127,7 @@ export const ResSchema = v.strictObject({
 		SMALLINT,
 		v.check<number>((n) => (n & (n - 1)) === 0),
 	),
+	sage: v.boolean(),
 });
 
 /**
