@@ -18,9 +18,9 @@ import {
 	contentTypesBitmaskCache,
 	isDeleted,
 	isMax,
+	ninjaScoreCache,
 	ownerIdCache,
 	resCountCache,
-	resLimitCache,
 	sageCache,
 	varsanCache,
 } from "../mylib/cache.js";
@@ -57,8 +57,12 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		}
 
 		// !バルサン
-		if (!isOwner && varsanCache.get(threadId)) {
-			// TODO: 忍法帖の実装後
+		if (
+			!isOwner &&
+			varsanCache.get(threadId) &&
+			(ninjaScoreCache.get(threadId) ?? 0) < 256
+		) {
+			return;
 		}
 
 		// roomのチェック

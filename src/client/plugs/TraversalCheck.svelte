@@ -3,6 +3,11 @@
     import { flaky } from "../mylib/anti-debug.js";
     import { base, pathname } from "../mylib/env.js";
     import { save } from "../mylib/idb/keyval.js";
+    import {
+        banReason,
+        banStatus,
+        traversalTarget,
+    } from "../mylib/idb/preload.js";
 
     let { children } = $props();
     let ready = $state(false);
@@ -38,9 +43,9 @@
             if (
                 !flaky(async () => {
                     await Promise.all([
-                        save("banStatus", "ban"),
-                        save("banReason", "traversal"),
-                        save("traversalTarget", window.location.href),
+                        banStatus.save("ban"),
+                        banReason.save("traversal"),
+                        traversalTarget.save(window.location.href),
                     ]);
                     navigate(base("/akukin"), { replace: true });
                 })

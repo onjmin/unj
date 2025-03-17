@@ -11,41 +11,42 @@
     import List, { Item, Graphic, Label } from "@smui/list";
     import Radio from "@smui/radio";
     import Slider from "@smui/slider";
+    import { Howler } from "howler";
     import {
         newResSound,
-        newResSoundKey,
         replyResSound,
-        replyResSoundKey,
-        saveNewResSound,
-        saveReplyResSound,
-        saveSoundVolume,
+        soundVolume,
+    } from "../mylib/idb/preload.js";
+    import {
+        changeNewResSound,
+        changeReplyResSound,
+        changeVolume,
+        coin,
+        newResSoundHowl,
+        replyResSoundHowl,
         soundMap,
+        waf,
     } from "../mylib/sound.js";
 
-    let soundVolume = $state(0.114514);
-    let selectedNewResSound: string = $state("");
-    let selectedReplyResSound: string = $state("");
+    changeVolume();
+    changeNewResSound();
+    changeReplyResSound();
+
+    let soundVolumeSlider = $state(Howler.volume());
+    let selectedNewResSound: string = $state(newResSound.value ?? coin.key);
+    let selectedReplyResSound: string = $state(replyResSound.value ?? waf.key);
+
     $effect(() => {
-        setTimeout(() => {
-            soundVolume = Howler.volume();
-            selectedNewResSound = newResSoundKey;
-            selectedReplyResSound = replyResSoundKey;
-        }, 512);
+        soundVolume.save(String(soundVolumeSlider));
+        changeVolume();
     });
     $effect(() => {
-        if (soundVolume !== 0.114514) saveSoundVolume(soundVolume);
+        newResSound.save(selectedNewResSound);
+        changeNewResSound();
     });
     $effect(() => {
-        if (selectedNewResSound !== "") {
-            const sound = soundMap.get(selectedNewResSound);
-            saveNewResSound(sound ?? null);
-        }
-    });
-    $effect(() => {
-        if (selectedReplyResSound !== "") {
-            const sound = soundMap.get(selectedReplyResSound);
-            saveReplyResSound(sound ?? null);
-        }
+        replyResSound.save(selectedReplyResSound);
+        changeReplyResSound();
     });
 </script>
 
@@ -64,12 +65,12 @@
                     <FormField align="end" style="display: flex;">
                         <Slider
                             style="flex-grow: 1;"
-                            bind:value={soundVolume}
+                            bind:value={soundVolumeSlider}
                             min={0}
                             max={1}
                             step={0.000001}
                         />
-                        <div>音量：{(soundVolume * 100) | 0}%</div>
+                        <div>音量：{(soundVolumeSlider * 100) | 0}%</div>
                     </FormField>
                 </Content>
             </Panel>
@@ -91,7 +92,7 @@
                                         class="material-icons"
                                         onclick={() =>
                                             setTimeout(() =>
-                                                newResSound?.play(),
+                                                newResSoundHowl?.play(),
                                             )}>play_arrow</IconButton
                                     >
                                 {/if}
@@ -118,7 +119,7 @@
                                         class="material-icons"
                                         onclick={() =>
                                             setTimeout(() =>
-                                                replyResSound?.play(),
+                                                replyResSoundHowl?.play(),
                                             )}>play_arrow</IconButton
                                     >
                                 {/if}

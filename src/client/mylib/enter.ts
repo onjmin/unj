@@ -1,6 +1,6 @@
 import { navigate } from "svelte-routing";
 import { base, pathname } from "./env.js";
-import { load, save } from "./idb/keyval.js";
+import { destinationPathname, termsAgreement } from "./idb/preload.js";
 
 const whitelist = [
 	"/new",
@@ -16,23 +16,18 @@ const whitelist = [
 	"/thread",
 ];
 
-const loadPathname = async (): Promise<string> => {
-	const pathname = await load("destinationPathname");
+const loadPathname = () => {
+	const pathname = destinationPathname.value;
 	if (pathname && whitelist.some((v) => pathname.startsWith(v))) {
-		save("destinationPathname", null);
+		destinationPathname.save(null);
 		return base(pathname);
 	}
 	return base("/headline");
 };
 
-export const savePathname = (pathname: string) => {
-	save("destinationPathname", pathname);
-};
-
 export const tryEnter = async () => {
-	if ("yes" === (await load("termsAgreement"))) {
-		const pathname = await loadPathname();
-		navigate(pathname);
+	if ("yes" === termsAgreement.value) {
+		navigate(loadPathname());
 		return true;
 	}
 	return false;

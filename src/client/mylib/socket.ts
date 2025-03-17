@@ -1,21 +1,17 @@
 import { type Socket, io } from "socket.io-client";
 import { navigate } from "svelte-routing";
 import { sleep } from "../../common/util.js";
-import { savePathname } from "./enter.js";
 import { PROD_MODE, base, pathname } from "./env.js";
-import { load, save } from "./idb/keyval.js";
+import {
+	authToken,
+	banReason,
+	banStatus,
+	destinationPathname,
+} from "./idb/preload.js";
 
 const uri = PROD_MODE
 	? import.meta.env.VITE_GLITCH_URL
 	: `http://localhost:${import.meta.env.VITE_LOCALHOST_PORT}`;
-
-/**
- * authToken
- */
-let authToken: string | null = null;
-export const authTokenPromise = load("authToken").then((v) => {
-	authToken = v;
-});
 
 export let errorReason = "";
 export let socket: Socket;
@@ -49,7 +45,7 @@ export const hello = (callback: (() => void) | null = null) => {
 		socket = io(uri, {
 			withCredentials: true,
 			auth: {
-				token: authToken,
+				token: authToken.value,
 			},
 		});
 		window.addEventListener("beforeunload", () => {
@@ -61,8 +57,8 @@ export const hello = (callback: (() => void) | null = null) => {
 				switch (data.reason) {
 					case "banned":
 						await Promise.all([
-							save("banStatus", "ban"),
-							save("banReason", "banned"),
+							banStatus.save("ban"),
+							banReason.save("banned"),
 						]);
 						navigate(base("/akukin"), { replace: true });
 						break;
@@ -70,11 +66,11 @@ export const hello = (callback: (() => void) | null = null) => {
 						navigate(base("/error"), { replace: true });
 						break;
 					case "newUsersRateLimit":
-						savePathname(pathname());
+						destinationPathname.save(pathname());
 						navigate(base("/error"), { replace: true });
 						break;
 					case "grantFailed":
-						savePathname(pathname());
+						destinationPathname.save(pathname());
 						navigate(base("/error"), { replace: true });
 						break;
 					default:
@@ -84,8 +80,7 @@ export const hello = (callback: (() => void) | null = null) => {
 		});
 		socket.on("updateAuthToken", (data: { ok: boolean; token: string }) => {
 			if (data.ok && data.token) {
-				authToken = data.token;
-				save("authToken", data.token);
+				authToken.save(data.token);
 			}
 		});
 		socket.on(

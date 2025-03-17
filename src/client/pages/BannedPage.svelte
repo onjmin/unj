@@ -7,54 +7,64 @@
 
     import { genBanVerifyCode } from "../mylib/anti-debug.js";
     import { VITE_ADMIN_EMAIL, VITE_ADMIN_TWITTER } from "../mylib/env.js";
-    import { load, save } from "../mylib/idb/keyval.js";
+    import {
+        banReason,
+        banReport,
+        banVerifyCode,
+        ipInfoJson,
+        traversalTarget,
+    } from "../mylib/idb/preload.js";
     import { reportBanned, reportTraversal } from "../mylib/webhook.js";
 
     let ip = $state("");
 
     const main = async () => {
         try {
-            let ipInfoJson = await load("ipInfoJson");
-            if (ipInfoJson === null) {
+            if (ipInfoJson.value === null) {
                 const ipInfo = await fetch("https://ipinfo.io?callback").then(
                     (res) => res.json(),
                 );
                 ip = ipInfo.ip;
-                ipInfoJson = JSON.stringify(ipInfo);
-                save("ipInfoJson", ipInfoJson);
+                await ipInfoJson.save(JSON.stringify(ipInfo));
             } else {
                 try {
-                    const ipInfo = JSON.parse(ipInfoJson);
+                    const ipInfo = JSON.parse(ipInfoJson.value);
                     ip = ipInfo.ip;
                 } catch (err) {
-                    save("ipInfoJson", null);
+                    await ipInfoJson.save(null);
                     return; // 確実に改ざんされているので、以降の処理は無意味。
                 }
             }
             // BAN解除コードの生成
-            const banVerifyCode = genBanVerifyCode(new Date(), "");
-            save("banVerifyCode", banVerifyCode);
+            const code = genBanVerifyCode(new Date(), "");
+            await banVerifyCode.save(code);
             // BANの通知
-            if ("done" !== (await load("banReport"))) {
-                const banReason = await load("banReason");
-                switch (banReason) {
+            if ("done" !== banReport.value) {
+                const unknown = "(unknown)";
+                const promises = [];
+                switch (banReason.value) {
                     case "traversal":
-                        await reportTraversal([
-                            banVerifyCode,
-                            ipInfoJson,
-                            (await load("traversalTarget")) ?? "(unknown)",
-                        ]);
-                        save("banReport", "done");
+                        promises.push(banReport.save("done"));
+                        promises.push(
+                            reportTraversal([
+                                banVerifyCode.value ?? unknown,
+                                ipInfoJson.value ?? unknown,
+                                traversalTarget.value ?? unknown,
+                            ]),
+                        );
                         break;
                     case "banned":
-                        await reportBanned([
-                            banVerifyCode,
-                            ipInfoJson,
-                            window.navigator.userAgent,
-                        ]);
-                        save("banReport", "done");
+                        promises.push(banReport.save("done"));
+                        promises.push(
+                            reportBanned([
+                                banVerifyCode.value ?? unknown,
+                                ipInfoJson.value ?? unknown,
+                                window.navigator.userAgent,
+                            ]),
+                        );
                         break;
                 }
+                await Promise.all(promises);
             }
         } catch (err) {}
     };

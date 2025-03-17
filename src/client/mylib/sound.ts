@@ -1,59 +1,6 @@
 import { Howler } from "howler";
 import { sha256 } from "js-sha256";
-import { load, save } from "./idb/keyval.js";
-
-/**
- * SE音量
- */
-export const saveSoundVolume = (volume: number) => {
-	Howler.volume(volume);
-	save("soundVolume", volume.toString());
-};
-load("soundVolume").then((v) => {
-	let volume = 0.3777;
-	if (v) volume = Number.parseFloat(v);
-	Howler.volume(volume);
-});
-
-const make = (sound: Sound | null) =>
-	!sound?.src
-		? null
-		: new Howl({
-				src: [sound.src],
-				html5: true,
-			});
-
-/**
- * 新着レスSE
- */
-export let newResSound: Howl | null = null;
-export let newResSoundKey = "";
-export const saveNewResSound = (sound: Sound | null) => {
-	newResSoundKey = sound?.key ?? "";
-	newResSound = make(sound);
-	save("newResSound", sound?.key ?? null);
-};
-load("newResSound").then((v) => {
-	newResSoundKey = v ?? "";
-	const sound = soundMap.get(newResSoundKey) ?? coin;
-	newResSound = make(sound);
-});
-
-/**
- * 安価レスSE
- */
-export let replyResSound: Howl | null = null;
-export let replyResSoundKey = "";
-export const saveReplyResSound = (sound: Sound | null) => {
-	replyResSoundKey = sound?.key ?? "";
-	replyResSound = make(sound);
-	save("replyResSound", sound?.key ?? null);
-};
-load("replyResSound").then((v) => {
-	replyResSoundKey = v ?? "";
-	const sound = soundMap.get(replyResSoundKey) ?? waf;
-	replyResSound = make(sound);
-});
+import { newResSound, replyResSound, soundVolume } from "./idb/preload.js";
 
 export const soundMap: Map<string, Sound> = new Map();
 class Sound {
@@ -73,11 +20,11 @@ new Sound({
 	src: null,
 });
 
-const coin = new Sound({
+export const coin = new Sound({
 	label: "コインの音（マリオ）",
 	src: "https://rpgen.org/dq/sound/res/79.mp3",
 });
-const waf = new Sound({
+export const waf = new Sound({
 	label: "和風扉",
 	src: "https://rpgen.org/dq/sound/res/741.mp3",
 });
@@ -135,3 +82,41 @@ new Sound({
 	label: "RPGEN チャット投稿音",
 	src: "https://rpgen.org/dq/sound/res/1099.mp3",
 });
+
+/**
+ * SE音量
+ */
+export const changeVolume = () =>
+	Howler.volume(
+		soundVolume.value === null ? 0.3777 : Number.parseFloat(soundVolume.value),
+	);
+
+const make = (key: string) => {
+	const sound = soundMap.get(key);
+	return sound?.src
+		? new Howl({
+				src: [sound.src],
+				html5: true,
+			})
+		: null;
+};
+
+/**
+ * 新着レスSE
+ */
+export let newResSoundHowl: Howl | null;
+export const changeNewResSound = () => {
+	newResSoundHowl = newResSound.value
+		? make(newResSound.value)
+		: make(coin.key);
+};
+
+/**
+ * 安価レスSE
+ */
+export let replyResSoundHowl: Howl | null;
+export const changeReplyResSound = () => {
+	replyResSoundHowl = replyResSound.value
+		? make(replyResSound.value)
+		: make(waf.key);
+};

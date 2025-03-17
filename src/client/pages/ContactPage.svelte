@@ -17,7 +17,7 @@
     import { addHours, differenceInHours, format } from "date-fns";
     import { ja } from "date-fns/locale";
     import * as v from "valibot";
-    import { load, save } from "../mylib/idb/keyval.js";
+    import { contactedAt } from "../mylib/idb/preload.js";
     import {
         contactAGPL3,
         contactKaizen,
@@ -109,7 +109,7 @@
             }
         } catch (err) {}
         if (success) {
-            save("contactedAt", `${+new Date()}`);
+            contactedAt.save(`${+new Date()}`);
             snackbarText = "送信しました。";
             isSuspend = true;
         } else {
@@ -122,11 +122,10 @@
     let resumeDate = $state("");
 
     const main = async () => {
-        const contactedAt = await load("contactedAt");
-        if (contactedAt === null) {
+        if (contactedAt.value === null) {
             isSuspend = false;
         } else {
-            const pastDate = new Date(Number(contactedAt));
+            const pastDate = new Date(Number(contactedAt.value));
             const now = new Date();
             resumeDate = format(
                 addHours(pastDate, 24),

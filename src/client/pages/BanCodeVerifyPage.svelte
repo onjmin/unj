@@ -22,24 +22,29 @@
     import { sleep } from "../../common/util.js";
     import { genBanVerifyCode } from "../mylib/anti-debug.js";
     import { base } from "../mylib/env.js";
-    import { load, save } from "../mylib/idb/keyval.js";
+    import {
+        banReason,
+        banReport,
+        banStatus,
+        banVerifyCode,
+        ipInfoJson,
+        traversalTarget,
+    } from "../mylib/idb/preload.js";
 
     const handleSubmit = async () => {
         loading = true;
         await sleep((2783 + 114514 / 334 ** Math.random()) & (9800 + 3777));
         if (
-            genBanVerifyCode(
-                bannedDate,
-                (await load("banVerifyCode")) ?? "",
-            ) === banVerifyCode.trim()
+            banVerifyCodeInput.trim() ===
+            genBanVerifyCode(bannedDate, banVerifyCode.value ?? "")
         ) {
             await Promise.all([
-                save("banStatus", null),
-                save("banReason", null),
-                save("traversalTarget", null),
-                save("ipInfoJson", null),
-                save("banVerifyCode", null),
-                save("banReport", null),
+                banStatus.save(null),
+                banReason.save(null),
+                traversalTarget.save(null),
+                ipInfoJson.save(null),
+                banVerifyCode.save(null),
+                banReport.save(null),
             ]);
             navigate(base("/"), { replace: true });
         } else {
@@ -50,7 +55,7 @@
 
     let loading = $state(false);
     let open = $state(false);
-    let banVerifyCode = $state("");
+    let banVerifyCodeInput = $state("");
     let bannedDate = $state(new Date());
     const segmentedList = ["CBC", "CFB", "OFB", "CTR", "GCM"];
     let segmentedSelected = $state("CFB");
@@ -121,7 +126,7 @@
             </Select>
         </Cell>
         <Cell>
-            <Textfield label="BAN解除コード" bind:value={banVerifyCode} />
+            <Textfield label="BAN解除コード" bind:value={banVerifyCodeInput} />
         </Cell>
         <Cell>
             <Label>パディング方式</Label>

@@ -5,11 +5,9 @@
   import Dialog, { Header, Title, Content, Actions } from "@smui/dialog";
   import FormField from "@smui/form-field";
   import IconButton from "@smui/icon-button";
-  import { navigate } from "svelte-routing";
   import { visible } from "../mylib/dom.js";
   import { tryEnter } from "../mylib/enter.js";
-  import { base } from "../mylib/env.js";
-  import { load, save } from "../mylib/idb/keyval.js";
+  import { termsAgreement } from "../mylib/idb/preload.js";
   import TermsPart from "./TermsPart.svelte";
 
   let { openConfirm = false } = $props();
@@ -27,7 +25,7 @@
         openTermsWarn = true;
         break;
       case "accept":
-        await save("termsAgreement", "yes");
+        await termsAgreement.save("yes");
         openConfirm = !(await tryEnter());
         break;
     }

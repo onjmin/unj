@@ -14,7 +14,6 @@
         differenceInSeconds,
         intervalToDuration,
     } from "date-fns";
-    import { Howl } from "howler";
     import { navigate } from "svelte-routing";
     import type { Res, Thread } from "../../common/response/schema.js";
     import { sleep } from "../../common/util.js";
@@ -22,11 +21,21 @@
     import { visible } from "../mylib/dom.js";
     import { base } from "../mylib/env.js";
     import { goodbye, hello, nonceKey, ok, socket } from "../mylib/socket.js";
-    import { newResSound, replyResSound } from "../mylib/sound.js";
+    import {
+        changeNewResSound,
+        changeReplyResSound,
+        changeVolume,
+        newResSoundHowl,
+        replyResSoundHowl,
+    } from "../mylib/sound.js";
     import AccessCounterPart from "../parts/AccessCounterPart.svelte";
     import ResFormPart from "../parts/ResFormPart.svelte";
     import ResPart from "../parts/ResPart.svelte";
     import TwemojiPart from "../parts/TwemojiPart.svelte";
+
+    changeVolume();
+    changeNewResSound();
+    changeReplyResSound();
 
     let { threadId = "", resNum = "" } = $props();
 
@@ -113,7 +122,7 @@
                 thread.resList.shift();
             }
             thread.resList.push(data.new);
-            newResSound?.play();
+            newResSoundHowl?.play();
             if (data.yours) {
                 ok();
                 content = "";
@@ -133,7 +142,7 @@
                 );
                 if (replyTo) {
                     await sleep(512);
-                    replyResSound?.play();
+                    replyResSoundHowl?.play();
                 }
             }
         }
