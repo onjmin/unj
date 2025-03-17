@@ -41,8 +41,8 @@
   </p>
   <p>『うんｊ』へようこそ！</p>
   <Button
-    onclick={async () => {
-      openConfirm = !(await tryEnter());
+    onclick={() => {
+      openConfirm = !tryEnter();
     }}
     variant="raised">入る</Button
   >

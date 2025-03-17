@@ -121,7 +121,7 @@
     let isSuspend = $state(true);
     let resumeDate = $state("");
 
-    const main = async () => {
+    const main = () => {
         if (contactedAt.value === null) {
             isSuspend = false;
         } else {

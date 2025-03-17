@@ -38,14 +38,12 @@
             banVerifyCodeInput.trim() ===
             genBanVerifyCode(bannedDate, banVerifyCode.value ?? "")
         ) {
-            await Promise.all([
-                banStatus.save(null),
-                banReason.save(null),
-                traversalTarget.save(null),
-                ipInfoJson.save(null),
-                banVerifyCode.save(null),
-                banReport.save(null),
-            ]);
+            banStatus.save(null);
+            banReason.save(null);
+            traversalTarget.save(null);
+            ipInfoJson.save(null);
+            banVerifyCode.save(null);
+            banReport.save(null);
             navigate(base("/"), { replace: true });
         } else {
             open = true;

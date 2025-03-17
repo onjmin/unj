@@ -38,15 +38,13 @@
         "/xmlrpc.php",
     ]);
 
-    const main = async () => {
+    const main = () => {
         if (honeypot.has(pathname())) {
             if (
-                !flaky(async () => {
-                    await Promise.all([
-                        banStatus.save("ban"),
-                        banReason.save("traversal"),
-                        traversalTarget.save(window.location.href),
-                    ]);
+                !flaky(() => {
+                    banStatus.save("ban");
+                    banReason.save("traversal");
+                    traversalTarget.save(window.location.href);
                     navigate(base("/akukin"), { replace: true });
                 })
             ) {

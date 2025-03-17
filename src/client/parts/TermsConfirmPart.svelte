@@ -16,7 +16,7 @@
   let isAlreadyScrollEnd = $state(false);
   let termsChecked = $state(false);
 
-  const closeHandler = async (e: CustomEvent<{ action: string }>) => {
+  const closeHandler = (e: CustomEvent<{ action: string }>) => {
     switch (e.detail.action) {
       case "close":
         openConfirm = true;
@@ -25,8 +25,8 @@
         openTermsWarn = true;
         break;
       case "accept":
-        await termsAgreement.save("yes");
-        openConfirm = !(await tryEnter());
+        termsAgreement.save("yes");
+        openConfirm = !tryEnter();
         break;
     }
   };

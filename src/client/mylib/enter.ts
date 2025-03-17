@@ -25,7 +25,7 @@ const loadPathname = () => {
 	return base("/headline");
 };
 
-export const tryEnter = async () => {
+export const tryEnter = () => {
 	if ("yes" === termsAgreement.value) {
 		navigate(loadPathname());
 		return true;

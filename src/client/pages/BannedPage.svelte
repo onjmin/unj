@@ -25,19 +25,19 @@
                     (res) => res.json(),
                 );
                 ip = ipInfo.ip;
-                await ipInfoJson.save(JSON.stringify(ipInfo));
+                ipInfoJson.save(JSON.stringify(ipInfo));
             } else {
                 try {
                     const ipInfo = JSON.parse(ipInfoJson.value);
                     ip = ipInfo.ip;
                 } catch (err) {
-                    await ipInfoJson.save(null);
+                    ipInfoJson.save(null);
                     return; // 確実に改ざんされているので、以降の処理は無意味。
                 }
             }
             // BAN解除コードの生成
             const code = genBanVerifyCode(new Date(), "");
-            await banVerifyCode.save(code);
+            banVerifyCode.save(code);
             // BANの通知
             if ("done" !== banReport.value) {
                 const unknown = "(unknown)";

@@ -16,7 +16,7 @@
 
   const index2key = [...avatarMap.keys()];
   let selectionIndex = $state(index2key.indexOf(userAvatar));
-  const closeHandler = async (e: CustomEvent<{ action: string }>) => {
+  const closeHandler = (e: CustomEvent<{ action: string }>) => {
     switch (e.detail.action) {
       case "accept":
         userAvatar = index2key[selectionIndex];

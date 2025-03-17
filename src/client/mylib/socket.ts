@@ -51,15 +51,13 @@ export const hello = (callback: (() => void) | null = null) => {
 		window.addEventListener("beforeunload", () => {
 			socket.disconnect();
 		});
-		socket.on("kicked", async (data: { ok: boolean; reason: string }) => {
+		socket.on("kicked", (data: { ok: boolean; reason: string }) => {
 			if (data.ok && data.reason) {
 				errorReason = data.reason;
 				switch (data.reason) {
 					case "banned":
-						await Promise.all([
-							banStatus.save("ban"),
-							banReason.save("banned"),
-						]);
+						banStatus.save("ban");
+						banReason.save("banned");
 						navigate(base("/akukin"), { replace: true });
 						break;
 					case "multipleConnections":
