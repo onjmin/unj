@@ -1,18 +1,25 @@
 import { format } from "date-fns";
 import { ja } from "date-fns/locale";
+import { decodeEnv } from "./env.js";
 
-const VITE_DISCORD_WEBHOOK_URL_OF_CONTACT_KAIZEN = import.meta.env
-	.VITE_DISCORD_WEBHOOK_URL_OF_CONTACT_KAIZEN;
-const VITE_DISCORD_WEBHOOK_URL_OF_CONTACT_AGPL3 = import.meta.env
-	.VITE_DISCORD_WEBHOOK_URL_OF_CONTACT_AGPL3;
-const VITE_DISCORD_WEBHOOK_URL_OF_CONTACT_POLICE = import.meta.env
-	.VITE_DISCORD_WEBHOOK_URL_OF_CONTACT_POLICE;
-const VITE_DISCORD_WEBHOOK_URL_OF_USER_REPORT = import.meta.env
-	.VITE_DISCORD_WEBHOOK_URL_OF_USER_REPORT;
-const VITE_DISCORD_WEBHOOK_URL_OF_REPORT_TRAVERSAL = import.meta.env
-	.VITE_DISCORD_WEBHOOK_URL_OF_REPORT_TRAVERSAL;
-const VITE_DISCORD_WEBHOOK_URL_OF_REPORT_BANNED_IP = import.meta.env
-	.VITE_DISCORD_WEBHOOK_URL_OF_REPORT_BANNED_IP;
+const VITE_DISCORD_WEBHOOK_URL_OF_CONTACT_KAIZEN = decodeEnv(
+	import.meta.env.VITE_DISCORD_WEBHOOK_URL_OF_CONTACT_KAIZEN,
+);
+const VITE_DISCORD_WEBHOOK_URL_OF_CONTACT_AGPL3 = decodeEnv(
+	import.meta.env.VITE_DISCORD_WEBHOOK_URL_OF_CONTACT_AGPL3,
+);
+const VITE_DISCORD_WEBHOOK_URL_OF_CONTACT_POLICE = decodeEnv(
+	import.meta.env.VITE_DISCORD_WEBHOOK_URL_OF_CONTACT_POLICE,
+);
+const VITE_DISCORD_WEBHOOK_URL_OF_USER_REPORT = decodeEnv(
+	import.meta.env.VITE_DISCORD_WEBHOOK_URL_OF_USER_REPORT,
+);
+const VITE_DISCORD_WEBHOOK_URL_OF_REPORT_TRAVERSAL = decodeEnv(
+	import.meta.env.VITE_DISCORD_WEBHOOK_URL_OF_REPORT_TRAVERSAL,
+);
+const VITE_DISCORD_WEBHOOK_URL_OF_REPORT_BANNED = decodeEnv(
+	import.meta.env.VITE_DISCORD_WEBHOOK_URL_OF_REPORT_BANNED,
+);
 
 /**
  * DiscordのWebhookは符号化のしようがないので素の状態で使う
@@ -70,4 +77,4 @@ export const reportTraversal = (array: string[]) =>
  * Socket.IOでIPが不明だった時に送信する
  */
 export const reportBanned = (array: string[]) =>
-	sendDiscordWebhook(VITE_DISCORD_WEBHOOK_URL_OF_REPORT_BANNED_IP, array);
+	sendDiscordWebhook(VITE_DISCORD_WEBHOOK_URL_OF_REPORT_BANNED, array);

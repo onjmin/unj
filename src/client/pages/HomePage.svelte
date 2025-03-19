@@ -11,6 +11,11 @@
   import { topIllusts } from "../mylib/top-illusts.js";
   import TermsConfirmPart from "../parts/TermsConfirmPart.svelte";
 
+  const catchphrase = [
+    "運営と運命を共にする、うんち実況（セーラージュピター）",
+    "裏おんｊ、縮めてうんｊ　このネットの不思議な不思議な掲示板",
+  ];
+
   const onjKeyWords = [
     "束音ロゼ",
     "曲スレ",
@@ -34,7 +39,7 @@
 <TermsConfirmPart {openConfirm} />
 
 <MainPart menu={false}>
-  <h1>運営と運命を共にする、うんち実況（セーラージュピター）</h1>
+  <h1>{randArray(catchphrase)}</h1>
   <img class="unj-img" alt="TOP絵" src={randomIllust} />
   <p>
     「{randomOnjKeyWord1}」から「{randomOnjKeyWord2}」までを手広くカバーする匿名掲示板

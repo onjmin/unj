@@ -38,7 +38,7 @@ export const genNonce = (key: string): string => {
 	return str.slice(0, nonceLength);
 };
 
-const HASHIDS_SECRET_PEPPER = process.env.HASHIDS_SECRET_PEPPER ?? "";
+const UNJ_HASHIDS_SECRET_PEPPER = process.env.UNJ_HASHIDS_SECRET_PEPPER ?? "";
 
 /**
  * フロントエンドに晒せるようにユーザーIDを符号化する
@@ -49,7 +49,7 @@ export const encodeUserId = (userId: number, date: Date): string | null => {
 	}
 	const basedTime = differenceInDays(date, new Date(0));
 	const hashids = new Hashids(
-		[basedTime, HASHIDS_SECRET_PEPPER].join(delimiter), // Hashidsのsaltは47文字以降無視される
+		[basedTime, UNJ_HASHIDS_SECRET_PEPPER].join(delimiter), // Hashidsのsaltは47文字以降無視される
 		userIdLength,
 	);
 	return hashids.encode(userId);
@@ -61,7 +61,7 @@ export const encodeUserId = (userId: number, date: Date): string | null => {
 export const decodeUserId = (userId: string, date: Date): number | null => {
 	const basedTime = differenceInDays(date, new Date(0));
 	const hashids = new Hashids(
-		[basedTime, HASHIDS_SECRET_PEPPER].join(delimiter), // Hashidsのsaltは47文字以降無視される
+		[basedTime, UNJ_HASHIDS_SECRET_PEPPER].join(delimiter), // Hashidsのsaltは47文字以降無視される
 		userIdLength,
 	);
 	const n = hashids.decode(userId)?.[0];
@@ -76,7 +76,7 @@ export const encodeThreadId = (threadId: number): string | null => {
 		return null;
 	}
 	const hashids = new Hashids(
-		[HASHIDS_SECRET_PEPPER].join(delimiter),
+		[UNJ_HASHIDS_SECRET_PEPPER].join(delimiter),
 		threadIdLength,
 	);
 	return hashids.encode(threadId);
@@ -87,7 +87,7 @@ export const encodeThreadId = (threadId: number): string | null => {
  */
 export const decodeThreadId = (threadId: string): number | null => {
 	const hashids = new Hashids(
-		[HASHIDS_SECRET_PEPPER].join(delimiter),
+		[UNJ_HASHIDS_SECRET_PEPPER].join(delimiter),
 		threadIdLength,
 	);
 	const n = hashids.decode(threadId)?.[0];
@@ -102,7 +102,7 @@ export const encodeResId = (resId: number): string | null => {
 		return null;
 	}
 	const hashids = new Hashids(
-		[HASHIDS_SECRET_PEPPER].join(delimiter),
+		[UNJ_HASHIDS_SECRET_PEPPER].join(delimiter),
 		resIdLength,
 	);
 	return hashids.encode(resId);
@@ -113,7 +113,7 @@ export const encodeResId = (resId: number): string | null => {
  */
 export const decodeResId = (resId: string): number | null => {
 	const hashids = new Hashids(
-		[HASHIDS_SECRET_PEPPER].join(delimiter),
+		[UNJ_HASHIDS_SECRET_PEPPER].join(delimiter),
 		resIdLength,
 	);
 	const n = hashids.decode(resId)?.[0];
@@ -138,7 +138,7 @@ export const encodeLimit = (limit: number, userId: string): string | null => {
 		return null;
 	}
 	const hashids = new Hashids(
-		[userId, HASHIDS_SECRET_PEPPER].join(delimiter),
+		[userId, UNJ_HASHIDS_SECRET_PEPPER].join(delimiter),
 		authLimitLength,
 	);
 	return hashids.encode(limit);
@@ -149,7 +149,7 @@ export const encodeLimit = (limit: number, userId: string): string | null => {
  */
 export const decodeLimit = (limit: string, userId: string): number | null => {
 	const hashids = new Hashids(
-		[userId, HASHIDS_SECRET_PEPPER].join(delimiter),
+		[userId, UNJ_HASHIDS_SECRET_PEPPER].join(delimiter),
 		authLimitLength,
 	);
 	const n = hashids.decode(limit)?.[0];

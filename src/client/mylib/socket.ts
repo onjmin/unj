@@ -2,7 +2,7 @@ import { type Socket, io } from "socket.io-client";
 import { navigate } from "svelte-routing";
 import type { Ninja } from "../../common/response/schema.js";
 import { sleep } from "../../common/util.js";
-import { PROD_MODE, base, pathname } from "./env.js";
+import { PROD_MODE, base, decodeEnv, pathname } from "./env.js";
 import {
 	authToken,
 	banReason,
@@ -14,8 +14,8 @@ import {
 } from "./idb/preload.js";
 
 const uri = PROD_MODE
-	? import.meta.env.VITE_GLITCH_URL
-	: `http://localhost:${import.meta.env.VITE_LOCALHOST_PORT}`;
+	? decodeEnv(import.meta.env.VITE_GLITCH_URL)
+	: `http://localhost:${decodeEnv(import.meta.env.VITE_LOCALHOST_PORT)}`;
 
 export let errorReason = "";
 export let socket: Socket;
