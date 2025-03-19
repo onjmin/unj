@@ -57,7 +57,6 @@ env.set("ENV_KEY", ENV_KEY);
 // dummy env
 for (const i of Array(randInt(32, 64)).keys()) {
 	env.set(`DUMMY${i}`, genEnvKey());
-	console.log(env.get(`DUMMY${i}`));
 }
 
 export default defineConfig({
