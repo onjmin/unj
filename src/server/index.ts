@@ -123,6 +123,17 @@ const online: Set<string> = new Set();
 let accessCount = 0;
 const accessCounter = () => accessCount;
 
+const verifyIP = (socket: Socket, ip: string) => {
+	if (isBannedIP(ip)) {
+		logger.http(`❌ ${ip}`);
+		// どのIPがBANされているのか悟られ難くするため
+		flaky(() => {
+			auth.kick(socket, "banned");
+		});
+		socket.disconnect();
+	}
+};
+
 const verifyUserId = (socket: Socket, userId: number) => {
 	if (blacklist.has(userId)) {
 		logger.http(`❌ ${getIP(socket)} ${userId}`);
@@ -140,15 +151,7 @@ io.on("connection", async (socket) => {
 		detectFastlyClientIp(socket.handshake.headers["fastly-client-ip"]) ??
 		socket.conn.remoteAddress;
 	logger.http(`👀 ${ip}`);
-	if (isBannedIP(ip)) {
-		logger.http(`❌ ${ip}`);
-		// どのIPがBANされているのか悟られ難くするため
-		flaky(() => {
-			auth.kick(socket, "banned");
-		});
-		socket.disconnect();
-		return;
-	}
+	verifyIP(socket, ip);
 	if (online.has(ip)) {
 		auth.kick(socket, "multipleConnections");
 		socket.disconnect();
@@ -181,6 +184,7 @@ io.on("connection", async (socket) => {
 	nonce.init(socket);
 
 	socket.use((_, next) => {
+		verifyIP(socket, getIP(socket));
 		verifyUserId(socket, auth.getUserId(socket));
 		if (auth.isAuthExpired(socket)) {
 			auth.updateAuthToken(socket);
