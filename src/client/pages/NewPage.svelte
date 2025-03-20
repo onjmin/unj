@@ -22,6 +22,7 @@
     import { sleep } from "../../common/util.js";
     import { genNonce } from "../mylib/anti-debug.js";
     import { base } from "../mylib/env.js";
+    import { Postload } from "../mylib/idb/postload.js";
     import { nonceKey } from "../mylib/idb/preload.js";
     import { goodbye, hello, ok, socket } from "../mylib/socket.js";
     import ResFormPart from "../parts/ResFormPart.svelte";
@@ -34,6 +35,24 @@
     let content = $state("");
     let contentUrl = $state("");
     let contentType = $state(1);
+
+    // postload
+    const titlePostload = new Postload("title");
+    titlePostload.promise.then(() => {
+        title = titlePostload.value ?? "";
+    });
+    $effect(() => {
+        titlePostload.value = title;
+    });
+
+    // postload
+    const contentPostload = new Postload("content");
+    contentPostload.promise.then(() => {
+        content = contentPostload.value ?? "";
+    });
+    $effect(() => {
+        contentPostload.value = content;
+    });
 
     let varsan = $state(false);
     let sage = $state(false);
@@ -63,6 +82,8 @@
     const handleMakeThread = (data: { ok: boolean; new: HeadlineThread }) => {
         if (data.ok) {
             ok();
+            titlePostload.value = null;
+            contentPostload.value = null;
             navigate(base(`/thread/${data.new.id}`));
         }
     };

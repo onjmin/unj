@@ -1,7 +1,7 @@
 import { load, save } from "./keyval.js";
 
 /**
- * 描画最適化のために最初の1回だけIndexedDBから取得する
+ * 事前読み込み
  */
 export class Preload {
 	static promises: Promise<void>[] = [];

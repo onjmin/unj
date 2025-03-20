@@ -20,6 +20,7 @@
     import { genNonce } from "../mylib/anti-debug.js";
     import { visible } from "../mylib/dom.js";
     import { base } from "../mylib/env.js";
+    import { Postload } from "../mylib/idb/postload.js";
     import { nonceKey } from "../mylib/idb/preload.js";
     import { goodbye, hello, ok, socket } from "../mylib/socket.js";
     import {
@@ -46,6 +47,15 @@
     let content = $state("");
     let contentUrl = $state("");
     let contentType = $state(1);
+
+    // postload
+    const contentPostload = new Postload(threadId);
+    contentPostload.promise.then(() => {
+        content = contentPostload.value ?? "";
+    });
+    $effect(() => {
+        contentPostload.value = content === "" ? null : content;
+    });
 
     let bookmark = $state(false); // idbから取得する
 
@@ -127,6 +137,7 @@
             newResSoundHowl?.play();
             if (data.yours) {
                 ok();
+                contentPostload.value = null;
                 content = "";
                 contentUrl = "";
                 await sleep(512);

@@ -4,6 +4,7 @@
   import Textfield from "@smui/textfield";
   import CharacterCounter from "@smui/textfield/character-counter";
   import { contentTypeOptions } from "../../common/request/content-schema.js";
+  import { Postload } from "../mylib/idb/postload.js";
   import AvatarPart from "./AvatarPart.svelte";
   import UrlTemplatePart from "./UrlTemplatePart.svelte";
 
@@ -18,11 +19,35 @@
 
   let openUrlTemplate = $state(false);
   let openAvatar = $state(false);
+
+  // postload
+  const userNamePostload = new Postload("userName");
+  userNamePostload.promise.then(() => {
+    userName = userNamePostload.value ?? "";
+  });
+  $effect(() => {
+    userNamePostload.value = userName;
+  });
+
+  // postload
+  let loaded = $state(false);
+  const userAvatarPostload = new Postload("userAvatar");
+  userAvatarPostload.promise.then(() => {
+    userAvatar = userAvatarPostload.value
+      ? Number(userAvatarPostload.value)
+      : 0;
+    loaded = true;
+  });
+  $effect(() => {
+    userAvatarPostload.value = String(userAvatar);
+  });
 </script>
 
-<UrlTemplatePart bind:open={openUrlTemplate} bind:contentUrl {contentType} />
+{#if loaded}
+  <AvatarPart bind:open={openAvatar} bind:userAvatar />
+{/if}
 
-<AvatarPart bind:open={openAvatar} bind:userAvatar />
+<UrlTemplatePart bind:open={openUrlTemplate} bind:contentUrl {contentType} />
 
 <Textfield {disabled} label="名前" bind:value={userName} input$maxlength={32}>
   {#snippet trailingIcon()}
