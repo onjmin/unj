@@ -45,7 +45,23 @@ export default ({ socket }: { socket: Socket }) => {
 		}
 
 		const userId = auth.getUserId(socket);
-		const ccUserId = makeCcUserId(ccBitmask, userId, socket);
+
+		// cc
+		const ccUserId = makeCcUserId({
+			ccBitmask,
+			userId,
+			socket,
+		});
+		const ccUserName = makeCcUserName({
+			ccBitmask,
+			userName: makeThread.output.userName,
+			socket,
+			ninja: false,
+		});
+		const ccUserAvatar = makeCcUserAvatar({
+			ccBitmask,
+			userAvatar: makeThread.output.userAvatar,
+		});
 
 		// レートリミット
 		if (isBefore(new Date(), coolTimes.get(userId) ?? 0)) {
@@ -113,8 +129,8 @@ export default ({ socket }: { socket: Socket }) => {
 					// 書き込み内容
 					userId,
 					ccUserId,
-					makeCcUserName(ccBitmask, makeThread.output.userName),
-					makeCcUserAvatar(ccBitmask, makeThread.output.userAvatar),
+					ccUserName,
+					ccUserAvatar,
 					contentResult.output.content,
 					contentResult.output.contentUrl,
 					contentResult.output.contentType,

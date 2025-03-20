@@ -128,6 +128,7 @@ export const ResSchema = v.strictObject({
 		v.check<number>((n) => (n & (n - 1)) === 0),
 	),
 	sage: v.boolean(),
+	ninja: v.boolean(),
 });
 
 /**

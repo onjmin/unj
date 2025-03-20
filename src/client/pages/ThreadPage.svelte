@@ -50,6 +50,7 @@
     let contentUrl = $state("");
     let contentType = $state(1);
     let sage = $state(false);
+    let ninja = $state(false);
 
     // postload
     const contentPostload = new Postload(`content###${threadId}`);
@@ -67,6 +68,15 @@
     });
     $effect(() => {
         sagePostload.value = sage ? "sage" : null;
+    });
+
+    // postload
+    const ninjaPostload = new Postload(`ninja###${threadId}`);
+    ninjaPostload.promise.then(() => {
+        ninja = ninjaPostload.value === "ninja";
+    });
+    $effect(() => {
+        ninjaPostload.value = ninja ? "ninja" : null;
     });
 
     let bookmark = $state(false); // idbから取得する
@@ -286,6 +296,7 @@
             contentUrl,
             contentType,
             sage,
+            ninja,
         });
         await sleep(4096);
         ok();
@@ -326,6 +337,16 @@
         <Checkbox bind:checked={sage} />
         {#snippet label()}🠋{/snippet}
     </FormField>
+    <FormField align="end">
+        <Checkbox bind:checked={ninja} />
+        {#snippet label()}忍{/snippet}
+    </FormField>
+    {#if thread?.yours}
+        <FormField align="end">
+            <Checkbox disabled checked={true} />
+            {#snippet label()}主{/snippet}
+        </FormField>
+    {/if}
 </HeaderPart>
 
 <Banner bind:open={openNewResNotice} centered mobileStacked>

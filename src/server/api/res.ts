@@ -152,10 +152,23 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 				userId,
 			});
 
+			// cc
 			const ccBitmask = ccBitmaskCache.get(threadId) ?? 0;
-			const ccUserId = makeCcUserId(ccBitmask, userId, socket);
-			const ccUserName = makeCcUserName(ccBitmask, res.output.userName);
-			const ccUserAvatar = makeCcUserAvatar(ccBitmask, res.output.userAvatar);
+			const ccUserId = makeCcUserId({
+				ccBitmask,
+				userId,
+				socket,
+			});
+			const ccUserName = makeCcUserName({
+				ccBitmask,
+				userName: res.output.userName,
+				socket,
+				ninja: res.output.ninja,
+			});
+			const ccUserAvatar = makeCcUserAvatar({
+				ccBitmask,
+				userAvatar: res.output.userAvatar,
+			});
 
 			await poolClient.query("BEGIN"); // トランザクション開始
 

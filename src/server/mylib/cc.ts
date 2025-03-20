@@ -1,14 +1,20 @@
 import { sha256 } from "js-sha256";
 import type { Socket } from "socket.io";
+import { pokemonMap } from "../../common/pokemon.js";
 import { encodeUserId } from "./anti-debug.js";
-import { ninjaScoreCache } from "./cache.js";
+import auth from "./auth.js";
+import { ninjaPokemonCache, ninjaScoreCache } from "./cache.js";
 import { getIP } from "./ip.js";
 
-export const makeCcUserId = (
-	ccBitmask: number,
-	userId: number,
-	socket: Socket,
-): string => {
+export const makeCcUserId = ({
+	ccBitmask,
+	userId,
+	socket,
+}: {
+	ccBitmask: number;
+	userId: number;
+	socket: Socket;
+}): string => {
 	if ((ccBitmask & 2) === 2) {
 		// 2: 自演防止ID表示 # （ID:8z.8u.L60）
 		const result = encodeUserId(userId, new Date());
@@ -43,19 +49,42 @@ const escapeUserName = (str: string) =>
 		.replace(/【/g, "｛")
 		.replace(/】/g, "｝");
 
+const bigDay = new Date(2025, 3, 21);
+
 /**
  * 名前に付加される系のコマンドもここで作成する
  * ToDo: 忍法帖
  */
-export const makeCcUserName = (ccBitmask: number, userName: string): string => {
+export const makeCcUserName = ({
+	ccBitmask,
+	userName,
+	socket,
+	ninja,
+}: {
+	ccBitmask: number;
+	userName: string;
+	socket: Socket;
+	ninja: boolean;
+}): string => {
 	if ((ccBitmask & 4) === 4) {
 		const index = userName.indexOf("#");
 		if (index === -1) {
-			return escapeUserName(userName);
+			let suffix = "";
+			if (ninja) {
+				const userId = auth.getUserId(socket);
+				const ninjaScore = ninjaScoreCache.get(userId) ?? 0;
+				const ninjaLv = (ninjaScore ** (1 / 3)) | 0;
+				const pokemon =
+					pokemonMap.get(ninjaPokemonCache.get(userId) ?? 0) ?? "けつばん";
+				const ninjaId = (encodeUserId(userId, bigDay) ?? "XX")
+					.slice(0, 2)
+					.toUpperCase();
+				suffix = `■忍【LV${ninjaLv},${pokemon},${ninjaId}】`;
+			}
+			const name = escapeUserName(userName);
+			return `${name}${suffix}`;
 		}
-		const name = escapeUserName(userName.slice(0, index));
 		const tripKey = userName.slice(index);
-		let output = name;
 		let trip = "";
 		if (tripKey.startsWith("#############")) {
 			trip = "???";
@@ -66,16 +95,19 @@ export const makeCcUserName = (ccBitmask: number, userName: string): string => {
 				.slice(0, 10)
 				.replace(/\+/g, ".");
 		}
-		output = `${name}◆${trip}`;
-		return output;
+		const name = escapeUserName(userName.slice(0, index));
+		return `${name}◆${trip}`;
 	}
 	return "";
 };
 
-export const makeCcUserAvatar = (
-	ccBitmask: number,
-	userAvatar: number,
-): number => {
+export const makeCcUserAvatar = ({
+	ccBitmask,
+	userAvatar,
+}: {
+	ccBitmask: number;
+	userAvatar: number;
+}): number => {
 	if ((ccBitmask & 8) === 8) {
 		return userAvatar;
 	}
