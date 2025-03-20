@@ -282,21 +282,23 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 				yours: false,
 			});
 
-			const newMeta: Meta = {
-				// 高度な設定
-				varsan: varsanCache.get(threadId) ?? false,
-				sage: sageCache.get(threadId) ?? false,
-				ccBitmask: ccBitmaskCache.get(threadId) ?? 0,
-				contentTypesBitmask: contentTypesBitmaskCache.get(threadId) ?? 0,
-				// 動的なデータ
-				ps: "", // TODO
-				ageRes: null, // TODO
-				balsResNum: balsResNumCache.get(threadId) ?? 0,
-			};
-			io.to(getThreadRoom(threadId)).emit("updateMeta", {
-				ok: true,
-				new: newMeta,
-			});
+			if (parsedResult.shouldUpdateMeta) {
+				const newMeta: Meta = {
+					// 高度な設定
+					varsan: varsanCache.get(threadId) ?? false,
+					sage: sageCache.get(threadId) ?? false,
+					ccBitmask: ccBitmaskCache.get(threadId) ?? 0,
+					contentTypesBitmask: contentTypesBitmaskCache.get(threadId) ?? 0,
+					// 動的なデータ
+					ps: "", // TODO
+					ageRes: null, // TODO
+					balsResNum: balsResNumCache.get(threadId) ?? 0,
+				};
+				io.to(getThreadRoom(threadId)).emit("updateMeta", {
+					ok: true,
+					new: newMeta,
+				});
+			}
 
 			await poolClient.query("COMMIT"); // 問題なければコミット
 			logger.verbose(api);
