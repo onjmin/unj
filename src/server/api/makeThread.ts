@@ -45,7 +45,7 @@ export default ({ socket }: { socket: Socket }) => {
 		}
 
 		const userId = auth.getUserId(socket);
-		const ccUserId = makeCcUserId(ccBitmask, userId);
+		const ccUserId = makeCcUserId(ccBitmask, userId, socket);
 
 		// レートリミット
 		if (isBefore(new Date(), coolTimes.get(userId) ?? 0)) {

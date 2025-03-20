@@ -412,7 +412,20 @@
                     isOwner={res.isOwner}
                     createdAt={res.createdAt}
                     threadId={thread.id}
-                />
+                >
+                    {#if res.num === thread.balseResNum}
+                        <div class="valus_res">
+                            <img
+                                src="https://livedoor.blogimg.jp/furage/imgs/8/4/84c5ac1b-s.png"
+                                alt="test"
+                            />
+                        </div>
+                        <script
+                            defer
+                            src="https://furage.github.io/valus/main.js"
+                        ></script>
+                    {/if}
+                </ResPart>
             {/each}
         </div>
     {/if}

@@ -14,7 +14,7 @@ import { randInt } from "../../common/util.js";
 import { decodeThreadId, encodeResId } from "../mylib/anti-debug.js";
 import auth from "../mylib/auth.js";
 import {
-	balseCache,
+	balseResNumCache,
 	ccBitmaskCache,
 	contentTypesBitmaskCache,
 	isDeleted,
@@ -160,8 +160,10 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 
 			// コマンドの解釈
 			let commandResult = "";
-			const cmds = contentResult.output.content.match(/![^!\s]+/g);
-			if (cmds && cmds.length < 8) {
+			const cmds = contentResult.output.content
+				.replace(/！/g, "!")
+				.match(/![^!\s]+/g);
+			if (cmds && cmds.length < 4) {
 				const results = [];
 				for (const cmd of new Set(cmds)) {
 					if (isOwner) {
@@ -214,11 +216,13 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 								results.push(
 									"！禁断呪文バルス発動！\nこのスレは崩壊しますた。。",
 								);
-								balseCache.set(threadId, true);
-								makeThreadCoolTimes.set(
-									userId,
-									addMinutes(new Date(), randInt(120, 180)),
-								);
+								balseResNumCache.set(threadId, 1);
+								if (PROD_MODE) {
+									makeThreadCoolTimes.set(
+										userId,
+										addMinutes(new Date(), randInt(120, 180)),
+									);
+								}
 								break;
 						}
 					}
@@ -248,7 +252,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			ninja(socket);
 
 			const ccBitmask = ccBitmaskCache.get(threadId) ?? 0;
-			const ccUserId = makeCcUserId(ccBitmask, userId);
+			const ccUserId = makeCcUserId(ccBitmask, userId, socket);
 			const ccUserName = makeCcUserName(ccBitmask, res.output.userName);
 			const ccUserAvatar = makeCcUserAvatar(ccBitmask, res.output.userAvatar);
 

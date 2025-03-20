@@ -14,7 +14,7 @@ export const PROD_MODE = !DEV_MODE && !STG_MODE;
  * 複号鍵の生成
  *
  * ビルド時に62進数風の複号鍵を生成する。
- * 62進数にした理由は符号化したenvの出力に紛れ込ませるため。
+ * 62進数にした理由は符号化したenvに紛れ込ませるため。
  * 木を隠すなら森の中。
  */
 export const genEnvKey = (): string => {
@@ -22,10 +22,10 @@ export const genEnvKey = (): string => {
 		.match(/.{1,9}/g) // 0xFFFFFFFFF.toString(36) === 'vkhsvlr' となり、1桁目がzに近くなる/.{1,9}/なら出力の偏りが少ない
 		?.map((v) => Number.parseInt(v, 16).toString(36)) // 36進数に変換
 		.join("") // この時点で約49文字
-		// エントロピーを維持したまま62進数を作成
-		.replace(/[a-z]/g, (char) => {
-			return Math.random() > 0.5 ? char.toUpperCase() : char;
-		})
+		.replace(
+			/[a-z]/g,
+			(char) => (Math.random() > 0.5 ? char.toUpperCase() : char), // エントロピーを維持したまま62進数を生成
+		)
 		.slice(0, 16 + 4 * randInt(0, 7) + 3); // 4の倍数+3;
 	if (!key || !isSecureValue(key)) {
 		console.error(chalk.bgRed.white("複号鍵の生成に失敗"));

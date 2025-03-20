@@ -2,6 +2,8 @@ import * as v from "valibot";
 import blacklistDarkWeb1 from "./blacklist/dark-web/domain1.js";
 import blacklistShortenedUrl2 from "./blacklist/shortened-url/domain2.js";
 import blacklistShortenedUrl3 from "./blacklist/shortened-url/domain3.js";
+import blacklistUploader2 from "./blacklist/uploader/domain2.js";
+import blacklistUploader3 from "./blacklist/uploader/domain3.js";
 import whitelistAudio from "./whitelist/audio.js";
 import whitelistGif from "./whitelist/gif.js";
 import whitelistImage from "./whitelist/image.js";
@@ -75,6 +77,8 @@ const UrlSchema = v.object({
 		v.check((input) => !blacklistDarkWeb1.has(sliceDomain(input, 1))),
 		v.check((input) => !blacklistShortenedUrl2.has(sliceDomain(input, 2))),
 		v.check((input) => !blacklistShortenedUrl3.has(sliceDomain(input, 3))),
+		v.check((input) => !blacklistUploader2.has(sliceDomain(input, 2))),
+		v.check((input) => !blacklistUploader3.has(sliceDomain(input, 3))),
 		v.check((input) => !findIn(whitelistUnjGames, new URL(input).hostname)),
 		v.check((input) => !findIn(whitelistImage, new URL(input).hostname)),
 		v.check((input) => !findIn(whitelistGif, new URL(input).hostname)),

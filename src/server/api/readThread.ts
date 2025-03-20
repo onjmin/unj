@@ -17,7 +17,7 @@ import auth from "../mylib/auth.js";
 import {
 	ageResCache,
 	badCountCache,
-	balseCache,
+	balseResNumCache,
 	ccBitmaskCache,
 	contentTypesBitmaskCache,
 	deletedAtCache,
@@ -107,7 +107,7 @@ export default ({ socket }: { socket: Socket }) => {
 				// 動的なデータ
 				resCountCache.set(threadId, threadRecord.res_count);
 				// ageResCache.set(threadId, threadRecord.age_res); TODO
-				balseCache.set(threadId, threadRecord.balse);
+				balseResNumCache.set(threadId, threadRecord.balse_res_num);
 				lolCountCache.set(threadId, threadRecord.lol_count);
 				goodCountCache.set(threadId, threadRecord.good_count);
 				badCountCache.set(threadId, threadRecord.bad_count);
@@ -182,6 +182,7 @@ export default ({ socket }: { socket: Socket }) => {
 				resCount: resCountCache.get(threadId) ?? 0,
 				ps: threadRecord.ps,
 				ageRes: ageResCache.get(threadId) ?? null,
+				balseResNum: balseResNumCache.get(threadId) ?? 0,
 				lolCount: lolCountCache.get(threadId) ?? 0,
 				goodCount: goodCountCache.get(threadId) ?? 0,
 				badCount: badCountCache.get(threadId) ?? 0,
