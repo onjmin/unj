@@ -53,7 +53,6 @@ const bigDay = new Date(2025, 3, 21);
 
 /**
  * 名前に付加される系のコマンドもここで作成する
- * ToDo: 忍法帖
  */
 export const makeCcUserName = ({
 	ccBitmask,
