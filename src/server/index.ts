@@ -126,10 +126,7 @@ const accessCounter = () => accessCount;
 const verifyIP = (socket: Socket, ip: string) => {
 	if (isBannedIP(ip)) {
 		logger.http(`❌ ${ip}`);
-		// どのIPがBANされているのか悟られ難くするため
-		flaky(() => {
-			auth.kick(socket, "banned");
-		});
+		flaky(() => auth.kick(socket, "banned"));
 		socket.disconnect();
 	}
 };
@@ -137,10 +134,7 @@ const verifyIP = (socket: Socket, ip: string) => {
 const verifyUserId = (socket: Socket, userId: number) => {
 	if (blacklist.has(userId)) {
 		logger.http(`❌ ${getIP(socket)} ${userId}`);
-		// どのusers.idがBANされているのか悟られ難くするため
-		flaky(() => {
-			auth.kick(socket, "banned");
-		});
+		flaky(() => auth.kick(socket, "banned"));
 		socket.disconnect();
 	}
 };

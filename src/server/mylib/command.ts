@@ -19,6 +19,7 @@ import {
 } from "../mylib/cache.js";
 import { getIP } from "../mylib/ip.js";
 import { logger } from "../mylib/log.js";
+import { flaky } from "./anti-debug.js";
 
 const delay = 1000 * 60 * 4; // Glitchは5分放置でスリープする
 const neet: Map<number, NodeJS.Timeout> = new Map();
@@ -177,7 +178,7 @@ export const parseCommand = ({
 		next = ninjaLv ** 3;
 		msg += `(lv:${_ninjaLv}→${ninjaLv})`;
 	} else {
-		next++;
+		flaky(() => next++);
 	}
 
 	// コマンド実行後に反映
