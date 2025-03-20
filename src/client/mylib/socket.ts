@@ -55,49 +55,45 @@ export const hello = (callback: (() => void) | null = null) => {
 			socket.disconnect();
 		});
 		socket.on("kicked", (data: { ok: boolean; reason: string }) => {
-			if (data.ok && data.reason) {
-				errorReason = data.reason;
-				switch (data.reason) {
-					case "banned":
-						banStatus.value = "ban";
-						banReason.value = "banned";
-						navigate(base("/akukin"), { replace: true });
-						break;
-					case "multipleConnections":
-						navigate(base("/error"), { replace: true });
-						break;
-					case "newUsersRateLimit":
-						destinationPathname.value = pathname();
-						navigate(base("/error"), { replace: true });
-						break;
-					case "grantFailed":
-						destinationPathname.value = pathname();
-						navigate(base("/error"), { replace: true });
-						break;
-					default:
-						break;
-				}
+			if (!data.ok || !data.reason) return;
+			errorReason = data.reason;
+			switch (data.reason) {
+				case "banned":
+					banStatus.value = "ban";
+					banReason.value = "banned";
+					navigate(base("/akukin"), { replace: true });
+					break;
+				case "multipleConnections":
+					navigate(base("/error"), { replace: true });
+					break;
+				case "newUsersRateLimit":
+					destinationPathname.value = pathname();
+					navigate(base("/error"), { replace: true });
+					break;
+				case "grantFailed":
+					destinationPathname.value = pathname();
+					navigate(base("/error"), { replace: true });
+					break;
+				default:
+					break;
 			}
 		});
 		socket.on("updateAuthToken", (data: { ok: boolean; token: string }) => {
-			if (data.ok && data.token) {
-				authToken.value = data.token;
-			}
+			if (!data.ok || !data.token) return;
+			authToken.value = data.token;
 		});
 		socket.on("ninja", (data: { ok: boolean; ninja: Ninja }) => {
-			if (data.ok) {
-				ninjaPokemon.value = String(data.ninja.pokemon);
-				ninjaScore.value = String(data.ninja.score);
-			}
+			if (!data.ok) return;
+			ninjaPokemon.value = String(data.ninja.pokemon);
+			ninjaScore.value = String(data.ninja.score);
 		});
 		socket.on(
 			"getNonceKey",
 			(data: { ok: boolean; nonceKey: string | null }) => {
-				if (data.ok && data.nonceKey) {
-					nonceKey.value = data.nonceKey;
-					if (!isOK && retry) {
-						retry();
-					}
+				if (!data.ok || !data.nonceKey) return;
+				nonceKey.value = data.nonceKey;
+				if (!isOK && retry) {
+					retry();
 				}
 			},
 		);

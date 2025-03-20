@@ -66,6 +66,18 @@ export type Thread = {
 	badCount: number;
 };
 
+export type Meta = {
+	// 高度な設定
+	varsan: boolean;
+	sage: boolean;
+	ccBitmask: number;
+	contentTypesBitmask: number;
+	// 動的なデータ
+	ps: string;
+	ageRes: Res | null;
+	balsResNum: number;
+};
+
 export type Ninja = {
 	pokemon: number;
 	score: number;

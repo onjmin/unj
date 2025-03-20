@@ -55,29 +55,24 @@
         size: number;
         accessCount: number;
     }) => {
-        if (data.ok) {
-            online = data.size;
-            pv = data.accessCount;
-        }
+        if (!data.ok) return;
+        online = data.size;
+        pv = data.accessCount;
     };
 
     let threadList: HeadlineThread[] | null = $state(null);
     const handleHeadline = (data: { ok: boolean; list: HeadlineThread[] }) => {
-        if (data.ok) {
-            ok();
-            threadList = data.list;
-        }
+        if (!data.ok) return;
+        ok();
+        threadList = data.list;
     };
 
     const handleMakeThread = (data: { ok: boolean; new: HeadlineThread }) => {
-        if (data.ok) {
-            if (threadList) {
-                if (threadList.length > 128) {
-                    threadList.pop();
-                }
-                threadList.unshift(data.new);
-            }
+        if (!data.ok || !threadList) return;
+        if (threadList.length > 128) {
+            threadList.pop();
         }
+        threadList.unshift(data.new);
     };
 
     $effect(() => {

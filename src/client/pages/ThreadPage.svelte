@@ -17,7 +17,7 @@
         intervalToDuration,
     } from "date-fns";
     import { navigate } from "svelte-routing";
-    import type { Res, Thread } from "../../common/response/schema.js";
+    import type { Meta, Res, Thread } from "../../common/response/schema.js";
     import { sleep } from "../../common/util.js";
     import { genNonce } from "../mylib/anti-debug.js";
     import { visible } from "../mylib/dom.js";
@@ -78,10 +78,24 @@
         size: number;
         pv: number | null;
     }) => {
-        if (data.ok) {
-            online = data.size;
-            pv = data.pv ?? pv;
-        }
+        if (!data.ok) return;
+        online = data.size;
+        pv = data.pv ?? pv;
+    };
+
+    let chips: string[] = $state([]);
+    const updateChips = () => {
+        if (!thread) return;
+        chips = [];
+        if (thread.balsResNum) chips.push("※禁断呪文バルス（スレ強制終了）");
+        if (thread.resLimit < 1000) chips.push(`上限${thread.resLimit}スレ`);
+        if (thread.deletedAt) chips.push("時間制限スレ");
+        if ((thread.ccBitmask & 3) === 0) chips.push("ID非表示");
+        if (thread.ccBitmask & 2) chips.push("自演防止＠jien");
+        if ((thread.ccBitmask & 4) === 0) chips.push("コテ禁");
+        if ((thread.ccBitmask & 8) === 0) chips.push("アイコン禁止");
+        if (thread.varsan) chips.push("バルサン中");
+        if (thread.sage) chips.push("強制sage");
     };
 
     let thread: Thread | null = $state(null);
@@ -93,41 +107,15 @@
     let denominator = $state(0);
     let goodRatio = $state(0);
     let badRatio = $state(0);
-    let chips: string[] = $state([]);
     const handleReadThread = (data: { ok: boolean; thread: Thread }) => {
-        if (data.ok) {
-            ok();
-            thread = data.thread;
-            title = thread.title;
-            lolCount = thread.lolCount;
-            goodVotes = thread.goodCount;
-            badVotes = thread.badCount;
-            chips = [];
-            if (thread.resLimit < 1000) {
-                chips.push(`上限${thread.resLimit}スレ`);
-            }
-            if (thread.deletedAt) {
-                chips.push("時間制限スレ");
-            }
-            if ((thread.ccBitmask & 3) === 0) {
-                chips.push("ID非表示");
-            }
-            if (thread.ccBitmask & 2) {
-                chips.push("自演防止＠jien");
-            }
-            if ((thread.ccBitmask & 4) === 0) {
-                chips.push("コテ禁");
-            }
-            if ((thread.ccBitmask & 8) === 0) {
-                chips.push("アイコン禁止");
-            }
-            if (thread.varsan) {
-                chips.push("バルサン中");
-            }
-            if (thread.sage) {
-                chips.push("強制sage");
-            }
-        }
+        if (!data.ok) return;
+        ok();
+        thread = data.thread;
+        title = thread.title;
+        lolCount = thread.lolCount;
+        goodVotes = thread.goodCount;
+        badVotes = thread.badCount;
+        updateChips();
     };
 
     let openNewResNotice = $state(false);
@@ -138,39 +126,47 @@
         new: Res;
         yours: boolean;
     }) => {
-        if (data.ok) {
-            if (!thread) {
-                return;
-            }
-            if (thread.resList.length > 128) {
-                thread.resList.shift();
-            }
-            thread.resList.push(data.new);
-            newResSoundHowl?.play();
-            if (data.yours) {
-                ok();
-                contentPostload.value = null;
-                content = "";
-                contentUrl = "";
+        if (!data.ok || !thread) return;
+        if (thread.resList.length > 128) {
+            thread.resList.shift();
+        }
+        thread.resList.push(data.new);
+        newResSoundHowl?.play();
+        if (data.yours) {
+            ok();
+            contentPostload.value = null;
+            content = "";
+            contentUrl = "";
+            await sleep(512);
+            scrollToEnd();
+        } else {
+            openNewResNotice = true;
+            newResCount++;
+            isAlreadyScrollEnd = false;
+        }
+        const m = data.new.content.match(/>>([0-9]+)/);
+        if (m) {
+            const num = Number(m[1]);
+            const replyTo = thread.resList.find(
+                (v) => v.yours && v.num === num,
+            );
+            if (replyTo) {
                 await sleep(512);
-                scrollToEnd();
-            } else {
-                openNewResNotice = true;
-                newResCount++;
-                isAlreadyScrollEnd = false;
-            }
-            const m = data.new.content.match(/>>([0-9]+)/);
-            if (m) {
-                const num = Number(m[1]);
-                const replyTo = thread.resList.find(
-                    (v) => v.yours && v.num === num,
-                );
-                if (replyTo) {
-                    await sleep(512);
-                    replyResSoundHowl?.play();
-                }
+                replyResSoundHowl?.play();
             }
         }
+    };
+
+    const handleUpdateMeta = async (data: { ok: boolean; new: Meta }) => {
+        if (!data.ok || !thread) return;
+        thread.varsan = data.new.varsan;
+        thread.sage = data.new.sage;
+        thread.ccBitmask = data.new.ccBitmask;
+        thread.contentTypesBitmask = data.new.contentTypesBitmask;
+        thread.ps = data.new.ps;
+        thread.ageRes = data.new.ageRes;
+        thread.balsResNum = data.new.balsResNum;
+        updateChips();
     };
 
     const scrollToEnd = () => {
@@ -186,10 +182,9 @@
         lolCount: number;
         yours: boolean;
     }) => {
-        if (data.ok) {
-            lolCount = data.lolCount;
-            if (data.yours) ok();
-        }
+        if (!data.ok) return;
+        lolCount = data.lolCount;
+        if (data.yours) ok();
     };
 
     const handleLike = (data: {
@@ -198,11 +193,10 @@
         badCount: number;
         yours: boolean;
     }) => {
-        if (data.ok) {
-            goodVotes = data.goodCount;
-            badVotes = data.badCount;
-            if (data.yours) ok();
-        }
+        if (!data.ok) return;
+        goodVotes = data.goodCount;
+        badVotes = data.badCount;
+        if (data.yours) ok();
     };
 
     $effect(() => {
@@ -254,6 +248,7 @@
         });
         socket.on("joinThread", handleJoinThread);
         socket.on("readThread", handleReadThread);
+        socket.on("updateMeta", handleUpdateMeta);
         socket.on("res", handleRes);
         socket.on("lol", handleLoL);
         socket.on("like", handleLike);
@@ -262,6 +257,7 @@
             goodbye();
             socket.off("joinThread", handleJoinThread);
             socket.off("readThread", handleReadThread);
+            socket.off("updateMeta", handleUpdateMeta);
             socket.off("res", handleRes);
             socket.off("lol", handleLoL);
             socket.off("like", handleLike);
@@ -375,6 +371,15 @@
                     </Chip>
                 {/snippet}
             </ChipSet>
+            {#if thread.balsResNum}
+                <span class="bals-warning">
+                    【閲覧注意！】このスレはスレ主によってバルスされました。
+                </span>
+                <br />
+                <span class="bals-warning">
+                    最後のコメまでスクロールするとスレが崩壊しますよっと。。
+                </span>
+            {/if}
             {#if remaining !== ""}
                 <div style="text-align:center">
                     <Chip>
@@ -480,6 +485,9 @@
         flex-direction: column;
         gap: 1rem;
         text-align: left;
+    }
+    .bals-warning {
+        background-color: #e57373;
     }
 
     /* ｲｲ!(・∀・) (・Ａ・)ｲｸﾅｲ!  */

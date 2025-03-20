@@ -80,12 +80,11 @@
     let check1 = $state(false);
 
     const handleMakeThread = (data: { ok: boolean; new: HeadlineThread }) => {
-        if (data.ok) {
-            ok();
-            titlePostload.value = null;
-            contentPostload.value = null;
-            navigate(base(`/thread/${data.new.id}`));
-        }
+        if (!data.ok) return;
+        ok();
+        titlePostload.value = null;
+        contentPostload.value = null;
+        navigate(base(`/thread/${data.new.id}`));
     };
 
     $effect(() => {

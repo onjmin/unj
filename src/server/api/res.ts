@@ -9,7 +9,7 @@ import type { Server, Socket } from "socket.io";
 import * as v from "valibot";
 import { contentSchemaMap } from "../../common/request/content-schema.js";
 import { ResSchema } from "../../common/request/schema.js";
-import type { Res } from "../../common/response/schema.js";
+import type { Meta, Res } from "../../common/response/schema.js";
 import { randInt } from "../../common/util.js";
 import { decodeThreadId, encodeResId } from "../mylib/anti-debug.js";
 import auth from "../mylib/auth.js";
@@ -280,6 +280,22 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 				ok: true,
 				new: newRes,
 				yours: false,
+			});
+
+			const newMeta: Meta = {
+				// 高度な設定
+				varsan: varsanCache.get(threadId) ?? false,
+				sage: sageCache.get(threadId) ?? false,
+				ccBitmask: ccBitmaskCache.get(threadId) ?? 0,
+				contentTypesBitmask: contentTypesBitmaskCache.get(threadId) ?? 0,
+				// 動的なデータ
+				ps: "", // TODO
+				ageRes: null, // TODO
+				balsResNum: balsResNumCache.get(threadId) ?? 0,
+			};
+			io.to(getThreadRoom(threadId)).emit("updateMeta", {
+				ok: true,
+				new: newMeta,
 			});
 
 			await poolClient.query("COMMIT"); // 問題なければコミット
