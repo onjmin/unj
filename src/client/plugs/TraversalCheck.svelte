@@ -2,7 +2,6 @@
     import { navigate } from "svelte-routing";
     import { flaky } from "../mylib/anti-debug.js";
     import { base, pathname } from "../mylib/env.js";
-    import { save } from "../mylib/idb/keyval.js";
     import {
         banReason,
         banStatus,
@@ -42,9 +41,9 @@
         if (honeypot.has(pathname())) {
             if (
                 !flaky(() => {
-                    banStatus.save("ban");
-                    banReason.save("traversal");
-                    traversalTarget.save(window.location.href);
+                    banStatus.value = "ban";
+                    banReason.value = "traversal";
+                    traversalTarget.value = window.location.href;
                     navigate(base("/akukin"), { replace: true });
                 })
             ) {

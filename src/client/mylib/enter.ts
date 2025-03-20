@@ -19,7 +19,7 @@ const whitelist = [
 const loadPathname = () => {
 	const pathname = destinationPathname.value;
 	if (pathname && whitelist.some((v) => pathname.startsWith(v))) {
-		destinationPathname.save(null);
+		destinationPathname.value = null;
 		return base(pathname);
 	}
 	return base("/headline");

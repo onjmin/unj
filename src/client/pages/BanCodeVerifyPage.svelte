@@ -38,12 +38,12 @@
             banVerifyCodeInput.trim() ===
             genBanVerifyCode(bannedDate, banVerifyCode.value ?? "")
         ) {
-            banStatus.save(null);
-            banReason.save(null);
-            traversalTarget.save(null);
-            ipInfoJson.save(null);
-            banVerifyCode.save(null);
-            banReport.save(null);
+            banStatus.value = null;
+            banReason.value = null;
+            traversalTarget.value = null;
+            ipInfoJson.value = null;
+            banVerifyCode.value = null;
+            banReport.value = null;
             navigate(base("/"), { replace: true });
         } else {
             open = true;

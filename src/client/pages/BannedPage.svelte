@@ -25,46 +25,40 @@
                     (res) => res.json(),
                 );
                 ip = ipInfo.ip;
-                ipInfoJson.save(JSON.stringify(ipInfo));
+                ipInfoJson.value = JSON.stringify(ipInfo);
             } else {
                 try {
                     const ipInfo = JSON.parse(ipInfoJson.value);
                     ip = ipInfo.ip;
                 } catch (err) {
-                    ipInfoJson.save(null);
+                    ipInfoJson.value = null;
                     return; // 確実に改ざんされているので、以降の処理は無意味。
                 }
             }
             // BAN解除コードの生成
             const code = genBanVerifyCode(new Date(), "");
-            banVerifyCode.save(code);
+            banVerifyCode.value = code;
             // BANの通知
             if ("done" !== banReport.value) {
                 const unknown = "(unknown)";
-                const promises = [];
                 switch (banReason.value) {
                     case "traversal":
-                        promises.push(banReport.save("done"));
-                        promises.push(
-                            reportTraversal([
-                                banVerifyCode.value ?? unknown,
-                                ipInfoJson.value ?? unknown,
-                                traversalTarget.value ?? unknown,
-                            ]),
-                        );
+                        banReport.value = "done";
+                        reportTraversal([
+                            banVerifyCode.value ?? unknown,
+                            ipInfoJson.value ?? unknown,
+                            traversalTarget.value ?? unknown,
+                        ]);
                         break;
                     case "banned":
-                        promises.push(banReport.save("done"));
-                        promises.push(
-                            reportBanned([
-                                banVerifyCode.value ?? unknown,
-                                ipInfoJson.value ?? unknown,
-                                window.navigator.userAgent,
-                            ]),
-                        );
+                        banReport.value = "done";
+                        reportBanned([
+                            banVerifyCode.value ?? unknown,
+                            ipInfoJson.value ?? unknown,
+                            window.navigator.userAgent,
+                        ]);
                         break;
                 }
-                await Promise.all(promises);
             }
         } catch (err) {}
     };

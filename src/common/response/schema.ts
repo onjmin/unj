@@ -60,7 +60,7 @@ export type Thread = {
 	resCount: number;
 	ps: string;
 	ageRes: Res | null;
-	balseResNum: number;
+	balsResNum: number;
 	lolCount: number;
 	goodCount: number;
 	badCount: number;

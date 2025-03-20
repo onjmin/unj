@@ -4,7 +4,7 @@ import ws from "ws";
 import { NEON_DATABASE_URL, PROD_MODE } from "../mylib/env.js";
 neonConfig.webSocketConstructor = ws;
 
-import { addMinutes, addSeconds, isBefore } from "date-fns";
+import { addSeconds, isBefore } from "date-fns";
 import type { Server, Socket } from "socket.io";
 import * as v from "valibot";
 import { contentSchemaMap } from "../../common/request/content-schema.js";
@@ -14,7 +14,7 @@ import { randInt } from "../../common/util.js";
 import { decodeThreadId, encodeResId } from "../mylib/anti-debug.js";
 import auth from "../mylib/auth.js";
 import {
-	balseResNumCache,
+	balsResNumCache,
 	ccBitmaskCache,
 	contentTypesBitmaskCache,
 	isDeleted,
@@ -29,33 +29,13 @@ import {
 	varsanCache,
 } from "../mylib/cache.js";
 import { makeCcUserAvatar, makeCcUserId, makeCcUserName } from "../mylib/cc.js";
-import { getIP } from "../mylib/ip.js";
+import { parseCommand } from "../mylib/command.js";
 import { logger } from "../mylib/log.js";
 import nonce from "../mylib/nonce.js";
 import { exist, getThreadRoom, joined } from "../mylib/socket.js";
-import { coolTimes as makeThreadCoolTimes } from "./makeThread.js";
 
 const api = "res";
 const coolTimes: Map<number, Date> = new Map();
-
-const delay = 1000 * 60 * 4; // Glitchは5分放置でスリープする
-const neet: Map<number, NodeJS.Timeout> = new Map();
-const lazyUpdate = (userId: number, ninjaScore: number, ip: string) => {
-	clearTimeout(neet.get(userId));
-	const id = setTimeout(async () => {
-		// pool
-		const pool = new Pool({ connectionString: NEON_DATABASE_URL });
-		pool.on("error", (error) => {
-			logger.error(error);
-		});
-		const poolClient = await pool.connect();
-		await poolClient.query(
-			"UPDATE users SET updated_at = NOW(), ip = $1, ninja_score = $2 WHERE id = $3",
-			[ip, ninjaScore, userId],
-		);
-	}, delay);
-	neet.set(userId, id);
-};
 
 export default ({ socket, io }: { socket: Socket; io: Server }) => {
 	socket.on(api, async (data) => {
@@ -71,6 +51,9 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		}
 
 		if (isDeleted(threadId)) {
+			return;
+		}
+		if (balsResNumCache.get(threadId)) {
 			return;
 		}
 
@@ -149,119 +132,30 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 				ninjaScoreCache.set(userId, ninja_score);
 				ninja(socket);
 			}
-			let ninjaScore = ninjaScoreCache.get(userId) ?? 0;
-			const _ninjaLv = (ninjaScore ** (1 / 3)) | 0;
-			let ninjaLv = _ninjaLv;
+			const ninjaScore = ninjaScoreCache.get(userId) ?? 0;
 
 			// !バルサン
 			if (!isOwner && varsanCache.get(threadId) && ninjaScore < 256) {
 				return;
 			}
 
-			// コマンドの解釈
-			let commandResult = "";
-			const cmds = contentResult.output.content
-				.replace(/！/g, "!")
-				.match(/![^!\s]+/g);
-			if (cmds && cmds.length < 4) {
-				const results = [];
-				for (const cmd of new Set(cmds)) {
-					if (isOwner) {
-						switch (cmd) {
-							case "!aku":
-								break;
-							case "!kaijo":
-								break;
-							case "!reset":
-								break;
-							case "!バルサン":
-								results.push(
-									"！荒らし撃退呪文『バルサン』発動！\nしばらくの間、忍法帖lv4未満による投稿を禁ず。。",
-								);
-								varsanCache.set(threadId, true);
-								break;
-							case "!sage":
-								{
-									const sage = !sageCache.get(threadId);
-									sageCache.set(threadId, sage);
-									results.push(sage ? "強制sage" : "強制sage解除");
-								}
-								break;
-							case "!jien":
-								break;
-							case "!ngk":
-								break;
-							case "!nopic":
-								{
-									const contentTypesBitmask =
-										contentTypesBitmaskCache.get(threadId);
-									// sageCache.set(threadId, sage);
-									results.push(
-										"！画像禁止『nopic』発動！\nしばらくの間、画像投稿を禁ず。。",
-									);
-								}
-								break;
-							case "!add":
-								break;
-							case "!age":
-								break;
-							case "!バルス":
-								if (ninjaLv < 3) {
-									results.push(
-										`禁断呪文バルス発動失敗。。忍法帖のレベル不足。(lv:${ninjaLv})`,
-									);
-									break;
-								}
-								ninjaLv -= 2;
-								results.push(
-									"！禁断呪文バルス発動！\nこのスレは崩壊しますた。。",
-								);
-								balseResNumCache.set(threadId, 1);
-								if (PROD_MODE) {
-									makeThreadCoolTimes.set(
-										userId,
-										addMinutes(new Date(), randInt(120, 180)),
-									);
-								}
-								break;
-						}
-					}
-					switch (cmd) {
-						case "!ping":
-							results.push("pong");
-							break;
-						case "!check":
-							if (ninjaLv < 2) break;
-							ninjaLv--;
-							break;
-					}
-				}
-				commandResult = results.map((v) => `★${v}`).join("\n");
-			}
+			const nextResNum = (resCountCache.get(threadId) ?? 0) + 1;
+			resCountCache.set(threadId, nextResNum);
 
-			if (_ninjaLv !== ninjaLv) {
-				ninjaScore = ninjaLv ** 3;
-				commandResult = `(lv:${_ninjaLv}→${ninjaLv})`;
-			} else {
-				ninjaScore++;
-			}
-
-			// コマンド実行後に反映
-			lazyUpdate(userId, ninjaScore, getIP(socket));
-			ninjaScoreCache.set(userId, ninjaScore);
-			ninja(socket);
+			const parsedResult = parseCommand({
+				content: contentResult.output.content,
+				isOwner,
+				nextResNum,
+				ninjaScore,
+				socket,
+				threadId,
+				userId,
+			});
 
 			const ccBitmask = ccBitmaskCache.get(threadId) ?? 0;
 			const ccUserId = makeCcUserId(ccBitmask, userId, socket);
 			const ccUserName = makeCcUserName(ccBitmask, res.output.userName);
 			const ccUserAvatar = makeCcUserAvatar(ccBitmask, res.output.userAvatar);
-
-			if (isMax(threadId, isOwner)) {
-				return;
-			}
-
-			const next = (resCountCache.get(threadId) ?? 0) + 1;
-			resCountCache.set(threadId, next);
 
 			await poolClient.query("BEGIN"); // トランザクション開始
 
@@ -295,10 +189,10 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 					contentResult.output.content,
 					contentResult.output.contentUrl,
 					contentResult.output.contentType,
-					commandResult,
+					parsedResult.msg,
 					// メタ情報
 					threadId,
-					next,
+					nextResNum,
 					isOwner,
 				],
 			);
@@ -314,15 +208,49 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			const sage = sageCache.get(threadId) || res.output.sage;
 
 			// スレッドの更新
-			// TODO: スレ主による高度な設定の更新なども
-			await poolClient.query(
-				[
-					`UPDATE threads SET${sage ? "" : " latest_res_at = NOW(),"}`,
-					"res_count = $1",
-					"WHERE id = $2",
-				].join(" "),
-				[next, threadId],
-			);
+			if (!parsedResult.shouldUpdateMeta) {
+				await poolClient.query(
+					[
+						"UPDATE threads SET",
+						[sage ? null : "latest_res_at = NOW()", "res_count = $1"]
+							.filter((v) => v)
+							.join(","),
+						"WHERE id = $2",
+					].join(" "),
+					[nextResNum, threadId],
+				);
+			} else {
+				await poolClient.query(
+					[
+						"UPDATE threads SET",
+						[
+							sage ? null : "latest_res_at = NOW()",
+							"res_count = $1",
+							"varsan = $2",
+							"sage = $3",
+							"cc_bitmask = $4",
+							"content_types_bitmask = $5",
+							"ps = $6",
+							"age_res_num = $7",
+							"bals_res_num = $8",
+						]
+							.filter((v) => v)
+							.join(","),
+						"WHERE id = $9",
+					].join(" "),
+					[
+						nextResNum,
+						varsanCache.get(threadId) ?? false,
+						sageCache.get(threadId) ?? false,
+						ccBitmaskCache.get(threadId) ?? 0,
+						contentTypesBitmaskCache.get(threadId) ?? 0,
+						"", // TODO
+						0, // TODO
+						balsResNumCache.get(threadId) ?? 0,
+						threadId,
+					],
+				);
+			}
 
 			const newRes: Res = {
 				yours: true,
@@ -333,10 +261,10 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 				content: contentResult.output.content,
 				contentUrl: contentResult.output.contentUrl,
 				contentType: contentResult.output.contentType,
-				commandResult,
+				commandResult: parsedResult.msg,
 				// メタ情報
 				id: resId,
-				num: next,
+				num: nextResNum,
 				createdAt: created_at,
 				isOwner,
 				sage,

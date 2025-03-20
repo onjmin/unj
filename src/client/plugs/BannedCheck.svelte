@@ -14,7 +14,7 @@
         if ("ban" === banStatus.value) {
             navigate(base("/akukin"), { replace: true });
         } else if ("yes" !== termsAgreement.value && "/" !== pathname()) {
-            destinationPathname.save(pathname());
+            destinationPathname.value = pathname();
             navigate(base("/"), { replace: true });
         }
         ready = true;

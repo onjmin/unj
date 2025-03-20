@@ -25,7 +25,7 @@
         openTermsWarn = true;
         break;
       case "accept":
-        termsAgreement.save("yes");
+        termsAgreement.value = "yes";
         openConfirm = !tryEnter();
         break;
     }

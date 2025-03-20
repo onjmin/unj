@@ -109,7 +109,7 @@
             }
         } catch (err) {}
         if (success) {
-            contactedAt.save(`${+new Date()}`);
+            contactedAt.value = `${+new Date()}`;
             snackbarText = "送信しました。";
             isSuspend = true;
         } else {

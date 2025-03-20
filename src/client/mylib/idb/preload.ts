@@ -18,9 +18,9 @@ export class Preload {
 	get value() {
 		return this.#value;
 	}
-	save(value: string | null) {
+	set value(value: string | null) {
 		this.#value = value;
-		return save(this.#key, value);
+		save(this.#key, value);
 	}
 }
 

@@ -30,6 +30,7 @@
         replyResSoundHowl,
     } from "../mylib/sound.js";
     import AccessCounterPart from "../parts/AccessCounterPart.svelte";
+    import BalsPart from "../parts/BalsPart.svelte";
     import ResFormPart from "../parts/ResFormPart.svelte";
     import ResPart from "../parts/ResPart.svelte";
     import TwemojiPart from "../parts/TwemojiPart.svelte";
@@ -413,17 +414,8 @@
                     createdAt={res.createdAt}
                     threadId={thread.id}
                 >
-                    {#if res.num === thread.balseResNum}
-                        <div class="valus_res">
-                            <img
-                                src="https://livedoor.blogimg.jp/furage/imgs/8/4/84c5ac1b-s.png"
-                                alt="test"
-                            />
-                        </div>
-                        <script
-                            defer
-                            src="https://furage.github.io/valus/main.js"
-                        ></script>
+                    {#if res.num === thread.balsResNum}
+                        <BalsPart />
                     {/if}
                 </ResPart>
             {/each}

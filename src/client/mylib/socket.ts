@@ -59,19 +59,19 @@ export const hello = (callback: (() => void) | null = null) => {
 				errorReason = data.reason;
 				switch (data.reason) {
 					case "banned":
-						banStatus.save("ban");
-						banReason.save("banned");
+						banStatus.value = "ban";
+						banReason.value = "banned";
 						navigate(base("/akukin"), { replace: true });
 						break;
 					case "multipleConnections":
 						navigate(base("/error"), { replace: true });
 						break;
 					case "newUsersRateLimit":
-						destinationPathname.save(pathname());
+						destinationPathname.value = pathname();
 						navigate(base("/error"), { replace: true });
 						break;
 					case "grantFailed":
-						destinationPathname.save(pathname());
+						destinationPathname.value = pathname();
 						navigate(base("/error"), { replace: true });
 						break;
 					default:
@@ -81,20 +81,20 @@ export const hello = (callback: (() => void) | null = null) => {
 		});
 		socket.on("updateAuthToken", (data: { ok: boolean; token: string }) => {
 			if (data.ok && data.token) {
-				authToken.save(data.token);
+				authToken.value = data.token;
 			}
 		});
 		socket.on("ninja", (data: { ok: boolean; ninja: Ninja }) => {
 			if (data.ok) {
-				ninjaPokemon.save(String(data.ninja.pokemon));
-				ninjaScore.save(String(data.ninja.score));
+				ninjaPokemon.value = String(data.ninja.pokemon);
+				ninjaScore.value = String(data.ninja.score);
 			}
 		});
 		socket.on(
 			"getNonceKey",
 			(data: { ok: boolean; nonceKey: string | null }) => {
 				if (data.ok && data.nonceKey) {
-					nonceKey.save(data.nonceKey);
+					nonceKey.value = data.nonceKey;
 					if (!isOK && retry) {
 						retry();
 					}

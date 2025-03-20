@@ -31,7 +31,7 @@ CREATE TABLE threads (
     res_count SMALLINT NOT NULL DEFAULT 1, -- count()よりも軽量。レス投稿後に発行されるIDが真の値。
     ps TEXT NOT NULL DEFAULT '', -- !add機能で>>1の末尾に追記する内容
     age_res_num INT NOT NULL DEFAULT 0, -- !age機能で表示するレスのID（0の場合はage無し）
-    balse_res_num INT NOT NULL DEFAULT 0, -- !バルス
+    bals_res_num INT NOT NULL DEFAULT 0, -- !バルス
     lol_count SMALLINT NOT NULL DEFAULT 0, -- 草ボタン
     good_count SMALLINT NOT NULL DEFAULT 0, -- ｲｲ!(・∀・)
     bad_count SMALLINT NOT NULL DEFAULT 0, -- (・Ａ・)ｲｸﾅｲ!

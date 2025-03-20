@@ -37,15 +37,15 @@
     let selectedReplyResSound: string = $state(replyResSound.value ?? waf.key);
 
     $effect(() => {
-        soundVolume.save(String(soundVolumeSlider));
+        soundVolume.value = String(soundVolumeSlider);
         changeVolume();
     });
     $effect(() => {
-        newResSound.save(selectedNewResSound);
+        newResSound.value = selectedNewResSound;
         changeNewResSound();
     });
     $effect(() => {
-        replyResSound.save(selectedReplyResSound);
+        replyResSound.value = selectedReplyResSound;
         changeReplyResSound();
     });
 </script>
