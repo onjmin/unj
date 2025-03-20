@@ -34,7 +34,7 @@
         $("html").addClass(
           randArray(["shake", "shake-slow", "shake-little", "shake-vertical"]),
         );
-        $("#app").css("background", "#FFCCCC");
+        $("#app").css("background", "#8b5e5e");
         const s = document.createElement("script");
         s.src = "https://furage.github.io/valus/bomb.v3.js";
         s.crossOrigin = "anonymous";
