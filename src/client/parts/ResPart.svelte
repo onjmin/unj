@@ -20,6 +20,7 @@
     id = "",
     num = 0,
     isOwner = false,
+    sage = false,
     createdAt = new Date(),
     // メタ情報
     threadId = "",
@@ -30,7 +31,7 @@
   <!-- 上段: 名前欄 -->
   <div class="name-row">
     <button
-      class="reply"
+      class="reply {sage ? 'sage' : ''}"
       onclick={() => {
         const m = input.match(/>>([0-9]+)/);
         if (m) {
@@ -98,6 +99,12 @@
 </div>
 
 <style>
+  .sage {
+    text-decoration: underline;
+  }
+  .sage:before {
+    content: "🠋";
+  }
   .reply {
     background-color: transparent; /* 背景を透明に */
     border: none; /* 枠線をなくす（必要に応じて） */

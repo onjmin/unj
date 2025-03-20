@@ -7,7 +7,9 @@
 
     import Banner, { Icon, Label } from "@smui/banner";
     import Button from "@smui/button";
+    import Checkbox from "@smui/checkbox";
     import Chip, { Set as ChipSet, LeadingIcon, Text } from "@smui/chips";
+    import FormField from "@smui/form-field";
     import Paper, { Title, Content, Subtitle } from "@smui/paper";
     import {
         differenceInDays,
@@ -47,14 +49,24 @@
     let content = $state("");
     let contentUrl = $state("");
     let contentType = $state(1);
+    let sage = $state(false);
 
     // postload
-    const contentPostload = new Postload(threadId);
+    const contentPostload = new Postload(`content###${threadId}`);
     contentPostload.promise.then(() => {
         content = contentPostload.value ?? "";
     });
     $effect(() => {
         contentPostload.value = content === "" ? null : content;
+    });
+
+    // postload
+    const sagePostload = new Postload(`sage###${threadId}`);
+    sagePostload.promise.then(() => {
+        sage = sagePostload.value === "sage";
+    });
+    $effect(() => {
+        sagePostload.value = sage ? "sage" : null;
     });
 
     let bookmark = $state(false); // idbから取得する
@@ -277,7 +289,7 @@
             content,
             contentUrl,
             contentType,
-            sage: false, // TODO
+            sage,
         });
         await sleep(4096);
         ok();
@@ -311,10 +323,13 @@
         bind:contentUrl
         bind:contentType
     />
-    <!-- ここにsage -->
     <Button disabled={emitting} onclick={tryRes} variant="raised"
         >投稿する</Button
     >
+    <FormField align="end">
+        <Checkbox bind:checked={sage} />
+        {#snippet label()}🠋{/snippet}
+    </FormField>
 </HeaderPart>
 
 <Banner bind:open={openNewResNotice} centered mobileStacked>
@@ -389,6 +404,7 @@
                 id=""
                 num={1}
                 isOwner={true}
+                sage={false}
                 createdAt={thread.createdAt}
                 threadId={thread.id}
             >
@@ -422,6 +438,7 @@
                     id={res.id}
                     num={res.num}
                     isOwner={res.isOwner}
+                    sage={res.sage}
                     createdAt={res.createdAt}
                     threadId={thread.id}
                 >

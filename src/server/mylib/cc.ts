@@ -36,28 +36,37 @@ export const makeCcUserId = (
 	return "";
 };
 
+const escapeUserName = (str: string) =>
+	str
+		.replace(/◆/g, "◇")
+		.replace(/■/g, "□")
+		.replace(/【/g, "｛")
+		.replace(/】/g, "｝");
+
 /**
  * 名前に付加される系のコマンドもここで作成する
+ * ToDo: 忍法帖
  */
 export const makeCcUserName = (ccBitmask: number, userName: string): string => {
 	if ((ccBitmask & 4) === 4) {
 		const index = userName.indexOf("#");
-		const name = userName.slice(0, index).replace(/◆/g, "◇");
-		const tripKey = index === -1 ? "" : userName.slice(index);
-		let output = name;
-		if (tripKey !== "") {
-			let trip = "";
-			if (tripKey.startsWith("#############")) {
-				trip = "???";
-			} else {
-				trip = btoa(
-					String.fromCharCode(...new Uint8Array(sha256.arrayBuffer(tripKey))),
-				)
-					.slice(0, 10)
-					.replace(/\+/g, ".");
-			}
-			output = `${name}◆${trip}`;
+		if (index === -1) {
+			return escapeUserName(userName);
 		}
+		const name = escapeUserName(userName.slice(0, index));
+		const tripKey = userName.slice(index);
+		let output = name;
+		let trip = "";
+		if (tripKey.startsWith("#############")) {
+			trip = "???";
+		} else {
+			trip = btoa(
+				String.fromCharCode(...new Uint8Array(sha256.arrayBuffer(tripKey))),
+			)
+				.slice(0, 10)
+				.replace(/\+/g, ".");
+		}
+		output = `${name}◆${trip}`;
 		return output;
 	}
 	return "";
