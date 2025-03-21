@@ -4,9 +4,18 @@
   import Textfield from "@smui/textfield";
   import CharacterCounter from "@smui/textfield/character-counter";
   import { contentTypeOptions } from "../../common/request/content-schema.js";
+  import audio from "../../common/request/whitelist/audio.js";
+  import gif from "../../common/request/whitelist/gif.js";
+  import image from "../../common/request/whitelist/image.js";
+  import { findIn } from "../../common/request/whitelist/site-info.js";
+  import unjGames from "../../common/request/whitelist/unj-games.js";
+  import video from "../../common/request/whitelist/video.js";
   import { Postload } from "../mylib/idb/postload.js";
   import AvatarPart from "./AvatarPart.svelte";
   import UrlTemplatePart from "./UrlTemplatePart.svelte";
+
+  const regexUrl =
+    /^(https?:\/\/)?([\w\-]+\.)+[\w\-]+(\/[\w\-._~:/?#[\]@!$&'()*+,;=]*)?$/i;
 
   let {
     disabled = false,
@@ -61,12 +70,31 @@
     <CharacterCounter />
   {/snippet}
 </Textfield>
+
 <Textfield
   {disabled}
   textarea
   label="本文"
   bind:value={content}
   input$maxlength={1024}
+  onpaste={(e: ClipboardEvent) => {
+    const pasteText = e.clipboardData?.getData("text");
+    const m = pasteText?.match(regexUrl);
+    if (!m) return;
+    let url;
+    try {
+      url = new URL(m[0]);
+    } catch (err) {}
+    if (!url) return;
+    contentUrl = url.href;
+    if (!!findIn(unjGames, url.hostname)) contentType = 4;
+    else if (!!findIn(image, url.hostname)) contentType = 8;
+    else if (!!findIn(gif, url.hostname)) contentType = 16;
+    else if (!!findIn(video, url.hostname)) contentType = 32;
+    else if (!!findIn(audio, url.hostname)) contentType = 64;
+    else contentType = 2;
+    setTimeout(() => (content = content.replace(m[0], "")));
+  }}
 >
   {#snippet helper()}
     <CharacterCounter />
