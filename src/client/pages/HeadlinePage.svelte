@@ -203,7 +203,7 @@
                                 onclick={() =>
                                     navigate(
                                         makePathname(
-                                            `/thread/${thread.id}/${thread.latestCursor}`,
+                                            `/thread/${thread.id}${thread.latestCursor && thread.resCount > 17 && !thread.balsResNum ? `/${thread.latestCursor}` : ""}`,
                                         ),
                                     )}>arrow_forward</IconButton
                             >

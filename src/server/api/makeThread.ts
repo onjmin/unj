@@ -146,6 +146,7 @@ export default ({ socket }: { socket: Socket }) => {
 				latestResAt: new Date(),
 				resCount: 1,
 				latestCursor: "",
+				balsResNum: 0,
 				// 基本的な情報
 				title: makeThread.output.title,
 				// 動的なデータ

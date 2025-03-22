@@ -167,7 +167,7 @@
             thread.resList.shift();
         }
         thread.resList.push(data.new);
-        bottomCursor = data.new.cursor;
+        thread.latestCursor = data.new.cursor;
         newResSoundHowl?.play();
         if (data.yours) {
             ok();
@@ -463,7 +463,7 @@
     >
     <IconButton
         class="material-icons"
-        disabled={emitting || thread?.firstCursor === topCursor}
+        disabled={emitting}
         onclick={() => navigate(makePathname("/headline"))}>home</IconButton
     >
     <IconButton
