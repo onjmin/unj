@@ -14,6 +14,8 @@ import { randInt } from "../../common/util.js";
 import { decodeThreadId, encodeResId } from "../mylib/anti-debug.js";
 import auth from "../mylib/auth.js";
 import {
+	ageResCache,
+	ageResNumCache,
 	balsResNumCache,
 	ccBitmaskCache,
 	contentTypesBitmaskCache,
@@ -213,7 +215,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 					contentTypesBitmaskCache.get(threadId) ?? 0,
 				);
 				query.set("ps", ""); // TODO
-				query.set("age_res_num", 0); // TODO
+				query.set("age_res_num", ageResNumCache.get(threadId) ?? 0); // TODO
 				query.set("bals_res_num", balsResNumCache.get(threadId) ?? 0);
 			}
 
@@ -259,7 +261,60 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 				yours: false,
 			});
 
+			// !age
+			let ageRes: Res | null;
+			const ageResNum = ageResNumCache.get(threadId) ?? 0;
+			if (ageResNum === nextResNum) {
+				ageRes = {
+					yours: false,
+					// 書き込み内容
+					ccUserId,
+					ccUserName,
+					ccUserAvatar,
+					content: contentResult.output.content,
+					contentUrl: contentResult.output.contentUrl,
+					contentType: contentResult.output.contentType,
+					commandResult: parsedResult.msg,
+					// メタ情報
+					cursor: "",
+					num: nextResNum,
+					createdAt: created_at,
+					isOwner,
+					sage,
+				};
+				ageResCache.set(threadId, ageRes);
+			}
+
 			if (parsedResult.shouldUpdateMeta) {
+				// !age
+				if (ageResNum > 1 && ageResNum < nextResNum) {
+					const { rows, rowCount } = await poolClient.query(
+						"SELECT * FROM res WHERE thread_id = $1 AND num = $2",
+						[threadId, ageResNum],
+					);
+					if (rowCount) {
+						const record = rows[0];
+						ageRes = {
+							yours: false,
+							// 書き込み内容
+							ccUserId: record.cc_user_id,
+							ccUserName: record.cc_user_name,
+							ccUserAvatar: record.cc_user_avatar,
+							content: record.content,
+							contentUrl: record.content_url,
+							contentType: record.content_type,
+							commandResult: record.command_result,
+							// メタ情報
+							cursor: "",
+							num: record.num,
+							createdAt: record.created_at,
+							isOwner: record.is_owner,
+							sage: record.sage,
+						};
+						ageResCache.set(threadId, ageRes);
+					}
+				}
+
 				const newMeta: Meta = {
 					// 高度な設定
 					varsan: varsanCache.get(threadId) ?? false,
@@ -268,7 +323,8 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 					contentTypesBitmask: contentTypesBitmaskCache.get(threadId) ?? 0,
 					// 動的なデータ
 					ps: "", // TODO
-					ageRes: null, // TODO
+					ageResNum,
+					ageRes: ageResCache.get(threadId) ?? null,
 					balsResNum: balsResNumCache.get(threadId) ?? 0,
 				};
 				io.to(getThreadRoom(threadId)).emit("updateMeta", {

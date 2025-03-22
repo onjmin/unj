@@ -16,6 +16,7 @@ import {
 import auth from "../mylib/auth.js";
 import {
 	ageResCache,
+	ageResNumCache,
 	badCountCache,
 	balsResNumCache,
 	ccBitmaskCache,
@@ -100,13 +101,46 @@ export default ({ socket }: { socket: Socket }) => {
 				deletedAtCache.set(threadId, threadRecord.deleted_at);
 				// 動的なデータ
 				resCountCache.set(threadId, threadRecord.res_count);
-				// ageResCache.set(threadId, threadRecord.age_res); TODO
+				ageResNumCache.set(threadId, threadRecord.age_res_num);
+				ageResCache.set(threadId, null);
 				balsResNumCache.set(threadId, threadRecord.bals_res_num);
 				lolCountCache.set(threadId, threadRecord.lol_count);
 				goodCountCache.set(threadId, threadRecord.good_count);
 				badCountCache.set(threadId, threadRecord.bad_count);
 				// スレ主
 				ownerIdCache.set(threadId, threadRecord.user_id);
+
+				// !age
+				if (
+					threadRecord.age_res_num > 1 &&
+					threadRecord.age_res_num <= threadRecord.res_count
+				) {
+					const { rows, rowCount } = await poolClient.query(
+						"SELECT * FROM res WHERE thread_id = $1 AND num = $2",
+						[threadId, threadRecord.age_res_num],
+					);
+					if (rowCount) {
+						const record = rows[0];
+						const ageRes: Res = {
+							yours: false,
+							// 書き込み内容
+							ccUserId: record.cc_user_id,
+							ccUserName: record.cc_user_name,
+							ccUserAvatar: record.cc_user_avatar,
+							content: record.content,
+							contentUrl: record.content_url,
+							contentType: record.content_type,
+							commandResult: record.command_result,
+							// メタ情報
+							cursor: "",
+							num: record.num,
+							createdAt: record.created_at,
+							isOwner: record.is_owner,
+							sage: record.sage,
+						};
+						ageResCache.set(threadId, ageRes);
+					}
+				}
 			}
 
 			if (isDeleted(threadId)) {
@@ -176,6 +210,7 @@ export default ({ socket }: { socket: Socket }) => {
 				// 動的なデータ
 				resCount: resCountCache.get(threadId) ?? 0,
 				ps: threadRecord.ps,
+				ageResNum: ageResNumCache.get(threadId) ?? 0,
 				ageRes: ageResCache.get(threadId) ?? null,
 				balsResNum: balsResNumCache.get(threadId) ?? 0,
 				lolCount: lolCountCache.get(threadId) ?? 0,

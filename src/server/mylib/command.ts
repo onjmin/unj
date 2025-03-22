@@ -9,6 +9,7 @@ import type { Socket } from "socket.io";
 import { randInt } from "../../common/util.js";
 import { coolTimes as makeThreadCoolTimes } from "../api/makeThread.js";
 import {
+	ageResNumCache,
 	balsResNumCache,
 	ccBitmaskCache,
 	contentTypesBitmaskCache,
@@ -71,10 +72,18 @@ export const parseCommand = ({
 	const cmds = content.replace(/！/g, "!").match(/![^!\s]+/g);
 	if (cmds && cmds.length < 4) {
 		const results = [];
+		const refArray = content.match(/>>[0-9]{1,4}/g);
 		for (const cmd of new Set(cmds)) {
 			if (isOwner) {
 				switch (cmd) {
 					case "!aku":
+						{
+							if (!refArray) break;
+							if (refArray.length > 8) break;
+							const numArray = [...new Set(refArray)]
+								.map((v) => v.slice(2))
+								.map(Number);
+						}
 						break;
 					case "!kaijo":
 						break;
@@ -139,6 +148,17 @@ export const parseCommand = ({
 					case "!add":
 						break;
 					case "!age":
+						{
+							if (!refArray) break;
+							if (refArray.length > 1) break;
+							const num = Number(refArray[0].slice(2));
+							const setNum = ageResNumCache.get(threadId) === num ? 0 : num;
+							ageResNumCache.set(threadId, setNum);
+							results.push(
+								setNum !== 0 ? `[${num}]をage` : `[${num}]のageを解除`,
+							);
+						}
+						shouldUpdateMeta = true;
 						break;
 					case "!バルス":
 						if (ninjaLv < 3) {

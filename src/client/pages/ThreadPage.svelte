@@ -167,6 +167,7 @@
         }
         thread.resList.push(data.new);
         thread.latestCursor = data.new.cursor;
+        if (thread.ageResNum === data.new.num) thread.ageRes = data.new;
         newResSoundHowl?.play();
         if (data.yours) {
             ok();
@@ -200,6 +201,7 @@
         thread.ccBitmask = data.new.ccBitmask;
         thread.contentTypesBitmask = data.new.contentTypesBitmask;
         thread.ps = data.new.ps;
+        thread.ageResNum = data.new.ageResNum;
         thread.ageRes = data.new.ageRes;
         thread.balsResNum = data.new.balsResNum;
         updateChips();
@@ -440,6 +442,28 @@
     {/snippet}
 </Banner>
 
+{#if thread?.ageRes}
+    <div class="ageRes">
+        <ResPart
+            bind:input={content}
+            ccUserId={thread?.ageRes.ccUserId}
+            ccUserName={thread?.ageRes.ccUserName}
+            ccUserAvatar={thread?.ageRes.ccUserAvatar}
+            content={thread?.ageRes.content}
+            contentUrl={thread?.ageRes.contentUrl}
+            contentType={1}
+            commandResult=""
+            cursor=""
+            num={thread?.ageRes.num}
+            isOwner={thread?.ageRes.isOwner}
+            sage={thread?.ageRes.sage}
+            createdAt={thread?.ageRes.createdAt}
+            threadId={thread.id}
+            threadTitle={thread.title}
+        />
+    </div>
+{/if}
+
 {#snippet paginationControls()}
     <IconButton
         class="material-icons"
@@ -620,6 +644,11 @@
 <FooterPart />
 
 <style>
+    .ageRes {
+        margin: 0 auto;
+        max-width: 100svw;
+        min-width: 60svw;
+    }
     .thread-header {
         text-align: left;
         inline-size: 768px;

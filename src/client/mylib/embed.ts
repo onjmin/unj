@@ -29,8 +29,13 @@ export const parseGifEmbedImgur = (url: URL): string | null => {
 export const parseVideoEmbedYouTube = (url: URL): string | null => {
 	const path = url.pathname;
 	let id = "";
+	// youtu.be 短縮URLの場合: https://youtu.be/VIDEO_ID
+	if (url.hostname === "youtu.be") {
+		// pathname は "/VIDEO_ID" になってる
+		id = path.slice(1);
+	}
 	// ショート動画の場合: https://www.youtube.com/shorts/VIDEO_ID
-	if (path.startsWith("/shorts/")) {
+	else if (path.startsWith("/shorts/")) {
 		// "/shorts/VIDEO_ID" となっているので、2 番目の要素が動画ID
 		const parts = path.split("/");
 		id = parts[2];

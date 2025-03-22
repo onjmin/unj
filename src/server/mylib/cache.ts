@@ -14,6 +14,7 @@ export const resLimitCache: Map<number, number> = new Map();
 export const deletedAtCache: Map<number, Date | null> = new Map();
 // 動的なデータ
 export const resCountCache: Map<number, number> = new Map();
+export const ageResNumCache: Map<number, number> = new Map();
 export const ageResCache: Map<number, Res | null> = new Map();
 export const balsResNumCache: Map<number, number> = new Map();
 export const lolCountCache: Map<number, number> = new Map();

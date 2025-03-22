@@ -63,6 +63,7 @@ export type Thread = {
 	// 動的なデータ
 	resCount: number;
 	ps: string;
+	ageResNum: number;
 	ageRes: Res | null;
 	balsResNum: number;
 	lolCount: number;
@@ -78,6 +79,7 @@ export type Meta = {
 	contentTypesBitmask: number;
 	// 動的なデータ
 	ps: string;
+	ageResNum: number;
 	ageRes: Res | null;
 	balsResNum: number;
 };
