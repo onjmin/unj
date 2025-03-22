@@ -108,6 +108,7 @@
     // TODO: ブックマーク設定
 
     let snackbar: Snackbar;
+    $effect(() => () => snackbar.close());
 </script>
 
 <HeaderPart title="ヘッドライン {online}人閲覧中">
@@ -203,7 +204,7 @@
                                 onclick={() =>
                                     navigate(
                                         makePathname(
-                                            `/thread/${thread.id}${thread.latestCursor && thread.resCount > 17 && !thread.balsResNum ? `/${thread.latestCursor}` : ""}`,
+                                            `/thread/${thread.id}${thread.latestCursor ? `/${thread.latestCursor}/1` : ""}`,
                                         ),
                                     )}>arrow_forward</IconButton
                             >

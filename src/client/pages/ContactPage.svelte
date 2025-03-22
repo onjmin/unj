@@ -66,6 +66,7 @@
     });
 
     let snackbar: Snackbar;
+    $effect(() => () => snackbar.close());
     let snackbarText = $state("");
 
     const handleSubmit = async () => {

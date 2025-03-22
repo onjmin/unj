@@ -38,6 +38,7 @@
   });
 
   let snackbar: Snackbar;
+  $effect(() => () => snackbar.close());
 </script>
 
 <svelte:head>

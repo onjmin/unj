@@ -66,6 +66,15 @@
         <ThreadPage threadId={params.threadId} cursor={params.cursor} />
       </BannedCheck>
     </Route>
+    <Route path="{makePathname('/thread')}/:threadId/:cursor/:desc" let:params>
+      <BannedCheck>
+        <ThreadPage
+          threadId={params.threadId}
+          cursor={params.cursor}
+          desc={!!params.desc}
+        />
+      </BannedCheck>
+    </Route>
 
     <!-- スレ立て -->
     <Route path={makePathname("/new")}>

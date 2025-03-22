@@ -2,6 +2,7 @@
   import Button, { Label } from "@smui/button";
   import Dialog, { Title, Content, Actions } from "@smui/dialog";
   import IconButton from "@smui/icon-button";
+  import Snackbar from "@smui/snackbar";
   import Textfield from "@smui/textfield";
   import { format } from "date-fns";
   import { ja } from "date-fns/locale";
@@ -33,6 +34,10 @@
   } = $props();
 
   let open = $state(false);
+  let snackbar: Snackbar;
+  let snackbar2: Snackbar;
+  $effect(() => () => snackbar.close());
+  $effect(() => () => snackbar2.close());
 
   const makeSharedLink = () => makeHref(`/thread/${threadId}/${cursor}`);
   let sharedLink = $state("");
@@ -72,6 +77,7 @@
           onclick={async () => {
             try {
               await navigator.clipboard.writeText(makeSharedLink());
+              snackbar.open();
             } catch (err) {}
           }}>content_copy</IconButton
         >
@@ -84,6 +90,14 @@
     </Button>
   </Actions>
 </Dialog>
+
+<Snackbar bind:this={snackbar}>
+  <Label>コピーしました</Label>
+</Snackbar>
+
+<Snackbar bind:this={snackbar2}>
+  <Label>バツポチしました</Label>
+</Snackbar>
 
 <div class="res">
   <!-- 上段: 名前欄 -->
@@ -120,6 +134,12 @@
     {/if}
     <IconButton class="material-icons" onclick={() => (open = true)}
       >share</IconButton
+    >
+    <IconButton
+      class="material-icons"
+      onclick={() => {
+        snackbar2.open();
+      }}>block</IconButton
     >
   </div>
   <!-- 下段: アイコンと内容 -->

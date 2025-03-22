@@ -13,7 +13,6 @@ import {
 	encodeResId,
 	encodeThreadId,
 } from "../mylib/anti-debug.js";
-import { balsResNumCache } from "../mylib/cache.js";
 import { logger } from "../mylib/log.js";
 import nonce from "../mylib/nonce.js";
 import { sizeOf } from "../mylib/socket.js";
@@ -77,7 +76,6 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 					latestResAt,
 					resCount,
 					latestCursor: encodeResId(record.latest_cursor) ?? "",
-					balsResNum: balsResNumCache.get(record.id) ?? 0,
 					// 基本的な情報
 					title: record.title,
 					// 動的なデータ

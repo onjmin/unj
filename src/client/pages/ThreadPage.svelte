@@ -46,7 +46,7 @@
     changeNewResSound();
     changeReplyResSound();
 
-    let { threadId = "", cursor = "" } = $props();
+    let { threadId = "", cursor = "", desc = false } = $props();
 
     let userName = $state("");
     let userAvatar = $state(0);
@@ -117,7 +117,6 @@
         const { contentTypesBitmask } = thread;
         if ((contentTypesBitmask & contentType) !== 0) return;
         contentType = contentTypesBitmask & -contentTypesBitmask;
-        console.log(contentType);
     };
 
     let thread: Thread | null = $state(null);
@@ -131,7 +130,7 @@
     let denominator = $state(0);
     let goodRatio = $state(0);
     let badRatio = $state(0);
-    let shouldScrollTo2 = $state(cursor !== "");
+    let shouldScrollTo2 = $state(cursor !== "" && !desc);
     const handleReadThread = async (data: { ok: boolean; thread: Thread }) => {
         if (!data.ok) return;
         ok();
@@ -292,7 +291,7 @@
                 nonce: genNonce(nonceKey.value ?? ""),
                 cursor: cursor || null,
                 size: 16,
-                desc: false,
+                desc,
                 threadId,
             });
         });
