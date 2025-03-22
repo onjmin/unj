@@ -150,10 +150,12 @@
             {contentUrl}
           </a>
         </div>
+        {#key num}
+          <div class="content-embed">
+            <EmbedPart {ccUserAvatar} {contentUrl} {contentType} />
+          </div>
+        {/key}
       {/if}
-      <div class="content-embed">
-        <EmbedPart {ccUserAvatar} {contentUrl} {contentType} />
-      </div>
     </div>
   </div>
   {@render children?.()}

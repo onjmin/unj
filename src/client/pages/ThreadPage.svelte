@@ -432,20 +432,24 @@
     <IconButton
         class="material-icons"
         disabled={emitting || thread?.latestCursor === bottomCursor}
-        onclick={() =>
+        onclick={() => {
+            shouldScrollTo2 = true;
             cursorBasedPagination({
                 cursor: bottomCursor,
                 desc: false,
-            })}>chevron_right</IconButton
+            });
+        }}>chevron_right</IconButton
     >
     <IconButton
         class="material-icons"
         disabled={emitting || thread?.latestCursor === bottomCursor}
-        onclick={() =>
+        onclick={() => {
+            shouldScrollTo2 = true;
             cursorBasedPagination({
                 cursor: thread?.latestCursor,
                 desc: true,
-            })}>last_page</IconButton
+            });
+        }}>last_page</IconButton
     >
 {/snippet}
 
@@ -564,17 +568,17 @@
                 </ResPart>
             {/each}
         </div>
+        <div
+            use:visible={(visible) => {
+                if (visible && !isAlreadyScrollEnd) {
+                    openNewResNotice = false;
+                    newResCount = 0;
+                    isAlreadyScrollEnd = true;
+                }
+            }}
+        ></div>
+        <div>{@render paginationControls()}</div>
     {/if}
-    <div
-        use:visible={(visible) => {
-            if (visible && !isAlreadyScrollEnd) {
-                openNewResNotice = false;
-                newResCount = 0;
-                isAlreadyScrollEnd = true;
-            }
-        }}
-    ></div>
-    <div>{@render paginationControls()}</div>
 </MainPart>
 
 <FooterPart />
