@@ -463,6 +463,11 @@
     >
     <IconButton
         class="material-icons"
+        disabled={emitting || thread?.firstCursor === topCursor}
+        onclick={() => navigate(makePathname("/headline"))}>home</IconButton
+    >
+    <IconButton
+        class="material-icons"
         disabled={emitting || thread?.latestCursor === bottomCursor}
         onclick={() => {
             shouldScrollTo2 = true;
