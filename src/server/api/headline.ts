@@ -18,17 +18,13 @@ const api = "headline";
 export default ({ socket, io }: { socket: Socket; io: Server }) => {
 	socket.on(api, async (data) => {
 		const headline = v.safeParse(HeadlineSchema, data);
-		if (!headline.success) {
-			return;
-		}
+		if (!headline.success) return;
 
 		// cursorの復号
 		let cursor: number | null = null;
 		if (headline.output.cursor !== null) {
 			cursor = decodeThreadId(headline.output.cursor);
-			if (cursor === null) {
-				return;
-			}
+			if (cursor === null) return;
 		}
 		const { size, desc } = headline.output;
 

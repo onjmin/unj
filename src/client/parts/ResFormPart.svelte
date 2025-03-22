@@ -24,6 +24,7 @@
     content = $bindable(""),
     contentUrl = $bindable(""),
     contentType = $bindable(0),
+    contentTypesBitmask = 0,
   } = $props();
 
   let openUrlTemplate = $state(false);
@@ -103,7 +104,9 @@
 
 <Select {disabled} bind:value={contentType} label="本文の形式">
   {#each contentTypeOptions as v}
-    <Option value={v.bit}>{v.label}</Option>
+    {#if (v.bit & contentTypesBitmask) !== 0}
+      <Option value={v.bit}>{v.label}</Option>
+    {/if}
   {/each}
 </Select>
 
@@ -112,7 +115,7 @@
   label="URL欄"
   bind:value={contentUrl}
   input$maxlength={1024}
-  style="visibility:{contentType === 1 ? 'hidden' : 'visible'};"
+  style="visibility:{contentType <= 1 ? 'hidden' : 'visible'};"
 >
   {#snippet trailingIcon()}
     <IconButton
@@ -125,7 +128,7 @@
   {/snippet}
   {#snippet helper()}
     <CharacterCounter
-      style="visibility:{contentType === 1 ? 'hidden' : 'visible'};"
+      style="visibility:{contentType <= 1 ? 'hidden' : 'visible'};"
     />
   {/snippet}
 </Textfield>

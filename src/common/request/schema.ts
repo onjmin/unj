@@ -2,6 +2,11 @@ import * as v from "valibot";
 import { avatarMap } from "./avatar.js";
 import { SAFE_TEXT_SINGLELINE } from "./content-schema.js";
 
+export const myConfig = {
+	abortEarly: true,
+	abortPipeEarly: true,
+};
+
 const smallintMax = 2 ** 15 - 1;
 const intMax = 2 ** 31 - 1;
 

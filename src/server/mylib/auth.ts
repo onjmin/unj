@@ -104,14 +104,10 @@ const lazyUpdate = (userId: number, auth: string, ip: string) => {
 const updateAuthToken = (socket: Socket) => {
 	const rawUserId = getUserId(socket);
 	const userId = encodeUserId(rawUserId, bigDay);
-	if (!userId) {
-		return;
-	}
+	if (!userId) return;
 	const rawLimit = differenceInDays(new Date(), bigDay) + 3;
 	const limit = encodeLimit(rawLimit, userId); // JWT風認証は3日で失効
-	if (!limit) {
-		return;
-	}
+	if (!limit) return;
 	const expiryDate = addDays(bigDay, rawLimit);
 	const sign = signAuth(userId, limit);
 	const token = [sign, userId, limit].join(".");

@@ -8,7 +8,7 @@ import { addSeconds, isBefore } from "date-fns";
 import type { Server, Socket } from "socket.io";
 import * as v from "valibot";
 import { contentSchemaMap } from "../../common/request/content-schema.js";
-import { ResSchema } from "../../common/request/schema.js";
+import { ResSchema, myConfig } from "../../common/request/schema.js";
 import type { Meta, Res } from "../../common/response/schema.js";
 import { randInt } from "../../common/util.js";
 import { decodeThreadId, encodeResId } from "../mylib/anti-debug.js";
@@ -41,54 +41,36 @@ const coolTimes: Map<number, Date> = new Map();
 
 export default ({ socket, io }: { socket: Socket; io: Server }) => {
 	socket.on(api, async (data) => {
-		const res = v.safeParse(ResSchema, data);
-		if (!res.success) {
-			return;
-		}
+		// 共通のバリデーション
+		const res = v.safeParse(ResSchema, data, myConfig);
+		if (!res.success) return;
 
 		// フロントエンド上のスレッドIDを復号する
 		const threadId = decodeThreadId(res.output.threadId);
-		if (threadId === null) {
-			return;
-		}
+		if (threadId === null) return;
 
-		if (isDeleted(threadId)) {
-			return;
-		}
-		if (balsResNumCache.get(threadId)) {
-			return;
-		}
+		// 共通のバリデーション2
+		const contentTypesBitmask = contentTypesBitmaskCache.get(threadId) ?? 0;
+		if ((contentTypesBitmask & res.output.contentType) === 0) return;
+		const schema = contentSchemaMap.get(res.output.contentType);
+		if (!schema) return;
+		const contentResult = v.safeParse(schema, data, myConfig);
+		if (!contentResult.success) return;
+
+		if (isDeleted(threadId)) return;
+		if (balsResNumCache.get(threadId)) return;
 
 		const userId = auth.getUserId(socket);
 		const isOwner = ownerIdCache.get(threadId) === userId;
 
-		if (isMax(threadId, isOwner)) {
-			return;
-		}
+		if (isMax(threadId, isOwner)) return;
 
 		// roomのチェック
 		if (
 			!exist(io, getThreadRoom(threadId)) ||
 			!joined(socket, getThreadRoom(threadId))
-		) {
+		)
 			return;
-		}
-
-		// 投稿許可されたコンテンツなのか
-		const contentTypesBitmask = contentTypesBitmaskCache.get(threadId) ?? 0;
-		if ((contentTypesBitmask & res.output.contentType) === 0) {
-			return;
-		}
-
-		// 偽装されたコンテンツなのか
-		const schema = contentSchemaMap.get(res.output.contentType);
-		if (!schema) {
-			return;
-		}
-		const contentResult = v.safeParse(schema, data);
-		if (!contentResult.success) {
-			return;
-		}
 
 		// レートリミット
 		if (isBefore(new Date(), coolTimes.get(userId) ?? 0)) {
@@ -125,9 +107,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 					"SELECT ninja_pokemon, ninja_score FROM users WHERE id = $1",
 					[userId],
 				);
-				if (rowCount === 0) {
-					return;
-				}
+				if (rowCount === 0) return;
 				const { ninja_pokemon, ninja_score } = rows[0];
 				userCached.set(userId, true);
 				ninjaPokemonCache.set(userId, ninja_pokemon);
@@ -137,9 +117,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			const ninjaScore = ninjaScoreCache.get(userId) ?? 0;
 
 			// !バルサン
-			if (!isOwner && varsanCache.get(threadId) && ninjaScore < 256) {
-				return;
-			}
+			if (!isOwner && varsanCache.get(threadId) && ninjaScore < 256) return;
 
 			const nextResNum = (resCountCache.get(threadId) ?? 0) + 1;
 			resCountCache.set(threadId, nextResNum);
@@ -211,14 +189,10 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 					isOwner,
 				],
 			);
-			if (rowCount === 0) {
-				return;
-			}
+			if (rowCount === 0) return;
 			const { id, created_at } = rows[0];
 			const resId = encodeResId(id);
-			if (resId === null) {
-				return;
-			}
+			if (resId === null) return;
 
 			const query = new Map();
 			if (nextResNum === 2) {

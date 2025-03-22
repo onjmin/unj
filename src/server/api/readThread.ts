@@ -41,27 +41,19 @@ const api = "readThread";
 export default ({ socket }: { socket: Socket }) => {
 	socket.on(api, async (data) => {
 		const readThread = v.safeParse(ReadThreadSchema, data);
-		if (!readThread.success) {
-			return;
-		}
+		if (!readThread.success) return;
 
 		// フロントエンド上のスレッドIDを復号する
 		const threadId = decodeThreadId(readThread.output.threadId);
-		if (threadId === null) {
-			return;
-		}
+		if (threadId === null) return;
 
-		if (isDeleted(threadId)) {
-			return;
-		}
+		if (isDeleted(threadId)) return;
 
 		// cursorの復号
 		let cursor: number | null = null;
 		if (readThread.output.cursor !== null) {
 			cursor = decodeResId(readThread.output.cursor);
-			if (cursor === null) {
-				return;
-			}
+			if (cursor === null) return;
 		}
 
 		// Nonce値の完全一致チェック
@@ -88,9 +80,7 @@ export default ({ socket }: { socket: Socket }) => {
 				"SELECT * FROM threads WHERE id = $1",
 				[threadId],
 			);
-			if (rowCount === 0) {
-				return;
-			}
+			if (rowCount === 0) return;
 			const threadRecord = rows[0];
 
 			// キャッシュの登録
@@ -141,9 +131,7 @@ export default ({ socket }: { socket: Socket }) => {
 			const list: Res[] = [];
 			for (const record of (await poolClient.query(query.join(" "))).rows) {
 				const resId = encodeResId(record.id);
-				if (resId === null) {
-					return;
-				}
+				if (resId === null) return;
 				list.push({
 					yours: record.user_id === userId,
 					// 書き込み内容

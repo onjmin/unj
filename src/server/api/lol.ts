@@ -40,33 +40,24 @@ const lazyUpdate = (threadId: number, lolCount: number) => {
 export default ({ socket, io }: { socket: Socket; io: Server }) => {
 	socket.on(api, async (data) => {
 		const lol = v.safeParse(lolSchema, data);
-		if (!lol.success) {
-			return;
-		}
+		if (!lol.success) return;
 
 		// フロントエンド上のスレッドIDを復号する
 		const threadId = decodeThreadId(lol.output.threadId);
-		if (threadId === null) {
-			return;
-		}
+		if (threadId === null) return;
 
-		if (isDeleted(threadId)) {
-			return;
-		}
+		if (isDeleted(threadId)) return;
 
 		// roomのチェック
 		if (
 			!exist(io, getThreadRoom(threadId)) ||
 			!joined(socket, getThreadRoom(threadId))
-		) {
+		)
 			return;
-		}
 
 		// 連投規制
 		const key = [auth.getUserId(socket), threadId].join(delimiter);
-		if (done.has(key)) {
-			return;
-		}
+		if (done.has(key)) return;
 		done.add(key);
 
 		// Nonce値の完全一致チェック

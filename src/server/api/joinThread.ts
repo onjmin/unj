@@ -16,20 +16,14 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 	socket.data.prevRoom = "";
 	socket.on(api, async (data) => {
 		const joinThread = v.safeParse(joinThreadSchema, data);
-		if (!joinThread.success) {
-			return;
-		}
+		if (!joinThread.success) return;
 
 		// フロントエンド上のスレッドIDを復号する
 		const threadId = decodeThreadId(joinThread.output.threadId);
-		if (threadId === null) {
-			return;
-		}
+		if (threadId === null) return;
 
 		// TODO: 未キャッシュ状態の削除済みスレに入れてしまう問題
-		if (isDeleted(threadId)) {
-			return;
-		}
+		if (isDeleted(threadId)) return;
 
 		const room = getThreadRoom(threadId);
 		const moved = await switchTo(socket, room);

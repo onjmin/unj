@@ -18,6 +18,9 @@
         intervalToDuration,
     } from "date-fns";
     import { navigate } from "svelte-routing";
+    import * as v from "valibot";
+    import { contentSchemaMap } from "../../common/request/content-schema.js";
+    import { ResSchema, myConfig } from "../../common/request/schema.js";
     import type { Meta, Res, Thread } from "../../common/response/schema.js";
     import { sleep } from "../../common/util.js";
     import { genNonce } from "../mylib/anti-debug.js";
@@ -49,7 +52,7 @@
     let userAvatar = $state(0);
     let content = $state("");
     let contentUrl = $state("");
-    let contentType = $state(1);
+    let contentType = $state(0);
     let sage = $state(false);
     let ninja = $state(false);
 
@@ -109,6 +112,14 @@
         if (thread.sage) chips.push("強制sage");
     };
 
+    const updateContentType = () => {
+        if (!thread) return;
+        const { contentTypesBitmask } = thread;
+        if ((contentTypesBitmask & contentType) !== 0) return;
+        contentType = contentTypesBitmask & -contentTypesBitmask;
+        console.log(contentType);
+    };
+
     let thread: Thread | null = $state(null);
     let topCursor = $state("");
     let bottomCursor = $state("");
@@ -125,14 +136,17 @@
         if (!data.ok) return;
         ok();
         thread = data.thread;
-        if (thread.desc) thread.resList.reverse();
-        topCursor = thread.resList[0].cursor;
-        bottomCursor = thread.resList[thread.resList.length - 1].cursor;
+        if (thread.resList.length) {
+            if (thread.desc) thread.resList.reverse();
+            topCursor = thread.resList[0].cursor;
+            bottomCursor = thread.resList[thread.resList.length - 1].cursor;
+        }
         title = thread.title;
         lolCount = thread.lolCount;
         goodVotes = thread.goodCount;
         badVotes = thread.badCount;
         updateChips();
+        updateContentType();
         if (shouldScrollTo2) {
             shouldScrollTo2 = false;
             await sleep(512);
@@ -190,6 +204,7 @@
         thread.ageRes = data.new.ageRes;
         thread.balsResNum = data.new.balsResNum;
         updateChips();
+        updateContentType();
     };
 
     const scrollTo2 = () => {
@@ -316,8 +331,8 @@
             threadId,
         });
         await sleep(2048);
-        ok();
         emitting = false;
+        ok();
     };
 
     let laaaaaaaag = $state(false);
@@ -332,9 +347,7 @@
     const tryRes = async () => {
         if (emitting) return;
         emitting = true;
-        // フロントエンドのバリデーション
-        // バックエンドに送信
-        socket.emit("res", {
+        const data = {
             nonce: genNonce(nonceKey.value ?? ""),
             threadId,
             userName,
@@ -344,10 +357,28 @@
             contentType,
             sage,
             ninja,
-        });
+        };
+        const result = (() => {
+            // 共通のバリデーション
+            const res = v.safeParse(ResSchema, data, myConfig);
+            if (!res.success) return;
+            const contentTypesBitmask = thread?.contentTypesBitmask ?? 0;
+            if ((contentTypesBitmask & res.output.contentType) === 0) return;
+            const schema = contentSchemaMap.get(res.output.contentType);
+            if (!schema) return;
+            const contentResult = v.safeParse(schema, data, myConfig);
+            if (!contentResult.success) return;
+            return res.output;
+        })();
+        if (!result) {
+            await sleep(4096);
+            emitting = false;
+            return;
+        }
+        socket.emit("res", result);
         await sleep(4096);
-        ok();
         emitting = false;
+        ok();
     };
 
     const tryLoL = () => {
@@ -376,6 +407,7 @@
         bind:content
         bind:contentUrl
         bind:contentType
+        contentTypesBitmask={thread?.contentTypesBitmask ?? 0}
     />
     <Button disabled={emitting} onclick={tryRes} variant="raised"
         >投稿する</Button

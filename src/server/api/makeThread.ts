@@ -8,7 +8,7 @@ import { addHours, addSeconds, isBefore } from "date-fns";
 import type { Socket } from "socket.io";
 import * as v from "valibot";
 import { contentSchemaMap } from "../../common/request/content-schema.js";
-import { MakeThreadSchema } from "../../common/request/schema.js";
+import { MakeThreadSchema, myConfig } from "../../common/request/schema.js";
 import type { HeadlineThread } from "../../common/response/schema.js";
 import { randInt } from "../../common/util.js";
 import { encodeThreadId } from "../mylib/anti-debug.js";
@@ -23,26 +23,15 @@ export const coolTimes: Map<number, Date> = new Map();
 
 export default ({ socket }: { socket: Socket }) => {
 	socket.on(api, async (data) => {
-		const makeThread = v.safeParse(MakeThreadSchema, data);
-		if (!makeThread.success) {
-			return;
-		}
-
-		// 投稿許可されたコンテンツなのか
+		// 共通のバリデーション
+		const makeThread = v.safeParse(MakeThreadSchema, data, myConfig);
+		if (!makeThread.success) return;
 		const { ccBitmask, contentTypesBitmask, contentType } = makeThread.output;
-		if ((contentTypesBitmask & contentType) === 0) {
-			return;
-		}
-
-		// 偽装されたコンテンツなのか
+		if ((contentTypesBitmask & contentType) === 0) return;
 		const schema = contentSchemaMap.get(contentType);
-		if (!schema) {
-			return;
-		}
-		const contentResult = v.safeParse(schema, data);
-		if (!contentResult.success) {
-			return;
-		}
+		if (!schema) return;
+		const contentResult = v.safeParse(schema, data, myConfig);
+		if (!contentResult.success) return;
 
 		const userId = auth.getUserId(socket);
 
@@ -146,9 +135,7 @@ export default ({ socket }: { socket: Socket }) => {
 					deletedAt,
 				],
 			);
-			if (rowCount === 0) {
-				return;
-			}
+			if (rowCount === 0) return;
 			const { id } = rows[0];
 
 			const newThread: HeadlineThread = {

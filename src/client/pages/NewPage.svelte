@@ -14,10 +14,13 @@
     import Textfield from "@smui/textfield";
     import CharacterCounter from "@smui/textfield/character-counter";
     import { navigate } from "svelte-routing";
+    import * as v from "valibot";
     import {
         ccOptions,
+        contentSchemaMap,
         contentTypeOptions,
     } from "../../common/request/content-schema.js";
+    import { MakeThreadSchema, myConfig } from "../../common/request/schema.js";
     import type { HeadlineThread } from "../../common/response/schema.js";
     import { sleep } from "../../common/util.js";
     import { genNonce } from "../mylib/anti-debug.js";
@@ -100,9 +103,7 @@
     const tryMakeThread = async () => {
         if (emitting) return;
         emitting = true;
-        // フロントエンドのバリデーション
-        // バックエンドに送信
-        socket.emit("makeThread", {
+        const data = {
             nonce: genNonce(nonceKey.value ?? ""),
             userName,
             userAvatar,
@@ -116,10 +117,28 @@
             contentTypesBitmask: bits2Int(contentTypesBitmask),
             max,
             timer,
-        });
+        };
+        const result = (() => {
+            // 共通のバリデーション
+            const makeThread = v.safeParse(MakeThreadSchema, data, myConfig);
+            if (!makeThread.success) return;
+            const { contentTypesBitmask, contentType } = makeThread.output;
+            if ((contentTypesBitmask & contentType) === 0) return;
+            const schema = contentSchemaMap.get(contentType);
+            if (!schema) return;
+            const contentResult = v.safeParse(schema, data, myConfig);
+            if (!contentResult.success) return;
+            return makeThread.output;
+        })();
+        if (!result) {
+            await sleep(4096);
+            emitting = false;
+            return;
+        }
+        socket.emit("makeThread", result);
         await sleep(4096);
-        ok();
         emitting = false;
+        ok();
     };
 
     if (isRef) {
@@ -238,6 +257,7 @@
             bind:content
             bind:contentUrl
             bind:contentType
+            contentTypesBitmask={bits2Int(contentTypesBitmask)}
         />
         <FormField>
             <Checkbox disabled={emitting} bind:checked={check1} />

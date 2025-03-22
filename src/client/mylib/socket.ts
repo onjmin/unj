@@ -100,9 +100,7 @@ export const hello = (callback: (() => void) | null = null) => {
 		getNonceKey();
 	}
 	(async () => {
-		if (!retry) {
-			return;
-		}
+		if (!retry) return;
 		retry();
 		await sleep(2048);
 		if (isOK) return;

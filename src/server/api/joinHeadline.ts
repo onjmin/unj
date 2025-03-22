@@ -19,9 +19,7 @@ export default ({
 	socket.data.prevRoom = "";
 	socket.on(api, async (data) => {
 		const joinHeadline = v.safeParse(joinHeadlineSchema, data);
-		if (!joinHeadline.success) {
-			return;
-		}
+		if (!joinHeadline.success) return;
 		const room = headlineRoom;
 		const moved = await switchTo(socket, room);
 		const { size } = online;
