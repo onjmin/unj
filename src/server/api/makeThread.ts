@@ -145,6 +145,7 @@ export default ({ socket }: { socket: Socket }) => {
 				id: encodeThreadId(id) ?? "",
 				latestResAt: new Date(),
 				resCount: 1,
+				latestCursor: "",
 				// 基本的な情報
 				title: makeThread.output.title,
 				// 動的なデータ

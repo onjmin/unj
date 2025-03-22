@@ -202,7 +202,9 @@
                                 class="material-icons"
                                 onclick={() =>
                                     navigate(
-                                        makePathname(`/thread/${thread.id}`),
+                                        makePathname(
+                                            `/thread/${thread.id}/${thread.latestCursor}`,
+                                        ),
                                     )}>arrow_forward</IconButton
                             >
                         </span>

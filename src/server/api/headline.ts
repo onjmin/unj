@@ -8,7 +8,11 @@ import type { Server, Socket } from "socket.io";
 import * as v from "valibot";
 import { HeadlineSchema } from "../../common/request/schema.js";
 import type { HeadlineThread } from "../../common/response/schema.js";
-import { decodeThreadId, encodeThreadId } from "../mylib/anti-debug.js";
+import {
+	decodeThreadId,
+	encodeResId,
+	encodeThreadId,
+} from "../mylib/anti-debug.js";
 import { logger } from "../mylib/log.js";
 import nonce from "../mylib/nonce.js";
 import { sizeOf } from "../mylib/socket.js";
@@ -71,6 +75,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 					id: encodeThreadId(record.id) ?? "",
 					latestResAt,
 					resCount,
+					latestCursor: encodeResId(record.latest_cursor) ?? "",
 					// 基本的な情報
 					title: record.title,
 					// 動的なデータ

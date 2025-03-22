@@ -5,6 +5,7 @@ export type HeadlineThread = {
 	id: string;
 	latestResAt: Date;
 	resCount: number;
+	latestCursor: string;
 	// 基本的な情報
 	title: string;
 	// 動的なデータ
