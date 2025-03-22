@@ -1,6 +1,6 @@
 <script lang="ts">
     import { navigate } from "svelte-routing";
-    import { base } from "../mylib/env.js";
+    import { makePathname } from "../mylib/env.js";
     import { banStatus } from "../mylib/idb/preload.js";
 
     let { children } = $props();
@@ -8,7 +8,7 @@
 
     $effect(() => {
         if ("ban" !== banStatus.value) {
-            navigate(base("/"), { replace: true });
+            navigate(makePathname("/"), { replace: true });
         } else {
             ready = true;
         }

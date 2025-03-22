@@ -10,6 +10,7 @@
     import Checkbox from "@smui/checkbox";
     import Chip, { Set as ChipSet, LeadingIcon, Text } from "@smui/chips";
     import FormField from "@smui/form-field";
+    import IconButton from "@smui/icon-button";
     import Paper, { Title, Content, Subtitle } from "@smui/paper";
     import {
         differenceInDays,
@@ -21,7 +22,7 @@
     import { sleep } from "../../common/util.js";
     import { genNonce } from "../mylib/anti-debug.js";
     import { visible } from "../mylib/dom.js";
-    import { base } from "../mylib/env.js";
+    import { makePathname } from "../mylib/env.js";
     import { Postload } from "../mylib/idb/postload.js";
     import { nonceKey } from "../mylib/idb/preload.js";
     import { goodbye, hello, ok, socket } from "../mylib/socket.js";
@@ -42,7 +43,7 @@
     changeNewResSound();
     changeReplyResSound();
 
-    let { threadId = "", resNum = "" } = $props();
+    let { threadId = "", cursor = "" } = $props();
 
     let userName = $state("");
     let userAvatar = $state(0);
@@ -109,6 +110,8 @@
     };
 
     let thread: Thread | null = $state(null);
+    let topCursor = $state("");
+    let bottomCursor = $state("");
     let title = $state("スレ読み込み中");
     let lolCount = $state(0);
     let goodVotes = $state(0);
@@ -117,15 +120,24 @@
     let denominator = $state(0);
     let goodRatio = $state(0);
     let badRatio = $state(0);
-    const handleReadThread = (data: { ok: boolean; thread: Thread }) => {
+    let shouldScrollTo2 = $state(cursor !== "");
+    const handleReadThread = async (data: { ok: boolean; thread: Thread }) => {
         if (!data.ok) return;
         ok();
         thread = data.thread;
+        if (thread.desc) thread.resList.reverse();
+        topCursor = thread.resList[0].cursor;
+        bottomCursor = thread.resList[thread.resList.length - 1].cursor;
         title = thread.title;
         lolCount = thread.lolCount;
         goodVotes = thread.goodCount;
         badVotes = thread.badCount;
         updateChips();
+        if (shouldScrollTo2) {
+            shouldScrollTo2 = false;
+            await sleep(512);
+            scrollTo2();
+        }
     };
 
     let openNewResNotice = $state(false);
@@ -141,6 +153,7 @@
             thread.resList.shift();
         }
         thread.resList.push(data.new);
+        bottomCursor = data.new.cursor;
         newResSoundHowl?.play();
         if (data.yours) {
             ok();
@@ -177,6 +190,18 @@
         thread.ageRes = data.new.ageRes;
         thread.balsResNum = data.new.balsResNum;
         updateChips();
+    };
+
+    const scrollTo2 = () => {
+        const main = document.querySelector(".unj-main-part") ?? document.body;
+        const res = document.querySelectorAll(".res");
+        const cursor = res[1];
+        if (cursor) {
+            main.scrollTo({
+                top: (cursor as HTMLElement).offsetTop,
+                behavior: "smooth",
+            });
+        }
     };
 
     const scrollToEnd = () => {
@@ -221,7 +246,7 @@
         const now = new Date();
         const diffSeconds = differenceInSeconds(date, now);
         if (diffSeconds < 0) {
-            navigate(base("/headline"), { replace: true });
+            navigate(makePathname("/headline"), { replace: true });
             return "期限切れ";
         }
         if (diffSeconds <= 359999) {
@@ -250,8 +275,8 @@
             });
             socket.emit("readThread", {
                 nonce: genNonce(nonceKey.value ?? ""),
-                cursor: null,
-                size: 64,
+                cursor: cursor || null,
+                size: 16,
                 desc: false,
                 threadId,
             });
@@ -274,6 +299,27 @@
         };
     });
 
+    const cursorBasedPagination = async ({
+        cursor,
+        desc,
+    }: {
+        cursor?: string;
+        desc: boolean;
+    }) => {
+        if (emitting) return;
+        emitting = true;
+        socket.emit("readThread", {
+            nonce: genNonce(nonceKey.value ?? ""),
+            cursor: cursor || null,
+            size: 16,
+            desc,
+            threadId,
+        });
+        await sleep(2048);
+        ok();
+        emitting = false;
+    };
+
     let laaaaaaaag = $state(false);
     $effect(() => {
         const id = setTimeout(() => {
@@ -284,6 +330,7 @@
 
     let emitting = $state(false);
     const tryRes = async () => {
+        if (emitting) return;
         emitting = true;
         // フロントエンドのバリデーション
         // バックエンドに送信
@@ -362,6 +409,46 @@
     {/snippet}
 </Banner>
 
+{#snippet paginationControls()}
+    <IconButton
+        class="material-icons"
+        disabled={emitting || thread?.firstCursor === topCursor}
+        onclick={() => {
+            cursorBasedPagination({
+                cursor: thread?.firstCursor,
+                desc: false,
+            });
+        }}>first_page</IconButton
+    >
+    <IconButton
+        class="material-icons"
+        disabled={emitting || thread?.firstCursor === topCursor}
+        onclick={() =>
+            cursorBasedPagination({
+                cursor: topCursor,
+                desc: true,
+            })}>chevron_left</IconButton
+    >
+    <IconButton
+        class="material-icons"
+        disabled={emitting || thread?.latestCursor === bottomCursor}
+        onclick={() =>
+            cursorBasedPagination({
+                cursor: bottomCursor,
+                desc: false,
+            })}>chevron_right</IconButton
+    >
+    <IconButton
+        class="material-icons"
+        disabled={emitting || thread?.latestCursor === bottomCursor}
+        onclick={() =>
+            cursorBasedPagination({
+                cursor: thread?.latestCursor,
+                desc: true,
+            })}>last_page</IconButton
+    >
+{/snippet}
+
 <MainPart>
     {#if thread === null}
         <p>スレ読み込み中…</p>
@@ -417,6 +504,7 @@
                 <span>{"ｗ".repeat(lolCount)}</span>
             </div>
         </div>
+        <div>{@render paginationControls()}</div>
         <div class="res-list">
             <ResPart
                 bind:input={content}
@@ -427,12 +515,13 @@
                 contentUrl={thread.contentUrl}
                 contentType={thread.contentType}
                 commandResult=""
-                id=""
+                cursor=""
                 num={1}
                 isOwner={true}
                 sage={false}
                 createdAt={thread.createdAt}
                 threadId={thread.id}
+                threadTitle={thread.title}
             >
                 <div class="unj-like-vote-container">
                     <div class="vote-buttons">
@@ -461,12 +550,13 @@
                     contentUrl={res.contentUrl}
                     contentType={res.contentType}
                     commandResult={res.commandResult}
-                    id={res.id}
+                    cursor={res.cursor}
                     num={res.num}
                     isOwner={res.isOwner}
                     sage={res.sage}
                     createdAt={res.createdAt}
                     threadId={thread.id}
+                    threadTitle={thread.title}
                 >
                     {#if res.num === thread.balsResNum}
                         <BalsPart />
@@ -484,6 +574,7 @@
             }
         }}
     ></div>
+    <div>{@render paginationControls()}</div>
 </MainPart>
 
 <FooterPart />

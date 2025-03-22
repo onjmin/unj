@@ -21,7 +21,7 @@
     import { navigate } from "svelte-routing";
     import { sleep } from "../../common/util.js";
     import { genBanVerifyCode } from "../mylib/anti-debug.js";
-    import { base } from "../mylib/env.js";
+    import { makePathname } from "../mylib/env.js";
     import {
         banReason,
         banReport,
@@ -44,7 +44,7 @@
             ipInfoJson.value = null;
             banVerifyCode.value = null;
             banReport.value = null;
-            navigate(base("/"), { replace: true });
+            navigate(makePathname("/"), { replace: true });
         } else {
             open = true;
         }
@@ -184,11 +184,11 @@
 
 <Dialog
     bind:open
-    aria-labelledby="simple-title"
-    aria-describedby="simple-content"
+    aria-labelledby="verify-failed-title"
+    aria-describedby="verify-failed-content"
 >
-    <Title id="simple-title">BAN解除に失敗しました</Title>
-    <Content id="simple-content">時間を置いて再度お試しください</Content>
+    <Title id="verify-failed-title">BAN解除に失敗しました</Title>
+    <Content id="verify-failed-content">時間を置いて再度お試しください</Content>
     <Actions>
         <Button>
             <Label>OK</Label>

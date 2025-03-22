@@ -26,7 +26,7 @@ export type Res = {
 	contentType: number;
 	commandResult: string;
 	// メタ情報
-	id: string;
+	cursor: string;
 	num: number;
 	createdAt: Date;
 	isOwner: boolean;
@@ -44,6 +44,9 @@ export type Thread = {
 	contentType: number;
 	// メタ情報
 	id: string;
+	firstCursor: string;
+	latestCursor: string;
+	desc: boolean;
 	createdAt: Date;
 	resList: Res[];
 	// 基本的な情報

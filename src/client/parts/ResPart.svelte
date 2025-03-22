@@ -1,8 +1,13 @@
 <script lang="ts">
+  import Button, { Label } from "@smui/button";
+  import Dialog, { Title, Content, Actions } from "@smui/dialog";
+  import IconButton from "@smui/icon-button";
+  import Textfield from "@smui/textfield";
   import { format } from "date-fns";
   import { ja } from "date-fns/locale";
   import { avatarMap } from "../../common/request/avatar.js";
   import { seededRandArray } from "../../common/util.js";
+  import { adminTwitterUsername, makeHref } from "../mylib/env.js";
   import EmbedPart from "./EmbedPart.svelte";
 
   let {
@@ -17,15 +22,68 @@
     contentType = 0,
     commandResult = "",
     // メタ情報
-    id = "",
+    cursor = "",
     num = 0,
     isOwner = false,
     sage = false,
     createdAt = new Date(),
     // メタ情報
     threadId = "",
+    threadTitle = "",
   } = $props();
+
+  let open = $state(false);
+
+  const makeSharedLink = () => makeHref(`/thread/${threadId}/${cursor}`);
+  let sharedLink = $state("");
+
+  $effect(() => {
+    if (open) {
+      sharedLink = makeSharedLink();
+    }
+  });
 </script>
+
+<Dialog
+  bind:open
+  selection
+  aria-labelledby="share-title"
+  aria-describedby="share-content"
+>
+  <Title id="share-title">{`>>${num}のレスを共有`}</Title>
+  <Content id="share-content">
+    <Button
+      onclick={() => {
+        const url = new URL("https://x.com/intent/post");
+        Object.entries({
+          url: makeSharedLink(),
+          text: threadTitle,
+          via: adminTwitterUsername,
+          related: adminTwitterUsername,
+        }).forEach(([k, v]) => url.searchParams.append(k, v));
+        window.open(url.href, "_blank");
+      }}
+      variant="raised">Xで共有</Button
+    >
+    <Textfield bind:value={sharedLink} label="共有リンク">
+      {#snippet trailingIcon()}
+        <IconButton
+          class="material-icons"
+          onclick={async () => {
+            try {
+              await navigator.clipboard.writeText(makeSharedLink());
+            } catch (err) {}
+          }}>content_copy</IconButton
+        >
+      {/snippet}
+    </Textfield>
+  </Content>
+  <Actions>
+    <Button>
+      <Label>閉じる</Label>
+    </Button>
+  </Actions>
+</Dialog>
 
 <div class="res">
   <!-- 上段: 名前欄 -->
@@ -60,6 +118,9 @@
     {#if isOwner}
       <span class="thread-owner">主</span>
     {/if}
+    <IconButton class="material-icons" onclick={() => (open = true)}
+      >share</IconButton
+    >
   </div>
   <!-- 下段: アイコンと内容 -->
   <div class="content-row">

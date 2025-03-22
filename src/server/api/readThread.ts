@@ -21,8 +21,10 @@ import {
 	ccBitmaskCache,
 	contentTypesBitmaskCache,
 	deletedAtCache,
+	firstCursorCache,
 	goodCountCache,
 	isDeleted,
+	latestCursorCache,
 	lolCountCache,
 	ownerIdCache,
 	resCountCache,
@@ -94,6 +96,8 @@ export default ({ socket }: { socket: Socket }) => {
 			// キャッシュの登録
 			if (!threadCached.has(threadId)) {
 				threadCached.set(threadId, true);
+				firstCursorCache.set(threadId, threadRecord.first_cursor);
+				latestCursorCache.set(threadId, threadRecord.latest_cursor);
 				// 高度な設定
 				varsanCache.set(threadId, threadRecord.varsan);
 				sageCache.set(threadId, threadRecord.sage);
@@ -125,9 +129,9 @@ export default ({ socket }: { socket: Socket }) => {
 			const { size, desc } = readThread.output;
 			if (cursor !== null) {
 				if (desc) {
-					query.push(`AND id < ${cursor}`);
+					query.push(`AND id <= ${cursor}`);
 				} else {
-					query.push(`AND id > ${cursor}`);
+					query.push(`AND id >= ${cursor}`);
 				}
 			}
 			query.push(`ORDER BY num ${desc ? "DESC" : "ASC"}`);
@@ -151,7 +155,7 @@ export default ({ socket }: { socket: Socket }) => {
 					contentType: record.content_type,
 					commandResult: record.command_result,
 					// メタ情報
-					id: resId,
+					cursor: resId,
 					num: record.num,
 					createdAt: record.created_at,
 					isOwner: record.is_owner,
@@ -161,6 +165,9 @@ export default ({ socket }: { socket: Socket }) => {
 
 			const thread: Thread = {
 				yours: threadRecord.user_id === userId,
+				firstCursor: encodeResId(firstCursorCache.get(threadId) ?? 0) ?? "",
+				latestCursor: encodeResId(latestCursorCache.get(threadId) ?? 0) ?? "",
+				desc,
 				// 書き込み内容
 				ccUserId: threadRecord.cc_user_id,
 				ccUserName: threadRecord.cc_user_name,

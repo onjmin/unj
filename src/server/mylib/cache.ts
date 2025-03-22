@@ -3,6 +3,8 @@ import type { Ninja, Res } from "../../common/response/schema.js";
 import auth from "./auth.js";
 
 export const threadCached: Map<number, boolean> = new Map();
+export const firstCursorCache: Map<number, number> = new Map();
+export const latestCursorCache: Map<number, number> = new Map();
 // 高度な設定
 export const varsanCache: Map<number, boolean> = new Map();
 export const sageCache: Map<number, boolean> = new Map();

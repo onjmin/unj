@@ -14,6 +14,7 @@ export const decodeEnv = (value?: string) =>
 
 export const VITE_ADMIN_EMAIL = decodeEnv(import.meta.env.VITE_ADMIN_EMAIL);
 export const VITE_ADMIN_TWITTER = decodeEnv(import.meta.env.VITE_ADMIN_TWITTER);
+export const adminTwitterUsername = VITE_ADMIN_TWITTER.split("/").slice(-1)[0];
 
 const VITE_BASE_URL = PROD_MODE
 	? decodeEnv(import.meta.env.VITE_BASE_URL)
@@ -47,7 +48,13 @@ export const pathname = (): string => {
 const url = PROD_MODE ? new URL(VITE_BASE_URL) : window.location;
 
 /**
- * デプロイ先に応じた遷移先
+ * デプロイ先に応じたpathnameを作る
  */
-export const base = (to: string) =>
+export const makePathname = (to: string) =>
 	PROD_MODE ? `${url.pathname}${to.slice(1)}` : to;
+
+/**
+ * デプロイ先に応じたhrefを作る
+ */
+export const makeHref = (to: string) =>
+	PROD_MODE ? `${url.href}${to.slice(1)}` : `${location.host}${to}`;

@@ -18,6 +18,8 @@ CREATE TABLE threads (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     deleted_at TIMESTAMP, -- 論理削除の予定日時（!timer用）
     latest_res_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 最終レスの日時
+    first_cursor INT NOT NULL DEFAULT 0,
+    latest_cursor INT NOT NULL DEFAULT 0,
     -- 基本的な情報
     title TEXT NOT NULL DEFAULT '',
     thread_type SMALLINT DEFAULT 0, -- スレッドの種類（実況スレ、地震スレ、安価スレ、スレタイで振り分けられる。または、SSスレ、運営スレ、語尾が変わる特殊なスレなど）

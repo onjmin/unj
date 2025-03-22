@@ -17,8 +17,10 @@ import {
 	balsResNumCache,
 	ccBitmaskCache,
 	contentTypesBitmaskCache,
+	firstCursorCache,
 	isDeleted,
 	isMax,
+	latestCursorCache,
 	ninja,
 	ninjaPokemonCache,
 	ninjaScoreCache,
@@ -218,52 +220,40 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 				return;
 			}
 
+			const query = new Map();
+			if (nextResNum === 2) {
+				query.set("first_cursor", id);
+				firstCursorCache.set(threadId, id);
+			}
+			query.set("latest_cursor", id);
+			latestCursorCache.set(threadId, id);
+
+			query.set("res_count", nextResNum);
+
+			if (parsedResult.shouldUpdateMeta) {
+				query.set("varsan", varsanCache.get(threadId) ?? false);
+				query.set("sage", sageCache.get(threadId) ?? false);
+				query.set("cc_bitmask", ccBitmaskCache.get(threadId) ?? 0);
+				query.set(
+					"content_types_bitmask",
+					contentTypesBitmaskCache.get(threadId) ?? 0,
+				);
+				query.set("ps", ""); // TODO
+				query.set("age_res_num", 0); // TODO
+				query.set("bals_res_num", balsResNumCache.get(threadId) ?? 0);
+			}
+
 			const sage = sageCache.get(threadId) || res.output.sage;
 
 			// スレッドの更新
-			if (!parsedResult.shouldUpdateMeta) {
-				await poolClient.query(
-					[
-						"UPDATE threads SET",
-						[sage ? null : "latest_res_at = NOW()", "res_count = $1"]
-							.filter((v) => v)
-							.join(","),
-						"WHERE id = $2",
-					].join(" "),
-					[nextResNum, threadId],
-				);
-			} else {
-				await poolClient.query(
-					[
-						"UPDATE threads SET",
-						[
-							sage ? null : "latest_res_at = NOW()",
-							"res_count = $1",
-							"varsan = $2",
-							"sage = $3",
-							"cc_bitmask = $4",
-							"content_types_bitmask = $5",
-							"ps = $6",
-							"age_res_num = $7",
-							"bals_res_num = $8",
-						]
-							.filter((v) => v)
-							.join(","),
-						"WHERE id = $9",
-					].join(" "),
-					[
-						nextResNum,
-						varsanCache.get(threadId) ?? false,
-						sageCache.get(threadId) ?? false,
-						ccBitmaskCache.get(threadId) ?? 0,
-						contentTypesBitmaskCache.get(threadId) ?? 0,
-						"", // TODO
-						0, // TODO
-						balsResNumCache.get(threadId) ?? 0,
-						threadId,
-					],
-				);
-			}
+			await poolClient.query(
+				[
+					`UPDATE threads SET ${sage ? "" : "latest_res_at = NOW(),"}`,
+					[...query.keys()].map((v, i) => `${v}=$${i + 1}`).join(","),
+					`WHERE id = $${query.size + 1}`,
+				].join(" "),
+				[...query.values(), threadId],
+			);
 
 			const newRes: Res = {
 				yours: true,
@@ -276,7 +266,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 				contentType: contentResult.output.contentType,
 				commandResult: parsedResult.msg,
 				// メタ情報
-				id: resId,
+				cursor: resId,
 				num: nextResNum,
 				createdAt: created_at,
 				isOwner,

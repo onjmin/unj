@@ -1,5 +1,5 @@
 import { navigate } from "svelte-routing";
-import { base, pathname } from "./env.js";
+import { makePathname, pathname } from "./env.js";
 import { destinationPathname, termsAgreement } from "./idb/preload.js";
 
 const whitelist = [
@@ -20,9 +20,9 @@ const loadPathname = () => {
 	const pathname = destinationPathname.value;
 	if (pathname && whitelist.some((v) => pathname.startsWith(v))) {
 		destinationPathname.value = null;
-		return base(pathname);
+		return makePathname(pathname);
 	}
-	return base("/headline");
+	return makePathname("/headline");
 };
 
 export const tryEnter = () => {

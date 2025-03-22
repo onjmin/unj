@@ -7,11 +7,11 @@
 
     import { navigate } from "svelte-routing";
     import { randArray } from "../../common/util.js";
-    import { base } from "../mylib/env.js";
+    import { makePathname } from "../mylib/env.js";
 
     $effect(() => {
         const id = setTimeout(() => {
-            navigate(base("/"), { replace: true });
+            navigate(makePathname("/"), { replace: true });
         }, 4096);
         return () => clearTimeout(id);
     });

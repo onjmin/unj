@@ -54,12 +54,12 @@
 <Dialog
   class="unj-dialog-part"
   bind:open={openTermsWarn}
-  aria-labelledby="simple-title"
-  aria-describedby="simple-content"
+  aria-labelledby="disagree-title"
+  aria-describedby="disagree-content"
   onSMUIDialogClosed={closeHandler}
 >
-  <Title id="simple-title">ダメです。</Title>
-  <Content id="simple-content"
+  <Title id="disagree-title">ダメです。</Title>
+  <Content id="disagree-content"
     >利用規約に同意しない場合は、お使いいただけません。</Content
   >
   <Actions>
@@ -75,15 +75,15 @@
   class="unj-dialog-part"
   bind:open={openTerms}
   fullscreen
-  aria-labelledby="fullscreen-title"
-  aria-describedby="fullscreen-content"
+  aria-labelledby="terms-title"
+  aria-describedby="terms-content"
   onSMUIDialogClosed={closeHandler}
 >
   <Header>
-    <Title id="fullscreen-title">うんｊ利用規約</Title>
+    <Title id="terms-title">うんｊ利用規約</Title>
     <IconButton action="close" class="material-icons">close</IconButton>
   </Header>
-  <Content id="fullscreen-content">
+  <Content id="terms-content">
     <TermsPart />
     <div
       use:visible={(visible) => {

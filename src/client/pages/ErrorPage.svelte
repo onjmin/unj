@@ -7,7 +7,7 @@
 
     import Button from "@smui/button";
     import Paper, { Title, Content, Subtitle } from "@smui/paper";
-    import { base } from "../mylib/env.js";
+    import { makePathname } from "../mylib/env.js";
     import { errorReason } from "../mylib/socket.js";
 </script>
 
@@ -28,7 +28,7 @@
             <Content>しばらくしてからリロードしてみてね。</Content>
             <Button
                 onclick={() => {
-                    location.href = base("/");
+                    location.href = makePathname("/");
                 }}
                 variant="raised">リロード</Button
             >

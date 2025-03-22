@@ -24,6 +24,7 @@ export class Preload {
 	}
 }
 
+// BAN
 export const banStatus = new Preload("banStatus");
 export const banReason = new Preload("banReason");
 export const traversalTarget = new Preload("traversalTarget");
@@ -31,14 +32,20 @@ export const ipInfoJson = new Preload("ipInfoJson");
 export const banVerifyCode = new Preload("banVerifyCode");
 export const banReport = new Preload("banReport");
 
+// Sound
 export const soundVolume = new Preload("soundVolume");
 export const newResSound = new Preload("newResSound");
 export const replyResSound = new Preload("replyResSound");
 
+// Guide
+export const showThreadGuide = new Preload("showThreadGuide");
+
+// other
 export const destinationPathname = new Preload("destinationPathname");
 export const termsAgreement = new Preload("termsAgreement");
 export const contactedAt = new Preload("contactedAt");
 
+// other2
 export const authToken = new Preload("authToken");
 export const nonceKey = new Preload("nonceKey");
 export const ninjaPokemon = new Preload("ninjaPokemon");

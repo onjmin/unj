@@ -2,7 +2,7 @@ import { type Socket, io } from "socket.io-client";
 import { navigate } from "svelte-routing";
 import type { Ninja } from "../../common/response/schema.js";
 import { sleep } from "../../common/util.js";
-import { PROD_MODE, base, decodeEnv, pathname } from "./env.js";
+import { PROD_MODE, decodeEnv, makePathname, pathname } from "./env.js";
 import {
 	authToken,
 	banReason,
@@ -61,18 +61,18 @@ export const hello = (callback: (() => void) | null = null) => {
 				case "banned":
 					banStatus.value = "ban";
 					banReason.value = "banned";
-					navigate(base("/akukin"), { replace: true });
+					navigate(makePathname("/akukin"), { replace: true });
 					break;
 				case "multipleConnections":
-					navigate(base("/error"), { replace: true });
+					navigate(makePathname("/error"), { replace: true });
 					break;
 				case "newUsersRateLimit":
 					destinationPathname.value = pathname();
-					navigate(base("/error"), { replace: true });
+					navigate(makePathname("/error"), { replace: true });
 					break;
 				case "grantFailed":
 					destinationPathname.value = pathname();
-					navigate(base("/error"), { replace: true });
+					navigate(makePathname("/error"), { replace: true });
 					break;
 				default:
 					break;

@@ -3,6 +3,7 @@
   import Snackbar, { Label } from "@smui/snackbar";
   import TopAppBar, { Title, Row, Section } from "@smui/top-app-bar";
   import { DEV_MODE, STG_MODE, pathname } from "../mylib/env.js";
+  import { showThreadGuide } from "../mylib/idb/preload.js";
   import LeftMenuPart from "./LeftMenuPart.svelte";
   import RightMenuPart from "./RightMenuPart.svelte";
 
@@ -26,6 +27,7 @@
   let openLeft = $state(false);
   let openRight = $state(false);
   let isMobile = $state(false);
+  let doneGuide = $state(false);
 
   $effect(() => {
     // ソフトウェアキーボードが出現すると画面幅が変わるため、最初の1回だけ実行する
@@ -121,8 +123,29 @@
       openRight = false;
     }}>うんｊ</button
   >
+  <button
+    type="button"
+    class="guide unj-main-part-overlay {isMobile &&
+    !doneGuide &&
+    !showThreadGuide.value &&
+    pathname().startsWith('/thread')
+      ? ''
+      : 'hidden'}"
+    onclick={() => {
+      showThreadGuide.value = "done";
+      doneGuide = true;
+    }}>右上の三本線からレス可能！</button
+  >
 {/if}
 
 <Snackbar bind:this={snackbar}>
   <Label>#後で見る</Label>
 </Snackbar>
+
+<style>
+  .guide {
+    color: white;
+    text-align: right;
+    font-size: 2rem;
+  }
+</style>

@@ -56,13 +56,14 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			];
 			if (cursor !== null) {
 				if (desc) {
-					query.push(`AND id < ${cursor}`);
+					query.push(`AND id <= ${cursor}`);
 				} else {
-					query.push(`AND id > ${cursor}`);
+					query.push(`AND id >= ${cursor}`);
 				}
 			}
 			query.push(`ORDER BY latest_res_at ${desc ? "DESC" : "ASC"}`);
 			query.push(`LIMIT ${size}`);
+
 			const list: HeadlineThread[] = [];
 			for (const record of (await poolClient.query(query.join(" "))).rows) {
 				const latestResAt = new Date(record.latest_res_at);

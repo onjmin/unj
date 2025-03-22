@@ -22,7 +22,7 @@
     import { navigate } from "svelte-routing";
     import type { HeadlineThread } from "../../common/response/schema.js";
     import { genNonce } from "../mylib/anti-debug.js";
-    import { base } from "../mylib/env.js";
+    import { makePathname } from "../mylib/env.js";
     import { nonceKey } from "../mylib/idb/preload.js";
     import { goodbye, hello, ok, socket } from "../mylib/socket.js";
     import AccessCounterPart from "../parts/AccessCounterPart.svelte";
@@ -201,8 +201,9 @@
                             <IconButton
                                 class="material-icons"
                                 onclick={() =>
-                                    navigate(base(`/thread/${thread.id}`))}
-                                >arrow_forward</IconButton
+                                    navigate(
+                                        makePathname(`/thread/${thread.id}`),
+                                    )}>arrow_forward</IconButton
                             >
                         </span>
                     </Content>

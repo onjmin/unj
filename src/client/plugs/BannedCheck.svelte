@@ -1,6 +1,6 @@
 <script lang="ts">
     import { navigate } from "svelte-routing";
-    import { base, pathname } from "../mylib/env.js";
+    import { makePathname, pathname } from "../mylib/env.js";
     import {
         banStatus,
         destinationPathname,
@@ -12,10 +12,10 @@
 
     $effect(() => {
         if ("ban" === banStatus.value) {
-            navigate(base("/akukin"), { replace: true });
+            navigate(makePathname("/akukin"), { replace: true });
         } else if ("yes" !== termsAgreement.value && "/" !== pathname()) {
             destinationPathname.value = pathname();
-            navigate(base("/"), { replace: true });
+            navigate(makePathname("/"), { replace: true });
         }
         ready = true;
     });

@@ -1,7 +1,7 @@
 <script lang="ts">
     import { navigate } from "svelte-routing";
     import { flaky } from "../mylib/anti-debug.js";
-    import { base, pathname } from "../mylib/env.js";
+    import { makePathname, pathname } from "../mylib/env.js";
     import {
         banReason,
         banStatus,
@@ -44,7 +44,7 @@
                     banStatus.value = "ban";
                     banReason.value = "traversal";
                     traversalTarget.value = window.location.href;
-                    navigate(base("/akukin"), { replace: true });
+                    navigate(makePathname("/akukin"), { replace: true });
                 })
             ) {
                 ready = true;

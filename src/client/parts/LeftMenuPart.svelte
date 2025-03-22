@@ -9,7 +9,7 @@
     } from "@smui/list";
     import TopAppBar, { Row } from "@smui/top-app-bar";
     import { navigate } from "svelte-routing";
-    import { base, pathname } from "../mylib/env.js";
+    import { makePathname, pathname } from "../mylib/env.js";
 
     let { open = false } = $props();
 </script>
@@ -24,7 +24,7 @@
         <Content>
             <List>
                 <Item
-                    onclick={() => navigate(base("/new"))}
+                    onclick={() => navigate(makePathname("/new"))}
                     activated={pathname().startsWith("/new")}
                 >
                     <Graphic class="material-icons" aria-hidden="true"
@@ -33,7 +33,7 @@
                     <Text>スレ立て</Text>
                 </Item>
                 <Item
-                    onclick={() => navigate(base("/headline"))}
+                    onclick={() => navigate(makePathname("/headline"))}
                     activated={pathname().startsWith("/headline")}
                 >
                     <Graphic class="material-icons" aria-hidden="true"
@@ -42,7 +42,7 @@
                     <Text>ヘッドライン</Text>
                 </Item>
                 <Item
-                    onclick={() => navigate(base("/history"))}
+                    onclick={() => navigate(makePathname("/history"))}
                     activated={pathname().startsWith("/history")}
                 >
                     <Graphic class="material-icons" aria-hidden="true"
@@ -51,7 +51,7 @@
                     <Text>閲覧履歴</Text>
                 </Item>
                 <Item
-                    onclick={() => navigate(base("/bookmark"))}
+                    onclick={() => navigate(makePathname("/bookmark"))}
                     activated={pathname().startsWith("/bookmark")}
                 >
                     <Graphic class="material-icons" aria-hidden="true"
@@ -60,7 +60,7 @@
                     <Text>#後で見る</Text>
                 </Item>
                 <Item
-                    onclick={() => navigate(base("/config"))}
+                    onclick={() => navigate(makePathname("/config"))}
                     activated={pathname().startsWith("/config")}
                 >
                     <Graphic class="material-icons" aria-hidden="true"
@@ -72,7 +72,7 @@
                 <Separator />
                 <Subheader tag="h6">サイト情報</Subheader>
                 <Item
-                    onclick={() => navigate(base("/terms"))}
+                    onclick={() => navigate(makePathname("/terms"))}
                     activated={pathname().startsWith("/terms")}
                 >
                     <Graphic class="material-icons" aria-hidden="true"
@@ -81,7 +81,7 @@
                     <Text>利用規約</Text>
                 </Item>
                 <Item
-                    onclick={() => navigate(base("/contact"))}
+                    onclick={() => navigate(makePathname("/contact"))}
                     activated={pathname().startsWith("/contact")}
                 >
                     <Graphic class="material-icons" aria-hidden="true"
@@ -90,7 +90,7 @@
                     <Text>お問い合わせ</Text>
                 </Item>
                 <Item
-                    onclick={() => navigate(base("/update"))}
+                    onclick={() => navigate(makePathname("/update"))}
                     activated={pathname().startsWith("/update")}
                 >
                     <Graphic class="material-icons" aria-hidden="true"
@@ -99,7 +99,7 @@
                     <Text>新機能のお知らせ</Text>
                 </Item>
                 <Item
-                    onclick={() => navigate(base("/art"))}
+                    onclick={() => navigate(makePathname("/art"))}
                     activated={pathname().startsWith("/art")}
                 >
                     <Graphic class="material-icons" aria-hidden="true"
@@ -108,7 +108,7 @@
                     <Text>TOP絵集</Text>
                 </Item>
                 <Item
-                    onclick={() => navigate(base("/links"))}
+                    onclick={() => navigate(makePathname("/links"))}
                     activated={pathname().startsWith("/links")}
                 >
                     <Graphic class="material-icons" aria-hidden="true"

@@ -21,7 +21,7 @@
     import type { HeadlineThread } from "../../common/response/schema.js";
     import { sleep } from "../../common/util.js";
     import { genNonce } from "../mylib/anti-debug.js";
-    import { base } from "../mylib/env.js";
+    import { makePathname } from "../mylib/env.js";
     import { Postload } from "../mylib/idb/postload.js";
     import { nonceKey } from "../mylib/idb/preload.js";
     import { goodbye, hello, ok, socket } from "../mylib/socket.js";
@@ -84,7 +84,7 @@
         ok();
         titlePostload.value = null;
         contentPostload.value = null;
-        navigate(base(`/thread/${data.new.id}`));
+        navigate(makePathname(`/thread/${data.new.id}`));
     };
 
     $effect(() => {
@@ -98,6 +98,7 @@
 
     let emitting = $state(false);
     const tryMakeThread = async () => {
+        if (emitting) return;
         emitting = true;
         // フロントエンドのバリデーション
         // バックエンドに送信
