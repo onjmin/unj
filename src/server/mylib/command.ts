@@ -9,6 +9,7 @@ import type { Socket } from "socket.io";
 import { randInt } from "../../common/util.js";
 import { coolTimes as makeThreadCoolTimes } from "../api/makeThread.js";
 import {
+	ageResCache,
 	ageResNumCache,
 	balsResNumCache,
 	ccBitmaskCache,
@@ -154,6 +155,7 @@ export const parseCommand = ({
 							const num = Number(refArray[0].slice(2));
 							const setNum = ageResNumCache.get(threadId) === num ? 0 : num;
 							ageResNumCache.set(threadId, setNum);
+							ageResCache.set(threadId, null);
 							results.push(
 								setNum !== 0 ? `[${num}]をage` : `[${num}]のageを解除`,
 							);
