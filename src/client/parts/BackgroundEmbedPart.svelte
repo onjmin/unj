@@ -80,6 +80,58 @@
         case 3202:
           videoEmbedNicovideo = true;
           embedUrl = parseVideoEmbedNicovideo(url) ?? "";
+          {
+            const NicoOrigin = "https://embed.nicovideo.jp";
+            const postNico = (data: object) =>
+              document
+                .querySelector("#unj-background-embed iframe")
+                ?.contentWindow.postMessage(
+                  Object.assign(
+                    {
+                      sourceConnectorType: 1,
+                    },
+                    data,
+                  ),
+                  NicoOrigin,
+                );
+            const play = () => {
+              postNico({
+                eventName: "volumeChange",
+                data: { volume: 64 / 100 },
+              });
+              postNico({ eventName: "play" });
+            };
+            window.addEventListener("message", (e) => {
+              if (e.origin !== NicoOrigin) return;
+              const { data } = e.data;
+              switch (e.data.eventName) {
+                // case "playerMetadataChange": {
+                //   const now = data.currentTime;
+                //   if (!now) return;
+                //   if (g_cmd.end && g_cmd.end * 1000 < now) play();
+                //   break;
+                // }
+                case "playerStatusChange": {
+                  switch (data.playerStatus) {
+                    // case 2:
+                    //   setVolume();
+                    //   endedFlag = false;
+                    //   break;
+                    case 4:
+                      play();
+                      break;
+                  }
+                  break;
+                }
+                case "loadComplete": {
+                  play();
+                  break;
+                }
+                default:
+                  break;
+              }
+            });
+          }
           break;
         case 6401:
           audioEmbedSoundCloud = true;
