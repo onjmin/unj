@@ -144,14 +144,14 @@
               widget?.bind(window.SC.Widget.Events.FINISH, play);
               widget?.bind(window.SC.Widget.Events.ERROR, console.error);
             };
-            if (window.SC) setTimeout(ready);
+            if (window.SC?.Widget) setTimeout(ready);
             else {
               const id = setInterval(() => {
                 if (!window.SC?.Widget) return;
                 clearInterval(id);
                 ready();
+                handleUserInteraction(play);
               }, 512);
-              handleUserInteraction(play);
             }
           }
           break;
