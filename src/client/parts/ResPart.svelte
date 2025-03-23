@@ -55,7 +55,9 @@
   aria-labelledby="share-title"
   aria-describedby="share-content"
 >
-  <Title id="share-title">{`>>${num}のレスを共有`}</Title>
+  <Title id="share-title"
+    >{num > 1 ? `>>${num}のレスを共有` : "このスレを共有"}</Title
+  >
   <Content id="share-content">
     <Button
       onclick={() => {

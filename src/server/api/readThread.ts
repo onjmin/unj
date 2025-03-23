@@ -132,7 +132,7 @@ export default ({ socket }: { socket: Socket }) => {
 							contentType: record.content_type,
 							commandResult: record.command_result,
 							// メタ情報
-							cursor: "",
+							cursor: encodeResId(record.id) ?? "",
 							num: record.num,
 							createdAt: record.created_at,
 							isOwner: record.is_owner,

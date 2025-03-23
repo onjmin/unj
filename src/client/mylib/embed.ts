@@ -52,7 +52,7 @@ export const parseVideoEmbedYouTube = (url: URL): string | null => {
 	}
 	// 動画 ID が抽出できた場合、埋め込み URL を返す
 	if (id) {
-		return `https://www.youtube.com/embed/${id}?`;
+		return `https://www.youtube.com/embed/${id}`;
 	}
 	return null;
 };

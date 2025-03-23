@@ -37,6 +37,7 @@
         replyResSoundHowl,
     } from "../mylib/sound.js";
     import AccessCounterPart from "../parts/AccessCounterPart.svelte";
+    import BackgroundEmbedPart from "../parts/BackgroundEmbedPart.svelte";
     import BalsPart from "../parts/BalsPart.svelte";
     import ResFormPart from "../parts/ResFormPart.svelte";
     import ResPart from "../parts/ResPart.svelte";
@@ -453,7 +454,7 @@
             contentUrl={thread?.ageRes.contentUrl}
             contentType={1}
             commandResult=""
-            cursor=""
+            cursor={thread?.ageRes.cursor}
             num={thread?.ageRes.num}
             isOwner={thread?.ageRes.isOwner}
             sage={thread?.ageRes.sage}
@@ -462,6 +463,12 @@
             threadTitle={thread.title}
         />
     </div>
+    {#key thread?.ageRes.num}
+        <BackgroundEmbedPart
+            contentUrl={thread.ageRes.contentUrl}
+            contentType={thread.ageRes.contentType}
+        />
+    {/key}
 {/if}
 
 {#snippet paginationControls()}

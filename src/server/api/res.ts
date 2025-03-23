@@ -276,7 +276,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 					contentType: contentResult.output.contentType,
 					commandResult: parsedResult.msg,
 					// メタ情報
-					cursor: "",
+					cursor: resId,
 					num: nextResNum,
 					createdAt: created_at,
 					isOwner,
@@ -305,7 +305,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 							contentType: record.content_type,
 							commandResult: record.command_result,
 							// メタ情報
-							cursor: "",
+							cursor: encodeResId(record.id) ?? "",
 							num: record.num,
 							createdAt: record.created_at,
 							isOwner: record.is_owner,

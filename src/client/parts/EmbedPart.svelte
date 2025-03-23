@@ -44,45 +44,41 @@
     try {
       embedding = true;
       const url = new URL(contentUrl);
-      let result: string | null = null;
       switch (siteInfo.id) {
         case 801:
           imageEmbed = true;
-          result = parseImageEmbedImgur(url);
+          embedUrl = parseImageEmbedImgur(url) ?? "";
           break;
         case 802:
           imageEmbed = true;
-          result = parseImageEmbedNicoseiga(url);
+          embedUrl = parseImageEmbedNicoseiga(url) ?? "";
           break;
         case 803:
           imageEmbed = true;
-          result = parseImageEmbedPixiv(url);
+          embedUrl = parseImageEmbedPixiv(url) ?? "";
           break;
         case 1601:
           imageEmbed = true;
-          result = parseGifEmbedImgur(url);
+          embedUrl = parseGifEmbedImgur(url) ?? "";
           break;
         case 3201:
           videoEmbedYouTube = true;
-          result = parseVideoEmbedYouTube(url);
+          embedUrl = parseVideoEmbedYouTube(url) ?? "";
           break;
         case 3202:
           videoEmbedNicovideo = true;
-          result = parseVideoEmbedNicovideo(url);
+          embedUrl = parseVideoEmbedNicovideo(url) ?? "";
           break;
         case 6401:
           audioEmbedSoundCloud = true;
-          result = parseAudioEmbedSoundCloud(url);
+          embedUrl = parseAudioEmbedSoundCloud(url) ?? "";
           break;
         case 6402:
           audioEmbedSpotify = true;
-          result = parseAudioEmbedSpotify(url);
+          embedUrl = parseAudioEmbedSpotify(url) ?? "";
           break;
       }
-      if (result === null) {
-        throw 114514;
-      }
-      embedUrl = result;
+      if (!embedUrl) throw 114514;
     } catch (err) {
       embedError = true;
       embedding = false;
