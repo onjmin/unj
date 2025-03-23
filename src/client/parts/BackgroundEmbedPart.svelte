@@ -97,7 +97,7 @@
             const play = () => {
               postNico({
                 eventName: "volumeChange",
-                data: { volume: 64 / 100 },
+                data: { volume: 96 / 100 },
               });
               postNico({ eventName: "play" });
             };
@@ -105,18 +105,8 @@
               if (e.origin !== NicoOrigin) return;
               const { data } = e.data;
               switch (e.data.eventName) {
-                // case "playerMetadataChange": {
-                //   const now = data.currentTime;
-                //   if (!now) return;
-                //   if (g_cmd.end && g_cmd.end * 1000 < now) play();
-                //   break;
-                // }
                 case "playerStatusChange": {
                   switch (data.playerStatus) {
-                    // case 2:
-                    //   setVolume();
-                    //   endedFlag = false;
-                    //   break;
                     case 4:
                       play();
                       break;
@@ -127,12 +117,14 @@
                   play();
                   break;
                 }
-                default:
-                  break;
               }
             };
             window.removeEventListener("message", handle);
             window.addEventListener("message", handle);
+            if (!window.unjBackgroundEmbeded) {
+              window.unjBackgroundEmbeded = true;
+              handleUserInteraction(play);
+            }
           }
           break;
         case 6401:
