@@ -146,7 +146,11 @@
             };
             if (window.SC) setTimeout(ready);
             else {
-              setTimeout(ready, 512); // TODO
+              const id = setInterval(() => {
+                if (!window.SC?.Widget) return;
+                clearInterval(id);
+                ready();
+              }, 512);
               handleUserInteraction(play);
             }
           }
