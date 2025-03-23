@@ -2,6 +2,7 @@ import type { Socket } from "socket.io";
 import type { Ninja, Res } from "../../common/response/schema.js";
 import auth from "./auth.js";
 
+// スレのキャッシュ
 export const threadCached: Map<number, boolean> = new Map();
 export const firstCursorCache: Map<number, number> = new Map();
 export const latestCursorCache: Map<number, number> = new Map();
@@ -24,10 +25,12 @@ export const badCountCache: Map<number, number> = new Map();
 export const ownerIdCache: Map<number, number> = new Map();
 // アク禁＆副主
 export const bannedCache: Map<number, Set<number>> = new Map();
+export const bannedIPCache: Map<number, Set<string>> = new Map();
 export const subbedCache: Map<number, Set<number>> = new Map();
 
+// ユーザーのキャッシュ
 export const userCached: Map<number, boolean> = new Map();
-// 忍法帖スコア
+export const userIPCache: Map<number, string> = new Map();
 export const ninjaPokemonCache: Map<number, number> = new Map();
 export const ninjaScoreCache: Map<number, number> = new Map();
 

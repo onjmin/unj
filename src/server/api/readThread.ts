@@ -19,6 +19,8 @@ import {
 	ageResNumCache,
 	badCountCache,
 	balsResNumCache,
+	bannedCache,
+	bannedIPCache,
 	ccBitmaskCache,
 	contentTypesBitmaskCache,
 	deletedAtCache,
@@ -31,6 +33,7 @@ import {
 	resCountCache,
 	resLimitCache,
 	sageCache,
+	subbedCache,
 	threadCached,
 	varsanCache,
 } from "../mylib/cache.js";
@@ -109,6 +112,10 @@ export default ({ socket }: { socket: Socket }) => {
 				badCountCache.set(threadId, threadRecord.bad_count);
 				// スレ主
 				ownerIdCache.set(threadId, threadRecord.user_id);
+				// アク禁＆副主
+				bannedCache.set(threadId, new Set());
+				bannedIPCache.set(threadId, new Set());
+				subbedCache.set(threadId, new Set());
 
 				// !age
 				if (

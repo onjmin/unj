@@ -11,12 +11,14 @@ import { contentSchemaMap } from "../../common/request/content-schema.js";
 import { ResSchema, myConfig } from "../../common/request/schema.js";
 import type { Meta, Res } from "../../common/response/schema.js";
 import { randInt } from "../../common/util.js";
-import { decodeThreadId, encodeResId } from "../mylib/anti-debug.js";
+import { decodeThreadId, encodeResId, flaky } from "../mylib/anti-debug.js";
 import auth from "../mylib/auth.js";
 import {
 	ageResCache,
 	ageResNumCache,
 	balsResNumCache,
+	bannedCache,
+	bannedIPCache,
 	ccBitmaskCache,
 	contentTypesBitmaskCache,
 	firstCursorCache,
@@ -30,10 +32,12 @@ import {
 	resCountCache,
 	sageCache,
 	userCached,
+	userIPCache,
 	varsanCache,
 } from "../mylib/cache.js";
 import { makeCcUserAvatar, makeCcUserId, makeCcUserName } from "../mylib/cc.js";
 import { parseCommand } from "../mylib/command.js";
+import { getIP } from "../mylib/ip.js";
 import { logger } from "../mylib/log.js";
 import nonce from "../mylib/nonce.js";
 import { exist, getThreadRoom, joined } from "../mylib/socket.js";
@@ -66,6 +70,10 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		const isOwner = ownerIdCache.get(threadId) === userId;
 
 		if (isMax(threadId, isOwner)) return;
+
+		// アク禁チェック
+		if (bannedCache.get(threadId)?.has(userId)) return;
+		if (bannedIPCache.get(threadId)?.has(getIP(socket))) return;
 
 		// roomのチェック
 		if (
@@ -112,11 +120,15 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 				if (rowCount === 0) return;
 				const { ninja_pokemon, ninja_score } = rows[0];
 				userCached.set(userId, true);
+				userIPCache.set(userId, getIP(socket));
 				ninjaPokemonCache.set(userId, ninja_pokemon);
 				ninjaScoreCache.set(userId, ninja_score);
 				ninja(socket);
 			}
 			const ninjaScore = ninjaScoreCache.get(userId) ?? 0;
+
+			// レス毎ランダムにBAN対象IPを最新化
+			flaky(() => userIPCache.set(userId, getIP(socket)));
 
 			// !バルサン
 			if (!isOwner && varsanCache.get(threadId) && ninjaScore < 256) return;
@@ -124,7 +136,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			const nextResNum = (resCountCache.get(threadId) ?? 0) + 1;
 			resCountCache.set(threadId, nextResNum);
 
-			const parsedResult = parseCommand({
+			const parsedResult = await parseCommand({
 				content: contentResult.output.content,
 				isOwner,
 				nextResNum,
@@ -132,6 +144,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 				socket,
 				threadId,
 				userId,
+				poolClient,
 			});
 
 			// cc

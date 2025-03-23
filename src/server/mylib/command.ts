@@ -1,5 +1,5 @@
 // pool
-import { Pool, neonConfig } from "@neondatabase/serverless";
+import { Pool, type PoolClient, neonConfig } from "@neondatabase/serverless";
 import ws from "ws";
 import { NEON_DATABASE_URL, PROD_MODE } from "../mylib/env.js";
 neonConfig.webSocketConstructor = ws;
@@ -12,11 +12,15 @@ import {
 	ageResCache,
 	ageResNumCache,
 	balsResNumCache,
+	bannedCache,
+	bannedIPCache,
 	ccBitmaskCache,
 	contentTypesBitmaskCache,
 	ninja,
 	ninjaScoreCache,
 	sageCache,
+	subbedCache,
+	userIPCache,
 	varsanCache,
 } from "../mylib/cache.js";
 import { getIP } from "../mylib/ip.js";
@@ -47,7 +51,13 @@ type ParsedResult = {
 	shouldUpdateMeta: boolean;
 };
 
-export const parseCommand = ({
+type Ref = {
+	num: number;
+	isOwner: boolean;
+	userId: number;
+};
+
+export const parseCommand = async ({
 	content,
 	isOwner,
 	nextResNum,
@@ -55,6 +65,7 @@ export const parseCommand = ({
 	socket,
 	threadId,
 	userId,
+	poolClient,
 }: {
 	content: string;
 	isOwner: boolean;
@@ -63,44 +74,57 @@ export const parseCommand = ({
 	socket: Socket;
 	threadId: number;
 	userId: number;
-}): ParsedResult => {
+	poolClient: PoolClient;
+}): Promise<ParsedResult> => {
 	const _ninjaLv = (ninjaScore ** (1 / 3)) | 0;
 	let ninjaLv = _ninjaLv;
+
+	const fetchRefArray = (() => {
+		let result: Ref[] | null = null;
+		return async (anka: number[]): Promise<Ref[] | null> => {
+			if (result !== null) return result;
+			const { rows } = await poolClient.query(
+				`SELECT num,is_owner,user_id FROM res WHERE thread_id = $1 AND num IN (${anka.join(",")})`,
+				[threadId],
+			);
+			// 重複排除
+			const arr: Ref[] = [];
+			const set = new Set();
+			for (const record of rows) {
+				if (set.has(record.user_id)) continue;
+				set.add(record.user_id);
+				arr.push({
+					num: record.num,
+					isOwner: record.is_owner,
+					userId: record.user_id,
+				});
+			}
+			result = arr;
+			return result;
+		};
+	})();
 
 	// コマンドの解釈
 	let msg = "";
 	let shouldUpdateMeta = false;
 	const cmds = content.replace(/！/g, "!").match(/![^!\s]+/g);
+	const isModerator = isOwner || subbedCache.get(threadId)?.has(userId);
 	if (cmds && cmds.length < 4) {
 		const results = [];
-		const refArray = content.match(/>>[0-9]{1,4}/g);
+		const anka = content
+			.match(/>>[0-9]{1,4}/g)
+			?.map((v) => v.slice(2))
+			.map(Number)
+			.filter((v) => !Number.isNaN(v))
+			.filter((v) => v > 0 && v < 1024);
 		for (const cmd of new Set(cmds)) {
 			if (isOwner) {
 				switch (cmd) {
-					case "!aku":
-						{
-							if (!refArray) break;
-							if (refArray.length > 8) break;
-							const numArray = [...new Set(refArray)]
-								.map((v) => v.slice(2))
-								.map(Number);
-						}
-						break;
-					case "!kaijo":
-						break;
 					case "!reset":
-						break;
-					case "!バルサン":
-						{
-							const varsan = !varsanCache.get(threadId);
-							varsanCache.set(threadId, varsan);
-							results.push(
-								varsan
-									? "！荒らし撃退呪文『バルサン』発動！\nしばらくの間、忍法帖lv4未満による投稿を禁ず。。"
-									: "バルサンを解除した",
-							);
-						}
-						shouldUpdateMeta = true;
+						bannedCache.get(threadId)?.clear();
+						bannedIPCache.get(threadId)?.clear();
+						subbedCache.get(threadId)?.clear();
+						results.push("すべての副主＆akuを解除");
 						break;
 					case "!sage":
 						{
@@ -120,47 +144,7 @@ export const parseCommand = ({
 						}
 						shouldUpdateMeta = true;
 						break;
-					case "!ngk":
-						{
-							const bit = (ccBitmaskCache.get(threadId) ?? 0) ^ 4;
-							ccBitmaskCache.set(threadId, bit);
-							results.push(bit & 4 ? "コテ禁止発動" : "コテ禁止解除");
-						}
-						shouldUpdateMeta = true;
-						break;
-					case "!nopic":
-						{
-							const picbit = 8 | 16;
-							let bit = contentTypesBitmaskCache.get(threadId) ?? 0;
-							if (bit & picbit) {
-								bit &= ~picbit;
-							} else {
-								bit |= picbit;
-							}
-							contentTypesBitmaskCache.set(threadId, bit);
-							results.push(
-								bit & picbit
-									? "！画像禁止『nopic』発動！\nしばらくの間、画像投稿を禁ず。。"
-									: "画像禁止を解除した",
-							);
-						}
-						shouldUpdateMeta = true;
-						break;
 					case "!add":
-						break;
-					case "!age":
-						{
-							if (!refArray) break;
-							if (refArray.length > 1) break;
-							const num = Number(refArray[0].slice(2));
-							const setNum = ageResNumCache.get(threadId) === num ? 0 : num;
-							ageResNumCache.set(threadId, setNum);
-							ageResCache.set(threadId, null);
-							results.push(
-								setNum !== 0 ? `[${num}]をage` : `[${num}]のageを解除`,
-							);
-						}
-						shouldUpdateMeta = true;
 						break;
 					case "!バルス":
 						if (ninjaLv < 3) {
@@ -183,6 +167,138 @@ export const parseCommand = ({
 				}
 			}
 			switch (cmd) {
+				// 副主権限が必要なコマンド
+				case "!aku":
+					{
+						if (!isModerator) break;
+						if (!anka) break;
+						if (anka.length > 8) break;
+						const refArray = await fetchRefArray([...new Set(anka)]);
+						const cache1 = bannedCache.get(threadId);
+						const cache2 = bannedIPCache.get(threadId);
+						if (!refArray || !refArray.length || !cache1 || !cache2) break;
+						if (!isOwner && refArray.some((v) => v.isOwner)) {
+							subbedCache.get(threadId)?.delete(userId);
+							results.push("▼無念：副は主をアクできぬい（副解雇の刑に処する）");
+							break;
+						}
+						const banned = [];
+						for (const ref of refArray) {
+							cache1.add(ref.userId);
+							cache2.add(userIPCache.get(ref.userId) ?? "");
+							banned.push(ref.num);
+						}
+						results.push(
+							`アク禁${isOwner ? "" : "(副)"}：${banned.map((v) => `>>${v}`).join(" ")}`,
+						);
+					}
+					break;
+				case "!kaijo":
+					{
+						if (!isModerator) break;
+						if (!anka) break;
+						if (anka.length > 8) break;
+						const refArray = await fetchRefArray([...new Set(anka)]);
+						const cache1 = bannedCache.get(threadId);
+						const cache2 = bannedIPCache.get(threadId);
+						if (!refArray || !refArray.length || !cache1 || !cache2) break;
+						const banned = [];
+						for (const ref of refArray) {
+							cache1.delete(ref.userId);
+							cache2.delete(userIPCache.get(ref.userId) ?? "");
+							banned.push(ref.num);
+						}
+						results.push(
+							`アク禁解除${isOwner ? "" : "(副)"}：${banned.map((v) => `>>${v}`).join(" ")}`,
+						);
+					}
+					break;
+				case "!sub":
+					{
+						if (!isModerator) break;
+						if (!anka) break;
+						if (anka.length > 8) break;
+						const refArray = await fetchRefArray([...new Set(anka)]);
+						const cache = subbedCache.get(threadId);
+						if (!refArray || !refArray.length || !cache) break;
+						const added = [];
+						const removed = [];
+						for (const ref of refArray) {
+							if (cache.has(ref.userId)) {
+								cache.delete(ref.userId);
+								removed.push(ref.userId);
+							} else {
+								cache.add(ref.userId);
+								added.push(ref.userId);
+							}
+						}
+						if (added.length) {
+							results.push(`副主に追加${added.map((v) => `>>${v}`).join(" ")}`);
+						}
+						if (removed.length) {
+							results.push(
+								`副主を解雇${removed.map((v) => `>>${v}`).join(" ")}`,
+							);
+						}
+					}
+					break;
+				case "!バルサン":
+					{
+						if (!isModerator) break;
+						const varsan = !varsanCache.get(threadId);
+						varsanCache.set(threadId, varsan);
+						results.push(
+							varsan
+								? "！荒らし撃退呪文『バルサン』発動！\nしばらくの間、忍法帖lv4未満による投稿を禁ず。。"
+								: "バルサンを解除した",
+						);
+					}
+					shouldUpdateMeta = true;
+					break;
+				case "!ngk":
+					{
+						if (!isModerator) break;
+						const bit = (ccBitmaskCache.get(threadId) ?? 0) ^ 4;
+						ccBitmaskCache.set(threadId, bit);
+						results.push(bit & 4 ? "コテ禁止発動" : "コテ禁止解除");
+					}
+					shouldUpdateMeta = true;
+					break;
+				case "!nopic":
+					{
+						if (!isModerator) break;
+						const picbit = 8 | 16;
+						let bit = contentTypesBitmaskCache.get(threadId) ?? 0;
+						if (bit & picbit) {
+							bit &= ~picbit;
+						} else {
+							bit |= picbit;
+						}
+						contentTypesBitmaskCache.set(threadId, bit);
+						results.push(
+							bit & picbit
+								? "！画像禁止『nopic』発動！\nしばらくの間、画像投稿を禁ず。。"
+								: "画像禁止を解除した",
+						);
+					}
+					shouldUpdateMeta = true;
+					break;
+				case "!age":
+					{
+						if (!isModerator) break;
+						if (!anka) break;
+						if (anka.length > 1) break;
+						const num = anka[0];
+						const setNum = ageResNumCache.get(threadId) === num ? 0 : num;
+						ageResNumCache.set(threadId, setNum);
+						ageResCache.set(threadId, null);
+						results.push(
+							setNum !== 0 ? `[${num}]をage` : `[${num}]のageを解除`,
+						);
+					}
+					shouldUpdateMeta = true;
+					break;
+				// 副主権限が不要なコマンド
 				case "!ping":
 					results.push("pong");
 					break;
@@ -192,7 +308,7 @@ export const parseCommand = ({
 					break;
 			}
 		}
-		msg = results.map((v) => `★${v}`).join("\n");
+		msg = results.map((v) => (v[0] === "▼" ? v : `★${v}`)).join("\n");
 	}
 
 	let next = ninjaScore;

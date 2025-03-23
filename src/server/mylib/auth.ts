@@ -27,6 +27,7 @@ import {
 	ninjaPokemonCache,
 	ninjaScoreCache,
 	userCached,
+	userIPCache,
 } from "./cache.js";
 import { getIP } from "./ip.js";
 import { logger } from "./log.js";
@@ -159,6 +160,7 @@ const init = async (socket: Socket): Promise<boolean> => {
 				setUserId(socket, id);
 				updateAuthToken(socket);
 				userCached.set(id, true);
+				userIPCache.set(id, getIP(socket));
 				ninjaPokemonCache.set(id, ninja_pokemon);
 				ninjaScoreCache.set(id, ninja_score);
 				ninja(socket);
@@ -176,6 +178,7 @@ const init = async (socket: Socket): Promise<boolean> => {
 			setUserId(socket, id);
 			updateAuthToken(socket);
 			userCached.set(id, true);
+			userIPCache.set(id, getIP(socket));
 			ninjaPokemonCache.set(id, ninjaPokemon);
 			ninjaScoreCache.set(id, 0);
 			ninja(socket);
