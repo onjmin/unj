@@ -101,7 +101,7 @@
               });
               postNico({ eventName: "play" });
             };
-            window.addEventListener("message", (e) => {
+            const handle = (e) => {
               if (e.origin !== NicoOrigin) return;
               const { data } = e.data;
               switch (e.data.eventName) {
@@ -130,7 +130,9 @@
                 default:
                   break;
               }
-            });
+            };
+            window.removeEventListener("message", handle);
+            window.addEventListener("message", handle);
           }
           break;
         case 6401:
