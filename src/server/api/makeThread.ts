@@ -16,6 +16,7 @@ import auth from "../mylib/auth.js";
 import { makeCcUserAvatar, makeCcUserId, makeCcUserName } from "../mylib/cc.js";
 import { logger } from "../mylib/log.js";
 import nonce from "../mylib/nonce.js";
+import { isSameSimhash } from "../mylib/simhash.js";
 import { headlineRoom } from "../mylib/socket.js";
 
 const api = "makeThread";
@@ -51,6 +52,9 @@ export default ({ socket }: { socket: Socket }) => {
 			ccBitmask,
 			userAvatar: makeThread.output.userAvatar,
 		});
+
+		// simhashチェック
+		if (isSameSimhash(contentResult.output.content, userId)) return;
 
 		// レートリミット
 		if (isBefore(new Date(), coolTimes.get(userId) ?? 0)) {

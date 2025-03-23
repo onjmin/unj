@@ -40,6 +40,7 @@ import { parseCommand } from "../mylib/command.js";
 import { getIP } from "../mylib/ip.js";
 import { logger } from "../mylib/log.js";
 import nonce from "../mylib/nonce.js";
+import { isSameSimhash } from "../mylib/simhash.js";
 import { exist, getThreadRoom, joined } from "../mylib/socket.js";
 
 const api = "res";
@@ -74,6 +75,9 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		// アク禁チェック
 		if (bannedCache.get(threadId)?.has(userId)) return;
 		if (bannedIPCache.get(threadId)?.has(getIP(socket))) return;
+
+		// simhashチェック
+		if (isSameSimhash(contentResult.output.content, userId)) return;
 
 		// roomのチェック
 		if (
