@@ -35,7 +35,7 @@
     let title = $state("");
     let userName = $state("");
     let userAvatar = $state(0);
-    let content = $state("");
+    let contentText = $state("");
     let contentUrl = $state("");
     let contentType = $state(1);
 
@@ -49,12 +49,12 @@
     });
 
     // postload
-    const contentPostload = new Postload("content");
-    contentPostload.promise.then(() => {
-        content = contentPostload.value ?? "";
+    const contentTextPostload = new Postload("contentText");
+    contentTextPostload.promise.then(() => {
+        contentText = contentTextPostload.value ?? "";
     });
     $effect(() => {
-        contentPostload.value = content;
+        contentTextPostload.value = contentText;
     });
 
     let varsan = $state(false);
@@ -86,7 +86,7 @@
         if (!data.ok) return;
         ok();
         titlePostload.value = null;
-        contentPostload.value = null;
+        contentTextPostload.value = null;
         navigate(makePathname(`/thread/${data.new.id}`));
     };
 
@@ -108,7 +108,7 @@
             userName,
             userAvatar,
             title,
-            content,
+            contentText,
             contentUrl,
             contentType,
             varsan,
@@ -126,8 +126,8 @@
             if ((contentTypesBitmask & contentType) === 0) return;
             const schema = contentSchemaMap.get(contentType);
             if (!schema) return;
-            const contentResult = v.safeParse(schema, data, myConfig);
-            if (!contentResult.success) return;
+            const content = v.safeParse(schema, data, myConfig);
+            if (!content.success) return;
             return makeThread.output;
         })();
         if (!result) {
@@ -254,7 +254,7 @@
             disabled={emitting || isRef}
             bind:userName
             bind:userAvatar
-            bind:content
+            bind:contentText
             bind:contentUrl
             bind:contentType
             contentTypesBitmask={bits2Int(contentTypesBitmask)}

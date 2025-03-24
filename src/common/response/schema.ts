@@ -22,7 +22,7 @@ export type Res = {
 	ccUserId: string;
 	ccUserName: string;
 	ccUserAvatar: number;
-	content: string;
+	contentText: string;
 	contentUrl: string;
 	contentType: number;
 	commandResult: string;
@@ -40,7 +40,7 @@ export type Thread = {
 	ccUserId: string;
 	ccUserName: string;
 	ccUserAvatar: number;
-	content: string;
+	contentText: string;
 	contentUrl: string;
 	contentType: number;
 	// メタ情報

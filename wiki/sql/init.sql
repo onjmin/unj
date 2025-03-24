@@ -42,7 +42,7 @@ CREATE TABLE threads (
     cc_user_id TEXT NOT NULL DEFAULT '',
     cc_user_name TEXT NOT NULL DEFAULT '',
     cc_user_avatar SMALLINT NOT NULL DEFAULT 0,
-    content TEXT NOT NULL DEFAULT '',
+    content_text TEXT NOT NULL DEFAULT '',
     content_url TEXT NOT NULL DEFAULT '',
     content_type SMALLINT NOT NULL DEFAULT 1
 );
@@ -60,7 +60,7 @@ CREATE TABLE res (
     cc_user_id TEXT NOT NULL DEFAULT '',
     cc_user_name TEXT NOT NULL DEFAULT '',
     cc_user_avatar SMALLINT NOT NULL DEFAULT 0,
-    content TEXT NOT NULL DEFAULT '',
+    content_text TEXT NOT NULL DEFAULT '',
     content_url TEXT NOT NULL DEFAULT '',
     content_type SMALLINT NOT NULL DEFAULT 1,
     command_result TEXT NOT NULL DEFAULT ''

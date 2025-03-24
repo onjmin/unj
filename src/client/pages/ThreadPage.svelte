@@ -51,19 +51,19 @@
 
     let userName = $state("");
     let userAvatar = $state(0);
-    let content = $state("");
+    let contentText = $state("");
     let contentUrl = $state("");
     let contentType = $state(0);
     let sage = $state(false);
     let ninja = $state(false);
 
     // postload
-    const contentPostload = new Postload(`content###${threadId}`);
-    contentPostload.promise.then(() => {
-        content = contentPostload.value ?? "";
+    const contentTextPostload = new Postload(`contentText###${threadId}`);
+    contentTextPostload.promise.then(() => {
+        contentText = contentTextPostload.value ?? "";
     });
     $effect(() => {
-        contentPostload.value = content === "" ? null : content;
+        contentTextPostload.value = contentText === "" ? null : contentText;
     });
 
     // postload
@@ -172,8 +172,8 @@
         newResSoundHowl?.play();
         if (data.yours) {
             ok();
-            contentPostload.value = null;
-            content = "";
+            contentTextPostload.value = null;
+            contentText = "";
             contentUrl = "";
             await sleep(512);
             scrollToEnd();
@@ -182,7 +182,7 @@
             newResCount++;
             isAlreadyScrollEnd = false;
         }
-        const m = data.new.content.match(/>>([0-9]+)/);
+        const m = data.new.contentText.match(/>>([0-9]+)/);
         if (m) {
             const num = Number(m[1]);
             const replyTo = thread.resList.find(
@@ -354,7 +354,7 @@
             threadId,
             userName,
             userAvatar,
-            content,
+            contentText,
             contentUrl,
             contentType,
             sage,
@@ -368,8 +368,8 @@
             if ((contentTypesBitmask & res.output.contentType) === 0) return;
             const schema = contentSchemaMap.get(res.output.contentType);
             if (!schema) return;
-            const contentResult = v.safeParse(schema, data, myConfig);
-            if (!contentResult.success) return;
+            const content = v.safeParse(schema, data, myConfig);
+            if (!content.success) return;
             return res.output;
         })();
         if (!result) {
@@ -406,7 +406,7 @@
         disabled={emitting}
         bind:userName
         bind:userAvatar
-        bind:content
+        bind:contentText
         bind:contentUrl
         bind:contentType
         contentTypesBitmask={thread?.contentTypesBitmask ?? 0}
@@ -446,11 +446,11 @@
 {#if thread?.ageRes}
     <div class="ageRes">
         <ResPart
-            bind:input={content}
+            bind:input={contentText}
             ccUserId={thread?.ageRes.ccUserId}
             ccUserName={thread?.ageRes.ccUserName}
             ccUserAvatar={thread?.ageRes.ccUserAvatar}
-            content={thread?.ageRes.content}
+            contentText={thread?.ageRes.contentText}
             contentUrl={thread?.ageRes.contentUrl}
             contentType={1}
             cursor={thread?.ageRes.cursor}
@@ -577,11 +577,11 @@
         <div>{@render paginationControls()}</div>
         <div class="res-list">
             <ResPart
-                bind:input={content}
+                bind:input={contentText}
                 ccUserId={thread.ccUserId}
                 ccUserName={thread.ccUserName}
                 ccUserAvatar={thread.ccUserAvatar}
-                content={thread.content}
+                contentText={thread.contentText}
                 contentUrl={thread.contentUrl}
                 contentType={thread.contentType}
                 ps={thread.ps}
@@ -610,11 +610,11 @@
             </ResPart>
             {#each thread.resList as res}
                 <ResPart
-                    bind:input={content}
+                    bind:input={contentText}
                     ccUserId={res.ccUserId}
                     ccUserName={res.ccUserName}
                     ccUserAvatar={res.ccUserAvatar}
-                    content={res.content}
+                    contentText={res.contentText}
                     contentUrl={res.contentUrl}
                     contentType={res.contentType}
                     commandResult={res.commandResult}

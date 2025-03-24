@@ -62,8 +62,8 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		if ((contentTypesBitmask & res.output.contentType) === 0) return;
 		const schema = contentSchemaMap.get(res.output.contentType);
 		if (!schema) return;
-		const contentResult = v.safeParse(schema, data, myConfig);
-		if (!contentResult.success) return;
+		const content = v.safeParse(schema, data, myConfig);
+		if (!content.success) return;
 
 		if (isDeleted(threadId)) return;
 		if (balsResNumCache.get(threadId)) return;
@@ -78,7 +78,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		if (bannedIPCache.get(threadId)?.has(getIP(socket))) return;
 
 		// simhashチェック
-		if (isSameSimhash(contentResult.output.content, userId)) return;
+		if (isSameSimhash(content.output.contentText, userId)) return;
 
 		// roomのチェック
 		if (
@@ -142,7 +142,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			resCountCache.set(threadId, nextResNum);
 
 			const parsedResult = await parseCommand({
-				content: contentResult.output.content,
+				contentText: content.output.contentText,
 				isOwner,
 				nextResNum,
 				ninjaScore,
@@ -181,7 +181,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 						"cc_user_id",
 						"cc_user_name",
 						"cc_user_avatar",
-						"content",
+						"content_text",
 						"content_url",
 						"content_type",
 						"command_result",
@@ -199,9 +199,9 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 					ccUserId,
 					ccUserName,
 					ccUserAvatar,
-					contentResult.output.content,
-					contentResult.output.contentUrl,
-					contentResult.output.contentType,
+					content.output.contentText,
+					content.output.contentUrl,
+					content.output.contentType,
 					parsedResult.msg,
 					// メタ情報
 					threadId,
@@ -255,9 +255,9 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 				ccUserId,
 				ccUserName,
 				ccUserAvatar,
-				content: contentResult.output.content,
-				contentUrl: contentResult.output.contentUrl,
-				contentType: contentResult.output.contentType,
+				contentText: content.output.contentText,
+				contentUrl: content.output.contentUrl,
+				contentType: content.output.contentType,
 				commandResult: parsedResult.msg,
 				// メタ情報
 				cursor: resId,
@@ -289,9 +289,9 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 					ccUserId,
 					ccUserName,
 					ccUserAvatar,
-					content: contentResult.output.content,
-					contentUrl: contentResult.output.contentUrl,
-					contentType: contentResult.output.contentType,
+					contentText: content.output.contentText,
+					contentUrl: content.output.contentUrl,
+					contentType: content.output.contentType,
 					commandResult: parsedResult.msg,
 					// メタ情報
 					cursor: resId,
@@ -318,7 +318,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 							ccUserId: record.cc_user_id,
 							ccUserName: record.cc_user_name,
 							ccUserAvatar: record.cc_user_avatar,
-							content: record.content,
+							contentText: record.content_text,
 							contentUrl: record.content_url,
 							contentType: record.content_type,
 							commandResult: record.command_result,

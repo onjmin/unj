@@ -21,7 +21,7 @@
     disabled = false,
     userName = $bindable(""),
     userAvatar = $bindable(0),
-    content = $bindable(""),
+    contentText = $bindable(""),
     contentUrl = $bindable(""),
     contentType = $bindable(0),
     contentTypesBitmask = 0,
@@ -76,7 +76,7 @@
   {disabled}
   textarea
   label="本文"
-  bind:value={content}
+  bind:value={contentText}
   input$maxlength={256}
   onpaste={(e: ClipboardEvent) => {
     const pasteText = e.clipboardData?.getData("text");
@@ -94,7 +94,7 @@
     else if (!!findIn(video, url.hostname)) contentType = 32;
     else if (!!findIn(audio, url.hostname)) contentType = 64;
     else contentType = 2;
-    setTimeout(() => (content = content.replace(m[0], "")));
+    setTimeout(() => (contentText = contentText.replace(m[0], "")));
   }}
 >
   {#snippet helper()}

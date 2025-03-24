@@ -18,7 +18,7 @@
     ccUserId = "",
     ccUserName = "",
     ccUserAvatar = 0,
-    content = "",
+    contentText = "",
     contentUrl = "",
     contentType = 0,
     commandResult = "",
@@ -157,16 +157,16 @@
     {/if}
     <!-- 右側のコンテンツ領域 -->
     <div class="content">
-      {#if content !== ""}
+      {#if contentText !== ""}
         <div class="content-text">
-          {content}
+          {contentText}
         </div>
       {/if}
       {#if ps !== ""}
         <div class="ps">
           <br />
           <div class="label">※追記</div>
-          <div class="content">{ps}</div>
+          <div class="content-text">{ps}</div>
         </div>
       {/if}
       {#if commandResult !== ""}
@@ -194,12 +194,6 @@
 <style>
   .ps .label {
     color: #e57373;
-  }
-  .ps .content {
-    display: block;
-    white-space: pre-wrap; /* 改行も反映、必要に応じて折り返す */
-    overflow-wrap: break-word; /* 長い単語も折り返し */
-    margin-bottom: 4px;
   }
   .sage {
     text-decoration: underline;

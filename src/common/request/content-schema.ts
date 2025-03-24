@@ -56,7 +56,7 @@ const SAFE_URL = v.pipe(
  */
 const TextSchema = v.object({
 	contentType: v.pipe(v.number(), v.value(1)),
-	content: v.pipe(SAFE_TEXT_MULTILINE, v.minLength(1)),
+	contentText: v.pipe(SAFE_TEXT_MULTILINE, v.minLength(1)),
 	contentUrl: v.pipe(v.string(), v.length(0)),
 });
 
@@ -71,7 +71,7 @@ const sliceDomain = (url: string, n: number) =>
  */
 const UrlSchema = v.object({
 	contentType: v.pipe(v.number(), v.value(2)),
-	content: SAFE_TEXT_MULTILINE,
+	contentText: SAFE_TEXT_MULTILINE,
 	contentUrl: v.pipe(
 		SAFE_URL,
 		v.check((input) => !blacklistDarkWeb1.has(sliceDomain(input, 1))),
@@ -92,7 +92,7 @@ const UrlSchema = v.object({
  */
 const UrlOfUnjGamesSchema = v.object({
 	contentType: v.pipe(v.number(), v.value(4)),
-	content: SAFE_TEXT_MULTILINE,
+	contentText: SAFE_TEXT_MULTILINE,
 	contentUrl: v.pipe(
 		SAFE_URL,
 		v.check((input) => !!findIn(whitelistUnjGames, new URL(input).hostname)),
@@ -104,7 +104,7 @@ const UrlOfUnjGamesSchema = v.object({
  */
 const UrlOfImageSchema = v.object({
 	contentType: v.pipe(v.number(), v.value(8)),
-	content: SAFE_TEXT_MULTILINE,
+	contentText: SAFE_TEXT_MULTILINE,
 	contentUrl: v.pipe(
 		SAFE_URL,
 		v.check((input) => !!findIn(whitelistImage, new URL(input).hostname)),
@@ -116,7 +116,7 @@ const UrlOfImageSchema = v.object({
  */
 const UrlOfGifSchema = v.object({
 	contentType: v.pipe(v.number(), v.value(16)),
-	content: SAFE_TEXT_MULTILINE,
+	contentText: SAFE_TEXT_MULTILINE,
 	contentUrl: v.pipe(
 		SAFE_URL,
 		v.check((input) => !!findIn(whitelistGif, new URL(input).hostname)),
@@ -128,7 +128,7 @@ const UrlOfGifSchema = v.object({
  */
 const UrlOfVideoSchema = v.object({
 	contentType: v.pipe(v.number(), v.value(32)),
-	content: SAFE_TEXT_MULTILINE,
+	contentText: SAFE_TEXT_MULTILINE,
 	contentUrl: v.pipe(
 		SAFE_URL,
 		v.check((input) => !!findIn(whitelistVideo, new URL(input).hostname)),
@@ -140,7 +140,7 @@ const UrlOfVideoSchema = v.object({
  */
 const UrlOfAudioSchema = v.object({
 	contentType: v.pipe(v.number(), v.value(64)),
-	content: SAFE_TEXT_MULTILINE,
+	contentText: SAFE_TEXT_MULTILINE,
 	contentUrl: v.pipe(
 		SAFE_URL,
 		v.check((input) => !!findIn(whitelistAudio, new URL(input).hostname)),

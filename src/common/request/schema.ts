@@ -109,7 +109,7 @@ export const MakeThreadSchema = v.strictObject({
 	// 書き込み内容
 	userName: USER_NAME,
 	userAvatar: USER_AVATAR,
-	content: v.string(), // この段階では簡易的にしか見ない
+	contentText: v.string(), // この段階では簡易的にしか見ない
 	contentUrl: v.string(), // この段階では簡易的にしか見ない
 	contentType: v.pipe(
 		SMALLINT,
@@ -126,7 +126,7 @@ export const ResSchema = v.strictObject({
 	// 書き込み内容
 	userName: USER_NAME,
 	userAvatar: USER_AVATAR,
-	content: v.string(), // この段階では簡易的にしか見ない
+	contentText: v.string(), // この段階では簡易的にしか見ない
 	contentUrl: v.string(), // この段階では簡易的にしか見ない
 	contentType: v.pipe(
 		SMALLINT,

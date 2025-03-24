@@ -31,8 +31,8 @@ export default ({ socket }: { socket: Socket }) => {
 		if ((contentTypesBitmask & contentType) === 0) return;
 		const schema = contentSchemaMap.get(contentType);
 		if (!schema) return;
-		const contentResult = v.safeParse(schema, data, myConfig);
-		if (!contentResult.success) return;
+		const content = v.safeParse(schema, data, myConfig);
+		if (!content.success) return;
 
 		const userId = auth.getUserId(socket);
 
@@ -54,7 +54,7 @@ export default ({ socket }: { socket: Socket }) => {
 		});
 
 		// simhashチェック
-		if (isSameSimhash(contentResult.output.content, userId)) return;
+		if (isSameSimhash(content.output.contentText, userId)) return;
 
 		// レートリミット
 		if (isBefore(new Date(), coolTimes.get(userId) ?? 0)) {
@@ -101,7 +101,7 @@ export default ({ socket }: { socket: Socket }) => {
 						"cc_user_id",
 						"cc_user_name",
 						"cc_user_avatar",
-						"content",
+						"content_text",
 						"content_url",
 						"content_type",
 						// 基本的な情報
@@ -124,9 +124,9 @@ export default ({ socket }: { socket: Socket }) => {
 					ccUserId,
 					ccUserName,
 					ccUserAvatar,
-					contentResult.output.content,
-					contentResult.output.contentUrl,
-					contentResult.output.contentType,
+					content.output.contentText,
+					content.output.contentUrl,
+					content.output.contentType,
 					// 基本的な情報
 					makeThread.output.title,
 					0, // TODO

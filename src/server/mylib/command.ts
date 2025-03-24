@@ -59,7 +59,7 @@ type Ref = {
 };
 
 export const parseCommand = async ({
-	content,
+	contentText,
 	isOwner,
 	nextResNum,
 	ninjaScore,
@@ -68,7 +68,7 @@ export const parseCommand = async ({
 	userId,
 	poolClient,
 }: {
-	content: string;
+	contentText: string;
 	isOwner: boolean;
 	nextResNum: number;
 	ninjaScore: number;
@@ -108,15 +108,15 @@ export const parseCommand = async ({
 	// コマンドの解釈
 	let msg = "";
 	let shouldUpdateMeta = false;
-	const cmds = content.replace(/！/g, "!").match(/![^!\s]+/g);
-	const withoutCmds = content
+	const cmds = contentText.replace(/！/g, "!").match(/![^!\s]+/g);
+	const withoutCmds = contentText
 		.replace(/！/g, "!")
 		.replace(/![^!\s]+/g, "")
 		.trim();
 	const isModerator = isOwner || subbedCache.get(threadId)?.has(userId);
 	if (cmds && cmds.length < 4) {
 		const results = [];
-		const anka = content
+		const anka = contentText
 			.match(/>>[0-9]{1,4}/g)
 			?.map((v) => v.slice(2))
 			.map(Number)
