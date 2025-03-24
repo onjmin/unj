@@ -22,6 +22,7 @@
     contentUrl = "",
     contentType = 0,
     commandResult = "",
+    ps = "",
     // メタ情報
     cursor = "",
     num = 0,
@@ -161,6 +162,13 @@
           {content}
         </div>
       {/if}
+      {#if ps !== ""}
+        <div class="ps">
+          <br />
+          <div class="label">※追記</div>
+          <div class="content">{ps}</div>
+        </div>
+      {/if}
       {#if commandResult !== ""}
         <div class="command-result">
           {commandResult}
@@ -184,6 +192,15 @@
 </div>
 
 <style>
+  .ps .label {
+    color: #e57373;
+  }
+  .ps .content {
+    display: block;
+    white-space: pre-wrap; /* 改行も反映、必要に応じて折り返す */
+    overflow-wrap: break-word; /* 長い単語も折り返し */
+    margin-bottom: 4px;
+  }
   .sage {
     text-decoration: underline;
   }

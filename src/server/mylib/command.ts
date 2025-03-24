@@ -18,6 +18,7 @@ import {
 	contentTypesBitmaskCache,
 	ninja,
 	ninjaScoreCache,
+	psCache,
 	sageCache,
 	subbedCache,
 	userIPCache,
@@ -108,6 +109,10 @@ export const parseCommand = async ({
 	let msg = "";
 	let shouldUpdateMeta = false;
 	const cmds = content.replace(/！/g, "!").match(/![^!\s]+/g);
+	const withoutCmds = content
+		.replace(/！/g, "!")
+		.replace(/![^!\s]+/g, "")
+		.trim();
 	const isModerator = isOwner || subbedCache.get(threadId)?.has(userId);
 	if (cmds && cmds.length < 4) {
 		const results = [];
@@ -145,6 +150,16 @@ export const parseCommand = async ({
 						shouldUpdateMeta = true;
 						break;
 					case "!add":
+						{
+							const ps = psCache.get(threadId) ?? "";
+							psCache.set(threadId, withoutCmds);
+							if (withoutCmds.length) {
+								results.push(`>>1に追記(${ps.length ? "上書き" : "1回目"})`);
+							} else {
+								results.push(">>1の追記を削除");
+							}
+						}
+						shouldUpdateMeta = true;
 						break;
 					case "!バルス":
 						if (ninjaLv < 3) {

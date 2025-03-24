@@ -77,7 +77,7 @@
   textarea
   label="本文"
   bind:value={content}
-  input$maxlength={1024}
+  input$maxlength={256}
   onpaste={(e: ClipboardEvent) => {
     const pasteText = e.clipboardData?.getData("text");
     const m = pasteText?.match(regexUrl);
@@ -114,7 +114,7 @@
   {disabled}
   label="URL欄"
   bind:value={contentUrl}
-  input$maxlength={1024}
+  input$maxlength={256}
   style="visibility:{contentType <= 1 ? 'hidden' : 'visible'};"
 >
   {#snippet trailingIcon()}

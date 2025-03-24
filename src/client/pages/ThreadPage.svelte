@@ -453,7 +453,6 @@
             content={thread?.ageRes.content}
             contentUrl={thread?.ageRes.contentUrl}
             contentType={1}
-            commandResult=""
             cursor={thread?.ageRes.cursor}
             num={thread?.ageRes.num}
             isOwner={thread?.ageRes.isOwner}
@@ -585,11 +584,9 @@
                 content={thread.content}
                 contentUrl={thread.contentUrl}
                 contentType={thread.contentType}
-                commandResult=""
-                cursor=""
+                ps={thread.ps}
                 num={1}
                 isOwner={true}
-                sage={false}
                 createdAt={thread.createdAt}
                 threadId={thread.id}
                 threadTitle={thread.title}

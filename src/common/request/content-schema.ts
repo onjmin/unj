@@ -14,7 +14,7 @@ import whitelistVideo from "./whitelist/video.js";
 const SAFE_TEXT = v.pipe(
 	v.string(),
 	v.trim(),
-	v.maxLength(1024),
+	v.maxLength(256),
 	// 制御文字
 	v.check(
 		(input) =>

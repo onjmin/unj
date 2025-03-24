@@ -12,9 +12,7 @@ export const detectFastlyClientIp = (
 	if (DEV_MODE || STG_MODE) {
 		return genTestIP();
 	}
-	return Array.isArray(fastlyClientIp)
-		? fastlyClientIp[0] // TODO: 人為的にfastly-client-ipヘッダを付加されたケース
-		: fastlyClientIp;
+	return Array.isArray(fastlyClientIp) ? fastlyClientIp[0] : fastlyClientIp;
 };
 
 export const isBannedIP = (ip: string) =>

@@ -30,6 +30,7 @@ import {
 	latestCursorCache,
 	lolCountCache,
 	ownerIdCache,
+	psCache,
 	resCountCache,
 	resLimitCache,
 	sageCache,
@@ -104,6 +105,7 @@ export default ({ socket }: { socket: Socket }) => {
 				deletedAtCache.set(threadId, threadRecord.deleted_at);
 				// 動的なデータ
 				resCountCache.set(threadId, threadRecord.res_count);
+				psCache.set(threadId, threadRecord.ps);
 				ageResNumCache.set(threadId, threadRecord.age_res_num);
 				ageResCache.set(threadId, null);
 				balsResNumCache.set(threadId, threadRecord.bals_res_num);
@@ -216,7 +218,7 @@ export default ({ socket }: { socket: Socket }) => {
 				deletedAt: deletedAtCache.get(threadId) ?? null,
 				// 動的なデータ
 				resCount: resCountCache.get(threadId) ?? 0,
-				ps: threadRecord.ps,
+				ps: psCache.get(threadId) ?? "",
 				ageResNum: ageResNumCache.get(threadId) ?? 0,
 				ageRes: ageResCache.get(threadId) ?? null,
 				balsResNum: balsResNumCache.get(threadId) ?? 0,

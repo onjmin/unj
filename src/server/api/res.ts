@@ -29,6 +29,7 @@ import {
 	ninjaPokemonCache,
 	ninjaScoreCache,
 	ownerIdCache,
+	psCache,
 	resCountCache,
 	sageCache,
 	userCached,
@@ -231,8 +232,8 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 					"content_types_bitmask",
 					contentTypesBitmaskCache.get(threadId) ?? 0,
 				);
-				query.set("ps", ""); // TODO
-				query.set("age_res_num", ageResNumCache.get(threadId) ?? 0); // TODO
+				query.set("ps", psCache.get(threadId) ?? "");
+				query.set("age_res_num", ageResNumCache.get(threadId) ?? 0);
 				query.set("bals_res_num", balsResNumCache.get(threadId) ?? 0);
 			}
 
@@ -339,7 +340,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 					ccBitmask: ccBitmaskCache.get(threadId) ?? 0,
 					contentTypesBitmask: contentTypesBitmaskCache.get(threadId) ?? 0,
 					// 動的なデータ
-					ps: "", // TODO
+					ps: psCache.get(threadId) ?? "",
 					ageResNum,
 					ageRes: ageResCache.get(threadId) ?? null,
 					balsResNum: balsResNumCache.get(threadId) ?? 0,
