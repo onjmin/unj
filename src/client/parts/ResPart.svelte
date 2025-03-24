@@ -135,7 +135,7 @@
     })}
     ID:{ccUserId !== "" ? ccUserId : "???"}
     {#if isOwner}
-      <span class="thread-owner">主</span>
+      <span class="thread-owner system-color">主</span>
     {/if}
     <IconButton class="material-icons" onclick={() => (open = true)}
       >share</IconButton
@@ -164,16 +164,16 @@
           {contentText}
         </div>
       {/if}
+      {#if commandResult !== ""}
+        <div class="content-text system-color">
+          {commandResult}
+        </div>
+      {/if}
       {#if ps !== ""}
         <div class="ps">
           <br />
-          <div class="label">※追記</div>
+          <div class="system-color">※追記</div>
           <div class="content-text">{ps}</div>
-        </div>
-      {/if}
-      {#if commandResult !== ""}
-        <div class="command-result">
-          {commandResult}
         </div>
       {/if}
       {#if contentUrl !== ""}
@@ -194,7 +194,7 @@
 </div>
 
 <style>
-  .ps .label {
+  .system-color {
     color: #e57373;
   }
   .sage {
@@ -228,7 +228,6 @@
     font-weight: bold;
   }
   .thread-owner {
-    color: #e57373;
     font-size: small;
   }
   /* content-row はアイコンと内容を横並びに */
@@ -270,13 +269,6 @@
   }
   /* content-text は改行を含むテキストを自動折り返し */
   .content-text {
-    display: block;
-    white-space: pre-wrap; /* 改行も反映、必要に応じて折り返す */
-    overflow-wrap: break-word; /* 長い単語も折り返し */
-    margin-bottom: 4px;
-  }
-  .command-result {
-    color: #e57373;
     display: block;
     white-space: pre-wrap; /* 改行も反映、必要に応じて折り返す */
     overflow-wrap: break-word; /* 長い単語も折り返し */
