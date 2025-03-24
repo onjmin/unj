@@ -49,8 +49,12 @@
 
     let { threadId = "", cursor = "", desc = false } = $props();
 
+    let openRight = $state(false);
     let textarea: HTMLTextAreaElement | null = $state(null);
-    const focus = () => textarea?.focus();
+    const focus = () => {
+        textarea?.focus();
+        openRight = true;
+    };
 
     let userName = $state("");
     let userAvatar = $state(0);
@@ -402,7 +406,7 @@
     };
 </script>
 
-<HeaderPart {title} bind:bookmark>
+<HeaderPart {title} bind:bookmark bind:openRight>
     <AccessCounterPart {online} {pv} />
     <p>レス書き込み欄</p>
     <ResFormPart

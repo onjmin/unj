@@ -12,6 +12,7 @@
     title = "",
     menu = true,
     bookmark = $bindable(null),
+    openRight = $bindable(false),
   } = $props();
 
   if (DEV_MODE) {
@@ -25,7 +26,6 @@
 
   const isEnabledRightMenu = children !== null;
   let openLeft = $state(false);
-  let openRight = $state(false);
   let isMobile = $state(false);
   let doneGuide = $state(false);
 
