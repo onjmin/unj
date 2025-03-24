@@ -156,13 +156,14 @@ const init = async (socket: Socket): Promise<boolean> => {
 				[token],
 			);
 			if (rowCount) {
-				const { id, ninja_pokemon, ninja_score } = rows[0];
-				setUserId(socket, id);
+				const record = rows[0];
+				const userId = record.id;
+				setUserId(socket, userId);
 				updateAuthToken(socket);
-				userCached.set(id, true);
-				userIPCache.set(id, getIP(socket));
-				ninjaPokemonCache.set(id, ninja_pokemon);
-				ninjaScoreCache.set(id, ninja_score);
+				userCached.set(userId, true);
+				userIPCache.set(userId, getIP(socket));
+				ninjaPokemonCache.set(userId, record.ninja_pokemon);
+				ninjaScoreCache.set(userId, record.ninja_score);
 				ninja(socket);
 				return true;
 			}
@@ -174,13 +175,14 @@ const init = async (socket: Socket): Promise<boolean> => {
 			[getIP(socket), ninjaPokemon],
 		);
 		if (rowCount) {
-			const { id } = rows[0];
-			setUserId(socket, id);
+			const record = rows[0];
+			const userId = record.id;
+			setUserId(socket, userId);
 			updateAuthToken(socket);
-			userCached.set(id, true);
-			userIPCache.set(id, getIP(socket));
-			ninjaPokemonCache.set(id, ninjaPokemon);
-			ninjaScoreCache.set(id, 0);
+			userCached.set(userId, true);
+			userIPCache.set(userId, getIP(socket));
+			ninjaPokemonCache.set(userId, ninjaPokemon);
+			ninjaScoreCache.set(userId, 0);
 			ninja(socket);
 			return true;
 		}

@@ -123,11 +123,11 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 					[userId],
 				);
 				if (rowCount === 0) return;
-				const { ninja_pokemon, ninja_score } = rows[0];
+				const record = rows[0];
 				userCached.set(userId, true);
 				userIPCache.set(userId, getIP(socket));
-				ninjaPokemonCache.set(userId, ninja_pokemon);
-				ninjaScoreCache.set(userId, ninja_score);
+				ninjaPokemonCache.set(userId, record.ninja_pokemon);
+				ninjaScoreCache.set(userId, record.ninja_score);
 				ninja(socket);
 			}
 			const ninjaScore = ninjaScoreCache.get(userId) ?? 0;
