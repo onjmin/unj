@@ -19,6 +19,7 @@
 
   let {
     disabled = false,
+    textarea = $bindable(null),
     userName = $bindable(""),
     userAvatar = $bindable(0),
     contentText = $bindable(""),
@@ -76,6 +77,7 @@
   {disabled}
   textarea
   label="本文"
+  bind:this={textarea}
   bind:value={contentText}
   input$maxlength={256}
   onpaste={(e: ClipboardEvent) => {

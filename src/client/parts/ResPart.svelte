@@ -13,6 +13,7 @@
 
   let {
     children = null,
+    focus,
     input = $bindable(""),
     // 書き込み内容
     ccUserId = "",
@@ -114,6 +115,7 @@
         } else {
           input = input.replace(/^[^\S]*/, `>>${num}\n`);
         }
+        focus();
       }}
       >{num}：<span class="user-name"
         >{ccUserName !== ""

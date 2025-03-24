@@ -49,6 +49,9 @@
 
     let { threadId = "", cursor = "", desc = false } = $props();
 
+    let textarea: HTMLTextAreaElement | null = $state(null);
+    const focus = () => textarea?.focus();
+
     let userName = $state("");
     let userAvatar = $state(0);
     let contentText = $state("");
@@ -404,6 +407,7 @@
     <p>レス書き込み欄</p>
     <ResFormPart
         disabled={emitting}
+        bind:textarea
         bind:userName
         bind:userAvatar
         bind:contentText
@@ -447,6 +451,7 @@
     <div class="ageRes">
         <ResPart
             bind:input={contentText}
+            {focus}
             ccUserId={thread?.ageRes.ccUserId}
             ccUserName={thread?.ageRes.ccUserName}
             ccUserAvatar={thread?.ageRes.ccUserAvatar}
@@ -577,6 +582,7 @@
         <div>{@render paginationControls()}</div>
         <div class="res-list">
             <ResPart
+                {focus}
                 bind:input={contentText}
                 ccUserId={thread.ccUserId}
                 ccUserName={thread.ccUserName}
@@ -610,6 +616,7 @@
             </ResPart>
             {#each thread.resList as res}
                 <ResPart
+                    {focus}
                     bind:input={contentText}
                     ccUserId={res.ccUserId}
                     ccUserName={res.ccUserName}
