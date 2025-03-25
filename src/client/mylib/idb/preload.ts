@@ -39,6 +39,8 @@ export const replyResSound = new Preload("replyResSound");
 
 // Guide
 export const showThreadGuide = new Preload("showThreadGuide");
+export const showTermsGuide = new Preload("showTermsGuide");
+export const showContactGuide = new Preload("showContactGuide");
 
 // other
 export const destinationPathname = new Preload("destinationPathname");

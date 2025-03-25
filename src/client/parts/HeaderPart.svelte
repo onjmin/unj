@@ -3,7 +3,11 @@
   import Snackbar, { Label } from "@smui/snackbar";
   import TopAppBar, { Title, Row, Section } from "@smui/top-app-bar";
   import { DEV_MODE, STG_MODE, pathname } from "../mylib/env.js";
-  import { showThreadGuide } from "../mylib/idb/preload.js";
+  import {
+    showContactGuide,
+    showTermsGuide,
+    showThreadGuide,
+  } from "../mylib/idb/preload.js";
   import LeftMenuPart from "./LeftMenuPart.svelte";
   import RightMenuPart from "./RightMenuPart.svelte";
 
@@ -27,7 +31,6 @@
   const isEnabledRightMenu = children !== null;
   let openLeft = $state(false);
   let isMobile = $state(false);
-  let doneGuide = $state(false);
 
   $effect(() => {
     // ソフトウェアキーボードが出現すると画面幅が変わるため、最初の1回だけ実行する
@@ -39,6 +42,25 @@
 
   let snackbar: Snackbar;
   $effect(() => () => snackbar.close());
+
+  let done = $state(false);
+  const guides = [
+    {
+      done: showThreadGuide,
+      path: "/thread",
+      text: "レスは右上の三本線から！",
+    },
+    {
+      done: showTermsGuide,
+      path: "/terms",
+      text: "よくある質問は右上の三本線を参照",
+    },
+    {
+      done: showContactGuide,
+      path: "/contact",
+      text: "「開示請求」はAGPL3タブの右側に隠れています",
+    },
+  ];
 </script>
 
 <svelte:head>
@@ -124,19 +146,21 @@
       openRight = false;
     }}>うんｊ</button
   >
-  <button
-    type="button"
-    class="guide unj-main-part-overlay {isMobile &&
-    !doneGuide &&
-    !showThreadGuide.value &&
-    pathname().startsWith('/thread')
-      ? ''
-      : 'hidden'}"
-    onclick={() => {
-      showThreadGuide.value = "done";
-      doneGuide = true;
-    }}>右上の三本線からレス可能！</button
-  >
+  {#each guides as guide}
+    <button
+      type="button"
+      class="guide unj-main-part-overlay {isMobile &&
+      !done &&
+      !guide.done.value &&
+      pathname().startsWith(guide.path)
+        ? ''
+        : 'hidden'}"
+      onclick={() => {
+        done = true;
+        guide.done.value = "done";
+      }}>{guide.text}</button
+    >
+  {/each}
 {/if}
 
 <Snackbar bind:this={snackbar}>
