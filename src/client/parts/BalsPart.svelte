@@ -43,5 +43,15 @@
     }
   }}
 >
-  <img style="filter:invert(1);" src={randArray(balsImgs)} alt="test" />
+  <img class="bals-image" src={randArray(balsImgs)} alt="test" />
 </div>
+
+<style>
+  .bals-image {
+    filter: invert(1);
+    display: block; /* インライン要素ではなくブロックにする */
+    max-width: 100%; /* 親要素の幅に収まる */
+    height: auto; /* アスペクト比を保って高さを自動調整 */
+    object-fit: contain; /* はみ出さないようにする（切り抜きたくないなら contain） */
+  }
+</style>

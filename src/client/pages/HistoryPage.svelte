@@ -9,7 +9,7 @@
 <HeaderPart title="閲覧履歴" />
 
 <MainPart>
-    <p>UNDER CONSTRUCTION</p>
+    <p>めんてちゅ</p>
 </MainPart>
 
 <FooterPart />

@@ -9,7 +9,7 @@
 <HeaderPart title="#後で見る" />
 
 <MainPart>
-    <p>UNDER CONSTRUCTION</p>
+    <p>めんてちゅ</p>
 </MainPart>
 
 <FooterPart />

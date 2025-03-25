@@ -9,7 +9,7 @@
 <HeaderPart title="新機能のお知らせ" />
 
 <MainPart>
-    <p>UNDER CONSTRUCTION</p>
+    <p>めんてちゅ</p>
 </MainPart>
 
 <FooterPart />
