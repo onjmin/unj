@@ -216,12 +216,10 @@
   }
   .res {
     border: 2mm ridge rgba(255, 255, 255, 0.1);
-    padding: 8px;
   }
   /* 名前欄は全幅で上段に表示 */
   .name-row {
     width: 100%;
-    margin-bottom: 8px;
   }
   .user-name {
     color: #66c0b5;
@@ -272,11 +270,11 @@
     display: block;
     white-space: pre-wrap; /* 改行も反映、必要に応じて折り返す */
     overflow-wrap: break-word; /* 長い単語も折り返し */
-    margin-bottom: 4px;
+    margin-bottom: 2px;
   }
   .content-url,
   .content-embed {
-    margin-bottom: 4px;
+    margin-bottom: 2px;
   }
   .content-url a {
     display: inline-block;
