@@ -106,8 +106,8 @@ const updateAuthToken = (socket: Socket) => {
 	const rawUserId = getUserId(socket);
 	const userId = encodeUserId(rawUserId, bigDay);
 	if (!userId) return;
-	const rawLimit = differenceInDays(new Date(), bigDay) + 3;
-	const limit = encodeLimit(rawLimit, userId); // JWT風認証は3日で失効
+	const rawLimit = differenceInDays(new Date(), bigDay) + 4;
+	const limit = encodeLimit(rawLimit, userId); // JWT風認証は4日で失効
 	if (!limit) return;
 	const expiryDate = addDays(bigDay, rawLimit);
 	const sign = signAuth(userId, limit);
