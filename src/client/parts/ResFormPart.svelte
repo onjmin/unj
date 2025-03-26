@@ -106,7 +106,7 @@
 
 <Select
   {disabled}
-  key={(v) => v.label}
+  key={(v) => String(v.bit)}
   bind:value={contentType}
   label="本文の形式"
 >

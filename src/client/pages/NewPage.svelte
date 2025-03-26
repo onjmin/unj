@@ -223,8 +223,8 @@
                     <Header>時間制限</Header>
                     <Content>
                         <Select
-                            key={(v) => v.label}
                             disabled={emitting}
+                            key={(v) => String(v.key)}
                             bind:value={timer}
                             label="!timer"
                         >
