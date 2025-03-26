@@ -145,7 +145,11 @@
 </FormField>
 
 {#snippet mail()}
-  <a href="mailto:{VITE_ADMIN_EMAIL}?subject=[legal]件名">メール</a>
+  <a
+    href="mailto:{VITE_ADMIN_EMAIL}?subject=[legal]件名"
+    target="_blank"
+    rel="noopener noreferrer">メール</a
+  >
 {/snippet}
 
 {#if fill}

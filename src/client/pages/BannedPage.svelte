@@ -71,10 +71,16 @@
 <HeaderPart menu={false} title="うんｊから大切なお知らせ" />
 
 {#snippet mail()}
-    <a href="mailto:{VITE_ADMIN_EMAIL}?subject=[abuse]{ip}">メール</a>
+    <a
+        href="mailto:{VITE_ADMIN_EMAIL}?subject=[abuse]{ip}"
+        target="_blank"
+        rel="noopener noreferrer">メール</a
+    >
 {/snippet}
 {#snippet twitter()}
-    <a href={VITE_ADMIN_TWITTER}>Twitter</a>
+    <a href={VITE_ADMIN_TWITTER} target="_blank" rel="noopener noreferrer"
+        >Twitter</a
+    >
 {/snippet}
 
 <MainPart menu={false}>
