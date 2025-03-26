@@ -136,7 +136,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			flaky(() => userIPCache.set(userId, getIP(socket)));
 
 			// !バルサン
-			if (!isOwner && varsanCache.get(threadId) && ninjaScore < 256) return;
+			if (!isOwner && varsanCache.get(threadId) && ninjaScore < 64) return;
 
 			const nextResNum = (resCountCache.get(threadId) ?? 0) + 1;
 			resCountCache.set(threadId, nextResNum);
