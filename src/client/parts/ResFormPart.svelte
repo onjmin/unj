@@ -104,7 +104,12 @@
   {/snippet}
 </Textfield>
 
-<Select {disabled} bind:value={contentType} label="本文の形式">
+<Select
+  {disabled}
+  key={(v) => v.label}
+  bind:value={contentType}
+  label="本文の形式"
+>
   {#each contentTypeOptions as v}
     {#if (v.bit & contentTypesBitmask) !== 0}
       <Option value={v.bit}>{v.label}</Option>
