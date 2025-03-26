@@ -8,10 +8,29 @@ const api = "/blacklist/ip";
 const tooManyThreshold = 65536;
 export const blacklist: Set<string> = new Set();
 const filePath = path.resolve(ROOT_PATH, "blacklist", "ip.txt");
-const IpAddressSchema = v.pipe(
+const IpSchema = v.pipe(
 	v.string("IP is required."),
 	v.ip("The IP is badly formatted."),
 );
+const WildcardIPv4Schema = v.pipe(
+	v.string("IP is required."),
+	v.regex(
+		/^(\d{1,3}|\*)\.(\d{1,3}|\*)\.(\d{1,3}|\*)\.(\d{1,3}|\*)$/,
+		"Invalid wildcard IP format.",
+	),
+);
+const WildcardIPv6Schema = v.pipe(
+	v.string("IP is required."),
+	v.regex(
+		/^([\da-fA-F]{1,4}|\*)?(:([\da-fA-F]{1,4}|\*)){0,7}(:{1,2}([\da-fA-F]{1,4}|\*)){0,7}$/,
+		"Invalid wildcard IP format.",
+	),
+);
+const BlacklistIPSchema = v.union([
+	IpSchema,
+	WildcardIPv4Schema,
+	WildcardIPv6Schema,
+]);
 
 const readBlacklist = async () => {
 	const data = await fs.readFile(filePath, "utf8");
@@ -58,7 +77,7 @@ export default (router: Router) => {
 		try {
 			const ip: string = req.body.ip;
 			const force: string = req.body.force;
-			const result = v.safeParse(IpAddressSchema, ip);
+			const result = v.safeParse(BlacklistIPSchema, ip);
 			if (!result.success) {
 				res.status(400).json({ error: v.flatten(result.issues) });
 				return;
@@ -93,7 +112,7 @@ export default (router: Router) => {
 		try {
 			const ip: string = req.body.ip;
 			const force: string = req.body.force;
-			const result = v.safeParse(IpAddressSchema, ip);
+			const result = v.safeParse(BlacklistIPSchema, ip);
 			if (!result.success) {
 				res.status(400).json({ error: v.flatten(result.issues) });
 				return;
