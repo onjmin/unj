@@ -18,7 +18,7 @@ export class SiteInfo {
 		href: string;
 		hostnames?: string[];
 	}) {
-		this.id = id;
+		this.id = id ?? 0;
 		this.name = name;
 		this.description = description;
 		this.href = href;

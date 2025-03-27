@@ -27,10 +27,11 @@
 
   let { ccUserAvatar = 0, contentUrl = "", contentType = 0 } = $props();
 
+  let siteInfo: SiteInfo | null = $state(null);
   const temp = contentTemplateMap.get(contentType) ?? [];
-  const siteInfo = temp.length
-    ? findIn(temp, new URL(contentUrl).hostname)
-    : null;
+  try {
+    siteInfo = findIn(temp, new URL(contentUrl).hostname);
+  } catch (err) {}
 
   let embedding = $state(false);
   let embedError = $state(false);

@@ -17,7 +17,7 @@ const VITE_UNJ_FLAKY_RATE = Number(process.env.VITE_UNJ_FLAKY_RATE);
  * 再現性を下げる
  */
 export const flaky = (func: () => void): boolean => {
-	if (Math.random() > VITE_UNJ_FLAKY_RATE) {
+	if (Math.random() < VITE_UNJ_FLAKY_RATE) {
 		func();
 		return true;
 	}

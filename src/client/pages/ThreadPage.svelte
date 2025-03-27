@@ -19,8 +19,15 @@
     } from "date-fns";
     import { navigate } from "svelte-routing";
     import * as v from "valibot";
-    import { contentSchemaMap } from "../../common/request/content-schema.js";
+    import {
+        contentSchemaMap,
+        contentTemplateMap,
+    } from "../../common/request/content-schema.js";
     import { ResSchema, myConfig } from "../../common/request/schema.js";
+    import {
+        SiteInfo,
+        findIn,
+    } from "../../common/request/whitelist/site-info.js";
     import type { Meta, Res, Thread } from "../../common/response/schema.js";
     import { sleep } from "../../common/util.js";
     import { genNonce } from "../mylib/anti-debug.js";
@@ -404,6 +411,18 @@
             good,
         });
     };
+
+    let siteInfo: SiteInfo | null = $state(null);
+    $effect(() => {
+        const temp =
+            contentTemplateMap.get(thread?.ageRes?.contentType ?? 0) ?? [];
+        try {
+            siteInfo = findIn(
+                temp,
+                new URL(thread?.ageRes?.contentUrl ?? "").hostname,
+            );
+        } catch (err) {}
+    });
 </script>
 
 <HeaderPart {title} bind:bookmark bind:openRight>
@@ -455,7 +474,9 @@
     <div class="ageRes">
         <ResPart
             bind:input={contentText}
-            backgroundEmbedControls
+            backgroundEmbedControls={siteInfo?.id === 3201 ||
+                siteInfo?.id === 3202 ||
+                siteInfo?.id === 6401}
             {focus}
             ccUserId={thread?.ageRes.ccUserId}
             ccUserName={thread?.ageRes.ccUserName}
