@@ -37,7 +37,7 @@
                     }
                 }
                 // BAN解除コードの生成
-                const code = genBanVerifyCode(new Date(), "");
+                const code = genBanVerifyCode("");
                 banVerifyCode.value = code;
                 // BANの通知
                 if ("done" !== banReport.value) {

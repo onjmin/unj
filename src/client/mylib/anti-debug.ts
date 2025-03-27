@@ -1,4 +1,3 @@
-import { differenceInDays } from "date-fns";
 import { sha256 } from "js-sha256";
 import { nonceLength } from "../../common/request/schema.js";
 import { decodeEnv } from "./env.js";
@@ -39,11 +38,10 @@ const VITE_UNJ_BAN_VERIFY_CODE_PEPPER = decodeEnv(
 /**
  * BAN解除コードの生成
  */
-export const genBanVerifyCode = (date: Date, key: string) => {
+export const genBanVerifyCode = (key: string): string => {
 	const basedKey = key || sha256(Math.random().toString());
-	const basedTime = differenceInDays(date, new Date(0));
 	const str = sha256(
-		[VITE_UNJ_BAN_VERIFY_CODE_PEPPER, basedTime, basedKey].join(delimiter),
+		[VITE_UNJ_BAN_VERIFY_CODE_PEPPER, basedKey].join(delimiter),
 	);
 	return str.slice(0, 8); // UXに関わるので8文字に削減
 };

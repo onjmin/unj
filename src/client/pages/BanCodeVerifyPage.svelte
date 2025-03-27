@@ -36,7 +36,7 @@
         await sleep((2783 + 114514 / 334 ** Math.random()) & (9800 + 3777));
         if (
             banVerifyCodeInput.trim() ===
-            genBanVerifyCode(bannedDate, banVerifyCode.value ?? "")
+            genBanVerifyCode(banVerifyCode.value ?? "")
         ) {
             banStatus.value = null;
             banReason.value = null;
