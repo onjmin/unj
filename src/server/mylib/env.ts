@@ -26,7 +26,7 @@ export const genEnvKey = (): string => {
 			/[a-z]/g,
 			(char) => (Math.random() > 0.5 ? char.toUpperCase() : char), // エントロピーを維持したまま62進数を生成
 		)
-		.slice(0, 16 + 4 * randInt(0, 7) + 3); // 4の倍数+3;
+		.slice(0, 15 + 5 * randInt(0, 5) + 4); // 5の倍数+4;
 	if (!key || !isSecureValue(key)) {
 		console.error(chalk.bgRed.white("複号鍵の生成に失敗"));
 		throw 114514;

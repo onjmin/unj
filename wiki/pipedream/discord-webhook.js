@@ -15,7 +15,6 @@ const genPipedreamApiTimedToken = () => {
 	const basedTime = Math.floor(
 		secondsSinceEpoch / PIPEDREAM_API_SECRET_INTERVAL,
 	);
-	console.log(basedTime);
 	const str = sha256([PIPEDREAM_API_SECRET_PEPPER, basedTime].join(delimiter));
 	return str.slice(0, 8); // 衝突の心配が低いので8文字に削減
 };
