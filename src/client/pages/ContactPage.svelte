@@ -122,7 +122,7 @@
     let isSuspend = $state(true);
     let resumeDate = $state("");
 
-    const main = () => {
+    $effect(() => {
         if (contactedAt.value === null) {
             isSuspend = false;
         } else {
@@ -135,10 +135,6 @@
             );
             isSuspend = differenceInHours(now, pastDate) < 24;
         }
-    };
-
-    $effect(() => {
-        main();
     });
 </script>
 

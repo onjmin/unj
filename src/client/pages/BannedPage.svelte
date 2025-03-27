@@ -18,53 +18,51 @@
 
     let ip = $state("");
 
-    const main = async () => {
-        try {
-            if (ipInfoJson.value === null) {
-                const ipInfo = await fetch("https://ipinfo.io?callback").then(
-                    (res) => res.json(),
-                );
-                ip = ipInfo.ip;
-                ipInfoJson.value = JSON.stringify(ipInfo);
-            } else {
-                try {
-                    const ipInfo = JSON.parse(ipInfoJson.value);
-                    ip = ipInfo.ip;
-                } catch (err) {
-                    ipInfoJson.value = null;
-                    return; // 確実に改ざんされているので、以降の処理は無意味。
-                }
-            }
-            // BAN解除コードの生成
-            const code = genBanVerifyCode(new Date(), "");
-            banVerifyCode.value = code;
-            // BANの通知
-            if ("done" !== banReport.value) {
-                const unknown = "(unknown)";
-                switch (banReason.value) {
-                    case "traversal":
-                        banReport.value = "done";
-                        reportTraversal([
-                            banVerifyCode.value ?? unknown,
-                            ipInfoJson.value ?? unknown,
-                            traversalTarget.value ?? unknown,
-                        ]);
-                        break;
-                    case "banned":
-                        banReport.value = "done";
-                        reportBanned([
-                            banVerifyCode.value ?? unknown,
-                            ipInfoJson.value ?? unknown,
-                            window.navigator.userAgent,
-                        ]);
-                        break;
-                }
-            }
-        } catch (err) {}
-    };
-
     $effect(() => {
-        main();
+        (async () => {
+            try {
+                if (ipInfoJson.value === null) {
+                    const ipInfo = await fetch(
+                        "https://ipinfo.io?callback",
+                    ).then((res) => res.json());
+                    ip = ipInfo.ip;
+                    ipInfoJson.value = JSON.stringify(ipInfo);
+                } else {
+                    try {
+                        const ipInfo = JSON.parse(ipInfoJson.value);
+                        ip = ipInfo.ip;
+                    } catch (err) {
+                        ipInfoJson.value = null;
+                        return; // 確実に改ざんされているので、以降の処理は無意味。
+                    }
+                }
+                // BAN解除コードの生成
+                const code = genBanVerifyCode(new Date(), "");
+                banVerifyCode.value = code;
+                // BANの通知
+                if ("done" !== banReport.value) {
+                    const unknown = "(unknown)";
+                    switch (banReason.value) {
+                        case "traversal":
+                            banReport.value = "done";
+                            reportTraversal([
+                                banVerifyCode.value ?? unknown,
+                                ipInfoJson.value ?? unknown,
+                                traversalTarget.value ?? unknown,
+                            ]);
+                            break;
+                        case "banned":
+                            banReport.value = "done";
+                            reportBanned([
+                                banVerifyCode.value ?? unknown,
+                                ipInfoJson.value ?? unknown,
+                                window.navigator.userAgent,
+                            ]);
+                            break;
+                    }
+                }
+            } catch (err) {}
+        })();
     });
 </script>
 

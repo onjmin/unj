@@ -12,10 +12,15 @@
 
     $effect(() => {
         if ("ban" === banStatus.value) {
-            navigate(makePathname("/akukin"), { replace: true });
-        } else if ("yes" !== termsAgreement.value && "/" !== pathname()) {
+            setTimeout(() =>
+                navigate(makePathname("/akukin"), { replace: true }),
+            );
+            return;
+        }
+        if ("yes" !== termsAgreement.value && "/" !== pathname()) {
             destinationPathname.value = pathname();
-            navigate(makePathname("/"), { replace: true });
+            setTimeout(() => navigate(makePathname("/"), { replace: true }));
+            return;
         }
         ready = true;
     });

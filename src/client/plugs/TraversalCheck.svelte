@@ -37,14 +37,16 @@
         "/xmlrpc.php",
     ]);
 
-    const main = () => {
+    $effect(() => {
         if (honeypot.has(pathname())) {
             if (
                 !flaky(() => {
                     banStatus.value = "ban";
                     banReason.value = "traversal";
                     traversalTarget.value = window.location.href;
-                    navigate(makePathname("/akukin"), { replace: true });
+                    setTimeout(() =>
+                        navigate(makePathname("/akukin"), { replace: true }),
+                    );
                 })
             ) {
                 ready = true;
@@ -52,10 +54,6 @@
         } else {
             ready = true;
         }
-    };
-
-    $effect(() => {
-        main();
     });
 </script>
 

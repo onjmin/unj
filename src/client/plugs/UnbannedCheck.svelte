@@ -8,10 +8,10 @@
 
     $effect(() => {
         if ("ban" !== banStatus.value) {
-            navigate(makePathname("/"), { replace: true });
-        } else {
-            ready = true;
+            setTimeout(() => navigate(makePathname("/"), { replace: true }));
+            return;
         }
+        ready = true;
     });
 </script>
 
