@@ -5,6 +5,12 @@
     findIn,
   } from "../../common/request/whitelist/site-info.js";
   import {
+    clearActiveController,
+    embedNicovideo,
+    embedSoundCloud,
+    embedYouTube,
+  } from "../mylib/background-embed.js";
+  import {
     parseAudioEmbedSoundCloud,
     parseVideoEmbedNicovideo,
     parseVideoEmbedYouTube,
@@ -16,19 +22,6 @@
   const siteInfo = temp.length
     ? findIn(temp, new URL(contentUrl).hostname)
     : null;
-
-  /**
-   * 初回遷移時、ユーザーの初回タップがなければ自動再生不可
-   */
-  const handleUserInteraction = (callback: () => void) => {
-    const play = () => {
-      callback();
-      window.removeEventListener("click", play);
-      window.removeEventListener("touchstart", play);
-    };
-    window.addEventListener("click", play);
-    window.addEventListener("touchstart", play);
-  };
 
   let embedding = $state(false);
   let embedError = $state(false);
@@ -44,116 +37,29 @@
         case 3201:
           videoEmbedYouTube = true;
           embedUrl = parseVideoEmbedYouTube(url) ?? "";
-          if (embedUrl) {
-            const videoId = embedUrl.split("/").slice(-1)[0];
-            let target: object | null = null;
-            const play = () => {
-              target?.setVolume(64);
-              target?.playVideo();
-              target?.setLoop(true);
-            };
-            const onYouTubeIframeAPIReady = () => {
-              new window.YT.Player(document.querySelector(".middle-wrapper"), {
-                width,
-                height,
-                videoId,
-                playerVars: {
-                  loop: 1,
-                  playlist: videoId,
-                },
-                events: {
-                  onReady: (event: YT.PlayerEvent) => {
-                    target = event.target;
-                    play();
-                  },
-                  onError: console.error,
-                },
-              });
-            };
-            if (window.YT) setTimeout(onYouTubeIframeAPIReady);
-            else {
-              window.onYouTubeIframeAPIReady = onYouTubeIframeAPIReady;
-              handleUserInteraction(play);
-            }
-          }
+          if (embedUrl)
+            embedYouTube({
+              iframeParentDOM: document.querySelector(".middle-wrapper"),
+              embedUrl,
+              width,
+              height,
+            });
           break;
         case 3202:
           videoEmbedNicovideo = true;
           embedUrl = parseVideoEmbedNicovideo(url) ?? "";
-          {
-            const NicoOrigin = "https://embed.nicovideo.jp";
-            const postNico = (data: object) =>
-              document
-                .querySelector("#unj-background-embed iframe")
-                ?.contentWindow.postMessage(
-                  Object.assign(
-                    {
-                      sourceConnectorType: 1,
-                    },
-                    data,
-                  ),
-                  NicoOrigin,
-                );
-            const play = () => {
-              postNico({
-                eventName: "volumeChange",
-                data: { volume: 96 / 100 },
-              });
-              postNico({ eventName: "play" });
-            };
-            const handle = (e) => {
-              if (e.origin !== NicoOrigin) return;
-              const { data } = e.data;
-              switch (e.data.eventName) {
-                case "playerStatusChange": {
-                  switch (data.playerStatus) {
-                    case 4:
-                      play();
-                      break;
-                  }
-                  break;
-                }
-                case "loadComplete": {
-                  play();
-                  break;
-                }
-              }
-            };
-            window.removeEventListener("message", handle);
-            window.addEventListener("message", handle);
-            if (!window.unjBackgroundEmbeded) {
-              window.unjBackgroundEmbeded = true;
-              handleUserInteraction(play);
-            }
-          }
+          if (embedUrl)
+            embedNicovideo({
+              iframeDOM: document.querySelector("#unj-background-embed iframe"),
+            });
           break;
         case 6401:
           audioEmbedSoundCloud = true;
           embedUrl = parseAudioEmbedSoundCloud(url) ?? "";
-          {
-            let widget: object | null = null;
-            const play = () => {
-              widget?.setVolume(64);
-              widget?.play();
-            };
-            const ready = () => {
-              widget = window.SC.Widget(
-                document.querySelector("#unj-background-embed iframe"),
-              );
-              widget?.bind(window.SC.Widget.Events.READY, play);
-              widget?.bind(window.SC.Widget.Events.FINISH, play);
-              widget?.bind(window.SC.Widget.Events.ERROR, console.error);
-            };
-            if (window.SC?.Widget) setTimeout(ready);
-            else {
-              const id = setInterval(() => {
-                if (!window.SC?.Widget) return;
-                clearInterval(id);
-                ready();
-                handleUserInteraction(play);
-              }, 512);
-            }
-          }
+          if (embedUrl)
+            embedSoundCloud({
+              iframeDOM: document.querySelector("#unj-background-embed iframe"),
+            });
           break;
       }
       if (!embedUrl) throw 114514;
@@ -168,6 +74,9 @@
       tryEmbed(siteInfo);
       if (!embedding) return;
     }
+    return () => {
+      clearActiveController();
+    };
   });
 
   let width = $state(0);

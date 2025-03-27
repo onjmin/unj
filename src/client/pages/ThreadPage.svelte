@@ -455,6 +455,7 @@
     <div class="ageRes">
         <ResPart
             bind:input={contentText}
+            backgroundEmbedControls
             {focus}
             ccUserId={thread?.ageRes.ccUserId}
             ccUserName={thread?.ageRes.ccUserName}

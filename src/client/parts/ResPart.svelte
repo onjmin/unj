@@ -8,11 +8,13 @@
   import { ja } from "date-fns/locale";
   import { avatarMap } from "../../common/request/avatar.js";
   import { seededRandArray } from "../../common/util.js";
+  import { activeController } from "../mylib/background-embed.js";
   import { adminTwitterUsername, makeHref } from "../mylib/env.js";
   import EmbedPart from "./EmbedPart.svelte";
 
   let {
     children = null,
+    backgroundEmbedControls = false,
     focus,
     input = $bindable(""),
     // 書き込み内容
@@ -146,6 +148,20 @@
         snackbar2.open();
       }}>block</IconButton
     >
+    {#if backgroundEmbedControls}
+      <IconButton
+        class="material-icons"
+        onclick={() => {
+          activeController?.play();
+        }}>play_arrow</IconButton
+      >
+      <IconButton
+        class="material-icons"
+        onclick={() => {
+          activeController?.pause();
+        }}>pause</IconButton
+      >
+    {/if}
   </div>
   <!-- 下段: アイコンと内容 -->
   <div class="content-row">
