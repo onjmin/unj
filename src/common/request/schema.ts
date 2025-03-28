@@ -142,7 +142,7 @@ export const ResSchema = v.strictObject({
 export const ReadThreadSchema = v.strictObject({
 	nonce: NONCE,
 	cursor: v.nullable(RES_ID),
-	size: RES_NUM,
+	size: v.pipe(RES_NUM, v.maxValue(32)),
 	desc: v.boolean(),
 	threadId: THREAD_ID,
 });
@@ -153,7 +153,7 @@ export const ReadThreadSchema = v.strictObject({
 export const HeadlineSchema = v.strictObject({
 	nonce: NONCE,
 	cursor: v.nullable(THREAD_ID),
-	size: v.pipe(v.number(), v.integer(), v.minValue(1), v.maxValue(16)),
+	size: v.pipe(v.number(), v.integer(), v.minValue(1), v.maxValue(32)),
 	desc: v.boolean(),
 });
 
@@ -163,7 +163,7 @@ export const HeadlineSchema = v.strictObject({
 export const SearchThreadSchema = v.strictObject({
 	nonce: NONCE,
 	cursor: v.nullable(THREAD_ID),
-	size: v.pipe(v.number(), v.integer(), v.minValue(1), v.maxValue(16)),
+	size: v.pipe(v.number(), v.integer(), v.minValue(1), v.maxValue(32)),
 	desc: v.boolean(),
 	from: v.date(),
 	to: v.date(),
@@ -176,7 +176,7 @@ export const SearchThreadSchema = v.strictObject({
 export const SearchResSchema = v.strictObject({
 	nonce: NONCE,
 	cursor: v.nullable(RES_ID),
-	size: v.pipe(v.number(), v.integer(), v.minValue(1), v.maxValue(16)),
+	size: v.pipe(v.number(), v.integer(), v.minValue(1), v.maxValue(32)),
 	desc: v.boolean(),
 	from: v.date(),
 	to: v.date(),

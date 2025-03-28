@@ -81,7 +81,7 @@
             socket.emit("headline", {
                 nonce: genNonce(nonceKey.value ?? ""),
                 cursor: null,
-                size: 16,
+                size: 32,
                 desc: true,
             });
         });
