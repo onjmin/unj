@@ -19,8 +19,8 @@ export default (router: Router) => {
 			)
 				.trim()
 				.split("\n")
-				.map((v) => v.trim())
-				.filter((v) => v);
+				.filter((v) => v)
+				.map((v) => v.trim());
 			if (list.length > tooManyThreshold) {
 				res.status(413).json({ error: "The fetched list is too large." });
 				return;

@@ -37,8 +37,8 @@ const readBlacklist = async () => {
 	return data
 		.trim()
 		.split("\n")
-		.map((v) => v.trim())
-		.filter((v) => v);
+		.filter((v) => v)
+		.map((v) => v.trim());
 };
 
 const writeBlacklist = () =>
