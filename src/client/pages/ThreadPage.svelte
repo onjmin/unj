@@ -307,7 +307,7 @@
             socket.emit("readThread", {
                 nonce: genNonce(nonceKey.value ?? ""),
                 cursor: cursor || null,
-                size: 32,
+                size: 16,
                 desc,
                 threadId,
             });
