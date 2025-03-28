@@ -172,5 +172,6 @@
     color: white;
     text-align: right;
     font-size: 2rem;
+    z-index: 256;
   }
 </style>
