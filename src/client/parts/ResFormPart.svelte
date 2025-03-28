@@ -89,13 +89,17 @@
       url = new URL(m[0]);
     } catch (err) {}
     if (!url) return;
-    contentUrl = url.href;
-    if (!!findIn(unjGames, url.hostname)) contentType = 4;
-    else if (!!findIn(image, url.hostname)) contentType = 8;
-    else if (!!findIn(gif, url.hostname)) contentType = 16;
-    else if (!!findIn(video, url.hostname)) contentType = 32;
-    else if (!!findIn(audio, url.hostname)) contentType = 64;
-    else contentType = 2;
+    let _contentType = 0;
+    if (!!findIn(unjGames, url.hostname)) _contentType = 4;
+    else if (!!findIn(image, url.hostname)) _contentType = 8;
+    else if (!!findIn(gif, url.hostname)) _contentType = 16;
+    else if (!!findIn(video, url.hostname)) _contentType = 32;
+    else if (!!findIn(audio, url.hostname)) _contentType = 64;
+    else _contentType = 2;
+    if ((_contentType & contentTypesBitmask) !== 0) {
+      contentType = _contentType;
+      contentUrl = url.href;
+    }
     setTimeout(() => (contentText = contentText.replace(m[0], "")));
   }}
 >
@@ -104,12 +108,7 @@
   {/snippet}
 </Textfield>
 
-<Select
-  {disabled}
-  key={(v: any) => String(v.bit)}
-  bind:value={contentType}
-  label="本文の形式"
->
+<Select {disabled} key={String} bind:value={contentType} label="本文の形式">
   {#each contentTypeOptions as v}
     {#if (v.bit & contentTypesBitmask) !== 0}
       <Option value={v.bit}>{v.label}</Option>

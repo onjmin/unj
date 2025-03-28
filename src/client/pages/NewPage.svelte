@@ -224,7 +224,7 @@
                     <Content>
                         <Select
                             disabled={emitting}
-                            key={(v: any) => String(v.key)}
+                            key={String}
                             bind:value={timer}
                             label="!timer"
                         >

@@ -156,11 +156,7 @@
     <LayoutGrid>
         <Cell span={12}>
             <div>
-                <TabBar
-                    tabs={contactTypes}
-                    key={(tab: ContactType) => tab.label}
-                    bind:active
-                >
+                <TabBar tabs={contactTypes} key={String} bind:active>
                     {#snippet tab(tab: ContactType)}
                         <Tab {tab}>
                             <Icon class="material-icons">{tab.icon}</Icon>
