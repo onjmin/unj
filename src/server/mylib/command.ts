@@ -241,10 +241,10 @@ export const parseCommand = async ({
 						for (const ref of refArray) {
 							if (cache.has(ref.userId)) {
 								cache.delete(ref.userId);
-								removed.push(ref.userId);
+								removed.push(ref.num);
 							} else {
 								cache.add(ref.userId);
-								added.push(ref.userId);
+								added.push(ref.num);
 							}
 						}
 						if (added.length) {
