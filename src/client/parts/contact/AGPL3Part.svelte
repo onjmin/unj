@@ -22,7 +22,7 @@
   rel="noopener noreferrer">GitHubのリンク</a
 >
 <p>
-  コラボレータとして招待いたしますので、GitHubのユーザー名をご連絡ください。
+  コラボレーターとして招待いたしますので、GitHubのユーザー名をご連絡ください。
 </p>
 <Textfield label="GitHubのユーザ名" bind:value={username} input$maxlength={39}>
   {#snippet helper()}

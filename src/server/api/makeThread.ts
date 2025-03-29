@@ -159,8 +159,10 @@ export default ({ socket }: { socket: Socket }) => {
 				goodCount: 0,
 				badCount: 0,
 			};
-			socket.emit(api, { ok: true, new: newThread });
-			socket.to(headlineRoom).emit(api, { ok: true, new: newThread });
+			socket.emit(api, { ok: true, new: newThread, yours: true });
+			socket
+				.to(headlineRoom)
+				.emit(api, { ok: true, new: newThread, yours: false });
 
 			await poolClient.query("COMMIT"); // 問題なければコミット
 			logger.verbose(api);

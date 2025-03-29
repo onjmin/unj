@@ -82,8 +82,13 @@
 
     let check1 = $state(false);
 
-    const handleMakeThread = (data: { ok: boolean; new: HeadlineThread }) => {
+    const handleMakeThread = (data: {
+        ok: boolean;
+        new: HeadlineThread;
+        yours: boolean;
+    }) => {
         if (!data.ok) return;
+        if (!data.yours) return;
         ok();
         titlePostload.value = null;
         contentTextPostload.value = null;
