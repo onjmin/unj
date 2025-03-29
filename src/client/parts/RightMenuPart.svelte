@@ -1,12 +1,12 @@
 <script lang="ts">
-  import { Content, Header, Subtitle, Title } from "@smui/drawer";
+  import { Header, Subtitle, Title } from "@smui/drawer";
   import TopAppBar, { Row } from "@smui/top-app-bar";
 
   let { children, open = false } = $props();
 </script>
 
 <div class="drawer-container-right {open ? '' : 'hidden'}">
-  <TopAppBar variant="static" fixed><Row /></TopAppBar>
+  <TopAppBar variant="static"><Row /></TopAppBar>
   <Header>
     <Title class="right-menu-title">サブメニュー</Title>
     <Subtitle class="right-menu-subtitle">固有のUIです。</Subtitle>
