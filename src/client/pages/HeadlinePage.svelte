@@ -145,11 +145,14 @@
                             <span class="thread-title">{thread.title}</span>
                         {/snippet}
                         {#snippet icon()}
-                            <Icon
+                            <IconButton
                                 class="material-icons"
-                                style="visibility:{Math.random() > 0.2
-                                    ? 'hidden'
-                                    : 'visible'}">remove_red_eye</Icon
+                                onclick={() =>
+                                    navigate(
+                                        makePathname(
+                                            `/thread/${thread.id}${thread.latestCursor ? `/${thread.latestCursor}/1` : ""}`,
+                                        ),
+                                    )}>read_more</IconButton
                             >
                         {/snippet}
                     </Header>
@@ -198,15 +201,6 @@
                                 >{isAlreadyBookmark
                                     ? "star"
                                     : "star_outline"}</IconButton
-                            >
-                            <IconButton
-                                class="material-icons"
-                                onclick={() =>
-                                    navigate(
-                                        makePathname(
-                                            `/thread/${thread.id}${thread.latestCursor ? `/${thread.latestCursor}/1` : ""}`,
-                                        ),
-                                    )}>arrow_forward</IconButton
                             >
                         </span>
                     </Content>
