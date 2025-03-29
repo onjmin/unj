@@ -203,7 +203,7 @@
     background-size: cover;
     background-position: center;
   }
-  :global(.embed-favicon-item-graphic.nicovideo) {
+  :global(body.dark .embed-favicon-item-graphic.nicovideo) {
     background-color: black;
   }
   .embed-image {

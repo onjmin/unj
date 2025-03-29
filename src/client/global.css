@@ -53,10 +53,6 @@ body {
 .unj-main-part.menu {
 	justify-content: center;
 }
-.unj-footer-part {
-	text-align: center;
-	color: rgba(255, 255, 255, 0.2);
-}
 
 /* レスポンシブな画像表示 */
 .unj-img {

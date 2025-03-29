@@ -5,10 +5,13 @@
   import MainPart from "../parts/MainPart.svelte";
   ///////////////
 
-  import Button from "@smui/button";
+  import Button, { Label } from "@smui/button";
+  import LayoutGrid, { Cell } from "@smui/layout-grid";
+  import SegmentedButton, { Segment } from "@smui/segmented-button";
   import { navigate } from "svelte-routing";
   import { randArray } from "../../common/util.js";
   import { makePathname } from "../mylib/env.js";
+  import { theme } from "../mylib/idb/preload.js";
   import { topIllusts } from "../mylib/top-illusts.js";
 
   const catchphrase = [
@@ -28,8 +31,17 @@
   const randomOnjKeyWord2 = randArray(
     onjKeyWords.filter((v) => v !== randomOnjKeyWord1),
   );
-
   const randomIllust = randArray(topIllusts.map((v) => v.src));
+
+  // 標準テーマ
+  const segmentedList = ["ダークモード", "ライトモード"];
+  let segmentedSelected = $state("");
+  if (theme.value === "metro-dark") segmentedSelected = "ダークモード";
+  if (theme.value === "unity") segmentedSelected = "ライトモード";
+  $effect(() => {
+    if (segmentedSelected === "ダークモード") theme.value = "metro-dark";
+    if (segmentedSelected === "ライトモード") theme.value = "unity";
+  });
 </script>
 
 <HeaderPart menu={false} title="うんｊ掲示板へようこそ" />
@@ -47,7 +59,22 @@
     }}
     variant="raised">入る</Button
   >
-  <p>しばらくしても、自動的に移動しません。</p>
+
+  <LayoutGrid>
+    <Cell span={12}>
+      <SegmentedButton
+        singleSelect
+        segments={segmentedList}
+        bind:selected={segmentedSelected}
+      >
+        {#snippet segment(segment: string)}
+          <Segment {segment}>
+            <Label>{segment}</Label>
+          </Segment>
+        {/snippet}
+      </SegmentedButton>
+    </Cell>
+  </LayoutGrid>
 </MainPart>
 
 <FooterPart />

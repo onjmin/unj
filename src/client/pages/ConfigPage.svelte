@@ -8,14 +8,17 @@
     import Accordion, { Panel, Header, Content } from "@smui-extra/accordion";
     import FormField from "@smui/form-field";
     import IconButton from "@smui/icon-button";
+    import LayoutGrid, { Cell } from "@smui/layout-grid";
     import List, { Item, Graphic, Label } from "@smui/list";
     import Radio from "@smui/radio";
+    import SegmentedButton, { Segment } from "@smui/segmented-button";
     import Slider from "@smui/slider";
     import { Howler } from "howler";
     import {
         newResSound,
         replyResSound,
         soundVolume,
+        theme,
     } from "../mylib/idb/preload.js";
     import {
         changeNewResSound,
@@ -49,32 +52,35 @@
         changeReplyResSound();
     });
 
-    const themeMap = new Map(
-        [
-            "bubblegum",
-            "bubblegum-dark",
-            "fixation",
-            "fixation-dark",
-            "material",
-            "material-dark",
-            "metro",
-            "metro-dark",
-            "svelte",
-            "svelte-dark",
-            "unity",
-            "unity-dark",
-        ].map((name) => [
-            name,
-            `https://cdn.jsdelivr.net/npm/svelte-material-ui@8.0.0-beta.3/themes/${name}.min.css`,
-        ]),
-    );
+    const themes = [
+        "bubblegum",
+        "bubblegum-dark",
+        "fixation",
+        "fixation-dark",
+        "material",
+        "material-dark",
+        "metro",
+        "metro-dark",
+        "svelte",
+        "svelte-dark",
+        "unity",
+        "unity-dark",
+    ];
 
-    let selectedTheme: string = $state("");
+    let selectedTheme: string = $state(theme.value ?? "");
     $effect(() => {
         if (!selectedTheme) return;
-        document
-            .getElementById("unj-theme")
-            ?.setAttribute("href", selectedTheme);
+        theme.value = selectedTheme;
+    });
+
+    // 標準テーマ
+    const segmentedList = ["ダークモード", "ライトモード"];
+    let segmentedSelected = $state("");
+    if (theme.value === "metro-dark") segmentedSelected = "ダークモード";
+    if (theme.value === "unity") segmentedSelected = "ライトモード";
+    $effect(() => {
+        if (segmentedSelected === "ダークモード") theme.value = "metro-dark";
+        if (segmentedSelected === "ライトモード") theme.value = "unity";
     });
 </script>
 
@@ -87,6 +93,39 @@
     <p>ここで設定変更できます</p>
     <div class="accordion-container">
         <Accordion>
+            <Panel>
+                <Header>テーマの変更</Header>
+                <Content>
+                    <LayoutGrid>
+                        <Cell span={12}>
+                            <SegmentedButton
+                                singleSelect
+                                segments={segmentedList}
+                                bind:selected={segmentedSelected}
+                            >
+                                {#snippet segment(segment: string)}
+                                    <Segment {segment}>
+                                        <Label>{segment}</Label>
+                                    </Segment>
+                                {/snippet}
+                            </SegmentedButton>
+                        </Cell>
+                    </LayoutGrid>
+                    <List class="demo-list" radioList>
+                        {#each themes as theme}
+                            <Item>
+                                <Graphic>
+                                    <Radio
+                                        bind:group={selectedTheme}
+                                        value={theme}
+                                    />
+                                </Graphic>
+                                <Label>{theme}</Label>
+                            </Item>
+                        {/each}
+                    </List>
+                </Content>
+            </Panel>
             <Panel>
                 <Header>SE音量</Header>
                 <Content>
@@ -151,24 +190,6 @@
                                             )}>play_arrow</IconButton
                                     >
                                 {/if}
-                            </Item>
-                        {/each}
-                    </List>
-                </Content>
-            </Panel>
-            <Panel>
-                <Header>テーマの変更</Header>
-                <Content>
-                    <List class="demo-list" radioList>
-                        {#each themeMap as [key, href]}
-                            <Item>
-                                <Graphic>
-                                    <Radio
-                                        bind:group={selectedTheme}
-                                        value={href}
-                                    />
-                                </Graphic>
-                                <Label>{key}</Label>
                             </Item>
                         {/each}
                     </List>
