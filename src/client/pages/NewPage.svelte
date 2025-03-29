@@ -26,12 +26,14 @@
     import { genNonce } from "../mylib/anti-debug.js";
     import { makePathname } from "../mylib/env.js";
     import { Postload } from "../mylib/idb/postload.js";
-    import { nonceKey } from "../mylib/idb/preload.js";
+    import { nonceKey, termsAgreement } from "../mylib/idb/preload.js";
     import { goodbye, hello, ok, socket } from "../mylib/socket.js";
     import ResFormPart from "../parts/ResFormPart.svelte";
+    import TermsConfirmPart from "../parts/TermsConfirmPart.svelte";
 
     let { isRef = false } = $props();
 
+    let openConfirm = $state(false);
     let title = $state("");
     let userName = $state("");
     let userAvatar = $state(0);
@@ -106,6 +108,10 @@
 
     let emitting = $state(false);
     const tryMakeThread = async () => {
+        if (termsAgreement.value !== "yes") {
+            openConfirm = true;
+            return;
+        }
         if (emitting) return;
         emitting = true;
         const data = {
@@ -243,6 +249,8 @@
         </div>
     {/if}
 </HeaderPart>
+
+<TermsConfirmPart {openConfirm} />
 
 <MainPart>
     <div class="form-container">

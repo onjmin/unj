@@ -6,7 +6,6 @@
   import FormField from "@smui/form-field";
   import IconButton from "@smui/icon-button";
   import { visible } from "../mylib/dom.js";
-  import { tryEnter } from "../mylib/enter.js";
   import { termsAgreement } from "../mylib/idb/preload.js";
   import TermsPart from "./TermsPart.svelte";
 
@@ -26,7 +25,6 @@
         break;
       case "accept":
         termsAgreement.value = "yes";
-        openConfirm = !tryEnter();
         break;
     }
   };

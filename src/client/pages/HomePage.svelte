@@ -6,10 +6,10 @@
   ///////////////
 
   import Button from "@smui/button";
+  import { navigate } from "svelte-routing";
   import { randArray } from "../../common/util.js";
-  import { tryEnter } from "../mylib/enter.js";
+  import { makePathname } from "../mylib/env.js";
   import { topIllusts } from "../mylib/top-illusts.js";
-  import TermsConfirmPart from "../parts/TermsConfirmPart.svelte";
 
   const catchphrase = [
     "運営と運命を共にする、うんち実況（セーラージュピター）",
@@ -36,8 +36,6 @@
 
 <HeaderPart menu={false} title="うんｊ掲示板へようこそ" />
 
-<TermsConfirmPart {openConfirm} />
-
 <MainPart menu={false}>
   <h1>{randArray(catchphrase)}</h1>
   <img class="unj-img" alt="TOP絵" src={randomIllust} />
@@ -47,7 +45,7 @@
   <p>『うんｊ』へようこそ！</p>
   <Button
     onclick={() => {
-      openConfirm = !tryEnter();
+      navigate(makePathname("/headline"));
     }}
     variant="raised">入る</Button
   >

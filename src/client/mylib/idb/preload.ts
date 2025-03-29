@@ -43,7 +43,6 @@ export const showTermsGuide = new Preload("showTermsGuide");
 export const showContactGuide = new Preload("showContactGuide");
 
 // other
-export const destinationPathname = new Preload("destinationPathname");
 export const termsAgreement = new Preload("termsAgreement");
 export const contactedAt = new Preload("contactedAt");
 

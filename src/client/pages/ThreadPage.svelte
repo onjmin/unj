@@ -34,7 +34,7 @@
     import { visible } from "../mylib/dom.js";
     import { makePathname } from "../mylib/env.js";
     import { Postload } from "../mylib/idb/postload.js";
-    import { nonceKey } from "../mylib/idb/preload.js";
+    import { nonceKey, termsAgreement } from "../mylib/idb/preload.js";
     import { goodbye, hello, ok, socket } from "../mylib/socket.js";
     import {
         changeNewResSound,
@@ -48,6 +48,7 @@
     import BalsPart from "../parts/BalsPart.svelte";
     import ResFormPart from "../parts/ResFormPart.svelte";
     import ResPart from "../parts/ResPart.svelte";
+    import TermsConfirmPart from "../parts/TermsConfirmPart.svelte";
     import TwemojiPart from "../parts/TwemojiPart.svelte";
 
     changeVolume();
@@ -56,6 +57,7 @@
 
     let { threadId = "", cursor = "", desc = false } = $props();
 
+    let openConfirm = $state(false);
     let openRight = $state(false);
     let textarea: HTMLTextAreaElement | null = $state(null);
     const focus = () => {
@@ -361,6 +363,10 @@
 
     let emitting = $state(false);
     const tryRes = async () => {
+        if (termsAgreement.value !== "yes") {
+            openConfirm = true;
+            return;
+        }
         if (emitting) return;
         emitting = true;
         const data = {
@@ -456,6 +462,8 @@
         </FormField>
     {/if}
 </HeaderPart>
+
+<TermsConfirmPart {openConfirm} />
 
 <Banner bind:open={openNewResNotice} centered mobileStacked>
     {#snippet icon()}
@@ -591,7 +599,7 @@
             {/if}
             {#if remaining !== ""}
                 <div style="text-align:center">
-                    <Chip>
+                    <Chip chip>
                         <LeadingIcon class="material-icons"
                             >schedule</LeadingIcon
                         >

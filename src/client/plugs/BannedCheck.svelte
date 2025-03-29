@@ -1,11 +1,7 @@
 <script lang="ts">
     import { navigate } from "svelte-routing";
-    import { makePathname, pathname } from "../mylib/env.js";
-    import {
-        banStatus,
-        destinationPathname,
-        termsAgreement,
-    } from "../mylib/idb/preload.js";
+    import { makePathname } from "../mylib/env.js";
+    import { banStatus } from "../mylib/idb/preload.js";
 
     let { children } = $props();
     let ready = $state(false);
@@ -15,11 +11,6 @@
             setTimeout(() =>
                 navigate(makePathname("/akukin"), { replace: true }),
             );
-            return;
-        }
-        if ("yes" !== termsAgreement.value && "/" !== pathname()) {
-            destinationPathname.value = pathname();
-            setTimeout(() => navigate(makePathname("/"), { replace: true }));
             return;
         }
         ready = true;

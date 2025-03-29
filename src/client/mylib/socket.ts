@@ -7,7 +7,6 @@ import {
 	authToken,
 	banReason,
 	banStatus,
-	destinationPathname,
 	ninjaPokemon,
 	ninjaScore,
 	nonceKey,
@@ -67,11 +66,9 @@ export const hello = (callback: (() => void) | null = null) => {
 					navigate(makePathname("/error"), { replace: true });
 					break;
 				case "newUsersRateLimit":
-					destinationPathname.value = pathname();
 					navigate(makePathname("/error"), { replace: true });
 					break;
 				case "grantFailed":
-					destinationPathname.value = pathname();
 					navigate(makePathname("/error"), { replace: true });
 					break;
 				default:
