@@ -16,6 +16,11 @@
 </script>
 
 <p>AGPL3.0の条件に基づき、難読化前のソースコードをご提供いたします。</p>
+<a
+  href="https://github.com/onjmin/unj"
+  target="_blank"
+  rel="noopener noreferrer">GitHubのリンク</a
+>
 <p>
   プライベートリポジトリへのアクセス権を付与いたしますので、GitHubのユーザー名をご連絡ください。
 </p>
