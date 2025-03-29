@@ -48,6 +48,34 @@
         replyResSound.value = selectedReplyResSound;
         changeReplyResSound();
     });
+
+    const themeMap = new Map(
+        [
+            "bubblegum",
+            "bubblegum-dark",
+            "fixation",
+            "fixation-dark",
+            "material",
+            "material-dark",
+            "metro",
+            "metro-dark",
+            "svelte",
+            "svelte-dark",
+            "unity",
+            "unity-dark",
+        ].map((name) => [
+            name,
+            `https://cdn.jsdelivr.net/npm/svelte-material-ui@8.0.0-beta.3/themes/${name}.min.css`,
+        ]),
+    );
+
+    let selectedTheme: string = $state("");
+    $effect(() => {
+        if (!selectedTheme) return;
+        document
+            .getElementById("unj-theme")
+            ?.setAttribute("href", selectedTheme);
+    });
 </script>
 
 <HeaderPart title="個人設定">
@@ -123,6 +151,24 @@
                                             )}>play_arrow</IconButton
                                     >
                                 {/if}
+                            </Item>
+                        {/each}
+                    </List>
+                </Content>
+            </Panel>
+            <Panel>
+                <Header>テーマの変更</Header>
+                <Content>
+                    <List class="demo-list" radioList>
+                        {#each themeMap as [key, href]}
+                            <Item>
+                                <Graphic>
+                                    <Radio
+                                        bind:group={selectedTheme}
+                                        value={href}
+                                    />
+                                </Graphic>
+                                <Label>{key}</Label>
                             </Item>
                         {/each}
                     </List>
