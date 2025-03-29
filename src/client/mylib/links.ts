@@ -17,6 +17,11 @@ export const links = [
 		href: "https://onjstu.livedoor.blog/",
 	}),
 	new SiteInfo({
+		name: "7ちゃんねる",
+		description: "俺が作った掲示板サイト盛り上げてくれ",
+		href: "https://7ch.1my.jp/",
+	}),
+	new SiteInfo({
 		name: "Hallo おんｊ",
 		description: "おんj民でウェブサイト作るぞ",
 		href: "https://onj-onj.vercel.app/1",

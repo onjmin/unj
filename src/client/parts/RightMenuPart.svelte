@@ -18,7 +18,7 @@
 
 <style>
   .drawer-container-right {
-    opacity: 0.8;
+    opacity: 0.92;
     position: fixed;
     z-index: 16;
     top: 0;

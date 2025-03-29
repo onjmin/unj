@@ -703,7 +703,7 @@
         padding-right: 16px;
     }
     .thread-title {
-        color: #66c0b5;
+        color: #409090;
         font-weight: bold;
     }
     .res-list {

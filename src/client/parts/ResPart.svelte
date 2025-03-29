@@ -238,7 +238,7 @@
     width: 100%;
   }
   .user-name {
-    color: #66c0b5;
+    color: #409090;
     font-weight: bold;
   }
   .thread-owner {
