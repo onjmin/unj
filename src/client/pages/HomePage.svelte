@@ -29,8 +29,6 @@
     onjKeyWords.filter((v) => v !== randomOnjKeyWord1),
   );
 
-  let openConfirm = $state(false);
-
   const randomIllust = randArray(topIllusts.map((v) => v.src));
 </script>
 
