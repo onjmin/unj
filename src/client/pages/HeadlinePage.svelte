@@ -7,7 +7,7 @@
 
     import Accordion, { Panel, Header } from "@smui-extra/accordion";
     import DataTable, { Head, Body, Row, Cell } from "@smui/data-table";
-    import IconButton, { Icon } from "@smui/icon-button";
+    import IconButton from "@smui/icon-button";
     import Paper, { Title, Content, Subtitle } from "@smui/paper";
     import Snackbar, { Label } from "@smui/snackbar";
     import {
