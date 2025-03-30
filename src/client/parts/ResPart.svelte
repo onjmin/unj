@@ -167,9 +167,10 @@
   <div class="content-row">
     <!-- 固定幅・高さのアイコン -->
     {#if ccUserAvatar && avatarMap.get(ccUserAvatar)}
-      <div class="avatar">
-        <img src={avatarMap.get(ccUserAvatar)?.src} alt="User Avatar" />
-      </div>
+      <div
+        class="avatar"
+        style="background-image:url({avatarMap.get(ccUserAvatar)?.src});"
+      ></div>
     {:else}
       <div class="empty-avatar"></div>
     {/if}
@@ -255,22 +256,12 @@
     width: 32px;
   }
   .avatar {
-    flex: 0 0 auto;
     width: 64px;
     height: 64px;
     border-radius: 50%;
     margin-right: 8px;
-    overflow: hidden;
-    display: flex; /* 中央寄せするならflexが楽 */
-    justify-content: center;
-    align-items: center;
-    background-color: #333; /* 透明な画像の場合の背景 */
-  }
-  .avatar img {
-    width: 100%;
-    height: auto;
-    object-fit: cover;
-    object-position: center center;
+    background-size: cover;
+    background-position: center center;
   }
   /* content は縦並びに、右側の残りスペースを使用 */
   .content {

@@ -34,7 +34,7 @@
     <Content>
       <div style="text-align:left;">
         <List twoLine avatarList singleSelection selectedIndex={selectionIndex}>
-          {#each avatarMap as [key, avatar], i}
+          {#each avatarMap.values() as avatar, i}
             <Item
               onSMUIAction={() => (selectionIndex = i)}
               selected={selectionIndex === i}
@@ -42,7 +42,7 @@
               {#if avatar.src}
                 <Graphic
                   class="avatar-item-graphic"
-                  style="background-image: url({avatar.src});"
+                  style="background-image:url({avatar.src});"
                 />
               {/if}
               <Text>
