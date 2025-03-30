@@ -453,17 +453,19 @@
         >投稿する</Button
     >
     <FormField align="end">
+        {#snippet label()}
+            <Icon class="material-icons">arrow_downward</Icon>
+        {/snippet}
         <Checkbox bind:checked={sage} />
-        {#snippet label()}🠋{/snippet}
     </FormField>
     <FormField align="end">
-        <Checkbox bind:checked={ninja} />
         {#snippet label()}忍{/snippet}
+        <Checkbox bind:checked={ninja} />
     </FormField>
     {#if thread?.yours}
         <FormField align="end">
-            <Checkbox disabled checked={true} />
             {#snippet label()}主{/snippet}
+            <Checkbox disabled checked={true} />
         </FormField>
     {/if}
 </HeaderPart>
