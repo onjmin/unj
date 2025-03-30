@@ -45,3 +45,31 @@ new Avatar({
 	src: "https://avatars.githubusercontent.com/u/88383494",
 	href: "https://w.atwiki.jp/openj3/pages/641.html",
 });
+new Avatar({
+	id: 3,
+	name: "フェリス",
+	description: "くしゃみ出そう…ふぇ…ふぇ……ﾌｪﾆｯｸｽ！",
+	src: "https://i.imgur.com/rqcCXvE.png",
+	href: "https://w.atwiki.jp/openj3/pages/36.html",
+});
+new Avatar({
+	id: 4,
+	name: "やきう民",
+	description: "やきうのお兄ちゃん",
+	src: "https://i.imgur.com/DerrjHB.png",
+	href: "https://w.atwiki.jp/openj3/pages/48.html",
+});
+new Avatar({
+	id: 5,
+	name: "原住民",
+	description: "(´・ω・｀)",
+	src: "https://i.imgur.com/Y7KcMns.png",
+	href: "https://w.atwiki.jp/openj3/pages/170.html",
+});
+new Avatar({
+	id: 6,
+	name: "🥺ぷゆゆ",
+	description: "または赤ガイ",
+	src: "https://i.imgur.com/bbfisaN.png",
+	href: "https://w.atwiki.jp/openj3/pages/464.html",
+});
