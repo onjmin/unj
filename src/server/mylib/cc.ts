@@ -4,7 +4,7 @@ import { pokemonMap } from "../../common/pokemon.js";
 import { encodeUserId } from "./anti-debug.js";
 import auth from "./auth.js";
 import { ninjaPokemonCache, ninjaScoreCache } from "./cache.js";
-import { getIP } from "./ip.js";
+import { getIP, sliceIPRange } from "./ip.js";
 
 export const makeCcUserId = ({
 	ccBitmask,
@@ -20,8 +20,7 @@ export const makeCcUserId = ({
 		const result = encodeUserId(userId, new Date());
 		if (result !== null) {
 			const ip = getIP(socket);
-			const delimiter = ip.includes(".") ? "." : ":";
-			const ipRange = ip.split(delimiter).slice(0, 2).join(delimiter);
+			const ipRange = sliceIPRange(ip);
 			const ninjaScore = ninjaScoreCache.get(userId) ?? 0;
 			const ninjaLv = (ninjaScore ** (1 / 3)) | 0;
 			// 「IDの最初の2文字」「プロパイダを基にした文字」「忍法帖レベル」

@@ -24,7 +24,7 @@ import {
 	userIPCache,
 	varsanCache,
 } from "../mylib/cache.js";
-import { getIP } from "../mylib/ip.js";
+import { getIP, sliceIPRange } from "../mylib/ip.js";
 import { logger } from "../mylib/log.js";
 import { flaky } from "./anti-debug.js";
 
@@ -47,6 +47,17 @@ const lazyUpdate = (userId: number, ninjaScore: number, ip: string) => {
 	neet.set(userId, id);
 };
 
+const fetchUserIP = async (
+	userId: number,
+	poolClient: PoolClient,
+): Promise<string | null> => {
+	const { rows, rowCount } = await poolClient.query(
+		"SELECT ip FROM users WHERE id = $1",
+		[userId],
+	);
+	return rowCount ? rows[0].ip : null;
+};
+
 type ParsedResult = {
 	msg: string;
 	shouldUpdateMeta: boolean;
@@ -56,9 +67,11 @@ type Ref = {
 	num: number;
 	isOwner: boolean;
 	userId: number;
+	ccUserId: string;
 };
 
 export const parseCommand = async ({
+	ccUserId,
 	contentText,
 	isOwner,
 	nextResNum,
@@ -68,6 +81,7 @@ export const parseCommand = async ({
 	userId,
 	poolClient,
 }: {
+	ccUserId: string;
 	contentText: string;
 	isOwner: boolean;
 	nextResNum: number;
@@ -85,7 +99,7 @@ export const parseCommand = async ({
 		return async (anka: number[]): Promise<Ref[] | null> => {
 			if (result !== null) return result;
 			const { rows } = await poolClient.query(
-				`SELECT num,is_owner,user_id FROM res WHERE thread_id = $1 AND num IN (${anka.join(",")})`,
+				`SELECT num,is_owner,user_id,cc_user_id FROM res WHERE thread_id = $1 AND num IN (${anka.join(",")})`,
 				[threadId],
 			);
 			// 重複排除
@@ -98,6 +112,7 @@ export const parseCommand = async ({
 					num: record.num,
 					isOwner: record.is_owner,
 					userId: record.user_id,
+					ccUserId: record.cc_user_id,
 				});
 			}
 			result = arr;
@@ -318,8 +333,36 @@ export const parseCommand = async ({
 					results.push("pong");
 					break;
 				case "!check":
-					if (ninjaLv < 2) break;
-					ninjaLv--;
+					{
+						if (ninjaLv < 2) break;
+						const refArray = await fetchRefArray([...new Set(anka)]);
+						if (!refArray || !refArray.length) break;
+						const ref = refArray[0];
+						let userIP1: string | null = userIPCache.get(ref.userId) ?? null;
+						if (!userIP1) userIP1 = await fetchUserIP(ref.userId, poolClient);
+						if (!userIP1) break;
+						let userIP2: string | null = userIPCache.get(userId) ?? null;
+						if (!userIP2) userIP2 = await fetchUserIP(userId, poolClient);
+						if (!userIP2) break;
+						const tests = [];
+						tests.push(userIP1 === userIP2 ? "〇IP同一" : "×IP別人");
+						tests.push(ref.userId === userId ? "〇UID同一" : "×UID別人");
+						tests.push(ref.ccUserId === ccUserId ? "〇ID同一" : "×ID別人");
+						tests.push(
+							sliceIPRange(userIP1) === sliceIPRange(userIP2)
+								? "〇プロバイダ同一"
+								: "×プロバイダ別人",
+						);
+						const score = tests.filter((v) => /同一/.test(v)).length;
+						let msg = "";
+						if (score >= 4) msg = "100%同一人物デス。";
+						else if (score >= 3) msg = "同一ノ可能性高メデス。";
+						else msg = "別回線、デス。";
+						results.push(
+							`🤖判定：${tests.join("、")}\n＜${msg}\nご利用アリガトウゴザイマシタ`,
+						);
+						ninjaLv--;
+					}
 					break;
 			}
 		}
@@ -328,7 +371,7 @@ export const parseCommand = async ({
 
 	let next = ninjaScore;
 	if (_ninjaLv !== ninjaLv) {
-		next = ninjaLv ** 3;
+		next = ninjaLv ** 3 + 1;
 		msg += `(lv:${_ninjaLv}→${ninjaLv})`;
 	} else {
 		flaky(() => next++);

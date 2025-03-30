@@ -34,6 +34,15 @@ export const isBannedIP = (ip: string): boolean => {
 	return false;
 };
 
+/**
+ * プロパイダを照合せずに済む軽い処理
+ */
+export const sliceIPRange = (ip: string): string => {
+	if (ip.includes(".")) return ip.split(".").slice(0, 2).join("."); // IPv4 の場合、上位 16ビット（255.255.0.0 相当）を取得
+	if (ip.includes(":")) return ip.split(":").slice(0, 4).join(":"); // IPv6 の場合、上位 32ビット（通常のプロバイダ識別単位）を取得
+	return ip; // エントロピーを捨てないように、異常な入力値ならそのまま返す
+};
+
 export const getIP = (socket: Socket): string => socket.data.ip;
 export const setIP = (socket: Socket, ip: string) => {
 	socket.data.ip = ip;

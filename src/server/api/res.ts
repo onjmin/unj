@@ -141,17 +141,6 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			const nextResNum = (resCountCache.get(threadId) ?? 0) + 1;
 			resCountCache.set(threadId, nextResNum);
 
-			const parsedResult = await parseCommand({
-				contentText: content.output.contentText,
-				isOwner,
-				nextResNum,
-				ninjaScore,
-				socket,
-				threadId,
-				userId,
-				poolClient,
-			});
-
 			// cc
 			const ccBitmask = ccBitmaskCache.get(threadId) ?? 0;
 			const ccUserId = makeCcUserId({
@@ -168,6 +157,18 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			const ccUserAvatar = makeCcUserAvatar({
 				ccBitmask,
 				userAvatar: res.output.userAvatar,
+			});
+
+			const parsedResult = await parseCommand({
+				ccUserId,
+				contentText: content.output.contentText,
+				isOwner,
+				nextResNum,
+				ninjaScore,
+				socket,
+				threadId,
+				userId,
+				poolClient,
 			});
 
 			await poolClient.query("BEGIN"); // トランザクション開始
