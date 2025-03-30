@@ -73,3 +73,10 @@ new Avatar({
 	src: "https://i.imgur.com/bbfisaN.png",
 	href: "https://w.atwiki.jp/openj3/pages/464.html",
 });
+new Avatar({
+	id: 7,
+	name: "おんJマン",
+	description: "おんJのマスコットキャラクター",
+	src: "https://i.imgur.com/boJkX3x.png",
+	href: "https://w.atwiki.jp/openj3/pages/26.html",
+});
