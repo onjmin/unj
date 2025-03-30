@@ -59,6 +59,7 @@ export const theme = new Preload("theme", () => {
 });
 
 // other
+export const latestReadThreadId = new Preload("latestReadThreadId");
 export const termsAgreement = new Preload("termsAgreement");
 export const contactedAt = new Preload("contactedAt");
 export const authToken = new Preload("authToken");

@@ -34,7 +34,11 @@
     import { visible } from "../mylib/dom.js";
     import { makePathname } from "../mylib/env.js";
     import { Postload } from "../mylib/idb/postload.js";
-    import { nonceKey, termsAgreement } from "../mylib/idb/preload.js";
+    import {
+        latestReadThreadId,
+        nonceKey,
+        termsAgreement,
+    } from "../mylib/idb/preload.js";
     import { goodbye, hello, ok, socket } from "../mylib/socket.js";
     import {
         changeNewResSound,
@@ -310,9 +314,10 @@
                 nonce: genNonce(nonceKey.value ?? ""),
                 cursor: cursor || null,
                 size: 16,
-                desc,
+                desc: latestReadThreadId.value === threadId ? false : desc,
                 threadId,
             });
+            latestReadThreadId.value = threadId;
         });
         socket.on("joinThread", handleJoinThread);
         socket.on("readThread", handleReadThread);
