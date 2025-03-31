@@ -41,18 +41,17 @@ const save = (key: string, value: string | null): void => {
 
 export class UnjStorage {
 	#key;
-	#reactive?: (value: string | null) => void;
-	constructor(key: string, reactive?: (value: string | null) => void) {
+	#reactive?: () => void;
+	constructor(key: string, reactive?: () => void) {
 		this.#key = key;
 		this.#reactive = reactive;
-		this.#reactive?.(load(key));
 	}
 	get value() {
 		return load(this.#key);
 	}
 	set value(value: string | null) {
 		save(this.#key, value);
-		this.#reactive?.(value);
+		this.#reactive?.();
 	}
 }
 
@@ -75,8 +74,8 @@ export const showTermsGuide = new UnjStorage("showTermsGuide");
 export const showContactGuide = new UnjStorage("showContactGuide");
 
 // theme-color
-export const theme = new UnjStorage("theme", (value) => {
-	const v = value || "metro-dark";
+export const theme = new UnjStorage("theme", () => {
+	const v = theme.value ?? "";
 	const href = `https://cdn.jsdelivr.net/npm/svelte-material-ui@8.0.0-beta.3/themes/${v}.min.css`;
 	document.getElementById("unj-theme")?.setAttribute("href", href);
 	if (v.slice(-4) === "dark") {
@@ -85,6 +84,7 @@ export const theme = new UnjStorage("theme", (value) => {
 		document.body.classList.remove("dark");
 	}
 });
+theme.value = theme.value ?? "unity";
 
 // other
 export const latestReadThreadId = new UnjStorage("latestReadThreadId");
