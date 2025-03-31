@@ -7,21 +7,31 @@ const VITE_UNJ_HASHIDS_SECRET_PEPPER = decodeEnv(
 	import.meta.env.VITE_UNJ_HASHIDS_SECRET_PEPPER,
 );
 
+let randomKey = localStorage.getItem("randomKey");
+if (randomKey === null) {
+	randomKey = Math.random().toString(36).slice(2);
+	localStorage.setItem("randomKey", randomKey);
+}
+
+const uniquePepper = [randomKey, VITE_UNJ_HASHIDS_SECRET_PEPPER].join(
+	delimiter,
+);
+
 const genSecureKey = (key: string): string => {
 	if (DEV_MODE) return key;
-	const str = sha256([VITE_UNJ_HASHIDS_SECRET_PEPPER, key].join(delimiter));
+	const str = sha256([uniquePepper, key].join(delimiter));
 	return str.slice(0, 8); // 衝突の心配が低いので8文字に削減
 };
 
 const load = (key: string): string | null => {
 	const k = genSecureKey(key);
 	const v = localStorage.getItem(k);
-	return DEV_MODE ? v : decode(v, VITE_UNJ_HASHIDS_SECRET_PEPPER);
+	return DEV_MODE ? v : decode(v, uniquePepper);
 };
 
 const save = (key: string, value: string | null): void => {
 	const k = genSecureKey(key);
-	const v = DEV_MODE ? value : encode(value, VITE_UNJ_HASHIDS_SECRET_PEPPER);
+	const v = DEV_MODE ? value : encode(value, uniquePepper);
 	if (v === null) {
 		localStorage.removeItem(k);
 	} else {
