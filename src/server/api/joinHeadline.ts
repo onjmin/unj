@@ -13,7 +13,7 @@ export default ({
 }: {
 	socket: Socket;
 	io: Server;
-	online: Set<string>;
+	online: Map<number, number>;
 	accessCounter: () => number;
 }) => {
 	socket.data.prevRoom = "";
