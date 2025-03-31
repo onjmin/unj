@@ -35,7 +35,6 @@ export const genEnvKey = (): string => {
 };
 
 export const VITE_BASE_URL = PROD_MODE ? process.env.VITE_BASE_URL : "/";
-export const NEON_DATABASE_URL = String(process.env.NEON_DATABASE_URL);
 
 export let ROOT_PATH = "";
 if (DEV_MODE) {
