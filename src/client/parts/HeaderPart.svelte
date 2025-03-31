@@ -7,7 +7,7 @@
     showContactGuide,
     showTermsGuide,
     showThreadGuide,
-  } from "../mylib/idb/preload.js";
+  } from "../mylib/unj-storage.js";
   import LeftMenuPart from "./LeftMenuPart.svelte";
   import RightMenuPart from "./RightMenuPart.svelte";
 

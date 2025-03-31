@@ -25,9 +25,12 @@
     import { sleep } from "../../common/util.js";
     import { genNonce } from "../mylib/anti-debug.js";
     import { makePathname } from "../mylib/env.js";
-    import { Postload } from "../mylib/idb/postload.js";
-    import { nonceKey, termsAgreement } from "../mylib/idb/preload.js";
     import { goodbye, hello, ok, socket } from "../mylib/socket.js";
+    import {
+        UnjStorage,
+        nonceKey,
+        termsAgreement,
+    } from "../mylib/unj-storage.js";
     import ResFormPart from "../parts/ResFormPart.svelte";
     import TermsConfirmPart from "../parts/TermsConfirmPart.svelte";
 
@@ -41,22 +44,18 @@
     let contentUrl = $state("");
     let contentType = $state(1);
 
-    // postload
-    const titlePostload = new Postload("title");
-    titlePostload.promise.then(() => {
-        title = titlePostload.value ?? "";
-    });
+    // UnjStorage
+    const titleUnjStorage = new UnjStorage("title");
+    title = titleUnjStorage.value ?? "";
     $effect(() => {
-        titlePostload.value = title;
+        titleUnjStorage.value = title;
     });
 
-    // postload
-    const contentTextPostload = new Postload("contentText");
-    contentTextPostload.promise.then(() => {
-        contentText = contentTextPostload.value ?? "";
-    });
+    // UnjStorage
+    const contentTextUnjStorage = new UnjStorage("contentText");
+    contentText = contentTextUnjStorage.value ?? "";
     $effect(() => {
-        contentTextPostload.value = contentText;
+        contentTextUnjStorage.value = contentText;
     });
 
     let varsan = $state(false);
@@ -92,8 +91,8 @@
         if (!data.ok) return;
         if (!data.yours) return;
         ok();
-        titlePostload.value = null;
-        contentTextPostload.value = null;
+        titleUnjStorage.value = null;
+        contentTextUnjStorage.value = null;
         navigate(makePathname(`/thread/${data.new.id}`));
     };
 

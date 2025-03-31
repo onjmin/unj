@@ -12,9 +12,7 @@ const VITE_UNJ_HASHIDS_SECRET_PEPPER = decodeEnv(
  * IndexedDBの安全なキーを計算する
  */
 const genSecureKey = (key: string): string => {
-	if (DEV_MODE) {
-		return key;
-	}
+	if (DEV_MODE) return key;
 	const str = sha256([VITE_UNJ_HASHIDS_SECRET_PEPPER, key].join(delimiter));
 	return str.slice(0, 8); // 衝突の心配が低いので8文字に削減
 };

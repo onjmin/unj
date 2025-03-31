@@ -10,7 +10,7 @@ import {
 	ninjaPokemon,
 	ninjaScore,
 	nonceKey,
-} from "./idb/preload.js";
+} from "./unj-storage.js";
 
 const uri = PROD_MODE
 	? decodeEnv(import.meta.env.VITE_GLITCH_URL)

@@ -11,8 +11,8 @@
   import { navigate } from "svelte-routing";
   import { randArray } from "../../common/util.js";
   import { makePathname } from "../mylib/env.js";
-  import { theme } from "../mylib/idb/preload.js";
   import { topIllusts } from "../mylib/top-illusts.js";
+  import { theme } from "../mylib/unj-storage.js";
 
   const catchphrase = [
     "運営と運命を共にする、うんち実況（セーラージュピター）",

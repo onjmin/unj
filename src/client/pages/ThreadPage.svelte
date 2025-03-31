@@ -33,12 +33,6 @@
     import { genNonce } from "../mylib/anti-debug.js";
     import { visible } from "../mylib/dom.js";
     import { makePathname } from "../mylib/env.js";
-    import { Postload } from "../mylib/idb/postload.js";
-    import {
-        latestReadThreadId,
-        nonceKey,
-        termsAgreement,
-    } from "../mylib/idb/preload.js";
     import { goodbye, hello, ok, socket } from "../mylib/socket.js";
     import {
         changeNewResSound,
@@ -47,6 +41,12 @@
         newResSoundHowl,
         replyResSoundHowl,
     } from "../mylib/sound.js";
+    import { UnjStorage } from "../mylib/unj-storage.js";
+    import {
+        latestReadThreadId,
+        nonceKey,
+        termsAgreement,
+    } from "../mylib/unj-storage.js";
     import AccessCounterPart from "../parts/AccessCounterPart.svelte";
     import BackgroundEmbedPart from "../parts/BackgroundEmbedPart.svelte";
     import BalsPart from "../parts/BalsPart.svelte";
@@ -77,31 +77,25 @@
     let sage = $state(false);
     let ninja = $state(false);
 
-    // postload
-    const contentTextPostload = new Postload(`contentText###${threadId}`);
-    contentTextPostload.promise.then(() => {
-        contentText = contentTextPostload.value ?? "";
-    });
+    // UnjStorage
+    const contentTextUnjStorage = new UnjStorage(`contentText###${threadId}`);
+    contentText = contentTextUnjStorage.value ?? "";
     $effect(() => {
-        contentTextPostload.value = contentText === "" ? null : contentText;
+        contentTextUnjStorage.value = contentText === "" ? null : contentText;
     });
 
-    // postload
-    const sagePostload = new Postload(`sage###${threadId}`);
-    sagePostload.promise.then(() => {
-        sage = sagePostload.value === "sage";
-    });
+    // UnjStorage
+    const sageUnjStorage = new UnjStorage(`sage###${threadId}`);
+    sage = sageUnjStorage.value === "sage";
     $effect(() => {
-        sagePostload.value = sage ? "sage" : null;
+        sageUnjStorage.value = sage ? "sage" : null;
     });
 
-    // postload
-    const ninjaPostload = new Postload(`ninja###${threadId}`);
-    ninjaPostload.promise.then(() => {
-        ninja = ninjaPostload.value === "ninja";
-    });
+    // UnjStorage
+    const ninjaUnjStorage = new UnjStorage(`ninja###${threadId}`);
+    ninja = ninjaUnjStorage.value === "ninja";
     $effect(() => {
-        ninjaPostload.value = ninja ? "ninja" : null;
+        ninjaUnjStorage.value = ninja ? "ninja" : null;
     });
 
     let bookmark = $state(false); // idbから取得する
@@ -199,7 +193,7 @@
         newResSoundHowl?.play();
         if (data.yours) {
             ok();
-            contentTextPostload.value = null;
+            contentTextUnjStorage.value = null;
             contentText = "";
             contentUrl = "";
             await sleep(512);

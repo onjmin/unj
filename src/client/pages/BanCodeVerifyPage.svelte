@@ -29,7 +29,7 @@
         banVerifyCode,
         ipInfoJson,
         traversalTarget,
-    } from "../mylib/idb/preload.js";
+    } from "../mylib/unj-storage.js";
 
     const handleSubmit = async () => {
         loading = true;

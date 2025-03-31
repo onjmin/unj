@@ -13,7 +13,7 @@
         banVerifyCode,
         ipInfoJson,
         traversalTarget,
-    } from "../mylib/idb/preload.js";
+    } from "../mylib/unj-storage.js";
     import { reportBanned, reportTraversal } from "../mylib/webhook.js";
 
     let ip = $state("");

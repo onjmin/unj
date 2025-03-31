@@ -6,7 +6,7 @@
   import FormField from "@smui/form-field";
   import IconButton from "@smui/icon-button";
   import { visible } from "../mylib/dom.js";
-  import { termsAgreement } from "../mylib/idb/preload.js";
+  import { termsAgreement } from "../mylib/unj-storage.js";
   import TermsPart from "./TermsPart.svelte";
 
   let { openConfirm = false } = $props();

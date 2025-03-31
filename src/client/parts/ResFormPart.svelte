@@ -10,7 +10,7 @@
   import { findIn } from "../../common/request/whitelist/site-info.js";
   import unjGames from "../../common/request/whitelist/unj-games.js";
   import video from "../../common/request/whitelist/video.js";
-  import { Postload } from "../mylib/idb/postload.js";
+  import { UnjStorage } from "../mylib/unj-storage.js";
   import AvatarPart from "./AvatarPart.svelte";
   import UrlTemplatePart from "./UrlTemplatePart.svelte";
 
@@ -31,33 +31,24 @@
   let openUrlTemplate = $state(false);
   let openAvatar = $state(false);
 
-  // postload
-  const userNamePostload = new Postload("userName");
-  userNamePostload.promise.then(() => {
-    userName = userNamePostload.value ?? "";
-  });
+  // UnjStorage
+  const userNameUnjStorage = new UnjStorage("userName");
+  userName = userNameUnjStorage.value ?? "";
   $effect(() => {
-    userNamePostload.value = userName;
+    userNameUnjStorage.value = userName;
   });
 
-  // postload
-  let loaded = $state(false);
-  const userAvatarPostload = new Postload("userAvatar");
-  userAvatarPostload.promise.then(() => {
-    userAvatar = userAvatarPostload.value
-      ? Number(userAvatarPostload.value)
-      : 0;
-    loaded = true;
-  });
+  // UnjStorage
+  const userAvatarUnjStorage = new UnjStorage("userAvatar");
+  userAvatar = userAvatarUnjStorage.value
+    ? Number(userAvatarUnjStorage.value)
+    : 0;
   $effect(() => {
-    userAvatarPostload.value = String(userAvatar);
+    userAvatarUnjStorage.value = String(userAvatar);
   });
 </script>
 
-{#if loaded}
-  <AvatarPart bind:open={openAvatar} bind:userAvatar />
-{/if}
-
+<AvatarPart bind:open={openAvatar} bind:userAvatar />
 <UrlTemplatePart bind:open={openUrlTemplate} bind:contentUrl {contentType} />
 
 <Textfield {disabled} label="名前" bind:value={userName} input$maxlength={32}>

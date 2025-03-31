@@ -17,7 +17,7 @@
     import { addHours, differenceInHours, format } from "date-fns";
     import { ja } from "date-fns/locale";
     import * as v from "valibot";
-    import { contactedAt } from "../mylib/idb/preload.js";
+    import { contactedAt } from "../mylib/unj-storage.js";
     import {
         contactAGPL3,
         contactKaizen,

@@ -6,7 +6,7 @@
         banReason,
         banStatus,
         traversalTarget,
-    } from "../mylib/idb/preload.js";
+    } from "../mylib/unj-storage.js";
 
     let { children } = $props();
     let ready = $state(false);

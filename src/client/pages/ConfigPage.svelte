@@ -15,12 +15,6 @@
     import Slider from "@smui/slider";
     import { Howler } from "howler";
     import {
-        newResSound,
-        replyResSound,
-        soundVolume,
-        theme,
-    } from "../mylib/idb/preload.js";
-    import {
         changeNewResSound,
         changeReplyResSound,
         changeVolume,
@@ -30,6 +24,12 @@
         soundMap,
         waf,
     } from "../mylib/sound.js";
+    import {
+        newResSound,
+        replyResSound,
+        soundVolume,
+        theme,
+    } from "../mylib/unj-storage.js";
 
     changeVolume();
     changeNewResSound();

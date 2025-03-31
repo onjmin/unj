@@ -1,6 +1,6 @@
 import { Howler } from "howler";
 import { sha256 } from "js-sha256";
-import { newResSound, replyResSound, soundVolume } from "./idb/preload.js";
+import { newResSound, replyResSound, soundVolume } from "./unj-storage.js";
 
 export const soundMap: Map<string, Sound> = new Map();
 class Sound {

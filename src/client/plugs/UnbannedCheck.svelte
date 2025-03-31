@@ -1,7 +1,7 @@
 <script lang="ts">
     import { navigate } from "svelte-routing";
     import { makePathname } from "../mylib/env.js";
-    import { banStatus } from "../mylib/idb/preload.js";
+    import { banStatus } from "../mylib/unj-storage.js";
 
     let { children } = $props();
     let ready = $state(false);
