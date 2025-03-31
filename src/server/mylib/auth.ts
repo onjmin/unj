@@ -1,9 +1,3 @@
-// pool
-import { Pool, neonConfig } from "@neondatabase/serverless";
-import ws from "ws";
-import { NEON_DATABASE_URL } from "../mylib/env.js";
-neonConfig.webSocketConstructor = ws;
-
 import {
 	addDays,
 	addSeconds,
@@ -15,6 +9,7 @@ import type { Socket } from "socket.io";
 import * as v from "valibot";
 import { AuthSchema, isSerial } from "../../common/request/schema.js";
 import { randInt } from "../../common/util.js";
+import { pool } from "../mylib/pool.js";
 import {
 	decodeLimit,
 	decodeUserId,
@@ -88,11 +83,6 @@ const neet: Map<number, NodeJS.Timeout> = new Map();
 const lazyUpdate = (userId: number, auth: string, ip: string) => {
 	clearTimeout(neet.get(userId));
 	const id = setTimeout(async () => {
-		// pool
-		const pool = new Pool({ connectionString: NEON_DATABASE_URL });
-		pool.on("error", (error) => {
-			logger.error(error);
-		});
 		const poolClient = await pool.connect();
 		await poolClient.query(
 			"UPDATE users SET updated_at = NOW(), ip = $1, auth = $2 WHERE id = $3",
@@ -143,11 +133,6 @@ const init = async (socket: Socket): Promise<boolean> => {
 	}
 	const token = getTokenParam(socket);
 	try {
-		// pool
-		const pool = new Pool({ connectionString: NEON_DATABASE_URL });
-		pool.on("error", (error) => {
-			throw error;
-		});
 		const poolClient = await pool.connect();
 		// 既存ユーザー照合
 		if (token) {

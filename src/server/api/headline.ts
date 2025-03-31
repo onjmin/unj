@@ -1,9 +1,4 @@
-// pool
-import { Pool, type PoolClient, neonConfig } from "@neondatabase/serverless";
-import ws from "ws";
-import { NEON_DATABASE_URL } from "../mylib/env.js";
-neonConfig.webSocketConstructor = ws;
-
+import type { PoolClient } from "@neondatabase/serverless";
 import type { Server, Socket } from "socket.io";
 import * as v from "valibot";
 import { HeadlineSchema } from "../../common/request/schema.js";
@@ -15,6 +10,7 @@ import {
 } from "../mylib/anti-debug.js";
 import { logger } from "../mylib/log.js";
 import nonce from "../mylib/nonce.js";
+import { pool } from "../mylib/pool.js";
 import { sizeOf } from "../mylib/socket.js";
 
 const api = "headline";
@@ -43,12 +39,6 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		try {
 			nonce.lock(socket);
 			nonce.update(socket);
-
-			// pool
-			const pool = new Pool({ connectionString: NEON_DATABASE_URL });
-			pool.on("error", (error) => {
-				throw error;
-			});
 			poolClient = await pool.connect();
 
 			const query = [

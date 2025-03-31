@@ -1,9 +1,5 @@
 // pool
-import { Pool, type PoolClient, neonConfig } from "@neondatabase/serverless";
-import ws from "ws";
-import { NEON_DATABASE_URL, PROD_MODE } from "../mylib/env.js";
-neonConfig.webSocketConstructor = ws;
-
+import type { PoolClient } from "@neondatabase/serverless";
 import { addSeconds, isBefore } from "date-fns";
 import type { Server, Socket } from "socket.io";
 import * as v from "valibot";
@@ -38,9 +34,11 @@ import {
 } from "../mylib/cache.js";
 import { makeCcUserAvatar, makeCcUserId, makeCcUserName } from "../mylib/cc.js";
 import { parseCommand } from "../mylib/command.js";
+import { PROD_MODE } from "../mylib/env.js";
 import { getIP } from "../mylib/ip.js";
 import { logger } from "../mylib/log.js";
 import nonce from "../mylib/nonce.js";
+import { pool } from "../mylib/pool.js";
 import { isSameSimhash } from "../mylib/simhash.js";
 import { exist, getThreadRoom, joined } from "../mylib/socket.js";
 
@@ -104,17 +102,10 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		try {
 			nonce.lock(socket);
 			nonce.update(socket);
-
-			if (PROD_MODE) {
-				coolTimes.set(userId, addSeconds(new Date(), randInt(8, 32)));
-			}
-
-			// pool
-			const pool = new Pool({ connectionString: NEON_DATABASE_URL });
-			pool.on("error", (error) => {
-				throw error;
-			});
 			poolClient = await pool.connect();
+
+			if (PROD_MODE)
+				coolTimes.set(userId, addSeconds(new Date(), randInt(8, 32)));
 
 			// 忍法帖の読み込み
 			if (!userCached.has(userId)) {

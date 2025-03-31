@@ -1,9 +1,4 @@
-// pool
-import { Pool, type PoolClient, neonConfig } from "@neondatabase/serverless";
-import ws from "ws";
-import { NEON_DATABASE_URL, PROD_MODE } from "../mylib/env.js";
-neonConfig.webSocketConstructor = ws;
-
+import type { PoolClient } from "@neondatabase/serverless";
 import { addMinutes } from "date-fns";
 import type { Socket } from "socket.io";
 import { randInt } from "../../common/util.js";
@@ -24,8 +19,9 @@ import {
 	userIPCache,
 	varsanCache,
 } from "../mylib/cache.js";
+import { PROD_MODE } from "../mylib/env.js";
 import { getIP, sliceIPRange } from "../mylib/ip.js";
-import { logger } from "../mylib/log.js";
+import { pool } from "../mylib/pool.js";
 import { flaky } from "./anti-debug.js";
 
 const delay = 1000 * 60 * 4; // Glitchは5分放置でスリープする
@@ -33,11 +29,6 @@ const neet: Map<number, NodeJS.Timeout> = new Map();
 const lazyUpdate = (userId: number, ninjaScore: number, ip: string) => {
 	clearTimeout(neet.get(userId));
 	const id = setTimeout(async () => {
-		// pool
-		const pool = new Pool({ connectionString: NEON_DATABASE_URL });
-		pool.on("error", (error) => {
-			logger.error(error);
-		});
 		const poolClient = await pool.connect();
 		await poolClient.query(
 			"UPDATE users SET updated_at = NOW(), ip = $1, ninja_score = $2 WHERE id = $3",

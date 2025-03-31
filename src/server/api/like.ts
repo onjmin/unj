@@ -1,9 +1,3 @@
-// pool
-import { Pool, neonConfig } from "@neondatabase/serverless";
-import ws from "ws";
-import { NEON_DATABASE_URL } from "../mylib/env.js";
-neonConfig.webSocketConstructor = ws;
-
 import type { Server, Socket } from "socket.io";
 import * as v from "valibot";
 import { likeSchema } from "../../common/request/schema.js";
@@ -12,6 +6,7 @@ import auth from "../mylib/auth.js";
 import { badCountCache, goodCountCache, isDeleted } from "../mylib/cache.js";
 import { logger } from "../mylib/log.js";
 import nonce from "../mylib/nonce.js";
+import { pool } from "../mylib/pool.js";
 import { exist, getThreadRoom, joined } from "../mylib/socket.js";
 
 const api = "like";
@@ -23,11 +18,6 @@ const neet: Map<number, NodeJS.Timeout> = new Map();
 const lazyUpdate = (threadId: number, goodCount: number, badCount: number) => {
 	clearTimeout(neet.get(threadId));
 	const id = setTimeout(async () => {
-		// pool
-		const pool = new Pool({ connectionString: NEON_DATABASE_URL });
-		pool.on("error", (error) => {
-			logger.error(error);
-		});
 		const poolClient = await pool.connect();
 		await poolClient.query(
 			"UPDATE threads SET good_count = $1, bad_count = $2 WHERE id = $3",
