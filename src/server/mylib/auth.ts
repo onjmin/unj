@@ -1,3 +1,4 @@
+import type { PoolClient } from "@neondatabase/serverless";
 import {
 	addDays,
 	addSeconds,
@@ -88,6 +89,7 @@ const lazyUpdate = (userId: number, auth: string, ip: string) => {
 			"UPDATE users SET updated_at = NOW(), ip = $1, auth = $2 WHERE id = $3",
 			[ip, auth, userId],
 		);
+		poolClient.release();
 	}, delay);
 	neet.set(userId, id);
 };
@@ -132,8 +134,12 @@ const init = async (socket: Socket): Promise<boolean> => {
 		initFIFO.push(new Date());
 	}
 	const token = getTokenParam(socket);
+
+	// 危険な処理
+	let poolClient: PoolClient | null = null;
 	try {
-		const poolClient = await pool.connect();
+		poolClient = await pool.connect();
+
 		// 既存ユーザー照合
 		if (token) {
 			const { rows, rowCount } = await poolClient.query(
@@ -172,6 +178,7 @@ const init = async (socket: Socket): Promise<boolean> => {
 			return true;
 		}
 	} catch (error) {
+		poolClient?.release();
 		logger.error(error);
 	}
 	return false;

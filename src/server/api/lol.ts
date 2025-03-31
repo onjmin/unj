@@ -23,6 +23,7 @@ const lazyUpdate = (threadId: number, lolCount: number) => {
 			lolCount,
 			threadId,
 		]);
+		poolClient.release();
 	}, delay);
 	neet.set(threadId, id);
 };

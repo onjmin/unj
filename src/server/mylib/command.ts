@@ -34,6 +34,7 @@ const lazyUpdate = (userId: number, ninjaScore: number, ip: string) => {
 			"UPDATE users SET updated_at = NOW(), ip = $1, ninja_score = $2 WHERE id = $3",
 			[ip, ninjaScore, userId],
 		);
+		poolClient.release();
 	}, delay);
 	neet.set(userId, id);
 };

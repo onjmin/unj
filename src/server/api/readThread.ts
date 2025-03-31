@@ -229,6 +229,7 @@ export default ({ socket }: { socket: Socket }) => {
 		} catch (error) {
 			logger.error(error);
 		} finally {
+			poolClient?.release();
 			nonce.unlock(socket);
 		}
 	});

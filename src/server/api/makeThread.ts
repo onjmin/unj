@@ -160,6 +160,7 @@ export default ({ socket }: { socket: Socket }) => {
 			await poolClient?.query("ROLLBACK"); // エラーが発生した場合はロールバック
 			logger.error(error);
 		} finally {
+			poolClient?.release();
 			nonce.unlock(socket);
 		}
 	});

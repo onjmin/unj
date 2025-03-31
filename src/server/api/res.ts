@@ -1,4 +1,3 @@
-// pool
 import type { PoolClient } from "@neondatabase/serverless";
 import { addSeconds, isBefore } from "date-fns";
 import type { Server, Socket } from "socket.io";
@@ -349,6 +348,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			await poolClient?.query("ROLLBACK"); // エラーが発生した場合はロールバック
 			logger.error(error);
 		} finally {
+			poolClient?.release();
 			nonce.unlock(socket);
 		}
 	});

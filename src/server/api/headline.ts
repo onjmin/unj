@@ -87,6 +87,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		} catch (error) {
 			logger.error(error);
 		} finally {
+			poolClient?.release();
 			nonce.unlock(socket);
 		}
 	});
