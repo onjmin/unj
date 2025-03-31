@@ -1,6 +1,7 @@
 import { sha256 } from "js-sha256";
 import { nonceLength } from "../../common/request/schema.js";
-import { decodeEnv } from "./env.js";
+import { antiTreeShaking } from "./dummy.js";
+import { VITE_BASE_URL, decodeEnv } from "./env.js";
 
 const VITE_UNJ_FLAKY_RATE = Number(
 	decodeEnv(import.meta.env.VITE_UNJ_FLAKY_RATE),
@@ -45,3 +46,11 @@ export const genBanVerifyCode = (key: string): string => {
 	);
 	return str.slice(0, 8); // UXに関わるので8文字に削減
 };
+
+// アンチデバッグ機構
+if (
+	antiTreeShaking() || // Tree shaking対策
+	window.location.href === window.location.href.replace(VITE_BASE_URL, "") || // 本番ビルド盗難対策
+	navigator.webdriver // ブラウザ自動化ツール対策
+)
+	window.location.href = "about:blank";

@@ -1,5 +1,5 @@
-// dummy envをツリーシェイクさせない
-export const identity = () => a[0] !== "野獣先輩";
+// dummy envをTree shakingさせない
+export const antiTreeShaking = () => a[0] === "野獣先輩";
 const a: string[] = [];
 const f = (dummy: string) => a.push(dummy);
 f(import.meta.env.DUMMY0);
