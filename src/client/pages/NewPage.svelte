@@ -64,7 +64,7 @@
     const bits2Int = (bits: number[]) => bits.reduce((p, x) => p | x);
 
     let ccBitmask = $state([1, 4, 8]);
-    let contentTypesBitmask = $state([1, 4, 8, 16, 32, 64]);
+    let contentTypesBitmask = $state([1, 2, 4, 8, 16, 32, 64]);
     let max = $state(1000);
 
     const timerOptions = [
