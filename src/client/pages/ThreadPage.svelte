@@ -177,6 +177,13 @@
     let openNewResNotice = $state(false);
     let newResCount = $state(0);
     let isAlreadyScrollEnd = $state(false);
+    $effect(() => {
+        if (isAlreadyScrollEnd) {
+            openNewResNotice = false;
+            newResCount = 0;
+        }
+    });
+
     const handleRes = async (data: {
         ok: boolean;
         new: Res;
@@ -197,10 +204,9 @@
             contentUrl = "";
             await sleep(512);
             scrollToEnd();
-        } else {
+        } else if (!isAlreadyScrollEnd) {
             openNewResNotice = true;
             newResCount++;
-            isAlreadyScrollEnd = false;
         }
         const m = data.new.contentText.match(/>>([0-9]+)/);
         if (m) {
@@ -244,9 +250,6 @@
     const scrollToEnd = () => {
         const main = document.querySelector(".unj-main-part") ?? document.body;
         main.scrollTo({ top: main.scrollHeight, behavior: "smooth" });
-        openNewResNotice = false;
-        newResCount = 0;
-        isAlreadyScrollEnd = true;
     };
 
     const handleLoL = (data: {
@@ -682,11 +685,7 @@
         </div>
         <div
             use:visible={(visible) => {
-                if (visible && !isAlreadyScrollEnd) {
-                    openNewResNotice = false;
-                    newResCount = 0;
-                    isAlreadyScrollEnd = true;
-                }
+                isAlreadyScrollEnd = visible;
             }}
         ></div>
         <div>{@render paginationControls()}</div>
