@@ -1,9 +1,3 @@
-// pool
-import { Pool, neonConfig } from "@neondatabase/serverless";
-import ws from "ws";
-import { NEON_DATABASE_URL } from "../mylib/env.js";
-neonConfig.webSocketConstructor = ws;
-
 import type { Server, Socket } from "socket.io";
 import * as v from "valibot";
 import { lolSchema } from "../../common/request/schema.js";
@@ -12,6 +6,7 @@ import auth from "../mylib/auth.js";
 import { isDeleted, lolCountCache } from "../mylib/cache.js";
 import { logger } from "../mylib/log.js";
 import nonce from "../mylib/nonce.js";
+import { pool } from "../mylib/pool.js";
 import { exist, getThreadRoom, joined } from "../mylib/socket.js";
 
 const api = "lol";
@@ -24,7 +19,6 @@ const lazyUpdate = (threadId: number, lolCount: number) => {
 	clearTimeout(neet.get(threadId));
 	const id = setTimeout(async () => {
 		// pool
-		const pool = new Pool({ connectionString: NEON_DATABASE_URL });
 		pool.on("error", (error) => {
 			logger.error(error);
 		});
@@ -33,6 +27,7 @@ const lazyUpdate = (threadId: number, lolCount: number) => {
 			lolCount,
 			threadId,
 		]);
+		poolClient.release();
 	}, delay);
 	neet.set(threadId, id);
 };

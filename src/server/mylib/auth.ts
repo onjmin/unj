@@ -1,9 +1,4 @@
-// pool
-import { Pool, neonConfig } from "@neondatabase/serverless";
-import ws from "ws";
-import { NEON_DATABASE_URL } from "../mylib/env.js";
-neonConfig.webSocketConstructor = ws;
-
+import type { PoolClient } from "@neondatabase/serverless";
 import {
 	addDays,
 	addSeconds,
@@ -31,6 +26,7 @@ import {
 } from "./cache.js";
 import { getIP } from "./ip.js";
 import { logger } from "./log.js";
+import { pool } from "./pool.js";
 
 /**
  * JWT風トークン
@@ -89,7 +85,6 @@ const lazyUpdate = (userId: number, auth: string, ip: string) => {
 	clearTimeout(neet.get(userId));
 	const id = setTimeout(async () => {
 		// pool
-		const pool = new Pool({ connectionString: NEON_DATABASE_URL });
 		pool.on("error", (error) => {
 			logger.error(error);
 		});
@@ -98,6 +93,7 @@ const lazyUpdate = (userId: number, auth: string, ip: string) => {
 			"UPDATE users SET updated_at = NOW(), ip = $1, auth = $2 WHERE id = $3",
 			[ip, auth, userId],
 		);
+		poolClient.release();
 	}, delay);
 	neet.set(userId, id);
 };
@@ -142,13 +138,14 @@ const init = async (socket: Socket): Promise<boolean> => {
 		initFIFO.push(new Date());
 	}
 	const token = getTokenParam(socket);
+	let poolClient: PoolClient | null = null;
+
 	try {
 		// pool
-		const pool = new Pool({ connectionString: NEON_DATABASE_URL });
 		pool.on("error", (error) => {
 			throw error;
 		});
-		const poolClient = await pool.connect();
+		poolClient = await pool.connect();
 		// 既存ユーザー照合
 		if (token) {
 			const { rows, rowCount } = await poolClient.query(
@@ -188,6 +185,8 @@ const init = async (socket: Socket): Promise<boolean> => {
 		}
 	} catch (error) {
 		logger.error(error);
+	} finally {
+		poolClient?.release();
 	}
 	return false;
 };

@@ -40,6 +40,7 @@ import {
 } from "../mylib/cache.js";
 import { logger } from "../mylib/log.js";
 import nonce from "../mylib/nonce.js";
+import { pool } from "../mylib/pool.js";
 
 const api = "readThread";
 
@@ -74,7 +75,6 @@ export default ({ socket }: { socket: Socket }) => {
 			nonce.update(socket);
 
 			// pool
-			const pool = new Pool({ connectionString: NEON_DATABASE_URL });
 			pool.on("error", (error) => {
 				throw error;
 			});
@@ -240,6 +240,7 @@ export default ({ socket }: { socket: Socket }) => {
 			logger.error(error);
 		} finally {
 			nonce.unlock(socket);
+			poolClient?.release();
 		}
 	});
 };
