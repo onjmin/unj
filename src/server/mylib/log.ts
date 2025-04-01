@@ -29,7 +29,7 @@ export const logger = winston.createLogger({
 	format: winston.format.combine(
 		winston.format.errors({ stack: true }),
 		winston.format.printf((info) => {
-			const time = format(new Date(), "HH:mm:ss");
+			const time = format(new Date(), "HH:mm:ss.SSS");
 			const level = info.level.toUpperCase();
 			const message = info.stack || info.message;
 			return JSON.stringify([time, level, message]);
