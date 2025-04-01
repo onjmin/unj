@@ -68,13 +68,17 @@ export default ({ socket }: { socket: Socket }) => {
 		try {
 			nonce.lock(socket);
 			nonce.update(socket);
+			logger.debug("📖 start pool.connect");
 			poolClient = await pool.connect();
+			logger.debug("📖 end pool.connect");
 
 			// スレッドの取得
+			logger.debug("📖 start poolClient.query");
 			const { rows, rowCount } = await poolClient.query(
 				"SELECT * FROM threads WHERE id = $1",
 				[threadId],
 			);
+			logger.debug("📖 end poolClient.query");
 			if (rowCount === 0) return;
 			const threadRecord = rows[0];
 
@@ -162,6 +166,7 @@ export default ({ socket }: { socket: Socket }) => {
 
 			const userId = auth.getUserId(socket);
 			const list: Res[] = [];
+			logger.debug("📖 start poolClient.query");
 			for (const record of (await poolClient.query(query.join(" "))).rows) {
 				const resId = encodeResId(record.id);
 				if (resId === null) return;
@@ -183,6 +188,7 @@ export default ({ socket }: { socket: Socket }) => {
 					sage: record.sage,
 				});
 			}
+			logger.debug("📖 end poolClient.query");
 
 			const thread: Thread = {
 				yours: threadRecord.user_id === userId,
