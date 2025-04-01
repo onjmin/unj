@@ -36,7 +36,7 @@
     // ソフトウェアキーボードが出現すると画面幅が変わるため、最初の1回だけ実行する
     isMobile = calcIsMobile();
     const isPC = !isMobile;
-    openLeft = isPC || pathname().slice(1).indexOf("/") === -1;
+    openLeft = isPC;
     openRight = isPC;
   });
 
