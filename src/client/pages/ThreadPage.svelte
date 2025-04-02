@@ -52,6 +52,7 @@
     import BalsPart from "../parts/BalsPart.svelte";
     import ResFormPart from "../parts/ResFormPart.svelte";
     import ResPart from "../parts/ResPart.svelte";
+    import RpgPart from "../parts/RpgPart.svelte";
     import TermsConfirmPart from "../parts/TermsConfirmPart.svelte";
     import TwemojiPart from "../parts/TwemojiPart.svelte";
 
@@ -76,6 +77,7 @@
     let contentType = $state(0);
     let sage = $state(false);
     let ninja = $state(false);
+    let rpgMode = $state(false);
 
     // UnjStorage
     const contentTextUnjStorage = new UnjStorage(`contentText###${threadId}`);
@@ -465,6 +467,10 @@
             <Checkbox disabled checked={true} />
         </FormField>
     {/if}
+    <FormField align="end">
+        {#snippet label()}RPGMODE{/snippet}
+        <Checkbox bind:checked={rpgMode} />
+    </FormField>
 </HeaderPart>
 
 <TermsConfirmPart {openConfirm} />
@@ -511,6 +517,10 @@
             contentType={thread.ageRes.contentType}
         />
     {/key}
+{/if}
+
+{#if rpgMode}
+    <RpgPart />
 {/if}
 
 {#snippet paginationControls()}
