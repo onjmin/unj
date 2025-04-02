@@ -1,4 +1,3 @@
-import type { PoolClient } from "@neondatabase/serverless";
 import { addSeconds, isBefore } from "date-fns";
 import type { Server, Socket } from "socket.io";
 import * as v from "valibot";
@@ -97,11 +96,10 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		}
 
 		// 危険な処理
-		let poolClient: PoolClient | null = null;
+		const poolClient = await pool.connect();
 		try {
 			nonce.lock(socket);
 			nonce.update(socket);
-			poolClient = await pool.connect();
 
 			if (PROD_MODE)
 				coolTimes.set(userId, addSeconds(new Date(), randInt(8, 32)));

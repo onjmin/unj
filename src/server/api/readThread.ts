@@ -1,4 +1,3 @@
-import type { PoolClient } from "@neondatabase/serverless";
 import type { Socket } from "socket.io";
 import * as v from "valibot";
 import { ReadThreadSchema } from "../../common/request/schema.js";
@@ -74,13 +73,12 @@ export default ({ socket }: { socket: Socket }) => {
 		}
 
 		// 危険な処理
-		let poolClient: PoolClient | null = null;
+		logger.debug("📖 start pool.connect");
+		const poolClient = await pool.connect();
+		logger.debug("📖 end pool.connect");
 		try {
 			nonce.lock(socket);
 			nonce.update(socket);
-			logger.debug("📖 start pool.connect");
-			poolClient = await pool.connect();
-			logger.debug("📖 end pool.connect");
 
 			// キャッシュの登録
 			if (!threadCached.has(threadId)) {

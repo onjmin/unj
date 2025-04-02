@@ -58,12 +58,10 @@
 		"typescript": "^5.8.2"
 	},
 	"dependencies": {
-		"@neondatabase/serverless": "^0.10.4",
 		"@sveltejs/vite-plugin-svelte": "^5.0.3",
 		"@types/express": "^5.0.0",
 		"@types/howler": "^2.2.12",
 		"@types/pg": "^8.11.11",
-		"@types/ws": "^8.18.0",
 		"chalk": "^5.4.1",
 		"cross-env": "^7.0.3",
 		"date-fns": "^4.1.0",
@@ -72,7 +70,6 @@
 		"express": "^4.21.2",
 		"hashids": "^2.3.0",
 		"howler": "^2.2.4",
-		"idb-keyval": "^6.2.1",
 		"js-sha256": "^0.11.0",
 		"pg": "^8.14.1",
 		"read-last-lines": "^1.8.0",
@@ -83,8 +80,7 @@
 		"valibot": "1.0.0-rc.2",
 		"vite": "^6.2.0",
 		"winston": "^3.17.0",
-		"winston-daily-rotate-file": "^5.0.0",
-		"ws": "^8.18.1"
+		"winston-daily-rotate-file": "^5.0.0"
 	},
 	"type": "module"
 }

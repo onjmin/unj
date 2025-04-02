@@ -1,5 +1,5 @@
-import type { PoolClient } from "@neondatabase/serverless";
 import { addMinutes } from "date-fns";
+import type { PoolClient } from "pg";
 import type { Socket } from "socket.io";
 import { randInt } from "../../common/util.js";
 import { coolTimes as makeThreadCoolTimes } from "../api/makeThread.js";

@@ -1,4 +1,3 @@
-import type { PoolClient } from "@neondatabase/serverless";
 import {
 	addDays,
 	addSeconds,
@@ -136,10 +135,8 @@ const init = async (socket: Socket): Promise<boolean> => {
 	const token = getTokenParam(socket);
 
 	// 危険な処理
-	let poolClient: PoolClient | null = null;
+	const poolClient = await pool.connect();
 	try {
-		poolClient = await pool.connect();
-
 		// 既存ユーザー照合
 		if (token) {
 			const { rows, rowCount } = await poolClient.query(
