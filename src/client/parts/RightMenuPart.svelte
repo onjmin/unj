@@ -43,7 +43,7 @@
     background-color: black;
   }
   .drawer-container-right.hidden {
-    transform: translateX(100%);
+    transform: translateX(calc(100% + 32px));
   }
   :global(.right-menu-title) {
     opacity: 0.87;
