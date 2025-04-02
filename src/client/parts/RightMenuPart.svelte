@@ -1,11 +1,12 @@
 <script lang="ts">
+  import Card, { Content } from "@smui/card";
   import { Header, Subtitle, Title } from "@smui/drawer";
   import TopAppBar, { Row } from "@smui/top-app-bar";
 
   let { children, open = false } = $props();
 </script>
 
-<div class="drawer-container-right {open ? '' : 'hidden'}">
+<Card class="drawer-container-right {open ? '' : 'hidden'}">
   <TopAppBar variant="static"><Row /></TopAppBar>
   <Header>
     <Title class="right-menu-title">サブメニュー</Title>
@@ -14,10 +15,10 @@
   <div class="content">
     {@render children?.()}
   </div>
-</div>
+</Card>
 
 <style>
-  .drawer-container-right {
+  :global(.drawer-container-right) {
     opacity: 0.92;
     position: fixed;
     z-index: 16;
@@ -31,7 +32,6 @@
     transform: translateX(0);
     border: 1px solid
       var(--mdc-theme-text-hint-on-background, rgba(255, 255, 255, 0.1));
-    background-color: white;
     box-shadow:
       -8px 10px 10px -5px rgba(0, 0, 0, 0.2),
       -16px 24px 24px 2px rgba(0, 0, 0, 0.14),
@@ -40,9 +40,8 @@
   :global(body.dark .drawer-container-right) {
     border: 1px solid
       var(--mdc-theme-text-hint-on-background, rgba(0, 0, 0, 0.1));
-    background-color: black;
   }
-  .drawer-container-right.hidden {
+  :global(.drawer-container-right.hidden) {
     transform: translateX(calc(100% + 32px));
   }
   :global(.right-menu-title) {
