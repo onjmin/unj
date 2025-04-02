@@ -108,13 +108,14 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 
 			// 忍法帖の読み込み
 			if (!userCached.has(userId)) {
+				userCached.set(userId, true);
 				const { rows, rowCount } = await poolClient.query(
 					"SELECT ninja_pokemon, ninja_score FROM users WHERE id = $1",
 					[userId],
 				);
 				if (rowCount === 0) return;
 				const record = rows[0];
-				userCached.set(userId, true);
+
 				userIPCache.set(userId, getIP(socket));
 				ninjaPokemonCache.set(userId, record.ninja_pokemon);
 				ninjaScoreCache.set(userId, record.ninja_score);

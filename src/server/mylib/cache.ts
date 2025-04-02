@@ -2,10 +2,23 @@ import type { Socket } from "socket.io";
 import type { Ninja, Res } from "../../common/response/schema.js";
 import auth from "./auth.js";
 
-// スレのキャッシュ
+// スレのキャッシュフラグ
 export const threadCached: Map<number, boolean> = new Map();
+// 書き込み内容
+export const ccUserIdCache: Map<number, string> = new Map();
+export const ccUserNameCache: Map<number, string> = new Map();
+export const ccUserAvatarCache: Map<number, number> = new Map();
+export const contentTextCache: Map<number, string> = new Map();
+export const contentUrlCache: Map<number, string> = new Map();
+export const contentTypeCache: Map<number, number> = new Map();
+// メタ情報
+export const createdAtCache: Map<number, Date> = new Map();
+export const userIdCache: Map<number, number> = new Map();
 export const firstCursorCache: Map<number, number> = new Map();
 export const latestCursorCache: Map<number, number> = new Map();
+// 基本的な情報
+export const titleCache: Map<number, string> = new Map();
+export const threadTypeCache: Map<number, number> = new Map();
 // 高度な設定
 export const varsanCache: Map<number, boolean> = new Map();
 export const sageCache: Map<number, boolean> = new Map();
@@ -29,7 +42,7 @@ export const bannedCache: Map<number, Set<number>> = new Map();
 export const bannedIPCache: Map<number, Set<string>> = new Map();
 export const subbedCache: Map<number, Set<number>> = new Map();
 
-// ユーザーのキャッシュ
+// ユーザーのキャッシュフラグ
 export const userCached: Map<number, boolean> = new Map();
 export const userIPCache: Map<number, string> = new Map();
 export const ninjaPokemonCache: Map<number, number> = new Map();

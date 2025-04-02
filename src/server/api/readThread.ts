@@ -17,7 +17,14 @@ import {
 	bannedCache,
 	bannedIPCache,
 	ccBitmaskCache,
+	ccUserAvatarCache,
+	ccUserIdCache,
+	ccUserNameCache,
+	contentTextCache,
+	contentTypeCache,
 	contentTypesBitmaskCache,
+	contentUrlCache,
+	createdAtCache,
 	deletedAtCache,
 	firstCursorCache,
 	goodCountCache,
@@ -31,6 +38,9 @@ import {
 	sageCache,
 	subbedCache,
 	threadCached,
+	threadTypeCache,
+	titleCache,
+	userIdCache,
 	varsanCache,
 } from "../mylib/cache.js";
 import { logger } from "../mylib/log.js";
@@ -72,21 +82,32 @@ export default ({ socket }: { socket: Socket }) => {
 			poolClient = await pool.connect();
 			logger.debug("📖 end pool.connect");
 
-			// スレッドの取得
-			logger.debug("📖 start poolClient.query");
-			const { rows, rowCount } = await poolClient.query(
-				"SELECT * FROM threads WHERE id = $1",
-				[threadId],
-			);
-			logger.debug("📖 end poolClient.query");
-			if (rowCount === 0) return;
-			const threadRecord = rows[0];
-
 			// キャッシュの登録
 			if (!threadCached.has(threadId)) {
 				threadCached.set(threadId, true);
+				// スレッドの取得
+				const { rows, rowCount } = await poolClient.query(
+					"SELECT * FROM threads WHERE id = $1",
+					[threadId],
+				);
+				if (rowCount === 0) return;
+				const threadRecord = rows[0];
+
+				// 書き込み内容
+				ccUserIdCache.set(threadId, threadRecord.cc_user_id);
+				ccUserNameCache.set(threadId, threadRecord.cc_user_name);
+				ccUserAvatarCache.set(threadId, threadRecord.cc_user_avatar);
+				contentTextCache.set(threadId, threadRecord.content_text);
+				contentUrlCache.set(threadId, threadRecord.content_url);
+				contentTypeCache.set(threadId, threadRecord.content_type);
+				// メタ情報
+				createdAtCache.set(threadId, new Date(threadRecord.created_at));
+				userIdCache.set(threadId, threadRecord.user_id);
 				firstCursorCache.set(threadId, threadRecord.first_cursor);
 				latestCursorCache.set(threadId, threadRecord.latest_cursor);
+				// 基本的な情報
+				titleCache.set(threadId, threadRecord.title);
+				threadTypeCache.set(threadId, threadRecord.thread_type);
 				// 高度な設定
 				varsanCache.set(threadId, threadRecord.varsan);
 				sageCache.set(threadId, threadRecord.sage);
@@ -191,20 +212,20 @@ export default ({ socket }: { socket: Socket }) => {
 			logger.debug("📖 end poolClient.query");
 
 			const thread: Thread = {
-				yours: threadRecord.user_id === userId,
+				yours: (userIdCache.get(threadId) ?? 0) === userId,
 				firstCursor: encodeResId(firstCursorCache.get(threadId) ?? 0) ?? "",
 				latestCursor: encodeResId(latestCursorCache.get(threadId) ?? 0) ?? "",
 				desc,
 				// 書き込み内容
-				ccUserId: threadRecord.cc_user_id,
-				ccUserName: threadRecord.cc_user_name,
-				ccUserAvatar: threadRecord.cc_user_avatar,
-				contentText: threadRecord.content_text,
-				contentUrl: threadRecord.content_url,
-				contentType: threadRecord.content_type,
+				ccUserId: ccUserIdCache.get(threadId) ?? "",
+				ccUserName: ccUserNameCache.get(threadId) ?? "",
+				ccUserAvatar: ccUserAvatarCache.get(threadId) ?? 0,
+				contentText: contentTextCache.get(threadId) ?? "",
+				contentUrl: contentUrlCache.get(threadId) ?? "",
+				contentType: contentTypeCache.get(threadId) ?? 0,
 				// 基本的な情報
-				title: threadRecord.title,
-				threadType: threadRecord.thread_type,
+				title: titleCache.get(threadId) ?? "",
+				threadType: threadTypeCache.get(threadId) ?? 0,
 				// 高度な設定
 				varsan: varsanCache.get(threadId) ?? false,
 				sage: sageCache.get(threadId) ?? false,
@@ -223,7 +244,7 @@ export default ({ socket }: { socket: Socket }) => {
 				badCount: badCountCache.get(threadId) ?? 0,
 				// メタ情報
 				id: readThread.output.threadId,
-				createdAt: threadRecord.created_at,
+				createdAt: createdAtCache.get(threadId) ?? new Date(0),
 				resList: list,
 			};
 
