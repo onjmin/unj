@@ -33,9 +33,9 @@
     border: 1px solid
       var(--mdc-theme-text-hint-on-background, rgba(255, 255, 255, 0.1));
     box-shadow:
-      -8px 10px 10px -5px rgba(0, 0, 0, 0.2),
-      -16px 24px 24px 2px rgba(0, 0, 0, 0.14),
-      -6px 30px 30px 5px rgba(0, 0, 0, 0.12);
+      -0px 8px 10px -5px rgba(0, 0, 0, 0.2),
+      -0px 16px 24px 2px rgba(0, 0, 0, 0.14),
+      -0px 6px 30px 5px rgba(0, 0, 0, 0.12);
   }
   :global(body.dark .drawer-container-right) {
     border: 1px solid
