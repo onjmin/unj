@@ -52,5 +52,6 @@
     max-width: 100svw;
     max-height: 100svh;
     transform: translate(-50%, -50%);
+    opacity: 0.4;
   }
 </style>
