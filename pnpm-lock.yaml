@@ -53,6 +53,9 @@ importers:
       read-last-lines:
         specifier: ^1.8.0
         version: 1.8.0
+      rpgen-map:
+        specifier: github:onjmin/rpgen-map
+        version: https://codeload.github.com/onjmin/rpgen-map/tar.gz/7416fdbcb273ce9ad3c22b08acabe395434f4a31
       socket.io:
         specifier: ^4.8.1
         version: 4.8.1
@@ -1854,6 +1857,10 @@ packages:
     resolution: {integrity: sha512-nF5XYqWWp9hx/LrpC8sZvvvmq0TeTjQgaZHYmAgwysT9nh8sWnZhBnM8ZyVbbJFIQBLwHDNoMqsBZBbUo4U8sQ==}
     engines: {node: '>=18.0.0', npm: '>=8.0.0'}
     hasBin: true
+
+  rpgen-map@https://codeload.github.com/onjmin/rpgen-map/tar.gz/7416fdbcb273ce9ad3c22b08acabe395434f4a31:
+    resolution: {tarball: https://codeload.github.com/onjmin/rpgen-map/tar.gz/7416fdbcb273ce9ad3c22b08acabe395434f4a31}
+    version: 1.0.0
 
   safe-buffer@5.2.1:
     resolution: {integrity: sha512-rp3So07KcdmmKbGvgaNxQSJr7bGVSVk5S9Eq1F+ppbRo70+YeaDxkw5Dd8NPN+GD6bjnYm2VuPuCXmpuYvmCXQ==}
@@ -4335,6 +4342,8 @@ snapshots:
       '@rollup/rollup-win32-ia32-msvc': 4.34.9
       '@rollup/rollup-win32-x64-msvc': 4.34.9
       fsevents: 2.3.3
+
+  rpgen-map@https://codeload.github.com/onjmin/rpgen-map/tar.gz/7416fdbcb273ce9ad3c22b08acabe395434f4a31: {}
 
   safe-buffer@5.2.1: {}
 
