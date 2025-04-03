@@ -21,16 +21,15 @@ export default (router: Router) => {
 		return;
 	});
 	router.post(api, async (req: Request, res: Response) => {
-		const level: string = req.body.level;
-		const result = v.safeParse(logLevelSchema, level);
-		if (!result.success) {
-			res.status(400).json({ error: v.flatten(result.issues) });
+		const level = v.safeParse(logLevelSchema, req.body.level);
+		if (!level.success) {
+			res.status(400).json({ error: v.flatten(level.issues) });
 			return;
 		}
-		logger.level = level === "*" ? "silly" : level;
+		logger.level = level.output === "*" ? "silly" : level.output;
 		res.status(200).json({
 			message: "Log level changed successfully",
-			level,
+			level: level.output,
 		});
 		return;
 	});

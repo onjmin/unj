@@ -20,11 +20,10 @@ const logLevelSchema = v.pipe(
 
 export default (router: Router) => {
 	router.post(api, async (req: Request, res: Response) => {
-		const level: string = req.body.level;
 		const max: number = Math.min(req.body.max ?? 32, tooManyThreshold);
-		const result = v.safeParse(logLevelSchema, level);
-		if (!result.success) {
-			res.status(400).json({ error: v.flatten(result.issues) });
+		const level = v.safeParse(logLevelSchema, req.body.level);
+		if (!level.success) {
+			res.status(400).json({ error: v.flatten(level.issues) });
 			return;
 		}
 		if (Number.isNaN(max)) {
@@ -48,9 +47,9 @@ export default (router: Router) => {
 
 		res.status(200).json({
 			logs:
-				level === "*"
+				level.output === "*"
 					? lines
-					: lines.filter((v) => v.includes(level.toUpperCase())),
+					: lines.filter((v) => v.includes(level.output.toUpperCase())),
 		});
 		return;
 	});

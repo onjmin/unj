@@ -75,14 +75,12 @@ export default (router: Router) => {
 	});
 	router.put(api, async (req: Request, res: Response) => {
 		try {
-			const ip: string = req.body.ip;
-			const force: string = req.body.force;
-			const result = v.safeParse(BlacklistIPSchema, ip);
-			if (!result.success) {
-				res.status(400).json({ error: v.flatten(result.issues) });
+			const ip = v.safeParse(BlacklistIPSchema, req.query.ip);
+			if (!ip.success) {
+				res.status(400).json({ error: v.flatten(ip.issues) });
 				return;
 			}
-			if (!blacklist.size && !force) {
+			if (!blacklist.size && !req.body.force) {
 				res.status(412).json({
 					error: "Precondition failed: The blacklist not initialized.",
 				});
@@ -92,11 +90,11 @@ export default (router: Router) => {
 				res.status(413).json({ error: "The blacklist is full." });
 				return;
 			}
-			if (blacklist.has(ip)) {
+			if (blacklist.has(ip.output)) {
 				res.status(409).json({ error: "IP already exists in the blacklist." });
 				return;
 			}
-			blacklist.add(ip);
+			blacklist.add(ip.output);
 			await writeBlacklist();
 			res.status(200).json({
 				message: "IP added to the blacklist successfully.",
@@ -110,24 +108,22 @@ export default (router: Router) => {
 	});
 	router.delete(api, async (req: Request, res: Response) => {
 		try {
-			const ip: string = req.body.ip;
-			const force: string = req.body.force;
-			const result = v.safeParse(BlacklistIPSchema, ip);
-			if (!result.success) {
-				res.status(400).json({ error: v.flatten(result.issues) });
+			const ip = v.safeParse(BlacklistIPSchema, req.query.ip);
+			if (!ip.success) {
+				res.status(400).json({ error: v.flatten(ip.issues) });
 				return;
 			}
-			if (!blacklist.size && !force) {
+			if (!blacklist.size && !req.body.force) {
 				res.status(412).json({
 					error: "Precondition failed: The blacklist not initialized.",
 				});
 				return;
 			}
-			if (!blacklist.has(ip)) {
+			if (!blacklist.has(ip.output)) {
 				res.status(404).json({ error: "IP not found in the blacklist." });
 				return;
 			}
-			blacklist.delete(ip);
+			blacklist.delete(ip.output);
 			await writeBlacklist();
 			res.status(200).json({
 				message: "IP removed from the blacklist successfully.",

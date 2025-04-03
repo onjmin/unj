@@ -54,13 +54,12 @@ export default (router: Router) => {
 	});
 	router.put(api, async (req: Request, res: Response) => {
 		try {
-			const id = Number(req.body.id);
-			const force: string = req.body.force;
-			if (!isSerial(id)) {
-				res.status(400).json({ error: "Field 'users.id' expected a SERIAL." });
+			const userId = Number(req.query.userId);
+			if (!isSerial(userId)) {
+				res.status(400).json({ error: "Field 'userId' expected a SERIAL." });
 				return;
 			}
-			if (!blacklist.size && !force) {
+			if (!blacklist.size && !req.body.force) {
 				res.status(412).json({
 					error: "Precondition failed: The blacklist not initialized.",
 				});
@@ -70,16 +69,16 @@ export default (router: Router) => {
 				res.status(413).json({ error: "The blacklist is full." });
 				return;
 			}
-			if (blacklist.has(id)) {
+			if (blacklist.has(userId)) {
 				res
 					.status(409)
-					.json({ error: "users.id already exists in the blacklist." });
+					.json({ error: "userId already exists in the blacklist." });
 				return;
 			}
-			blacklist.add(id);
+			blacklist.add(userId);
 			await writeBlacklist();
 			res.status(200).json({
-				message: "users.id added to the blacklist successfully.",
+				message: "userId added to the blacklist successfully.",
 				count: blacklist.size,
 			});
 			return;
@@ -90,26 +89,25 @@ export default (router: Router) => {
 	});
 	router.delete(api, async (req: Request, res: Response) => {
 		try {
-			const id = Number(req.body.id);
-			const force: string = req.body.force;
-			if (!isSerial(id)) {
-				res.status(400).json({ error: "Field 'users.id' expected a SERIAL." });
+			const userId = Number(req.query.userId);
+			if (!isSerial(userId)) {
+				res.status(400).json({ error: "Field 'userId' expected a SERIAL." });
 				return;
 			}
-			if (!blacklist.size && !force) {
+			if (!blacklist.size && !req.body.force) {
 				res.status(412).json({
 					error: "Precondition failed: The blacklist not initialized.",
 				});
 				return;
 			}
-			if (!blacklist.has(id)) {
-				res.status(404).json({ error: "users.id not found in the blacklist." });
+			if (!blacklist.has(userId)) {
+				res.status(404).json({ error: "userId not found in the blacklist." });
 				return;
 			}
-			blacklist.delete(id);
+			blacklist.delete(userId);
 			await writeBlacklist();
 			res.status(200).json({
-				message: "users.id removed from the blacklist successfully.",
+				message: "userId removed from the blacklist successfully.",
 				count: blacklist.size,
 			});
 			return;

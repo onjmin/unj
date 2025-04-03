@@ -18,7 +18,7 @@ export const authSignLength = 16;
 export const authLimitLength = 16;
 export const hashidsRegex = /^[0-9A-Za-z]+$/;
 
-const SMALLINT = v.pipe(
+export const SMALLINT = v.pipe(
 	v.number(),
 	v.integer(),
 	v.minValue(0),
