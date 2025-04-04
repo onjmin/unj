@@ -10,6 +10,7 @@ import {
 	bannedCache,
 	bannedIPCache,
 	ccBitmaskCache,
+	ccUserIdCache,
 	contentTypesBitmaskCache,
 	ninja,
 	ninjaScoreCache,
@@ -17,6 +18,7 @@ import {
 	sageCache,
 	subbedCache,
 	userIPCache,
+	userIdCache,
 	varsanCache,
 } from "../mylib/cache.js";
 import { PROD_MODE } from "../mylib/env.js";
@@ -56,9 +58,9 @@ type ParsedResult = {
 };
 
 type Ref = {
+	userId: number;
 	num: number;
 	isOwner: boolean;
-	userId: number;
 	ccUserId: string;
 };
 
@@ -87,48 +89,64 @@ export const parseCommand = async ({
 	let ninjaLv = _ninjaLv;
 
 	const fetchRefArray = (() => {
-		let result: Ref[] | null = null;
+		const cache: Map<string, Ref[]> = new Map();
 		return async (anka: number[]): Promise<Ref[] | null> => {
-			if (result !== null) return result;
-			const { rows } = await poolClient.query(
-				`SELECT num,is_owner,user_id,cc_user_id FROM res WHERE thread_id = $1 AND num IN (${anka.join(",")})`,
-				[threadId],
-			);
+			const query = anka.join(",");
+			if (cache.has(query)) return cache.get(query) ?? null;
+
 			// 重複排除
 			const arr: Ref[] = [];
-			const set = new Set();
-			for (const record of rows) {
-				if (set.has(record.user_id)) continue;
-				set.add(record.user_id);
+			const set: Set<number> = new Set();
+
+			if (anka.includes(1)) {
+				const userId = userIdCache.get(threadId) ?? 0;
+				set.add(userId);
 				arr.push({
-					num: record.num,
-					isOwner: record.is_owner,
-					userId: record.user_id,
-					ccUserId: record.cc_user_id,
+					userId,
+					num: 1,
+					isOwner: true,
+					ccUserId: ccUserIdCache.get(threadId) ?? "",
 				});
 			}
-			result = arr;
-			return result;
+			const without1 = anka.filter((v) => v !== 1);
+			if (without1.length) {
+				const { rows } = await poolClient.query(
+					`SELECT num,is_owner,user_id,cc_user_id FROM res WHERE thread_id = $1 AND num IN (${without1.join(",")})`,
+					[threadId],
+				);
+				for (const record of rows) {
+					const userId = record.user_id;
+					if (set.has(userId)) continue;
+					set.add(userId);
+					arr.push({
+						userId,
+						num: record.num,
+						isOwner: record.is_owner,
+						ccUserId: record.cc_user_id,
+					});
+				}
+			}
+			cache.set(query, arr);
+			return arr;
 		};
 	})();
+
+	const isValidRangeAnka = (n: number) => !Number.isNaN(n) && n > 0 && n < 1024;
 
 	// コマンドの解釈
 	let msg = "";
 	let shouldUpdateMeta = false;
-	const cmds = contentText.replace(/！/g, "!").match(/![^!\s]+/g);
-	const withoutCmds = contentText
-		.replace(/！/g, "!")
-		.replace(/![^!\s]+/g, "")
-		.trim();
+	const str = contentText.replace(/！/g, "!");
+	const cmds = str.match(/![^!\s]+/g);
+	const withoutCmds = str.replace(/![^!\s]+/g, "").trim();
 	const isModerator = isOwner || subbedCache.get(threadId)?.has(userId);
-	if (cmds && cmds.length < 4) {
+	if (cmds && cmds.length < 8) {
 		const results = [];
-		const anka = contentText
+		const multiAnka = str
 			.match(/>>[0-9]{1,4}/g)
 			?.map((v) => v.slice(2))
 			.map(Number)
-			.filter((v) => !Number.isNaN(v))
-			.filter((v) => v > 0 && v < 1024);
+			.filter(isValidRangeAnka);
 		for (const cmd of new Set(cmds)) {
 			if (isOwner) {
 				switch (cmd) {
@@ -188,13 +206,20 @@ export const parseCommand = async ({
 						break;
 				}
 			}
-			switch (cmd) {
+			const oneAnka = cmd.match(/[0-9]{1,4}/)?.[0] ?? null;
+			switch (oneAnka ? cmd.replace(oneAnka, "") : cmd) {
 				// 副主権限が必要なコマンド
 				case "!aku":
 					{
 						if (!isModerator) break;
-						if (!anka) break;
-						if (anka.length > 8) break;
+						let anka: number[];
+						if (oneAnka !== null) {
+							const n = Number(oneAnka);
+							if (!isValidRangeAnka(n)) break;
+							anka = [n];
+						} else if (multiAnka && multiAnka.length < 8) {
+							anka = multiAnka;
+						} else break;
 						const refArray = await fetchRefArray([...new Set(anka)]);
 						const cache1 = bannedCache.get(threadId);
 						const cache2 = bannedIPCache.get(threadId);
@@ -218,8 +243,14 @@ export const parseCommand = async ({
 				case "!kaijo":
 					{
 						if (!isModerator) break;
-						if (!anka) break;
-						if (anka.length > 8) break;
+						let anka: number[];
+						if (oneAnka !== null) {
+							const n = Number(oneAnka);
+							if (!isValidRangeAnka(n)) break;
+							anka = [n];
+						} else if (multiAnka && multiAnka.length < 8) {
+							anka = multiAnka;
+						} else break;
 						const refArray = await fetchRefArray([...new Set(anka)]);
 						const cache1 = bannedCache.get(threadId);
 						const cache2 = bannedIPCache.get(threadId);
@@ -238,8 +269,14 @@ export const parseCommand = async ({
 				case "!sub":
 					{
 						if (!isModerator) break;
-						if (!anka) break;
-						if (anka.length > 8) break;
+						let anka: number[];
+						if (oneAnka !== null) {
+							const n = Number(oneAnka);
+							if (!isValidRangeAnka(n)) break;
+							anka = [n];
+						} else if (multiAnka && multiAnka.length < 8) {
+							anka = multiAnka;
+						} else break;
 						const refArray = await fetchRefArray([...new Set(anka)]);
 						const cache = subbedCache.get(threadId);
 						if (!refArray || !refArray.length || !cache) break;
@@ -308,9 +345,9 @@ export const parseCommand = async ({
 				case "!age":
 					{
 						if (!isModerator) break;
-						if (!anka) break;
-						if (anka.length > 1) break;
-						const num = anka[0];
+						if (!multiAnka) break;
+						if (multiAnka.length > 1) break;
+						const num = multiAnka[0];
 						const setNum = ageResNumCache.get(threadId) === num ? 0 : num;
 						ageResNumCache.set(threadId, setNum);
 						ageResCache.set(threadId, null);
@@ -327,7 +364,7 @@ export const parseCommand = async ({
 				case "!check":
 					{
 						if (ninjaLv < 2) break;
-						const refArray = await fetchRefArray([...new Set(anka)]);
+						const refArray = await fetchRefArray([...new Set(multiAnka)]);
 						if (!refArray || !refArray.length) break;
 						const ref = refArray[0];
 						let userIP1: string | null = userIPCache.get(ref.userId) ?? null;
