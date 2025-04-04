@@ -86,6 +86,10 @@ export const theme = new UnjStorage("theme", () => {
 });
 theme.value = theme.value ?? "unity";
 
+// RPG
+export const rpgMode = new UnjStorage("rpgMode");
+export const sAnimsId = new UnjStorage("sAnimsId");
+
 // other
 export const latestReadThreadId = new UnjStorage("latestReadThreadId");
 export const termsAgreement = new UnjStorage("termsAgreement");

@@ -1,5 +1,6 @@
 <script lang="ts">
   import { RPGMap } from "rpgen-map";
+  import { makePathname } from "../mylib/env.js";
   import { calcChipSize, render } from "../mylib/rpg.js";
 
   let canvas: HTMLCanvasElement;
@@ -23,7 +24,7 @@
   $effect(() => {
     (async () => {
       try {
-        const mapText = await fetch("http://localhost:4545/static/rpg/map.txt")
+        const mapText = await fetch(makePathname("/static/rpg/map.txt"))
           .then((v) => v.text())
           .then((v) => v.trim());
         rpgMap = RPGMap.parse(mapText);

@@ -41,7 +41,7 @@
         newResSoundHowl,
         replyResSoundHowl,
     } from "../mylib/sound.js";
-    import { UnjStorage } from "../mylib/unj-storage.js";
+    import { UnjStorage, rpgMode } from "../mylib/unj-storage.js";
     import {
         latestReadThreadId,
         nonceKey,
@@ -77,7 +77,11 @@
     let contentType = $state(0);
     let sage = $state(false);
     let ninja = $state(false);
-    let rpgMode = $state(false);
+    let isRpgMode = $state(rpgMode.value === "RPG");
+
+    $effect(() => {
+        rpgMode.value = isRpgMode ? "RPG" : null;
+    });
 
     // UnjStorage
     const contentTextUnjStorage = new UnjStorage(`contentText###${threadId}`);
@@ -469,7 +473,7 @@
     {/if}
     <FormField align="end">
         {#snippet label()}RPGMODE{/snippet}
-        <Checkbox bind:checked={rpgMode} />
+        <Checkbox bind:checked={isRpgMode} />
     </FormField>
 </HeaderPart>
 
@@ -519,7 +523,7 @@
     {/key}
 {/if}
 
-{#if rpgMode}
+{#if isRpgMode}
     <RpgPart />
 {/if}
 
