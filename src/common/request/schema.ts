@@ -37,7 +37,7 @@ const USER_ID = v.pipe(
 	v.length(userIdLength),
 	v.regex(hashidsRegex),
 );
-const THREAD_ID = v.pipe(
+export const THREAD_ID = v.pipe(
 	v.string(),
 	v.length(threadIdLength),
 	v.regex(hashidsRegex),

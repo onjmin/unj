@@ -88,3 +88,11 @@ export type Ninja = {
 	pokemon: number;
 	score: number;
 };
+
+export type Player = {
+	userId: string;
+	sAnimsId: number;
+	msg: string;
+	x: number;
+	y: number;
+};

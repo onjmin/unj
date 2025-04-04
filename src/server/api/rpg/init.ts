@@ -1,7 +1,64 @@
 import type { Socket } from "socket.io";
 import * as v from "valibot";
-const api = "rpg.init";
+import { RpgInitSchema } from "../../../common/request/rpg-schema.js";
+import type { Player } from "../../../common/response/schema.js";
+import { decodeThreadId, encodeUserId } from "../../mylib/anti-debug.js";
+import auth from "../../mylib/auth.js";
+import { isDeleted } from "../../mylib/cache.js";
+import {
+	Doppelganger,
+	Human,
+	bigDay,
+	doppelgangers,
+	humans,
+} from "../../mylib/rpg.js";
+import { getThreadRoom } from "../../mylib/socket.js";
+
+const api = "rpgInit";
 
 export default ({ socket }: { socket: Socket }) => {
-	socket.on(api, async (data) => {});
+	socket.on(api, async (data) => {
+		const rpgInit = v.safeParse(RpgInitSchema, data);
+		if (!rpgInit.success) return;
+
+		// フロントエンド上のスレッドIDを復号する
+		const threadId = decodeThreadId(rpgInit.output.threadId);
+		if (threadId === null) return;
+
+		if (isDeleted(threadId)) return;
+
+		if (!doppelgangers.has(threadId)) doppelgangers.set(threadId, new Map());
+		const m = doppelgangers.get(threadId);
+		if (!m) return;
+
+		const userId = auth.getUserId(socket);
+		if (!m.has(userId)) {
+			if (!humans.has(userId)) humans.set(userId, new Human());
+			const human = humans.get(userId);
+			if (!human) return;
+			m.set(userId, new Doppelganger(human));
+		}
+
+		const players: Player[] = [];
+		for (const [k, d] of m.entries() ?? []) {
+			players.push({
+				userId: encodeUserId(k, bigDay) ?? "",
+				sAnimsId: d.human.sAnimsId,
+				msg: d.human.msg,
+				x: d.x,
+				y: d.y,
+			});
+		}
+
+		const encoded = encodeUserId(userId, bigDay);
+		socket.emit(api, {
+			ok: true,
+			players,
+			yours: encoded,
+		});
+		socket.to(getThreadRoom(threadId)).emit("rpgPatch", {
+			ok: true,
+			player: players.find((p) => p.userId === encoded),
+		});
+	});
 };

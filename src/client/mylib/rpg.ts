@@ -6,10 +6,9 @@ import {
 	type TileChipMap,
 	getDQAnimationSpritePosition,
 } from "rpgen-map";
+import { HEIGHT, WIDTH } from "../../common/request/rpg-schema.js";
 
-const WIDTH = 7;
 const WIDTH2 = WIDTH >> 1;
-const HEIGHT = 11;
 const HEIGHT2 = HEIGHT >> 1;
 const cache: Map<string, HTMLImageElement | null | undefined> = new Map();
 

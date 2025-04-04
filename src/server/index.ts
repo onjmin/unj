@@ -27,6 +27,8 @@ import handleLol from "./api/lol.js";
 import handleMakeThread from "./api/makeThread.js";
 import handleReadThread from "./api/readThread.js";
 import handleRes from "./api/res.js";
+import handleRpgInit from "./api/rpg/init.js";
+import handleRpgPatch from "./api/rpg/patch.js";
 import { flaky } from "./mylib/anti-debug.js";
 import auth from "./mylib/auth.js";
 import { detectFastlyClientIp, getIP, isBannedIP, setIP } from "./mylib/ip.js";
@@ -195,6 +197,8 @@ io.on("connection", async (socket) => {
 	handleMakeThread({ socket });
 	handleReadThread({ socket });
 	handleRes({ socket, io });
+	handleRpgInit({ socket });
+	handleRpgPatch({ socket, io });
 
 	accessCount++;
 });

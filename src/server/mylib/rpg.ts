@@ -1,24 +1,24 @@
+import { HEIGHT, WIDTH } from "../../common/request/rpg-schema.js";
 import { randInt } from "../../common/util.js";
 
-const WIDTH = 7;
-const HEIGHT = 11;
+export const bigDay = new Date(2025, 4 - 1, 4);
+export const humans: Map<number, Human> = new Map();
+export const doppelgangers: Map<number, Map<number, Doppelganger>> = new Map();
 
-export class Player {
+export class Human {
 	sAnimsId;
 	msg;
-	ccUserId;
 	constructor() {
 		this.sAnimsId = 0;
 		this.msg = "";
-		this.ccUserId = "";
 	}
 }
 
 export class Doppelganger {
 	x;
 	y;
-	constructor(public player: Player) {
-		this.player = player;
+	constructor(public human: Human) {
+		this.human = human;
 		this.x = randInt(0, WIDTH - 1);
 		this.y = randInt(0, HEIGHT - 1);
 	}
