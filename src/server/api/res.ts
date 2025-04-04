@@ -70,8 +70,10 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		if (isMax(threadId, isOwner)) return;
 
 		// アク禁チェック
-		if (bannedCache.get(threadId)?.has(userId)) return;
-		if (bannedIPCache.get(threadId)?.has(getIP(socket))) return;
+		if (!(isOwner && content.output.contentText.includes("!kaijo"))) {
+			if (bannedCache.get(threadId)?.has(userId)) return;
+			if (bannedIPCache.get(threadId)?.has(getIP(socket))) return;
+		}
 
 		// simhashチェック
 		if (isSameSimhash(content.output.contentText, userId)) return;
