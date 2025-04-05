@@ -8,6 +8,8 @@ import {
 } from "rpgen-map";
 import { HEIGHT, WIDTH } from "../../common/request/rpg-schema.js";
 import type { Player } from "../../common/response/schema.js";
+import { seededRandArray } from "../../common/util.js";
+import { makePathname } from "./env.js";
 
 const WIDTH2 = WIDTH >> 1;
 const HEIGHT2 = HEIGHT >> 1;
@@ -255,4 +257,41 @@ export const render = (
 	renderPlayers(ctx, players);
 	renderPlayersMsg(ctx, players);
 	currentFrameFlip = ((timestamp / ANIMATION_SPRITE_FLIP_INTERVAL) | 0) % 2;
+};
+
+const list = [
+	null,
+	null,
+	null,
+	null,
+	"0_8",
+	"3_8",
+	"0_12",
+	"9_8",
+	"3_12",
+	"0_3",
+	"3_3",
+	"3_4",
+	"1_3",
+	"0_7",
+	"13_9",
+	"9_0",
+	"/static/rpg/map.txt",
+	"/static/rpg/map.txt",
+	"/static/rpg/map.txt",
+	"/static/rpg/map.txt",
+];
+
+export const loadRpgMapText = async (threadId: string): Promise<string> => {
+	const mapId = seededRandArray(list, threadId);
+	if (mapId === null) return "";
+	if (mapId.startsWith("/")) {
+		const res = await fetch(makePathname(mapId))
+			.then((v) => v.text())
+			.then((v) => v.trim());
+		return res;
+	}
+	let mapText = `#HERO\n${WIDTH2},${HEIGHT2}#END\n\n`;
+	mapText += `#FLOOR\n${[...Array(HEIGHT).keys()].map((v) => `${mapId} `.repeat(WIDTH)).join("\n")}#END`;
+	return mapText;
 };

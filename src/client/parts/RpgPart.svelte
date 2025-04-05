@@ -4,8 +4,12 @@
   import { RpgPatchSchema } from "../../common/request/rpg-schema.js";
   import { myConfig } from "../../common/request/schema.js";
   import type { Player } from "../../common/response/schema.js";
-  import { makePathname } from "../mylib/env.js";
-  import { calcChipSize, chipSize, render } from "../mylib/rpg.js";
+  import {
+    calcChipSize,
+    chipSize,
+    loadRpgMapText,
+    render,
+  } from "../mylib/rpg.js";
   import { socket } from "../mylib/socket.js";
   import { sAnimsId } from "../mylib/unj-storage.js";
 
@@ -32,9 +36,7 @@
   $effect(() => {
     (async () => {
       try {
-        const mapText = await fetch(makePathname("/static/rpg/map.txt"))
-          .then((v) => v.text())
-          .then((v) => v.trim());
+        const mapText = await loadRpgMapText(threadId);
         rpgMap = RPGMap.parse(mapText);
       } catch (err) {}
     })();
