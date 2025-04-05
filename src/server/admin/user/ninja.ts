@@ -3,7 +3,7 @@ import * as v from "valibot";
 import { SERIAL, SMALLINT } from "../../../common/request/schema.js";
 import { ninjaScoreCache } from "../../mylib/cache.js";
 
-const api = "/ninja";
+const api = "/user/ninja";
 
 export default (router: Router) => {
 	// GET: クエリパラメータの userId に対応するスコア取得
