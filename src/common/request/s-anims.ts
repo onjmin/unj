@@ -41,6 +41,12 @@ new SAnim({
 	href: "https://w.atwiki.jp/openj3/pages/170.html",
 });
 new SAnim({
+	id: 1404,
+	name: "🥺ぷゆゆ",
+	description: "または赤ガイ",
+	href: "https://w.atwiki.jp/openj3/pages/464.html",
+});
+new SAnim({
 	id: 1212,
 	name: "おんちゃん",
 	description: "(o'ω'n)",
