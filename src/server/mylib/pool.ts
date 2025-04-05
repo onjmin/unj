@@ -13,7 +13,9 @@ pool.on("error", (error) => {
 	logger.error(error);
 });
 
-export const onError = (poolClient: PoolClient) =>
+export const onError = (poolClient: PoolClient) => {
+	if (poolClient.listenerCount("error")) return;
 	poolClient.on("error", (error) => {
 		logger.error(error);
 	});
+};
