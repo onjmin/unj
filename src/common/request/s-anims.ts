@@ -62,7 +62,7 @@ new SAnim({
 	id: 528,
 	name: "カッス",
 	description: "なお、まにあわんもよう",
-	href: "https://wikiwiki.jp/livejupiter/%E5%B7%A8%E4%BA%BA%E5%B0%8F%E7%AC%A0%E5%8E%9F",
+	href: "https://wikiwiki.jp/livejupiter/%E3%82%AB%E3%83%83%E3%82%B9",
 });
 new SAnim({
 	id: 668,
