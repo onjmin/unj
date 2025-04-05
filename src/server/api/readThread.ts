@@ -44,7 +44,7 @@ import {
 } from "../mylib/cache.js";
 import { logger } from "../mylib/log.js";
 import nonce from "../mylib/nonce.js";
-import { pool } from "../mylib/pool.js";
+import { onError, pool } from "../mylib/pool.js";
 
 const api = "readThread";
 
@@ -75,6 +75,7 @@ export default ({ socket }: { socket: Socket }) => {
 		// 危険な処理
 		logger.debug("📖 start pool.connect");
 		const poolClient = await pool.connect();
+		onError(poolClient);
 		logger.debug("📖 end pool.connect");
 		try {
 			nonce.lock(socket);

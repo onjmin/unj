@@ -9,7 +9,7 @@ import type { Socket } from "socket.io";
 import * as v from "valibot";
 import { AuthSchema, isSerial } from "../../common/request/schema.js";
 import { randInt } from "../../common/util.js";
-import { pool } from "../mylib/pool.js";
+import { onError, pool } from "../mylib/pool.js";
 import {
 	decodeLimit,
 	decodeUserId,
@@ -84,11 +84,15 @@ const lazyUpdate = (userId: number, auth: string, ip: string) => {
 	clearTimeout(neet.get(userId));
 	const id = setTimeout(async () => {
 		const poolClient = await pool.connect();
-		await poolClient.query(
-			"UPDATE users SET updated_at = NOW(), ip = $1, auth = $2 WHERE id = $3",
-			[ip, auth, userId],
-		);
-		poolClient.release();
+		onError(poolClient);
+		try {
+			await poolClient.query(
+				"UPDATE users SET updated_at = NOW(), ip = $1, auth = $2 WHERE id = $3",
+				[ip, auth, userId],
+			);
+		} finally {
+			poolClient.release();
+		}
 	}, delay);
 	neet.set(userId, id);
 };
@@ -136,6 +140,7 @@ const init = async (socket: Socket): Promise<boolean> => {
 
 	// 危険な処理
 	const poolClient = await pool.connect();
+	onError(poolClient);
 	try {
 		// 既存ユーザー照合
 		if (token) {

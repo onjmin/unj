@@ -9,7 +9,7 @@ import {
 } from "../mylib/anti-debug.js";
 import { logger } from "../mylib/log.js";
 import nonce from "../mylib/nonce.js";
-import { pool } from "../mylib/pool.js";
+import { onError, pool } from "../mylib/pool.js";
 import { sizeOf } from "../mylib/socket.js";
 
 const api = "headline";
@@ -35,6 +35,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 
 		// 危険な処理
 		const poolClient = await pool.connect();
+		onError(poolClient);
 		try {
 			nonce.lock(socket);
 			nonce.update(socket);

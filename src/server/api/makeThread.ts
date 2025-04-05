@@ -11,7 +11,7 @@ import { makeCcUserAvatar, makeCcUserId, makeCcUserName } from "../mylib/cc.js";
 import { PROD_MODE } from "../mylib/env.js";
 import { logger } from "../mylib/log.js";
 import nonce from "../mylib/nonce.js";
-import { pool } from "../mylib/pool.js";
+import { onError, pool } from "../mylib/pool.js";
 import { isSameSimhash } from "../mylib/simhash.js";
 import { headlineRoom } from "../mylib/socket.js";
 
@@ -71,6 +71,7 @@ export default ({ socket }: { socket: Socket }) => {
 
 		// 危険な処理
 		const poolClient = await pool.connect();
+		onError(poolClient);
 		try {
 			nonce.lock(socket);
 			nonce.update(socket);

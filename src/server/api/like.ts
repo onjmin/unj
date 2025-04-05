@@ -6,7 +6,7 @@ import auth from "../mylib/auth.js";
 import { badCountCache, goodCountCache, isDeleted } from "../mylib/cache.js";
 import { logger } from "../mylib/log.js";
 import nonce from "../mylib/nonce.js";
-import { pool } from "../mylib/pool.js";
+import { onError, pool } from "../mylib/pool.js";
 import { exist, getThreadRoom, joined } from "../mylib/socket.js";
 
 const api = "like";
@@ -19,11 +19,15 @@ const lazyUpdate = (threadId: number, goodCount: number, badCount: number) => {
 	clearTimeout(neet.get(threadId));
 	const id = setTimeout(async () => {
 		const poolClient = await pool.connect();
-		await poolClient.query(
-			"UPDATE threads SET good_count = $1, bad_count = $2 WHERE id = $3",
-			[goodCount, badCount, threadId],
-		);
-		poolClient.release();
+		onError(poolClient);
+		try {
+			await poolClient.query(
+				"UPDATE threads SET good_count = $1, bad_count = $2 WHERE id = $3",
+				[goodCount, badCount, threadId],
+			);
+		} finally {
+			poolClient.release();
+		}
 	}, delay);
 	neet.set(threadId, id);
 };

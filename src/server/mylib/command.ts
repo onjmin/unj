@@ -23,7 +23,7 @@ import {
 } from "../mylib/cache.js";
 import { PROD_MODE } from "../mylib/env.js";
 import { getIP, sliceIPRange } from "../mylib/ip.js";
-import { pool } from "../mylib/pool.js";
+import { onError, pool } from "../mylib/pool.js";
 import { flaky } from "./anti-debug.js";
 
 const delay = 1000 * 60 * 4; // Glitchは5分放置でスリープする
@@ -32,11 +32,15 @@ const lazyUpdate = (userId: number, ninjaScore: number, ip: string) => {
 	clearTimeout(neet.get(userId));
 	const id = setTimeout(async () => {
 		const poolClient = await pool.connect();
-		await poolClient.query(
-			"UPDATE users SET updated_at = NOW(), ip = $1, ninja_score = $2 WHERE id = $3",
-			[ip, ninjaScore, userId],
-		);
-		poolClient.release();
+		onError(poolClient);
+		try {
+			await poolClient.query(
+				"UPDATE users SET updated_at = NOW(), ip = $1, ninja_score = $2 WHERE id = $3",
+				[ip, ninjaScore, userId],
+			);
+		} finally {
+			poolClient.release();
+		}
 	}, delay);
 	neet.set(userId, id);
 };

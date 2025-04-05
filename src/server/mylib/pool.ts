@@ -1,4 +1,4 @@
-import pg from "pg";
+import pg, { type PoolClient } from "pg";
 import { logger } from "../mylib/log.js";
 
 export const NEON_DATABASE_URL = String(process.env.NEON_DATABASE_URL);
@@ -12,3 +12,8 @@ export const pool = new pg.Pool({
 pool.on("error", (error) => {
 	logger.error(error);
 });
+
+export const onError = (poolClient: PoolClient) =>
+	poolClient.on("error", (error) => {
+		logger.error(error);
+	});
