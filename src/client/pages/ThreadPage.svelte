@@ -80,7 +80,7 @@
     let contentType = $state(0);
     let sage = $state(false);
     let ninja = $state(false);
-    let isRpgMode = $state(rpgMode.value === "RPG");
+    let isRpgMode = $state(rpgMode.value === "1");
     let openDressUp = $state(false);
     let nowSAnimsId = $state(Number(sAnimsId.value ?? 2086));
     let dressUp: (() => void) | undefined = $state();
@@ -90,7 +90,7 @@
         dressUp?.();
     });
     $effect(() => {
-        rpgMode.value = isRpgMode ? "RPG" : null;
+        rpgMode.value = isRpgMode ? "1" : "0";
     });
 
     // UnjStorage
