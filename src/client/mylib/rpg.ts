@@ -261,9 +261,6 @@ export const render = (
 
 const list = [
 	null,
-	null,
-	null,
-	null,
 	"0_8",
 	"3_8",
 	"0_12",
@@ -276,20 +273,31 @@ const list = [
 	"0_7",
 	"13_9",
 	"9_0",
-	"/static/rpg/map.txt",
-	"/static/rpg/map.txt",
-	"/static/rpg/map.txt",
-	"/static/rpg/map.txt",
+	"/static/rpg/3095.txt",
+	"/static/rpg/3965.txt",
+	"/static/rpg/5023.txt",
+	"/static/rpg/5056.txt",
 ];
 
 export const loadRpgMapText = async (threadId: string): Promise<string> => {
 	const mapId = seededRandArray(list, threadId);
 	if (mapId === null) return "";
 	if (mapId.startsWith("/")) {
-		const res = await fetch(makePathname(mapId))
+		const str = await fetch(makePathname(mapId))
 			.then((v) => v.text())
 			.then((v) => v.trim());
-		return res;
+		if (mapId.endsWith("5023.txt")) {
+			const [x, y] = seededRandArray(
+				[
+					[10, 22],
+					[10, 7],
+					[32, 13],
+				],
+				threadId,
+			);
+			str.replace(/#HERO\n.+#END/, `#HERO\n${x},${y}#END`);
+		}
+		return str;
 	}
 	let mapText = `#HERO\n${WIDTH2},${HEIGHT2}#END\n\n`;
 	mapText += `#FLOOR\n${[...Array(HEIGHT).keys()].map((v) => `${mapId} `.repeat(WIDTH)).join("\n")}#END`;
