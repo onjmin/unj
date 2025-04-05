@@ -5,7 +5,13 @@ import type { Player } from "../../../common/response/schema.js";
 import { decodeThreadId, encodeUserId } from "../../mylib/anti-debug.js";
 import auth from "../../mylib/auth.js";
 import { isDeleted } from "../../mylib/cache.js";
-import { bigDay, doppelgangers, humans } from "../../mylib/rpg.js";
+import {
+	Doppelganger,
+	Human,
+	bigDay,
+	doppelgangers,
+	humans,
+} from "../../mylib/rpg.js";
 import { getThreadRoom } from "../../mylib/socket.js";
 
 const api = "rpgPatch";
@@ -25,15 +31,24 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		if (!m) return;
 
 		const userId = auth.getUserId(socket);
-		const human = humans.get(userId);
-		if (!human) return;
+		let human = humans.get(userId);
+		if (!human) {
+			// その他の失効の補正
+			human = new Human();
+			humans.set(userId, human);
+		}
 		human.sAnimsId = rpgInit.output.sAnimsId;
 
-		const d = m.get(userId);
-		if (!d) return;
+		let d = m.get(userId);
+		if (!d) {
+			// 有効期限切れの補正
+			d = new Doppelganger(human);
+			m.set(userId, d);
+		}
 		d.x = rpgInit.output.x;
 		d.y = rpgInit.output.y;
 		d.direction = rpgInit.output.direction;
+		d.updatedAt = new Date();
 
 		const player: Player = {
 			userId: encodeUserId(userId, bigDay) ?? "",

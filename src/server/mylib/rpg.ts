@@ -19,10 +19,12 @@ export class Doppelganger {
 	x;
 	y;
 	direction: number;
+	updatedAt: Date;
 	constructor(public human: Human) {
 		this.human = human;
 		this.x = randInt(0, WIDTH - 1);
 		this.y = randInt(0, HEIGHT - 1);
 		this.direction = Direction.South;
+		this.updatedAt = new Date();
 	}
 }

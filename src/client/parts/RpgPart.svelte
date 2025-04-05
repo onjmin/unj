@@ -7,6 +7,7 @@
   import { makePathname } from "../mylib/env.js";
   import { calcChipSize, chipSize, render } from "../mylib/rpg.js";
   import { socket } from "../mylib/socket.js";
+  import { sAnimsId } from "../mylib/unj-storage.js";
 
   let { threadId = "" } = $props();
 
@@ -118,7 +119,7 @@
 
     const data = {
       threadId,
-      sAnimsId: 2086,
+      sAnimsId: Number(sAnimsId.value ?? 2086),
       x,
       y,
       direction,
@@ -130,7 +131,10 @@
 
   $effect(() => {
     setTimeout(() => {
-      socket.emit("rpgInit", { threadId, sAnimsId: 2086 });
+      socket.emit("rpgInit", {
+        threadId,
+        sAnimsId: Number(sAnimsId.value ?? 2086),
+      });
       socket.on("rpgInit", handleRpgInit);
       socket.on("rpgPatch", handleRpgPatch);
       document.addEventListener("click", handleGlobalClick, true);

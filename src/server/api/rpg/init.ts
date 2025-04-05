@@ -1,3 +1,4 @@
+import { addMinutes, isAfter } from "date-fns";
 import type { Socket } from "socket.io";
 import * as v from "valibot";
 import { RpgInitSchema } from "../../../common/request/rpg-schema.js";
@@ -41,7 +42,15 @@ export default ({ socket }: { socket: Socket }) => {
 		}
 
 		const players: Player[] = [];
-		for (const [k, d] of m.entries() ?? []) {
+		// 途中でループ回数が減る可能性あり
+		for (const k of Array.from(m.keys())) {
+			const d = m.get(k);
+			if (!d) continue;
+			// 有効期限切れ
+			if (isAfter(new Date(), addMinutes(d.updatedAt, 4))) {
+				m.delete(k);
+				continue;
+			}
 			players.push({
 				userId: encodeUserId(k, bigDay) ?? "",
 				sAnimsId: d.human.sAnimsId,

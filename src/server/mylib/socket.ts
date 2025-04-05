@@ -31,6 +31,7 @@ export const switchTo = async (
 	if (joined(socket, newRoom)) {
 		return false;
 	}
+	// 途中でループ回数が減る可能性あり
 	for (const room of Array.from(socket.rooms)) {
 		if (room !== socket.id) {
 			await socket.leave(room);
