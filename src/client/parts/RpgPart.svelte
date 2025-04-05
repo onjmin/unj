@@ -5,6 +5,8 @@
   import { calcChipSize, render } from "../mylib/rpg.js";
   import { socket } from "../mylib/socket.js";
 
+  let { threadId = "" } = $props();
+
   let canvas: HTMLCanvasElement;
   let ctx: CanvasRenderingContext2D;
   let rpgMap: RPGMap;
@@ -53,8 +55,11 @@
   };
 
   $effect(() => {
-    socket.on("rpgInit", handleRpgInit);
-    socket.on("rpgPatch", handleRpgPatch);
+    setTimeout(() => {
+      socket.on("rpgInit", handleRpgInit);
+      socket.on("rpgPatch", handleRpgPatch);
+      socket.emit("rpgInit", { threadId, sAnimsId: 2086 });
+    }, 512);
     return () => {
       socket.off("rpgInit", handleRpgInit);
       socket.off("rpgPatch", handleRpgPatch);

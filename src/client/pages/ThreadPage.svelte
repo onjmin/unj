@@ -524,7 +524,7 @@
 {/if}
 
 {#if isRpgMode}
-    <RpgPart />
+    <RpgPart {threadId} />
 {/if}
 
 {#snippet paginationControls()}
