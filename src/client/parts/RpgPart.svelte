@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { RPGMap } from "rpgen-map";
+  import { Direction, RPGMap } from "rpgen-map";
   import * as v from "valibot";
   import { RpgPatchSchema } from "../../common/request/rpg-schema.js";
   import { myConfig } from "../../common/request/schema.js";
@@ -99,12 +99,29 @@
     const x = Math.floor((clientX - rect.left) / chipSize);
     const y = Math.floor((clientY - rect.top) / chipSize);
 
+    const me = players.get(yours);
+    if (!me) return;
+
+    // クリック位置と自分の位置の差分
+    const deltaX = x - me.x;
+    const deltaY = y - me.y;
+    let direction: number;
+
+    // どちらの差が大きいかで、方向を判定する
+    if (Math.abs(deltaX) > Math.abs(deltaY)) {
+      // 横方向の移動が大きい場合
+      direction = deltaX >= 0 ? Direction.East : Direction.West;
+    } else {
+      // 縦方向の移動が大きい場合
+      direction = deltaY >= 0 ? Direction.South : Direction.North;
+    }
+
     const data = {
       threadId,
       sAnimsId: 2086,
       x,
       y,
-      direction: 0,
+      direction,
     };
     const res = v.safeParse(RpgPatchSchema, data, myConfig);
     if (!res.success) return;
@@ -118,7 +135,7 @@
       socket.on("rpgPatch", handleRpgPatch);
       document.addEventListener("click", handleGlobalClick, true);
       document.addEventListener("touchend", handleGlobalClick, true);
-    }, 512);
+    });
     return () => {
       socket.off("rpgInit", handleRpgInit);
       socket.off("rpgPatch", handleRpgPatch);
