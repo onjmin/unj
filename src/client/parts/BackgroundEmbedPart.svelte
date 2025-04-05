@@ -164,6 +164,6 @@
     aspect-ratio: 16 / 9;
     pointer-events: none;
     z-index: 0;
-    opacity: 0.4;
+    opacity: 0.3;
   }
 </style>
