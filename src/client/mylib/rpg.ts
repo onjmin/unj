@@ -179,7 +179,6 @@ const renderHumans = (ctx: CanvasRenderingContext2D, rpgMap: RPGMap) => {
 const renderPlayers = (
 	ctx: CanvasRenderingContext2D,
 	players: Map<string, Player>,
-	yours: string,
 ) => {
 	for (const [k, p] of players) {
 		const customAnimationSprite = requestImage(
@@ -190,8 +189,6 @@ const renderPlayers = (
 			renderNotFound(ctx, p.x, p.y);
 			break;
 		}
-		// TODO: draw msg
-		// yours
 		ctx.drawImage(
 			customAnimationSprite,
 			RPGEN_CHIP_SIZE * currentFrameFlip,
@@ -205,6 +202,39 @@ const renderPlayers = (
 		);
 	}
 };
+const renderPlayersMsg = (
+	ctx: CanvasRenderingContext2D,
+	players: Map<string, Player>,
+) => {
+	for (const [k, p] of players) {
+		// メッセージを改行で分割し、各行ごとに描画する
+		const lines = p.msg.split("\n");
+
+		// テキスト表示用の設定
+		ctx.font = "12px sans-serif";
+		ctx.textAlign = "center";
+		ctx.fillStyle = "white";
+		ctx.strokeStyle = "black";
+		ctx.lineWidth = 2;
+
+		// 基準となる位置（最下行をキャラクターの頭上から5px上に表示）
+		const baseX = chipSize * p.x + chipSize / 2;
+		const baseY = chipSize * p.y - 5;
+
+		// フォントサイズに合わせた行の高さ（例: 14px）
+		const lineHeight = 14;
+
+		// 最下行がキャラクターに近いように、後ろから順に描画
+		// 例：lines = ["こんにちは！", "元気ですか？"] の場合
+		// 「元気ですか？」が baseY に、
+		// 「こんにちは！」が baseY - lineHeight に表示される
+		for (let i = lines.length - 1; i >= 0; i--) {
+			const yPos = baseY - (lines.length - 1 - i) * lineHeight;
+			ctx.strokeText(lines[i], baseX, yPos);
+			ctx.fillText(lines[i], baseX, yPos);
+		}
+	}
+};
 
 let currentFrameFlip = 0;
 export const render = (
@@ -213,7 +243,6 @@ export const render = (
 	ctx: CanvasRenderingContext2D,
 	rpgMap: RPGMap,
 	players: Map<string, Player>,
-	yours: string,
 ) => {
 	if (!canvas || !rpgMap) return;
 	canvas.width = chipSize * WIDTH;
@@ -223,6 +252,7 @@ export const render = (
 	renderTileMap(ctx, rpgMap, rpgMap.floor);
 	renderTileMap(ctx, rpgMap, rpgMap.objects);
 	renderHumans(ctx, rpgMap);
-	renderPlayers(ctx, players, yours);
+	renderPlayers(ctx, players);
+	renderPlayersMsg(ctx, players);
 	currentFrameFlip = ((timestamp / ANIMATION_SPRITE_FLIP_INTERVAL) | 0) % 2;
 };

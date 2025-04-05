@@ -17,7 +17,7 @@
   let id: number;
 
   const loop = (timestamp: DOMHighResTimeStamp) => {
-    render(timestamp, canvas, ctx, rpgMap, players, yours);
+    render(timestamp, canvas, ctx, rpgMap, players);
     id = requestAnimationFrame(loop);
   };
 

@@ -3,9 +3,14 @@ import type { Server, Socket } from "socket.io";
 import * as v from "valibot";
 import { contentSchemaMap } from "../../common/request/content-schema.js";
 import { ResSchema, myConfig } from "../../common/request/schema.js";
-import type { Meta, Res } from "../../common/response/schema.js";
+import type { Meta, Player, Res } from "../../common/response/schema.js";
 import { randInt } from "../../common/util.js";
-import { decodeThreadId, encodeResId, flaky } from "../mylib/anti-debug.js";
+import {
+	decodeThreadId,
+	encodeResId,
+	encodeUserId,
+	flaky,
+} from "../mylib/anti-debug.js";
 import auth from "../mylib/auth.js";
 import {
 	ageResCache,
@@ -37,7 +42,7 @@ import { getIP } from "../mylib/ip.js";
 import { logger } from "../mylib/log.js";
 import nonce from "../mylib/nonce.js";
 import { onError, pool } from "../mylib/pool.js";
-import { humans } from "../mylib/rpg.js";
+import { bigDay, doppelgangers, humans } from "../mylib/rpg.js";
 import { isSameSimhash } from "../mylib/simhash.js";
 import { exist, getThreadRoom, joined } from "../mylib/socket.js";
 
@@ -343,10 +348,34 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 					ok: true,
 					new: newMeta,
 				});
+			}
 
-				if (humans.has(userId)) {
-					const human = humans.get(userId);
-					if (human) human.msg = content.output.contentText.slice(0, 64);
+			// RPG
+			if (humans.has(userId)) {
+				const human = humans.get(userId);
+				if (human) {
+					const msg = content.output.contentText;
+					if (msg.length > 64) {
+						human.msg = `${msg.slice(0, 64)}…`;
+					} else {
+						human.msg = msg;
+					}
+					const m = doppelgangers.get(threadId);
+					if (!m) return;
+					const d = m.get(userId);
+					if (!d) return;
+					const player: Player = {
+						userId: encodeUserId(userId, bigDay) ?? "",
+						sAnimsId: d.human.sAnimsId,
+						msg: d.human.msg,
+						x: d.x,
+						y: d.y,
+						direction: d.direction,
+					};
+					io.to(getThreadRoom(threadId)).emit("rpgPatch", {
+						ok: true,
+						player,
+					});
 				}
 			}
 

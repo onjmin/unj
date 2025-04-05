@@ -1,18 +1,18 @@
 import type { Server, Socket } from "socket.io";
 import * as v from "valibot";
-import { RpgPatchSchema } from "../../../common/request/rpg-schema.js";
-import type { Player } from "../../../common/response/schema.js";
-import { decodeThreadId, encodeUserId } from "../../mylib/anti-debug.js";
-import auth from "../../mylib/auth.js";
-import { isDeleted } from "../../mylib/cache.js";
+import { RpgPatchSchema } from "../../common/request/rpg-schema.js";
+import type { Player } from "../../common/response/schema.js";
+import { decodeThreadId, encodeUserId } from "../mylib/anti-debug.js";
+import auth from "../mylib/auth.js";
+import { isDeleted } from "../mylib/cache.js";
 import {
 	Doppelganger,
 	Human,
 	bigDay,
 	doppelgangers,
 	humans,
-} from "../../mylib/rpg.js";
-import { getThreadRoom } from "../../mylib/socket.js";
+} from "../mylib/rpg.js";
+import { getThreadRoom } from "../mylib/socket.js";
 
 const api = "rpgPatch";
 
