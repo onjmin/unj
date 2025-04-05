@@ -77,6 +77,12 @@ new SAnim({
 	href: "https://wikiwiki.jp/livejupiter/%E3%81%86%E3%82%8B%E3%81%95%E3%81%84%E3%81%A7%E3%81%99%E3%81%AD%E2%80%A6%E2%80%A6",
 });
 new SAnim({
+	id: 1194,
+	name: "ナナチ",
+	description: "ナナチは可愛いですね",
+	href: "https://dic.pixiv.net/a/%E3%83%8A%E3%83%8A%E3%83%81",
+});
+new SAnim({
 	id: 708,
 	name: "野獣先輩",
 	description: "24歳、学生です",
