@@ -13,7 +13,7 @@ const S_ANIMS_ID = v.pipe(
 );
 
 /**
- * RPGのスキーマ
+ * RPGMODE初回接続のスキーマ
  */
 export const RpgInitSchema = v.strictObject({
 	threadId: THREAD_ID,
@@ -21,7 +21,7 @@ export const RpgInitSchema = v.strictObject({
 });
 
 /**
- * RPGのスキーマ
+ * RPGMODE位置送信のスキーマ
  */
 export const RpgPatchSchema = v.strictObject({
 	threadId: THREAD_ID,

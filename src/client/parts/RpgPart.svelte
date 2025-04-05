@@ -1,8 +1,11 @@
 <script lang="ts">
   import { RPGMap } from "rpgen-map";
+  import * as v from "valibot";
+  import { RpgPatchSchema } from "../../common/request/rpg-schema.js";
+  import { myConfig } from "../../common/request/schema.js";
   import type { Player } from "../../common/response/schema.js";
   import { makePathname } from "../mylib/env.js";
-  import { calcChipSize, render } from "../mylib/rpg.js";
+  import { calcChipSize, chipSize, render } from "../mylib/rpg.js";
   import { socket } from "../mylib/socket.js";
 
   let { threadId = "" } = $props();
@@ -54,15 +57,73 @@
     players.set(data.player.userId, data.player);
   };
 
+  /**
+   * 全体のクリック／タッチイベントで canvas 領域内ならグリッド座標を算出して送信
+   */
+  const handleGlobalClick = (event: MouseEvent | TouchEvent) => {
+    // もし対象が入力可能な要素ならスキップ
+    const target = event.target as HTMLElement;
+    if (
+      target &&
+      (target.tagName === "INPUT" ||
+        target.tagName === "TEXTAREA" ||
+        target.isContentEditable)
+    )
+      return;
+
+    // canvas の位置とサイズを取得
+    const rect = canvas.getBoundingClientRect();
+    let clientX: number;
+    let clientY: number;
+
+    if (event instanceof MouseEvent) {
+      clientX = event.clientX;
+      clientY = event.clientY;
+    } else if (event instanceof TouchEvent && event.changedTouches.length > 0) {
+      clientX = event.changedTouches[0].clientX;
+      clientY = event.changedTouches[0].clientY;
+    } else {
+      return;
+    }
+
+    // canvas 領域外なら何もしない
+    if (
+      clientX < rect.left ||
+      clientX > rect.right ||
+      clientY < rect.top ||
+      clientY > rect.bottom
+    )
+      return;
+
+    // canvas 内のクリック位置からグリッド座標を算出
+    const x = Math.floor((clientX - rect.left) / chipSize);
+    const y = Math.floor((clientY - rect.top) / chipSize);
+
+    const data = {
+      threadId,
+      sAnimsId: 2086,
+      x,
+      y,
+      direction: 0,
+    };
+    const res = v.safeParse(RpgPatchSchema, data, myConfig);
+    if (!res.success) return;
+    socket.emit("rpgPatch", data);
+  };
+
   $effect(() => {
     setTimeout(() => {
+      socket.emit("rpgInit", { threadId, sAnimsId: 2086 });
       socket.on("rpgInit", handleRpgInit);
       socket.on("rpgPatch", handleRpgPatch);
-      socket.emit("rpgInit", { threadId, sAnimsId: 2086 });
+      document.addEventListener("click", handleGlobalClick, true);
+      document.addEventListener("touchend", handleGlobalClick, true);
     }, 512);
     return () => {
       socket.off("rpgInit", handleRpgInit);
       socket.off("rpgPatch", handleRpgPatch);
+      document.removeEventListener("click", handleGlobalClick, true);
+      document.removeEventListener("touchend", handleGlobalClick, true);
     };
   });
 

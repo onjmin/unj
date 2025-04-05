@@ -16,7 +16,7 @@ const cache: Map<string, HTMLImageElement | null | undefined> = new Map();
 const offsetX = (rpgMap: RPGMap) => rpgMap.initialHeroPosition.x - WIDTH2;
 const offsetY = (rpgMap: RPGMap) => rpgMap.initialHeroPosition.y - HEIGHT2;
 
-let chipSize = 0;
+export let chipSize = 0;
 export const calcChipSize = () => {
 	chipSize = (window.innerHeight / HEIGHT) | 0;
 };
