@@ -275,6 +275,7 @@ const list = [
 	"9_0",
 	"/static/rpg/3095.txt",
 	"/static/rpg/3965.txt",
+	"/static/rpg/4421.txt",
 	"/static/rpg/5023.txt",
 	"/static/rpg/5056.txt",
 ];
@@ -291,7 +292,7 @@ export const loadRpgMapText = async (threadId: string): Promise<string> => {
 				[
 					[10, 22],
 					[10, 7],
-					[32, 13],
+					[32, 12],
 				],
 				threadId,
 			);
