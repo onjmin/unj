@@ -33,6 +33,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		if (!d) return;
 		d.x = rpgInit.output.x;
 		d.y = rpgInit.output.y;
+		d.direction = rpgInit.output.direction;
 
 		const player: Player = {
 			userId: encodeUserId(userId, bigDay) ?? "",
@@ -40,6 +41,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			msg: d.human.msg,
 			x: d.x,
 			y: d.y,
+			direction: d.direction,
 		};
 
 		io.to(getThreadRoom(threadId)).emit(api, {

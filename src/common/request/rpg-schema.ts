@@ -28,4 +28,5 @@ export const RpgPatchSchema = v.strictObject({
 	sAnimsId: S_ANIMS_ID,
 	x: v.pipe(v.number(), v.integer(), v.minValue(0), v.maxValue(WIDTH - 1)),
 	y: v.pipe(v.number(), v.integer(), v.minValue(0), v.maxValue(HEIGHT - 1)),
+	direction: v.pipe(v.number(), v.integer(), v.minValue(0), v.maxValue(3)),
 });

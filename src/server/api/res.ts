@@ -37,6 +37,7 @@ import { getIP } from "../mylib/ip.js";
 import { logger } from "../mylib/log.js";
 import nonce from "../mylib/nonce.js";
 import { pool } from "../mylib/pool.js";
+import { humans } from "../mylib/rpg.js";
 import { isSameSimhash } from "../mylib/simhash.js";
 import { exist, getThreadRoom, joined } from "../mylib/socket.js";
 
@@ -341,6 +342,11 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 					ok: true,
 					new: newMeta,
 				});
+
+				if (humans.has(userId)) {
+					const human = humans.get(userId);
+					if (human) human.msg = content.output.contentText.slice(0, 64);
+				}
 			}
 
 			await poolClient.query("COMMIT"); // 問題なければコミット

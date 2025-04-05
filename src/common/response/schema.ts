@@ -95,4 +95,5 @@ export type Player = {
 	msg: string;
 	x: number;
 	y: number;
+	direction: number;
 };

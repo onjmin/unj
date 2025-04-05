@@ -36,6 +36,7 @@ export default ({ socket }: { socket: Socket }) => {
 			if (!humans.has(userId)) humans.set(userId, new Human());
 			const human = humans.get(userId);
 			if (!human) return;
+			human.sAnimsId = rpgInit.output.sAnimsId;
 			m.set(userId, new Doppelganger(human));
 		}
 
@@ -47,6 +48,7 @@ export default ({ socket }: { socket: Socket }) => {
 				msg: d.human.msg,
 				x: d.x,
 				y: d.y,
+				direction: d.direction,
 			});
 		}
 

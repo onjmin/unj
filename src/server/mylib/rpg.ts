@@ -1,3 +1,4 @@
+import { Direction } from "rpgen-map";
 import { HEIGHT, WIDTH } from "../../common/request/rpg-schema.js";
 import { randInt } from "../../common/util.js";
 
@@ -17,9 +18,11 @@ export class Human {
 export class Doppelganger {
 	x;
 	y;
+	direction: number;
 	constructor(public human: Human) {
 		this.human = human;
 		this.x = randInt(0, WIDTH - 1);
 		this.y = randInt(0, HEIGHT - 1);
+		this.direction = Direction.South;
 	}
 }

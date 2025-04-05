@@ -7,6 +7,7 @@ import {
 	getDQAnimationSpritePosition,
 } from "rpgen-map";
 import { HEIGHT, WIDTH } from "../../common/request/rpg-schema.js";
+import type { Player } from "../../common/response/schema.js";
 
 const WIDTH2 = WIDTH >> 1;
 const HEIGHT2 = HEIGHT >> 1;
@@ -175,6 +176,35 @@ const renderHumans = (ctx: CanvasRenderingContext2D, rpgMap: RPGMap) => {
 		}
 	}
 };
+const renderPlayers = (
+	ctx: CanvasRenderingContext2D,
+	players: Map<string, Player>,
+	yours: string,
+) => {
+	for (const [k, p] of players) {
+		const customAnimationSprite = requestImage(
+			`https://rpgen.cc/dq/sAnims/res/${p.sAnimsId}.png`,
+		);
+		if (customAnimationSprite === undefined) break;
+		if (customAnimationSprite === null) {
+			renderNotFound(ctx, p.x, p.y);
+			break;
+		}
+		// TODO: draw msg
+		// yours
+		ctx.drawImage(
+			customAnimationSprite,
+			RPGEN_CHIP_SIZE * currentFrameFlip,
+			RPGEN_CHIP_SIZE * p.direction,
+			RPGEN_CHIP_SIZE,
+			RPGEN_CHIP_SIZE,
+			chipSize * p.x,
+			chipSize * p.y,
+			chipSize,
+			chipSize,
+		);
+	}
+};
 
 let currentFrameFlip = 0;
 export const render = (
@@ -182,6 +212,8 @@ export const render = (
 	canvas: HTMLCanvasElement,
 	ctx: CanvasRenderingContext2D,
 	rpgMap: RPGMap,
+	players: Map<string, Player>,
+	yours: string,
 ) => {
 	if (!canvas || !rpgMap) return;
 	canvas.width = chipSize * WIDTH;
@@ -191,5 +223,6 @@ export const render = (
 	renderTileMap(ctx, rpgMap, rpgMap.floor);
 	renderTileMap(ctx, rpgMap, rpgMap.objects);
 	renderHumans(ctx, rpgMap);
+	renderPlayers(ctx, players, yours);
 	currentFrameFlip = ((timestamp / ANIMATION_SPRITE_FLIP_INTERVAL) | 0) % 2;
 };
