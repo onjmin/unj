@@ -23,6 +23,7 @@
         contentSchemaMap,
         contentTemplateMap,
     } from "../../common/request/content-schema.js";
+    import { RpgPatchSchema } from "../../common/request/rpg-schema.js";
     import { ResSchema, myConfig } from "../../common/request/schema.js";
     import {
         SiteInfo,
@@ -45,11 +46,13 @@
     import {
         latestReadThreadId,
         nonceKey,
+        sAnimsId,
         termsAgreement,
     } from "../mylib/unj-storage.js";
     import AccessCounterPart from "../parts/AccessCounterPart.svelte";
     import BackgroundEmbedPart from "../parts/BackgroundEmbedPart.svelte";
     import BalsPart from "../parts/BalsPart.svelte";
+    import DressUpPart from "../parts/DressUpPart.svelte";
     import ResFormPart from "../parts/ResFormPart.svelte";
     import ResPart from "../parts/ResPart.svelte";
     import RpgPart from "../parts/RpgPart.svelte";
@@ -78,7 +81,14 @@
     let sage = $state(false);
     let ninja = $state(false);
     let isRpgMode = $state(rpgMode.value === "RPG");
+    let openDressUp = $state(false);
+    let nowSAnimsId = $state(Number(sAnimsId.value ?? 2086));
+    let dressUp: (() => void) | undefined = $state();
 
+    $effect(() => {
+        sAnimsId.value = String(nowSAnimsId);
+        dressUp?.();
+    });
     $effect(() => {
         rpgMode.value = isRpgMode ? "RPG" : null;
     });
@@ -475,9 +485,18 @@
         {#snippet label()}RPGMODE{/snippet}
         <Checkbox bind:checked={isRpgMode} />
     </FormField>
+    {#if isRpgMode}
+        <IconButton
+            class="material-icons"
+            onclick={() => {
+                openDressUp = true;
+            }}>checkroom</IconButton
+        >
+    {/if}
 </HeaderPart>
 
 <TermsConfirmPart {openConfirm} />
+<DressUpPart bind:open={openDressUp} bind:nowSAnimsId />
 
 <Banner bind:open={openNewResNotice} centered mobileStacked>
     {#snippet icon()}
@@ -524,7 +543,7 @@
 {/if}
 
 {#if isRpgMode}
-    <RpgPart {threadId} />
+    <RpgPart {threadId} bind:dressUp />
 {/if}
 
 {#snippet paginationControls()}

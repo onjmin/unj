@@ -13,7 +13,7 @@
   import { socket } from "../mylib/socket.js";
   import { sAnimsId } from "../mylib/unj-storage.js";
 
-  let { threadId = "" } = $props();
+  let { threadId = "", dressUp = $bindable() } = $props();
 
   let canvas: HTMLCanvasElement;
   let ctx: CanvasRenderingContext2D;
@@ -44,6 +44,21 @@
 
   const players: Map<string, Player> = new Map();
   let yours = $state("");
+
+  dressUp = () => {
+    const me = players.get(yours);
+    if (!me) return;
+    const data = {
+      threadId,
+      sAnimsId: Number(sAnimsId.value ?? 2086),
+      x: me.x,
+      y: me.y,
+      direction: me.direction,
+    };
+    const res = v.safeParse(RpgPatchSchema, data, myConfig);
+    if (!res.success) return;
+    socket.emit("rpgPatch", data);
+  };
 
   const handleRpgInit = async (data: {
     ok: boolean;
