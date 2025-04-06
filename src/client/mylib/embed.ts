@@ -67,9 +67,13 @@ export const parseAudioEmbedSoundCloud = (url: URL): string | null => {
 	return `https://w.soundcloud.com/player/?url=${encodeURIComponent(url.href)}&visual=true`;
 };
 export const parseAudioEmbedSpotify = (url: URL): string | null => {
-	const id = url.pathname.match(/track\/([a-zA-Z0-9]{22})/)?.[1];
-	if (id) {
-		return `https://open.spotify.com/embed/track/${id}?utm_source=generator`;
+	const match = url.pathname.match(
+		/\/(track|album|playlist)\/([a-zA-Z0-9]{22})/,
+	);
+	if (match) {
+		const type = match[1];
+		const id = match[2];
+		return `https://open.spotify.com/embed/${type}/${id}?utm_source=generator`;
 	}
 	return null;
 };
