@@ -450,9 +450,7 @@
     });
 </script>
 
-<HeaderPart {title} bind:bookmark bind:openRight>
-    <AccessCounterPart {online} {pv} />
-    <p>レス書き込み欄</p>
+{#snippet form()}
     <ResFormPart
         disabled={emitting}
         bind:textarea
@@ -494,6 +492,12 @@
             }}>checkroom</IconButton
         >
     {/if}
+{/snippet}
+
+<HeaderPart {title} bind:bookmark bind:openRight>
+    <AccessCounterPart {online} {pv} />
+    <p>レス書き込み欄</p>
+    <div>{@render form()}</div>
 </HeaderPart>
 
 <TermsConfirmPart {openConfirm} />
@@ -717,6 +721,11 @@
             }}
         ></div>
         <div>{@render paginationControls()}</div>
+        <Paper>
+            <Title>レス書き込み欄</Title>
+            <Subtitle>適当に書き込んでってクレメンス</Subtitle>
+            <Content>{@render form()}</Content>
+        </Paper>
     {/if}
 </MainPart>
 
