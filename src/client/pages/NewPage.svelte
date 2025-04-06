@@ -107,10 +107,11 @@
 
     let emitting = $state(false);
     const tryMakeThread = async () => {
-        if (termsAgreement.value !== "yes") {
-            openConfirm = true;
-            return;
-        }
+        // 利用規約同意
+        // if (termsAgreement.value !== "yes") {
+        //     openConfirm = true;
+        //     return;
+        // }
         if (emitting) return;
         emitting = true;
         const data = {
