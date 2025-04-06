@@ -84,11 +84,11 @@ export const theme = new UnjStorage("theme", () => {
 		document.body.classList.remove("dark");
 	}
 });
-theme.value = theme.value ?? "metro-dark";
+theme.value = theme.value ?? "unity";
 
 // RPG
 export const rpgMode = new UnjStorage("rpgMode");
-rpgMode.value = rpgMode.value ?? "1";
+rpgMode.value = rpgMode.value ?? "0";
 export const sAnimsId = new UnjStorage("sAnimsId");
 
 // other
