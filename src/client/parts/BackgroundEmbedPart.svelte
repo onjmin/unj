@@ -35,7 +35,7 @@
       embedding = true;
       const url = new URL(contentUrl);
       switch (siteInfo.id) {
-        case 3201:
+        case 1601:
           videoEmbedYouTube = true;
           embedUrl = parseVideoEmbedYouTube(url) ?? "";
           if (embedUrl)
@@ -46,7 +46,7 @@
               height,
             });
           break;
-        case 3202:
+        case 1602:
           videoEmbedNicovideo = true;
           embedUrl = parseVideoEmbedNicovideo(url) ?? "";
           if (embedUrl)
@@ -54,7 +54,7 @@
               iframeDOM: document.querySelector("#unj-background-embed iframe"),
             });
           break;
-        case 6401:
+        case 3201:
           audioEmbedSoundCloud = true;
           embedUrl = parseAudioEmbedSoundCloud(url) ?? "";
           if (embedUrl)

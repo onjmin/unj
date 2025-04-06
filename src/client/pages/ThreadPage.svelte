@@ -520,9 +520,9 @@
     <div class="ageRes">
         <ResPart
             bind:input={contentText}
-            backgroundEmbedControls={siteInfo?.id === 3201 ||
-                siteInfo?.id === 3202 ||
-                siteInfo?.id === 6401}
+            backgroundEmbedControls={siteInfo?.id === 1601 ||
+                siteInfo?.id === 1602 ||
+                siteInfo?.id === 3201}
             {focus}
             ccUserId={thread?.ageRes.ccUserId}
             ccUserName={thread?.ageRes.ccUserName}

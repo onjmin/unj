@@ -88,22 +88,10 @@ const UrlSchema = v.object({
 });
 
 /**
- * 4: url_of_unj_games
- */
-const UrlOfUnjGamesSchema = v.object({
-	contentType: v.pipe(v.number(), v.value(4)),
-	contentText: SAFE_TEXT_MULTILINE,
-	contentUrl: v.pipe(
-		SAFE_URL,
-		v.check((input) => !!findIn(whitelistUnjGames, new URL(input).hostname)),
-	),
-});
-
-/**
- * 8: url_of_image(Imgur|アル)
+ * 4: url_of_image(Imgur|アル)
  */
 const UrlOfImageSchema = v.object({
-	contentType: v.pipe(v.number(), v.value(8)),
+	contentType: v.pipe(v.number(), v.value(4)),
 	contentText: SAFE_TEXT_MULTILINE,
 	contentUrl: v.pipe(
 		SAFE_URL,
@@ -112,10 +100,10 @@ const UrlOfImageSchema = v.object({
 });
 
 /**
- * 16: url_of_gif(Imgur)
+ * 8: url_of_gif(Imgur)
  */
 const UrlOfGifSchema = v.object({
-	contentType: v.pipe(v.number(), v.value(16)),
+	contentType: v.pipe(v.number(), v.value(8)),
 	contentText: SAFE_TEXT_MULTILINE,
 	contentUrl: v.pipe(
 		SAFE_URL,
@@ -124,10 +112,10 @@ const UrlOfGifSchema = v.object({
 });
 
 /**
- * 32: url_of_video(YouTube||Nicovideo||Vimeo)
+ * 16: url_of_video(YouTube||Nicovideo||Vimeo)
  */
 const UrlOfVideoSchema = v.object({
-	contentType: v.pipe(v.number(), v.value(32)),
+	contentType: v.pipe(v.number(), v.value(16)),
 	contentText: SAFE_TEXT_MULTILINE,
 	contentUrl: v.pipe(
 		SAFE_URL,
@@ -136,14 +124,26 @@ const UrlOfVideoSchema = v.object({
 });
 
 /**
- * 64: url_of_audio(SoundCloud||Spotify)
+ * 32: url_of_audio(SoundCloud||Spotify)
  */
 const UrlOfAudioSchema = v.object({
-	contentType: v.pipe(v.number(), v.value(64)),
+	contentType: v.pipe(v.number(), v.value(32)),
 	contentText: SAFE_TEXT_MULTILINE,
 	contentUrl: v.pipe(
 		SAFE_URL,
 		v.check((input) => !!findIn(whitelistAudio, new URL(input).hostname)),
+	),
+});
+
+/**
+ * 64: url_of_unj_games
+ */
+const UrlOfUnjGamesSchema = v.object({
+	contentType: v.pipe(v.number(), v.value(64)),
+	contentText: SAFE_TEXT_MULTILINE,
+	contentUrl: v.pipe(
+		SAFE_URL,
+		v.check((input) => !!findIn(whitelistUnjGames, new URL(input).hostname)),
 	),
 });
 
@@ -154,11 +154,11 @@ export const contentSchemaMap = new Map(
 	Object.entries({
 		1: TextSchema,
 		2: UrlSchema,
-		4: UrlOfUnjGamesSchema,
-		8: UrlOfImageSchema,
-		16: UrlOfGifSchema,
-		32: UrlOfVideoSchema,
-		64: UrlOfAudioSchema,
+		4: UrlOfImageSchema,
+		8: UrlOfGifSchema,
+		16: UrlOfVideoSchema,
+		32: UrlOfAudioSchema,
+		64: UrlOfUnjGamesSchema,
 	}).map(([k, v]) => [Number(k), v]),
 );
 
@@ -170,11 +170,11 @@ export const contentTemplateMap = new Map(
 	Object.entries({
 		1: [],
 		2: [],
-		4: whitelistUnjGames,
-		8: whitelistImage,
-		16: whitelistGif,
-		32: whitelistVideo,
-		64: whitelistAudio,
+		4: whitelistImage,
+		8: whitelistGif,
+		16: whitelistVideo,
+		32: whitelistAudio,
+		64: whitelistUnjGames,
 	}).map(([k, v]) => [Number(k), v]),
 );
 
@@ -185,11 +185,11 @@ export const contentTemplateMap = new Map(
 export const contentTypeOptions = [
 	{ bit: 1, label: "テキスト" },
 	{ bit: 2, label: "+URL" },
-	{ bit: 4, label: "+ゲーム" },
-	{ bit: 8, label: "+画像" },
-	{ bit: 16, label: "+GIF" },
-	{ bit: 32, label: "+動画" },
-	{ bit: 64, label: "+音楽" },
+	{ bit: 4, label: "+画像" },
+	{ bit: 8, label: "+GIF" },
+	{ bit: 16, label: "+動画" },
+	{ bit: 32, label: "+音楽" },
+	{ bit: 64, label: "+ゲーム" },
 ];
 
 /**

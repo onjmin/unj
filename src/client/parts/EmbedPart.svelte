@@ -46,35 +46,35 @@
       embedding = true;
       const url = new URL(contentUrl);
       switch (siteInfo.id) {
-        case 801:
+        case 401:
           imageEmbed = true;
           embedUrl = parseImageEmbedImgur(url) ?? "";
           break;
-        case 802:
+        case 402:
           imageEmbed = true;
           embedUrl = parseImageEmbedNicoseiga(url) ?? "";
           break;
-        case 803:
+        case 403:
           imageEmbed = true;
           embedUrl = parseImageEmbedPixiv(url) ?? "";
           break;
-        case 1601:
+        case 801:
           imageEmbed = true;
           embedUrl = parseGifEmbedImgur(url) ?? "";
           break;
-        case 3201:
+        case 1601:
           videoEmbedYouTube = true;
           embedUrl = parseVideoEmbedYouTube(url) ?? "";
           break;
-        case 3202:
+        case 1602:
           videoEmbedNicovideo = true;
           embedUrl = parseVideoEmbedNicovideo(url) ?? "";
           break;
-        case 6401:
+        case 3201:
           audioEmbedSoundCloud = true;
           embedUrl = parseAudioEmbedSoundCloud(url) ?? "";
           break;
-        case 6402:
+        case 3202:
           audioEmbedSpotify = true;
           embedUrl = parseAudioEmbedSpotify(url) ?? "";
           break;
