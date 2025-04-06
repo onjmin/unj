@@ -41,13 +41,15 @@ export default ({ socket }: { socket: Socket }) => {
 			m.set(userId, new Doppelganger(human));
 		}
 
+		const timestamp = new Date();
+
 		const players: Player[] = [];
 		// 途中でループ回数が減る可能性あり
 		for (const k of Array.from(m.keys())) {
 			const d = m.get(k);
 			if (!d) continue;
 			// 有効期限切れ
-			if (isAfter(new Date(), addMinutes(d.updatedAt, 4))) {
+			if (isAfter(timestamp, addMinutes(d.updatedAt, 4))) {
 				m.delete(k);
 				continue;
 			}
@@ -58,6 +60,7 @@ export default ({ socket }: { socket: Socket }) => {
 				x: d.x,
 				y: d.y,
 				direction: d.direction,
+				updatedAt: d.updatedAt,
 			});
 		}
 

@@ -96,4 +96,5 @@ export type Player = {
 	x: number;
 	y: number;
 	direction: number;
+	updatedAt: Date;
 };

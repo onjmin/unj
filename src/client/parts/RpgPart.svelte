@@ -64,6 +64,7 @@
     ok: boolean;
     players: Player[];
     yours: string;
+    timestamp: Date;
   }) => {
     if (!data.ok) return;
     for (const p of data.players) players.set(p.userId, p);

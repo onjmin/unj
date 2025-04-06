@@ -57,6 +57,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			x: d.x,
 			y: d.y,
 			direction: d.direction,
+			updatedAt: d.updatedAt,
 		};
 
 		io.to(getThreadRoom(threadId)).emit(api, {

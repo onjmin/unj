@@ -1,3 +1,4 @@
+import { addMinutes, isAfter } from "date-fns";
 import {
 	ANIMATION_SPRITE_FLIP_INTERVAL,
 	RPGEN_CHIP_SIZE,
@@ -182,7 +183,15 @@ const renderPlayers = (
 	ctx: CanvasRenderingContext2D,
 	players: Map<string, Player>,
 ) => {
-	for (const [k, p] of players) {
+	// 途中でループ回数が減る可能性あり
+	for (const k of Array.from(players.keys())) {
+		const p = players.get(k);
+		if (!p) continue;
+		// 有効期限切れ
+		if (isAfter(new Date(), addMinutes(p.updatedAt, 4))) {
+			players.delete(k);
+			continue;
+		}
 		const customAnimationSprite = requestImage(
 			`https://rpgen.cc/dq/sAnims/res/${p.sAnimsId}.png`,
 		);
