@@ -1,4 +1,5 @@
 import { addSeconds, isBefore } from "date-fns";
+import type { PoolClient } from "pg";
 import type { Server, Socket } from "socket.io";
 import * as v from "valibot";
 import { contentSchemaMap } from "../../common/request/content-schema.js";
@@ -104,11 +105,13 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		}
 
 		// 危険な処理
-		const poolClient = await pool.connect();
-		onError(poolClient);
+		let poolClient: PoolClient | null = null;
 		try {
 			nonce.lock(socket);
 			nonce.update(socket);
+
+			poolClient = await pool.connect();
+			onError(poolClient);
 
 			if (PROD_MODE)
 				coolTimes.set(userId, addSeconds(new Date(), randInt(8, 32)));
@@ -371,6 +374,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 						x: d.x,
 						y: d.y,
 						direction: d.direction,
+						updatedAt: d.updatedAt,
 					};
 					io.to(getThreadRoom(threadId)).emit("rpgPatch", {
 						ok: true,

@@ -5,6 +5,7 @@ import {
 	isAfter,
 	isBefore,
 } from "date-fns";
+import type { PoolClient } from "pg";
 import type { Socket } from "socket.io";
 import * as v from "valibot";
 import { AuthSchema, isSerial } from "../../common/request/schema.js";
@@ -83,15 +84,16 @@ const neet: Map<number, NodeJS.Timeout> = new Map();
 const lazyUpdate = (userId: number, auth: string, ip: string) => {
 	clearTimeout(neet.get(userId));
 	const id = setTimeout(async () => {
-		const poolClient = await pool.connect();
-		onError(poolClient);
+		let poolClient: PoolClient | null = null;
 		try {
+			poolClient = await pool.connect();
+			onError(poolClient);
 			await poolClient.query(
 				"UPDATE users SET updated_at = NOW(), ip = $1, auth = $2 WHERE id = $3",
 				[ip, auth, userId],
 			);
 		} finally {
-			poolClient.release();
+			poolClient?.release();
 		}
 	}, delay);
 	neet.set(userId, id);
@@ -139,9 +141,11 @@ const init = async (socket: Socket): Promise<boolean> => {
 	const token = getTokenParam(socket);
 
 	// 危険な処理
-	const poolClient = await pool.connect();
-	onError(poolClient);
+	let poolClient: PoolClient | null = null;
 	try {
+		poolClient = await pool.connect();
+		onError(poolClient);
+
 		// 既存ユーザー照合
 		if (token) {
 			const { rows, rowCount } = await poolClient.query(

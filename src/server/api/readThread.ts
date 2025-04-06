@@ -1,3 +1,4 @@
+import type { PoolClient } from "pg";
 import type { Socket } from "socket.io";
 import * as v from "valibot";
 import { ReadThreadSchema } from "../../common/request/schema.js";
@@ -73,13 +74,15 @@ export default ({ socket }: { socket: Socket }) => {
 		}
 
 		// 危険な処理
-		logger.debug("📖 start pool.connect");
-		const poolClient = await pool.connect();
-		onError(poolClient);
-		logger.debug("📖 end pool.connect");
+		let poolClient: PoolClient | null = null;
 		try {
 			nonce.lock(socket);
 			nonce.update(socket);
+
+			logger.debug("📖 start pool.connect");
+			poolClient = await pool.connect();
+			onError(poolClient);
+			logger.debug("📖 end pool.connect");
 
 			// キャッシュの登録
 			if (!threadCached.has(threadId)) {

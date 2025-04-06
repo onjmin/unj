@@ -1,3 +1,4 @@
+import type { PoolClient } from "pg";
 import type { Server, Socket } from "socket.io";
 import * as v from "valibot";
 import { lolSchema } from "../../common/request/schema.js";
@@ -18,15 +19,16 @@ const neet: Map<number, NodeJS.Timeout> = new Map();
 const lazyUpdate = (threadId: number, lolCount: number) => {
 	clearTimeout(neet.get(threadId));
 	const id = setTimeout(async () => {
-		const poolClient = await pool.connect();
-		onError(poolClient);
+		let poolClient: PoolClient | null = null;
 		try {
+			poolClient = await pool.connect();
+			onError(poolClient);
 			await poolClient.query(
 				"UPDATE threads SET lol_count = $1 WHERE id = $2",
 				[lolCount, threadId],
 			);
 		} finally {
-			poolClient.release();
+			poolClient?.release();
 		}
 	}, delay);
 	neet.set(threadId, id);

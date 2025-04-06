@@ -31,15 +31,16 @@ const neet: Map<number, NodeJS.Timeout> = new Map();
 const lazyUpdate = (userId: number, ninjaScore: number, ip: string) => {
 	clearTimeout(neet.get(userId));
 	const id = setTimeout(async () => {
-		const poolClient = await pool.connect();
-		onError(poolClient);
+		let poolClient: PoolClient | null = null;
 		try {
+			poolClient = await pool.connect();
+			onError(poolClient);
 			await poolClient.query(
 				"UPDATE users SET updated_at = NOW(), ip = $1, ninja_score = $2 WHERE id = $3",
 				[ip, ninjaScore, userId],
 			);
 		} finally {
-			poolClient.release();
+			poolClient?.release();
 		}
 	}, delay);
 	neet.set(userId, id);

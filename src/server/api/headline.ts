@@ -1,3 +1,4 @@
+import type { PoolClient } from "pg";
 import type { Server, Socket } from "socket.io";
 import * as v from "valibot";
 import { HeadlineSchema } from "../../common/request/schema.js";
@@ -34,11 +35,13 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		}
 
 		// 危険な処理
-		const poolClient = await pool.connect();
-		onError(poolClient);
+		let poolClient: PoolClient | null = null;
 		try {
 			nonce.lock(socket);
 			nonce.update(socket);
+
+			poolClient = await pool.connect();
+			onError(poolClient);
 
 			const query = [
 				"SELECT * FROM threads WHERE deleted_at IS NULL OR deleted_at > CURRENT_TIMESTAMP",

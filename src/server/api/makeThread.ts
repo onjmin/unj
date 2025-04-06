@@ -1,4 +1,5 @@
 import { addHours, addSeconds, isBefore } from "date-fns";
+import type { PoolClient } from "pg";
 import type { Socket } from "socket.io";
 import * as v from "valibot";
 import { contentSchemaMap } from "../../common/request/content-schema.js";
@@ -70,11 +71,13 @@ export default ({ socket }: { socket: Socket }) => {
 		}
 
 		// 危険な処理
-		const poolClient = await pool.connect();
-		onError(poolClient);
+		let poolClient: PoolClient | null = null;
 		try {
 			nonce.lock(socket);
 			nonce.update(socket);
+
+			poolClient = await pool.connect();
+			onError(poolClient);
 
 			if (PROD_MODE)
 				coolTimes.set(userId, addSeconds(new Date(), randInt(32, 256)));
