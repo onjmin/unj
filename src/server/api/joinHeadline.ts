@@ -1,7 +1,12 @@
 import type { Server, Socket } from "socket.io";
 import * as v from "valibot";
 import { joinHeadlineSchema } from "../../common/request/schema.js";
-import { headlineRoom, sizeOf, switchTo } from "../mylib/socket.js";
+import {
+	type Online,
+	headlineRoom,
+	sizeOf,
+	switchTo,
+} from "../mylib/socket.js";
 
 const api = "joinHeadline";
 
@@ -13,7 +18,7 @@ export default ({
 }: {
 	socket: Socket;
 	io: Server;
-	online: Map<number, number>;
+	online: Online;
 	accessCounter: () => number;
 }) => {
 	socket.data.prevRoom = "";

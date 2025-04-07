@@ -5,10 +5,9 @@ export const NEON_DATABASE_URL = String(process.env.NEON_DATABASE_URL);
 export const pool = new pg.Pool({
 	connectionString: NEON_DATABASE_URL,
 	ssl: { rejectUnauthorized: false },
-	keepAlive: true,
-	max: 16, // 最大接続数16（デフォルト10）
-	idleTimeoutMillis: 16_000, // 16秒（デフォルト10秒, リクエスト間隔を考慮して少し長め）
-	connectionTimeoutMillis: 4_000, // 接続確立のタイムアウト（DBが落ちている時に無駄に待たないように）
+	max: 32, // 保持するコネクション数32（デフォルト10）
+	idleTimeoutMillis: 8_000, // 自動切断時間8秒（デフォルト10秒）
+	connectionTimeoutMillis: 8_000, // 接続確立のタイムアウト8秒（DBが落ちている時に無駄に待たないように）
 });
 
 pool.on("error", (error) => {

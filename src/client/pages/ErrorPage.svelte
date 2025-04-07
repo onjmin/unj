@@ -18,7 +18,8 @@
     {#if errorReason === "multipleConnections"}
         <Paper color="primary" variant="outlined">
             <Title>不自然な操作を感知しました。</Title>
-            <Subtitle>うんｊは同じIPからの多窓を禁止しています。。</Subtitle>
+            <Subtitle>うんｊは同じIPからの複数タブを禁止しています。。</Subtitle
+            >
             <Content>まずはこのタブを閉じようね。</Content>
         </Paper>
     {:else if errorReason === "newUsersRateLimit"}

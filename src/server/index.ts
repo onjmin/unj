@@ -34,6 +34,7 @@ import auth from "./mylib/auth.js";
 import { detectFastlyClientIp, getIP, isBannedIP, setIP } from "./mylib/ip.js";
 import { logger } from "./mylib/log.js";
 import nonce from "./mylib/nonce.js";
+import type { Online } from "./mylib/socket.js";
 
 const bannedCheckMiddleware = (
 	req: Request,
@@ -123,7 +124,7 @@ if (DEV_MODE || STG_MODE) {
 	app.use(express.static(path.resolve(ROOT_PATH, "public")));
 }
 
-const online: Map<number, number> = new Map();
+const online: Online = new Map();
 let accessCount = 0;
 const accessCounter = () => accessCount;
 
@@ -150,6 +151,20 @@ io.on("connection", async (socket) => {
 		socket.conn.remoteAddress;
 	logger.http(`👀 ${ip}`);
 	verifyIP(socket, ip);
+	if (online.has(ip)) {
+		const socketId = online.get(ip) ?? "";
+		// ゾンビIPならスルー
+		if (io.sockets.sockets.has(socketId)) {
+			auth.kick(socket, "multipleConnections");
+			socket.disconnect();
+			return;
+		}
+	}
+	online.set(ip, socket.id);
+	socket.on("disconnect", () => {
+		online.delete(ip);
+	});
+
 	setIP(socket, ip);
 
 	const claims = auth.parseClaims(socket);
@@ -170,14 +185,6 @@ io.on("connection", async (socket) => {
 	}
 
 	nonce.init(socket);
-
-	const userId = auth.getUserId(socket);
-	online.set(userId, (online.get(userId) ?? 0) + 1);
-	socket.on("disconnect", () => {
-		const next = (online.get(userId) ?? 0) - 1;
-		if (next) online.set(userId, next);
-		else online.delete(userId);
-	});
 
 	socket.use((_, next) => {
 		verifyIP(socket, getIP(socket));
