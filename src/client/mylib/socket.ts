@@ -62,14 +62,14 @@ export const hello = (callback: (() => void) | null = null) => {
 					banReason.value = "banned";
 					navigate(makePathname("/akukin"), { replace: true });
 					break;
-				case "multipleConnections":
-					navigate(makePathname("/error"), { replace: true });
+				case "multipleConnectionsLimit":
+					navigate(makePathname("/error"));
 					break;
 				case "newUsersRateLimit":
-					navigate(makePathname("/error"), { replace: true });
+					navigate(makePathname("/error"));
 					break;
 				case "grantFailed":
-					navigate(makePathname("/error"), { replace: true });
+					navigate(makePathname("/error"));
 					break;
 				default:
 					break;

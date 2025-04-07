@@ -15,10 +15,10 @@
 
 <MainPart menu={false}>
     <p>ここで何か起こっているようだ</p>
-    {#if errorReason === "multipleConnections"}
+    {#if errorReason === "multipleConnectionsLimit"}
         <Paper color="primary" variant="outlined">
-            <Title>不自然な操作を感知しました。</Title>
-            <Subtitle>うんｊは同じIPからの複数タブを禁止しています。。</Subtitle
+            <Title>複数タブの個数上限です。</Title>
+            <Subtitle>うんｊは同じIPからの複数タブを制限しています。。</Subtitle
             >
             <Content>まずはこのタブを閉じようね。</Content>
         </Paper>

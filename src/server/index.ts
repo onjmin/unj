@@ -124,6 +124,7 @@ if (DEV_MODE || STG_MODE) {
 	app.use(express.static(path.resolve(ROOT_PATH, "public")));
 }
 
+const multipleConnectionsLimit = 3;
 const online: Online = new Map();
 let accessCount = 0;
 const accessCounter = () => accessCount;
@@ -151,18 +152,22 @@ io.on("connection", async (socket) => {
 		socket.conn.remoteAddress;
 	logger.http(`👀 ${ip}`);
 	verifyIP(socket, ip);
-	if (online.has(ip)) {
-		const socketId = online.get(ip) ?? "";
-		// ゾンビIPならスルー
-		if (io.sockets.sockets.has(socketId)) {
-			auth.kick(socket, "multipleConnections");
-			socket.disconnect();
-			return;
-		}
+
+	// 複数タブ検出
+	const s = online.get(ip) ?? new Set();
+	online.set(ip, s);
+	for (const socketId of s) {
+		// ゾンビIPの掃除
+		if (!io.sockets.sockets.has(socketId)) s.delete(socketId);
 	}
-	online.set(ip, socket.id);
+	if (s.size >= multipleConnectionsLimit) {
+		auth.kick(socket, "multipleConnectionsLimit");
+		socket.disconnect();
+		return;
+	}
+	s.add(socket.id);
 	socket.on("disconnect", () => {
-		online.delete(ip);
+		s.delete(socket.id);
 	});
 
 	setIP(socket, ip);

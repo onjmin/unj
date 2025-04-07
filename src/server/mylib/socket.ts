@@ -1,9 +1,9 @@
 import type { Server, Socket } from "socket.io";
 
 /**
- * IP => socket.id
+ * Map<IP, Set<socket.id>>
  */
-export type Online = Map<string, string>;
+export type Online = Map<string, Set<string>>;
 export const headlineRoom = "headline";
 export const getThreadRoom = (threadId: number) => `thread:${threadId}`;
 
