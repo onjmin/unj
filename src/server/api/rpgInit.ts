@@ -45,7 +45,7 @@ export default ({ socket }: { socket: Socket }) => {
 
 		const players: Player[] = [];
 		// 途中でループ回数が減る可能性あり
-		for (const k of Array.from(m.keys())) {
+		for (const k of m.keys()) {
 			const d = m.get(k);
 			if (!d) continue;
 			// 有効期限切れ

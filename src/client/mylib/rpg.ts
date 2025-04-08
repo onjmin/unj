@@ -184,7 +184,7 @@ const renderPlayers = (
 	players: Map<string, Player>,
 ) => {
 	// 途中でループ回数が減る可能性あり
-	for (const k of Array.from(players.keys())) {
+	for (const k of players.keys()) {
 		const p = players.get(k);
 		if (!p) continue;
 		// 有効期限切れ
