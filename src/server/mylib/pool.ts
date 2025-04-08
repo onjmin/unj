@@ -1,22 +1,11 @@
-import pg, { type PoolClient } from "pg";
+import { Pool, neonConfig } from "@neondatabase/serverless";
+import ws from "ws";
 import { logger } from "../mylib/log.js";
 
+neonConfig.webSocketConstructor = ws;
 export const NEON_DATABASE_URL = String(process.env.NEON_DATABASE_URL);
-export const pool = new pg.Pool({
-	connectionString: NEON_DATABASE_URL,
-	ssl: { rejectUnauthorized: false },
-	max: 32, // 保持するコネクション数32（デフォルト10）
-	idleTimeoutMillis: 8_000, // 自動切断時間8秒（デフォルト10秒）
-	connectionTimeoutMillis: 8_000, // 接続確立のタイムアウト8秒（DBが落ちている時に無駄に待たないように）
-});
+export const pool = new Pool({ connectionString: NEON_DATABASE_URL });
 
-pool.on("error", (error) => {
+pool.on("error", (error: Error) => {
 	logger.error(error);
 });
-
-export const onError = (poolClient: PoolClient) => {
-	if (poolClient.listenerCount("error")) return;
-	poolClient.on("error", (error) => {
-		logger.error(error);
-	});
-};

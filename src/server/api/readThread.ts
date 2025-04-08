@@ -1,4 +1,4 @@
-import type { PoolClient } from "pg";
+import type { PoolClient } from "@neondatabase/serverless";
 import type { Socket } from "socket.io";
 import * as v from "valibot";
 import { ReadThreadSchema } from "../../common/request/schema.js";
@@ -45,7 +45,7 @@ import {
 } from "../mylib/cache.js";
 import { logger } from "../mylib/log.js";
 import nonce from "../mylib/nonce.js";
-import { onError, pool } from "../mylib/pool.js";
+import { pool } from "../mylib/pool.js";
 
 const api = "readThread";
 
@@ -81,7 +81,6 @@ export default ({ socket }: { socket: Socket }) => {
 
 			logger.debug("📖 start pool.connect");
 			poolClient = await pool.connect();
-			onError(poolClient);
 			logger.debug("📖 end pool.connect");
 
 			// キャッシュの登録

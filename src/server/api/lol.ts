@@ -1,4 +1,4 @@
-import type { PoolClient } from "pg";
+import type { PoolClient } from "@neondatabase/serverless";
 import type { Server, Socket } from "socket.io";
 import * as v from "valibot";
 import { lolSchema } from "../../common/request/schema.js";
@@ -7,7 +7,7 @@ import auth from "../mylib/auth.js";
 import { isDeleted, lolCountCache } from "../mylib/cache.js";
 import { logger } from "../mylib/log.js";
 import nonce from "../mylib/nonce.js";
-import { onError, pool } from "../mylib/pool.js";
+import { pool } from "../mylib/pool.js";
 import { exist, getThreadRoom, joined } from "../mylib/socket.js";
 
 const api = "lol";
@@ -22,7 +22,6 @@ const lazyUpdate = (threadId: number, lolCount: number) => {
 		let poolClient: PoolClient | null = null;
 		try {
 			poolClient = await pool.connect();
-			onError(poolClient);
 			await poolClient.query(
 				"UPDATE threads SET lol_count = $1 WHERE id = $2",
 				[lolCount, threadId],

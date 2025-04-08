@@ -1,5 +1,5 @@
+import type { PoolClient } from "@neondatabase/serverless";
 import { addHours, addSeconds, isBefore } from "date-fns";
-import type { PoolClient } from "pg";
 import type { Socket } from "socket.io";
 import * as v from "valibot";
 import { contentSchemaMap } from "../../common/request/content-schema.js";
@@ -12,7 +12,7 @@ import { makeCcUserAvatar, makeCcUserId, makeCcUserName } from "../mylib/cc.js";
 import { PROD_MODE } from "../mylib/env.js";
 import { logger } from "../mylib/log.js";
 import nonce from "../mylib/nonce.js";
-import { onError, pool } from "../mylib/pool.js";
+import { pool } from "../mylib/pool.js";
 import { isSameSimhash } from "../mylib/simhash.js";
 import { headlineRoom } from "../mylib/socket.js";
 
@@ -77,7 +77,6 @@ export default ({ socket }: { socket: Socket }) => {
 			nonce.update(socket);
 
 			poolClient = await pool.connect();
-			onError(poolClient);
 
 			if (PROD_MODE)
 				coolTimes.set(userId, addSeconds(new Date(), randInt(32, 256)));

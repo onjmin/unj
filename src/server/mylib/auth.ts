@@ -1,3 +1,4 @@
+import type { PoolClient } from "@neondatabase/serverless";
 import {
 	addDays,
 	addSeconds,
@@ -5,12 +6,11 @@ import {
 	isAfter,
 	isBefore,
 } from "date-fns";
-import type { PoolClient } from "pg";
 import type { Socket } from "socket.io";
 import * as v from "valibot";
 import { AuthSchema, isSerial } from "../../common/request/schema.js";
 import { randInt } from "../../common/util.js";
-import { onError, pool } from "../mylib/pool.js";
+import { pool } from "../mylib/pool.js";
 import {
 	decodeLimit,
 	decodeUserId,
@@ -87,7 +87,6 @@ const lazyUpdate = (userId: number, auth: string, ip: string) => {
 		let poolClient: PoolClient | null = null;
 		try {
 			poolClient = await pool.connect();
-			onError(poolClient);
 			await poolClient.query(
 				"UPDATE users SET updated_at = NOW(), ip = $1, auth = $2 WHERE id = $3",
 				[ip, auth, userId],
@@ -144,7 +143,6 @@ const init = async (socket: Socket): Promise<boolean> => {
 	let poolClient: PoolClient | null = null;
 	try {
 		poolClient = await pool.connect();
-		onError(poolClient);
 
 		// 既存ユーザー照合
 		if (token) {

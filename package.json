@@ -58,10 +58,12 @@
 		"typescript": "^5.8.2"
 	},
 	"dependencies": {
+		"@neondatabase/serverless": "^1.0.0",
 		"@sveltejs/vite-plugin-svelte": "^5.0.3",
 		"@types/express": "^5.0.0",
 		"@types/howler": "^2.2.12",
 		"@types/pg": "^8.11.11",
+		"@types/ws": "^8.18.1",
 		"chalk": "^5.4.1",
 		"cross-env": "^7.0.3",
 		"date-fns": "^4.1.0",
@@ -81,7 +83,8 @@
 		"valibot": "1.0.0-rc.2",
 		"vite": "^6.2.0",
 		"winston": "^3.17.0",
-		"winston-daily-rotate-file": "^5.0.0"
+		"winston-daily-rotate-file": "^5.0.0",
+		"ws": "^8.18.1"
 	},
 	"type": "module"
 }

@@ -1,5 +1,5 @@
+import type { PoolClient } from "@neondatabase/serverless";
 import { addMinutes } from "date-fns";
-import type { PoolClient } from "pg";
 import type { Socket } from "socket.io";
 import { randInt } from "../../common/util.js";
 import { coolTimes as makeThreadCoolTimes } from "../api/makeThread.js";
@@ -23,7 +23,7 @@ import {
 } from "../mylib/cache.js";
 import { PROD_MODE } from "../mylib/env.js";
 import { getIP, sliceIPRange } from "../mylib/ip.js";
-import { onError, pool } from "../mylib/pool.js";
+import { pool } from "../mylib/pool.js";
 import { flaky } from "./anti-debug.js";
 
 const delay = 1000 * 60 * 4; // Glitchは5分放置でスリープする
@@ -34,7 +34,6 @@ const lazyUpdate = (userId: number, ninjaScore: number, ip: string) => {
 		let poolClient: PoolClient | null = null;
 		try {
 			poolClient = await pool.connect();
-			onError(poolClient);
 			await poolClient.query(
 				"UPDATE users SET updated_at = NOW(), ip = $1, ninja_score = $2 WHERE id = $3",
 				[ip, ninjaScore, userId],

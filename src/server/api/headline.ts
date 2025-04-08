@@ -1,4 +1,4 @@
-import type { PoolClient } from "pg";
+import type { PoolClient } from "@neondatabase/serverless";
 import type { Server, Socket } from "socket.io";
 import * as v from "valibot";
 import { HeadlineSchema } from "../../common/request/schema.js";
@@ -10,7 +10,7 @@ import {
 } from "../mylib/anti-debug.js";
 import { logger } from "../mylib/log.js";
 import nonce from "../mylib/nonce.js";
-import { onError, pool } from "../mylib/pool.js";
+import { pool } from "../mylib/pool.js";
 import { sizeOf } from "../mylib/socket.js";
 
 const api = "headline";
@@ -41,7 +41,6 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			nonce.update(socket);
 
 			poolClient = await pool.connect();
-			onError(poolClient);
 
 			const query = [
 				"SELECT * FROM threads WHERE deleted_at IS NULL OR deleted_at > CURRENT_TIMESTAMP",
