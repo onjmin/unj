@@ -1,4 +1,3 @@
-import type { PoolClient } from "@neondatabase/serverless";
 import type { Server, Socket } from "socket.io";
 import * as v from "valibot";
 import { likeSchema } from "../../common/request/schema.js";
@@ -19,16 +18,12 @@ const neet: Map<number, NodeJS.Timeout> = new Map();
 const lazyUpdate = (threadId: number, goodCount: number, badCount: number) => {
 	clearTimeout(neet.get(threadId));
 	const id = setTimeout(async () => {
-		let poolClient: PoolClient | null = null;
 		try {
-			poolClient = await pool.connect();
-			await poolClient.query(
+			await pool.query(
 				"UPDATE threads SET good_count = $1, bad_count = $2 WHERE id = $3",
 				[goodCount, badCount, threadId],
 			);
-		} finally {
-			poolClient?.release();
-		}
+		} catch (err) {}
 	}, delay);
 	neet.set(threadId, id);
 };

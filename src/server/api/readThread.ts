@@ -74,20 +74,15 @@ export default ({ socket }: { socket: Socket }) => {
 		}
 
 		// 危険な処理
-		let poolClient: PoolClient | null = null;
 		try {
 			nonce.lock(socket);
 			nonce.update(socket);
-
-			logger.debug("📖 start pool.connect");
-			poolClient = await pool.connect();
-			logger.debug("📖 end pool.connect");
 
 			// キャッシュの登録
 			if (!threadCached.has(threadId)) {
 				threadCached.set(threadId, true);
 				// スレッドの取得
-				const { rows, rowCount } = await poolClient.query(
+				const { rows, rowCount } = await pool.query(
 					"SELECT * FROM threads WHERE id = $1",
 					[threadId],
 				);
@@ -140,7 +135,7 @@ export default ({ socket }: { socket: Socket }) => {
 					threadRecord.age_res_num > 1 &&
 					threadRecord.age_res_num <= threadRecord.res_count
 				) {
-					const { rows, rowCount } = await poolClient.query(
+					const { rows, rowCount } = await pool.query(
 						"SELECT * FROM res WHERE thread_id = $1 AND num = $2",
 						[threadId, threadRecord.age_res_num],
 					);
@@ -188,8 +183,7 @@ export default ({ socket }: { socket: Socket }) => {
 
 			const userId = auth.getUserId(socket);
 			const list: Res[] = [];
-			logger.debug("📖 start poolClient.query");
-			for (const record of (await poolClient.query(query.join(" "))).rows) {
+			for (const record of (await pool.query(query.join(" "))).rows) {
 				const resId = encodeResId(record.id);
 				if (resId === null) return;
 				list.push({
@@ -210,7 +204,6 @@ export default ({ socket }: { socket: Socket }) => {
 					sage: record.sage,
 				});
 			}
-			logger.debug("📖 end poolClient.query");
 
 			const thread: Thread = {
 				yours: (userIdCache.get(threadId) ?? 0) === userId,
@@ -257,7 +250,6 @@ export default ({ socket }: { socket: Socket }) => {
 		} catch (error) {
 			logger.error(error);
 		} finally {
-			poolClient?.release();
 			nonce.unlock(socket);
 		}
 	});

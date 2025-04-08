@@ -19,16 +19,12 @@ const neet: Map<number, NodeJS.Timeout> = new Map();
 const lazyUpdate = (threadId: number, lolCount: number) => {
 	clearTimeout(neet.get(threadId));
 	const id = setTimeout(async () => {
-		let poolClient: PoolClient | null = null;
 		try {
-			poolClient = await pool.connect();
-			await poolClient.query(
-				"UPDATE threads SET lol_count = $1 WHERE id = $2",
-				[lolCount, threadId],
-			);
-		} finally {
-			poolClient?.release();
-		}
+			await pool.query("UPDATE threads SET lol_count = $1 WHERE id = $2", [
+				lolCount,
+				threadId,
+			]);
+		} catch (err) {}
 	}, delay);
 	neet.set(threadId, id);
 };

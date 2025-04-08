@@ -84,16 +84,12 @@ const neet: Map<number, NodeJS.Timeout> = new Map();
 const lazyUpdate = (userId: number, auth: string, ip: string) => {
 	clearTimeout(neet.get(userId));
 	const id = setTimeout(async () => {
-		let poolClient: PoolClient | null = null;
 		try {
-			poolClient = await pool.connect();
-			await poolClient.query(
+			await pool.query(
 				"UPDATE users SET updated_at = NOW(), ip = $1, auth = $2 WHERE id = $3",
 				[ip, auth, userId],
 			);
-		} finally {
-			poolClient?.release();
-		}
+		} catch (err) {}
 	}, delay);
 	neet.set(userId, id);
 };
@@ -140,13 +136,10 @@ const init = async (socket: Socket): Promise<boolean> => {
 	const token = getTokenParam(socket);
 
 	// 危険な処理
-	let poolClient: PoolClient | null = null;
 	try {
-		poolClient = await pool.connect();
-
 		// 既存ユーザー照合
 		if (token) {
-			const { rows, rowCount } = await poolClient.query(
+			const { rows, rowCount } = await pool.query(
 				"SELECT id, ninja_pokemon, ninja_score FROM users WHERE auth = $1",
 				[token],
 			);
@@ -165,7 +158,7 @@ const init = async (socket: Socket): Promise<boolean> => {
 		}
 		// 新規ユーザー発行
 		const ninjaPokemon = randInt(1, 151);
-		const { rows, rowCount } = await poolClient.query(
+		const { rows, rowCount } = await pool.query(
 			"INSERT INTO users (ip, ninja_pokemon) VALUES ($1, $2) RETURNING id",
 			[getIP(socket), ninjaPokemon],
 		);
@@ -182,7 +175,6 @@ const init = async (socket: Socket): Promise<boolean> => {
 			return true;
 		}
 	} catch (error) {
-		poolClient?.release();
 		logger.error(error);
 	}
 	return false;
