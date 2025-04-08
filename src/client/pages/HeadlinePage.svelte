@@ -5,9 +5,7 @@
     import MainPart from "../parts/MainPart.svelte";
     ///////////////
 
-    import Accordion, { Panel, Header } from "@smui-extra/accordion";
-    import DataTable, { Head, Body, Row, Cell } from "@smui/data-table";
-    import IconButton from "@smui/icon-button";
+    import List, { Item, Graphic, Separator, Text } from "@smui/list";
     import Paper, { Title, Content, Subtitle } from "@smui/paper";
     import Snackbar, { Label } from "@smui/snackbar";
     import {
@@ -19,7 +17,7 @@
         differenceInWeeks,
         differenceInYears,
     } from "date-fns";
-    import { navigate } from "svelte-routing";
+    import { Link } from "svelte-routing";
     import type { HeadlineThread } from "../../common/response/schema.js";
     import { genNonce } from "../mylib/anti-debug.js";
     import { makePathname } from "../mylib/env.js";
@@ -45,8 +43,6 @@
             return `${differenceInMinutes(now, date)}分前`;
         return `${differenceInSeconds(now, date)}秒前`;
     };
-
-    let isAlreadyBookmark = $state(false); // TODO
 
     let online = $state(0);
     let pv = $state(0);
@@ -104,9 +100,6 @@
         return () => clearTimeout(id);
     });
 
-    // TODO: 無視設定
-    // TODO: ブックマーク設定
-
     let snackbar: Snackbar;
     $effect(() => () => snackbar.close());
 </script>
@@ -130,83 +123,26 @@
         </Paper>
     {/if}
     <div class="unj-headline-accordion-container">
-        <Accordion>
+        <List class="demo-list" dense>
             {#each threadList ?? [] as thread}
-                <Panel>
-                    <Header>
-                        <div class="time-and-count-container">
-                            <span class="res-time"
-                                >{formatTimeAgo(thread.latestResAt)}</span
-                            >
-                            <span class="res-count">{thread.resCount}レス</span>
-                        </div>
-                        {#snippet description()}
-                            <TwemojiPart seed={thread.id} height="16" />
-                            <span class="thread-title">{thread.title}</span>
-                        {/snippet}
-                        {#snippet icon()}
-                            <IconButton
-                                class="material-icons"
-                                onclick={() =>
-                                    navigate(
-                                        makePathname(
-                                            `/thread/${thread.id}${thread.latestCursor ? `/${thread.latestCursor}/1` : ""}`,
-                                        ),
-                                    )}>read_more</IconButton
-                            >
-                        {/snippet}
-                    </Header>
-                    <Content style="text-align: center;">
-                        <div>
-                            <TwemojiPart seed={thread.id} height="16" /><span
-                                style="padding-left: 5px;">{thread.title}</span
-                            >
-                        </div>
-                        <DataTable
-                            table$aria-label="People list"
-                            style="max-width: 100%;"
+                <Item>
+                    <Graphic
+                        ><TwemojiPart seed={thread.id} height="16" /></Graphic
+                    >
+                    <div class="time-and-count-container">
+                        <span class="res-time"
+                            >{formatTimeAgo(thread.latestResAt)}</span
                         >
-                            <Head>
-                                <Row>
-                                    <Cell>スレ主ID</Cell>
-                                    <Cell>接続</Cell>
-                                    <Cell>勢い</Cell>
-                                    <Cell numeric>草</Cell>
-                                    <Cell numeric>ｲｲ!(・∀・)</Cell>
-                                    <Cell numeric>(・Ａ・)ｲｸﾅｲ!</Cell>
-                                </Row>
-                            </Head>
-                            <Body>
-                                <Row>
-                                    <Cell>{thread.ccUserId}</Cell>
-                                    <Cell numeric>{thread.online}</Cell>
-                                    <Cell numeric>{thread.ikioi}</Cell>
-                                    <Cell numeric>{thread.lolCount}</Cell>
-                                    <Cell numeric>{thread.goodCount}</Cell>
-                                    <Cell numeric>{thread.badCount}</Cell>
-                                </Row>
-                            </Body>
-                        </DataTable>
-                        <span class="thread-detail-ui">
-                            <IconButton
-                                class="material-icons"
-                                onclick={() => {
-                                    isAlreadyBookmark = !isAlreadyBookmark;
-                                    if (isAlreadyBookmark) {
-                                        snackbar.open();
-                                    } else {
-                                        snackbar.close();
-                                    }
-                                }}
-                                >{isAlreadyBookmark
-                                    ? "star"
-                                    : "star_outline"}</IconButton
-                            >
-                        </span>
-                    </Content>
-                </Panel>
+                        <span class="res-count">{thread.resCount}レス</span>
+                    </div>
+                    <Link
+                        to={makePathname(
+                            `/thread/${thread.id}${thread.latestCursor ? `/${thread.latestCursor}/1` : ""}`,
+                        )}>{thread.title}</Link
+                    >
+                </Item>
             {/each}
-        </Accordion>
+        </List>
     </div>
 </MainPart>
 
@@ -222,38 +158,17 @@
     .unj-headline-accordion-container {
         text-align: left;
     }
-
-    /* @smui-extra/accordionのデフォルトのスタイルを改変 */
-    :global(
-            .unj-headline-accordion-container
-                .smui-accordion
-                .smui-accordion__panel
-                > .smui-accordion__header
-                .smui-accordion__header__title.smui-accordion__header__title--with-description
-        ) {
-        max-width: 96px;
-    }
-
     .time-and-count-container {
         display: flex;
         justify-content: space-between;
     }
-
     .res-time {
         opacity: 0.6;
         font-size: 0.6rem;
+        width: 3rem;
     }
-
     .res-count {
         font-size: 0.7rem;
-    }
-
-    .thread-title {
-        font-size: 0.7rem;
-        vertical-align: bottom;
-    }
-
-    .thread-detail-ui {
-        display: inline-block;
+        width: 3rem;
     }
 </style>
