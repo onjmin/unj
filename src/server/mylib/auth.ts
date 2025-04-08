@@ -1,4 +1,3 @@
-import type { PoolClient } from "@neondatabase/serverless";
 import {
 	addDays,
 	addSeconds,

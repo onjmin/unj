@@ -1,4 +1,3 @@
-import type { PoolClient } from "@neondatabase/serverless";
 import type { Socket } from "socket.io";
 import * as v from "valibot";
 import { ReadThreadSchema } from "../../common/request/schema.js";
