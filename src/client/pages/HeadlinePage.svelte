@@ -5,9 +5,8 @@
     import MainPart from "../parts/MainPart.svelte";
     ///////////////
 
-    import List, { Item, Graphic, Separator, Text } from "@smui/list";
+    import List, { Item, Graphic } from "@smui/list";
     import Paper, { Title, Content, Subtitle } from "@smui/paper";
-    import Snackbar, { Label } from "@smui/snackbar";
     import {
         differenceInDays,
         differenceInHours,
@@ -61,6 +60,7 @@
         if (!data.ok) return;
         ok();
         threadList = data.list;
+        localStorage.headlineCache = JSON.stringify(data.list);
     };
 
     const handleMakeThread = (data: { ok: boolean; new: HeadlineThread }) => {
@@ -100,8 +100,13 @@
         return () => clearTimeout(id);
     });
 
-    let snackbar: Snackbar;
-    $effect(() => () => snackbar.close());
+    $effect(() => {
+        const c = localStorage.headlineCache;
+        if (!c) return;
+        try {
+            threadList = JSON.parse(c);
+        } catch (err) {}
+    });
 </script>
 
 <HeaderPart title="ヘッドライン {online}人閲覧中">
@@ -147,12 +152,6 @@
 </MainPart>
 
 <FooterPart />
-
-<!-- ここから固有のUI -->
-
-<Snackbar bind:this={snackbar}>
-    <Label>#後で見る</Label>
-</Snackbar>
 
 <style>
     .unj-headline-accordion-container {
