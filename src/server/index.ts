@@ -134,6 +134,7 @@ let neet: NodeJS.Timeout;
 const lazyCleanUp = () => {
 	clearTimeout(neet);
 	neet = setTimeout(async () => {
+		// ゾンビ接続の掃除
 		for (const [ip, s] of online) {
 			for (const socketId of s) {
 				if (!io.sockets.sockets.has(socketId)) s.delete(socketId);
@@ -170,8 +171,8 @@ io.on("connection", async (socket) => {
 	// 複数タブ検出
 	const s = online.get(ip) ?? new Set();
 	online.set(ip, s);
+	// ゾンビ接続の掃除
 	for (const socketId of s) {
-		// ゾンビIPの掃除
 		if (!io.sockets.sockets.has(socketId)) s.delete(socketId);
 	}
 	if (s.size >= multipleConnectionsLimit) {
