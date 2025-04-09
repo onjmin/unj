@@ -156,10 +156,6 @@ io.on("connection", async (socket) => {
 	// 複数タブ検出
 	const s = online.get(ip) ?? new Set();
 	online.set(ip, s);
-	// ゾンビ接続の掃除
-	for (const socketId of s) {
-		if (!io.sockets.sockets.has(socketId)) s.delete(socketId);
-	}
 	if (s.size >= multipleConnectionsLimit) {
 		auth.kick(socket, "multipleConnectionsLimit");
 		socket.disconnect();
