@@ -178,7 +178,7 @@
     </LayoutGrid>
 </MainPart>
 
-<FooterPart />
+<FooterPart menu={false} />
 
 <!-- ここから固有のUI -->
 

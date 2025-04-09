@@ -23,6 +23,7 @@
 		"@biomejs/biome": "1.9.4",
 		"@smui-extra/accordion": "8.0.0-beta.3",
 		"@smui-extra/autocomplete": "8.0.0-beta.3",
+		"@smui-extra/bottom-app-bar": "8.0.0-beta.3",
 		"@smui/banner": "8.0.0-beta.3",
 		"@smui/button": "8.0.0-beta.3",
 		"@smui/card": "8.0.0-beta.3",

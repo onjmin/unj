@@ -42,6 +42,7 @@
         newResSoundHowl,
         replyResSoundHowl,
     } from "../mylib/sound.js";
+    import { openRight } from "../mylib/store.js";
     import { UnjStorage, rpgMode } from "../mylib/unj-storage.js";
     import {
         latestReadThreadId,
@@ -66,11 +67,10 @@
     let { threadId = "", cursor = "", desc = false } = $props();
 
     let openConfirm = $state(false);
-    let openRight = $state(false);
     let textarea: HTMLTextAreaElement | null = $state(null);
     const focus = () => {
         textarea?.focus();
-        openRight = true;
+        openRight.set(true);
     };
 
     let userName = $state("");
@@ -494,7 +494,7 @@
     {/if}
 {/snippet}
 
-<HeaderPart {title} bind:bookmark bind:openRight>
+<HeaderPart {title} bind:bookmark>
     <AccessCounterPart {online} {pv} />
     <p>レス書き込み欄</p>
     <div>{@render form()}</div>

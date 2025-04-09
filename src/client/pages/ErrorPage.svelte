@@ -49,7 +49,7 @@
     </div>
 </MainPart>
 
-<FooterPart />
+<FooterPart menu={false} />
 
 <style>
     .iframe-container {

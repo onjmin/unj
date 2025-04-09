@@ -114,4 +114,4 @@
                 </pre>
 </MainPart>
 
-<FooterPart />
+<FooterPart menu={false} />

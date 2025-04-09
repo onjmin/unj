@@ -4,6 +4,12 @@
   import TopAppBar, { Title, Row, Section } from "@smui/top-app-bar";
   import { DEV_MODE, STG_MODE, pathname } from "../mylib/env.js";
   import {
+    isEnabledRightMenu,
+    isMobile,
+    openLeft,
+    openRight,
+  } from "../mylib/store.js";
+  import {
     showContactGuide,
     showTermsGuide,
     showThreadGuide,
@@ -16,7 +22,6 @@
     title = "",
     menu = true,
     bookmark = $bindable(null),
-    openRight = $bindable(false),
   } = $props();
 
   if (DEV_MODE) {
@@ -27,17 +32,14 @@
   }
 
   const calcIsMobile = () => window.innerWidth < 768;
-
-  const isEnabledRightMenu = children !== null;
-  let openLeft = $state(false);
-  let isMobile = $state(false);
+  isEnabledRightMenu.set(children !== null);
 
   $effect(() => {
     // ソフトウェアキーボードが出現すると画面幅が変わるため、最初の1回だけ実行する
-    isMobile = calcIsMobile();
-    const isPC = !isMobile;
-    openLeft = isPC;
-    openRight = isPC;
+    isMobile.set(calcIsMobile());
+    const isPC = !$isMobile;
+    openLeft.set(isPC);
+    openRight.set(isPC);
   });
 
   let snackbar: Snackbar;
@@ -77,10 +79,10 @@
           <IconButton
             class="material-icons"
             onclick={() => {
-              if (isMobile) {
-                openRight = false;
+              if ($isMobile) {
+                openRight.set(false);
               }
-              openLeft = !openLeft;
+              openLeft.update((v) => !v);
             }}>menu</IconButton
           >
         </Section>
@@ -109,18 +111,15 @@
             }}>{bookmark ? "star" : "star_outline"}</IconButton
           >
         </Section>
-        <Section
-          align="end"
-          toolbar
-          style="visibility:{isEnabledRightMenu ? 'visible' : 'hidden'};"
-        >
+        <Section align="end" toolbar>
           <IconButton
             class="material-icons"
+            style="visibility:{$isEnabledRightMenu ? 'visible' : 'hidden'};"
             onclick={() => {
-              if (isMobile) {
-                openLeft = false;
+              if ($isMobile) {
+                openLeft.set(false);
               }
-              openRight = !openRight;
+              openRight.update((v) => !v);
             }}>menu</IconButton
           >
         </Section>
@@ -130,26 +129,26 @@
 </header>
 
 {#if menu}
-  <LeftMenuPart open={openLeft} />
+  <LeftMenuPart open={$openLeft} />
   {#if children !== null}
-    <RightMenuPart open={openRight && isEnabledRightMenu}>
+    <RightMenuPart open={$openRight && $isEnabledRightMenu}>
       {@render children?.()}
     </RightMenuPart>
   {/if}
   <button
     type="button"
-    class="unj-main-part-overlay {isMobile && (openLeft || openRight)
+    class="unj-main-part-overlay {$isMobile && ($openLeft || $openRight)
       ? ''
       : 'hidden'}"
     onclick={() => {
-      openLeft = false;
-      openRight = false;
+      openLeft.set(false);
+      openRight.set(false);
     }}>うんｊ</button
   >
   {#each guides as guide}
     <button
       type="button"
-      class="guide unj-main-part-overlay {isMobile &&
+      class="guide unj-main-part-overlay {$isMobile &&
       !done &&
       !guide.done.value &&
       pathname().startsWith(guide.path)

@@ -77,4 +77,4 @@
   </LayoutGrid>
 </MainPart>
 
-<FooterPart />
+<FooterPart menu={false} />

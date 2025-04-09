@@ -37,4 +37,4 @@
     <p>これ、なんだったの？</p>
 </MainPart>
 
-<FooterPart />
+<FooterPart menu={false} />
