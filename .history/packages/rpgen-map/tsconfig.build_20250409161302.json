@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./",
+    "declarationMap": true,
+    "inlineSourceMap": true,
+    "noEmit": false,
+    "outDir": "./dist"
+  },
+  "exclude": [
+    "src/**/*.test.ts"
+  ],
+  "extends": "./tsconfig.json",
+  "include": [
+    "src/**/*.ts"
+  ]
+}

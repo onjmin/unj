@@ -4,7 +4,6 @@ import path from "node:path";
 import { format } from "date-fns";
 import { ja } from "date-fns/locale";
 import { PROD_MODE, ROOT_PATH } from "./env.js";
-import { toZonedTime } from "date-fns-tz";
 
 export const levels = [
 	"error",
@@ -31,7 +30,7 @@ export const logger = winston.createLogger({
 	format: winston.format.combine(
 		winston.format.errors({ stack: true }),
 		winston.format.printf((info) => {
-			const zonedDate =  toZonedTime(new Date(), "Asia/Tokyo");
+		const zonedDate =  toZonedTime(new Date(), 'Asia/Tokyo');
 			const time = format(zonedDate, "HH:mm:ss.SSS", { locale: ja });
 			const level = info.level.toUpperCase();
 			const message = info.stack || info.message;

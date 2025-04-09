@@ -1,0 +1,33 @@
+{
+    "$schema": "https://turbo.build/schema.json",
+    "tasks": {
+        "dev": {
+            "dependsOn": [
+                "start"
+            ]
+        },
+        "prod": {
+            "dependsOn": [
+                "start"
+            ]
+        },
+        "rpgen-map#build": {
+            "outputs": [
+                "dist/**"
+            ]
+        },
+        "start": {
+            "dependsOn": [
+                "rpgen-map#build"
+            ],
+            "persistent": true
+        },
+        "stg": {
+            "dependsOn": [
+                "start"
+            ]
+        },
+        "sync": {}
+    },
+    "ui": "tui"
+}

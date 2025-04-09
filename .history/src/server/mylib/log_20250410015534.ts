@@ -31,7 +31,7 @@ export const logger = winston.createLogger({
 	format: winston.format.combine(
 		winston.format.errors({ stack: true }),
 		winston.format.printf((info) => {
-			const zonedDate =  toZonedTime(new Date(), "Asia/Tokyo");
+			const zonedDate =  toZonedTime(new Date(), "America/New_York");
 			const time = format(zonedDate, "HH:mm:ss.SSS", { locale: ja });
 			const level = info.level.toUpperCase();
 			const message = info.stack || info.message;
