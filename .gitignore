@@ -3,6 +3,9 @@
 blacklist/id.txt
 blacklist/ip.txt
 
+# Local History
+.history
+
 # Logs
 logs
 *.log

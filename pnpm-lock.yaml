@@ -39,6 +39,9 @@ importers:
       date-fns:
         specifier: ^4.1.0
         version: 4.1.0
+      date-fns-tz:
+        specifier: 3.0.1-beta.0
+        version: 3.0.1-beta.0(date-fns@4.1.0)
       date-picker-svelte:
         specifier: ^2.15.1
         version: 2.15.1(svelte@5.20.5)
@@ -1217,6 +1220,11 @@ packages:
   crypt@0.0.2:
     resolution: {integrity: sha512-mCxBlsHFYh9C+HVpiEacem8FEBnMXgU9gy4zmNC+SXAZNB/1idgp/aulFJ4FgCi7GPEVbfyng092GqL2k2rmow==}
 
+  date-fns-tz@3.0.1-beta.0:
+    resolution: {integrity: sha512-6Ek91iK2jkYSYhGYdkqir8pDr5OGd/Yc5g4qjASzNq3/iZTKsyOOR/XePAFK7Ye6iC6/0q5KqEc0uLgHVGZ9uw==}
+    peerDependencies:
+      date-fns: ^3.0.0
+
   date-fns@4.1.0:
     resolution: {integrity: sha512-Ukq0owbQXxa/U3EGtsdVBkR1w7KOQ5gIBqdH2hkvknzZPYvBxb/aa6E8L7tmjFtkwZBu3UXBbjIgPo/Ez4xaNg==}
 
@@ -1588,6 +1596,9 @@ packages:
 
   locate-character@3.0.0:
     resolution: {integrity: sha512-SW13ws7BjaeJ6p7Q6CO2nchbYEc3X3J6WrmTTDto7yMPqVSZTUyY5Tjbid+Ab8gLnATtygYtiDIJGQRRn2ZOiA==}
+
+  lodash.clonedeep@4.5.0:
+    resolution: {integrity: sha512-H5ZhCF25riFd9uB5UCkVKo61m3S/xZk1x4wA6yp/L3RFP6Z/eHH1ymQcGLo7J3GMPfm0V/7m1tryHuGVxpqEBQ==}
 
   logform@2.7.0:
     resolution: {integrity: sha512-TFYA4jnP7PVbmlBIfhlSe+WKxs9dklXMTEGcBCIvLhE/Tn3H6Gk1norupVW7m5Cnd4bLcr08AytbyV/xj7f/kQ==}
@@ -3686,6 +3697,11 @@ snapshots:
 
   crypt@0.0.2: {}
 
+  date-fns-tz@3.0.1-beta.0(date-fns@4.1.0):
+    dependencies:
+      date-fns: 4.1.0
+      lodash.clonedeep: 4.5.0
+
   date-fns@4.1.0: {}
 
   date-picker-svelte@2.15.1(svelte@5.20.5):
@@ -4104,6 +4120,8 @@ snapshots:
   libphonenumber-js@1.12.4: {}
 
   locate-character@3.0.0: {}
+
+  lodash.clonedeep@4.5.0: {}
 
   logform@2.7.0:
     dependencies:
