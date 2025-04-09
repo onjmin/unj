@@ -70,7 +70,7 @@
 1. [pnpmをインストール](https://pnpm.io/ja/installation)
 1. このREADME.mdがある階層をvscodeで開く
 1. 拡張機能タブから推奨事項をインストールする
-1. `.env.example`を複製して`.env`にリネーム
+1. `packages/unj`内の`.env.example`を複製して`.env`にリネーム
 1. このREADME.mdがある階層で`pnpm i`
 1. よく使うコマンド
   - `pnpm run dev`: 開発ビルド（バックエンドはtsxで直接実行される）

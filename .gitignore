@@ -3,6 +3,12 @@
 blacklist/id.txt
 blacklist/ip.txt
 
+# Local History
+.history
+
+# Turborepo
+.turbo
+
 # Logs
 logs
 *.log
