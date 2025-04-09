@@ -127,8 +127,8 @@
             <Content>ページ更新してみてね。</Content>
         </Paper>
     {/if}
-    <div class="unj-headline-accordion-container">
-        <List class="demo-list" dense>
+    <div class="unj-headline-container">
+        <List class="demo-list" dense nonInteractive>
             {#each threadList ?? [] as thread}
                 <Item>
                     <Graphic
@@ -140,11 +140,13 @@
                         >
                         <span class="res-count">{thread.resCount}レス</span>
                     </div>
-                    <Link
-                        to={makePathname(
-                            `/thread/${thread.id}${thread.latestCursor ? `/${thread.latestCursor}/1` : ""}`,
-                        )}>{thread.title}</Link
-                    >
+                    <div class="thread-title">
+                        <Link
+                            to={makePathname(
+                                `/thread/${thread.id}${thread.latestCursor ? `/${thread.latestCursor}/1` : ""}`,
+                            )}>{thread.title}</Link
+                        >
+                    </div>
                 </Item>
             {/each}
         </List>
@@ -154,7 +156,7 @@
 <FooterPart />
 
 <style>
-    .unj-headline-accordion-container {
+    .unj-headline-container {
         text-align: left;
     }
     .time-and-count-container {
@@ -163,11 +165,14 @@
     }
     .res-time {
         opacity: 0.6;
-        font-size: 0.6rem;
+        font-size: 0.7rem;
         width: 3rem;
     }
     .res-count {
-        font-size: 0.7rem;
+        font-size: 0.8rem;
         width: 3rem;
+    }
+    .thread-title {
+        font-size: 1rem;
     }
 </style>
