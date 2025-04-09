@@ -44,7 +44,7 @@
                         onclick={() => navigate(makePathname("/new"))}
                         >edit_note</IconButton
                     >
-                    <div class="label-overlay">スレ立て</div>
+                    <div class="label-overlay">新規</div>
                 </div>
                 <div class="icon-container">
                     <IconButton
@@ -53,7 +53,7 @@
                         onclick={() => navigate(makePathname("/headline"))}
                         >article</IconButton
                     >
-                    <div class="label-overlay">ヘッドライン</div>
+                    <div class="label-overlay">一覧</div>
                 </div>
                 <div class="icon-container">
                     <IconButton
@@ -62,7 +62,7 @@
                         onclick={() => navigate(makePathname("/config"))}
                         >settings</IconButton
                     >
-                    <div class="label-overlay">個人設定</div>
+                    <div class="label-overlay">設定</div>
                 </div>
                 <div class="icon-container">
                     <IconButton
@@ -71,7 +71,7 @@
                         onclick={() => navigate(makePathname("/contact"))}
                         >help</IconButton
                     >
-                    <div class="label-overlay">お問い合わせ</div>
+                    <div class="label-overlay">FAQ</div>
                 </div>
             </Section>
             <Section align="end" toolbar>
@@ -100,7 +100,6 @@
     .icon-container {
         position: relative;
         display: inline-block;
-        padding: 0 8px;
     }
     .label-overlay {
         position: absolute;
