@@ -6,8 +6,14 @@
   let { children, open = false } = $props();
 </script>
 
+{#snippet margin()}
+  <div style="visibility:hidden;">
+    <TopAppBar variant="static"><Row /></TopAppBar>
+  </div>
+{/snippet}
+
 <Card class="drawer-container-right {open ? '' : 'hidden'}">
-  <TopAppBar variant="static"><Row /></TopAppBar>
+  {@render margin()}
   <Header>
     <Title class="right-menu-title">サブメニュー</Title>
     <Subtitle class="right-menu-subtitle">固有のUIです。</Subtitle>
@@ -15,6 +21,7 @@
   <div class="content">
     {@render children?.()}
   </div>
+  {@render margin()}
 </Card>
 
 <style>

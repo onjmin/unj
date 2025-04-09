@@ -14,9 +14,15 @@
     let { open = false } = $props();
 </script>
 
+{#snippet margin()}
+    <div style="visibility:hidden;">
+        <TopAppBar variant="static"><Row /></TopAppBar>
+    </div>
+{/snippet}
+
 <div class="drawer-container-left">
     <Drawer variant="modal" fixed bind:open>
-        <TopAppBar variant="static"><Row /></TopAppBar>
+        {@render margin()}
         <Header>
             <Title>メインメニュー</Title>
             <Subtitle>うんｊのサイトマップです。</Subtitle>
@@ -118,6 +124,7 @@
                 </Item>
             </List>
         </Content>
+        {@render margin()}
     </Drawer>
 </div>
 
