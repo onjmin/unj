@@ -50,12 +50,12 @@
     {
       done: showThreadGuide,
       path: "/thread",
-      text: "レスは右上の三本線から！",
+      text: "レスは右下の三本線から！",
     },
     {
       done: showTermsGuide,
       path: "/terms",
-      text: "よくある質問は右上の三本線を参照",
+      text: "よくある質問は右下の三本線を参照",
     },
     {
       done: showContactGuide,
