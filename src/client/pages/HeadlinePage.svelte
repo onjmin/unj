@@ -5,7 +5,7 @@
     import MainPart from "../parts/MainPart.svelte";
     ///////////////
 
-    import List, { Item, Graphic } from "@smui/list";
+    import List, { Item, Graphic, Separator } from "@smui/list";
     import Paper, { Title, Content, Subtitle } from "@smui/paper";
     import {
         differenceInDays,
@@ -129,7 +129,7 @@
     {/if}
     <div class="unj-headline-container">
         <List class="demo-list" dense nonInteractive>
-            {#each threadList ?? [] as thread}
+            {#each threadList ?? [] as thread, i}
                 <Item>
                     <Graphic
                         ><TwemojiPart seed={thread.id} height="16" /></Graphic
@@ -148,6 +148,9 @@
                         >
                     </div>
                 </Item>
+                {#if i % 4 === 3 && i !== (threadList ?? []).length - 1}
+                    <Separator />
+                {/if}
             {/each}
         </List>
     </div>

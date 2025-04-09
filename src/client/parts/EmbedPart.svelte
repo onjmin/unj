@@ -114,7 +114,15 @@
 {#if siteInfo}
   {#if !embedding}
     <List twoLine
-      ><Item>
+      ><Item
+        onclick={() => {
+          if (temp === unjGames) {
+            window.open(contentUrl, "_blank");
+          } else {
+            tryEmbed(siteInfo);
+          }
+        }}
+      >
         <Graphic
           class="embed-favicon-item-graphic {siteInfo.id === 3202
             ? 'nicovideo'
@@ -126,15 +134,9 @@
           <SecondaryText>{siteInfo.description}</SecondaryText>
         </Text>
         {#if temp === unjGames}
-          <IconButton
-            class="material-icons"
-            onclick={() => window.open(contentUrl, "_blank")}
-            >open_in_new</IconButton
-          >
+          <IconButton class="material-icons">open_in_new</IconButton>
         {:else}
-          <IconButton class="material-icons" onclick={() => tryEmbed(siteInfo)}
-            >touch_app</IconButton
-          >
+          <IconButton class="material-icons">touch_app</IconButton>
         {/if}
       </Item>
     </List>
