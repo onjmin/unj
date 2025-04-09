@@ -129,21 +129,6 @@ const online: Online = new Map();
 let accessCount = 0;
 const accessCounter = () => accessCount;
 
-const delay = 1000 * 60 * 4; // Glitchは5分放置でスリープする
-let neet: NodeJS.Timeout;
-const lazyCleanUp = () => {
-	clearTimeout(neet);
-	neet = setTimeout(async () => {
-		// ゾンビ接続の掃除
-		for (const [ip, s] of online) {
-			for (const socketId of s) {
-				if (!io.sockets.sockets.has(socketId)) s.delete(socketId);
-			}
-			if (s.size === 0) online.delete(ip);
-		}
-	}, delay);
-};
-
 const verifyIP = (socket: Socket, ip: string) => {
 	if (isBannedIP(ip)) {
 		logger.http(`❌ ${ip}`);
@@ -181,9 +166,9 @@ io.on("connection", async (socket) => {
 		return;
 	}
 	s.add(socket.id);
-	lazyCleanUp(); // disconnectが発火しない対策
 	socket.on("disconnect", () => {
 		s.delete(socket.id);
+		if (s.size === 0) online.delete(ip);
 	});
 
 	setIP(socket, ip);
