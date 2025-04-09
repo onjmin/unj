@@ -2,6 +2,7 @@ import * as winston from "winston";
 import "winston-daily-rotate-file";
 import path from "node:path";
 import { format } from "date-fns";
+import { ja } from "date-fns/locale";
 import { PROD_MODE, ROOT_PATH } from "./env.js";
 
 export const levels = [
@@ -29,7 +30,7 @@ export const logger = winston.createLogger({
 	format: winston.format.combine(
 		winston.format.errors({ stack: true }),
 		winston.format.printf((info) => {
-			const time = format(new Date(), "HH:mm:ss.SSS");
+			const time = format(new Date(), "HH:mm:ss.SSS", { locale: ja });
 			const level = info.level.toUpperCase();
 			const message = info.stack || info.message;
 			return JSON.stringify([time, level, message]);
