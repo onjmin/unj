@@ -95,6 +95,7 @@
 <style>
     .unj-footer-part {
         z-index: 64;
+        overflow: hidden;
     }
     .icon-container {
         position: relative;
@@ -103,9 +104,9 @@
     }
     .label-overlay {
         position: absolute;
-        bottom: -16px;
+        bottom: 0;
+        transform: translateX(-50%) translateY(100%);
         left: 50%;
-        transform: translateX(-50%);
         font-size: 10px;
         padding: 2px 4px;
         border-radius: 4px;
