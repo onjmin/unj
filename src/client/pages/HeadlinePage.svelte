@@ -27,20 +27,20 @@
 
     const formatTimeAgo = (date: Date): string => {
         const now = new Date();
-        if (date > now) return "0秒前";
+        if (date > now) return "0秒";
         if (differenceInYears(now, date) > 0)
-            return `${differenceInYears(now, date)}年前`;
+            return `${differenceInYears(now, date)}年`;
         if (differenceInMonths(now, date) > 0)
-            return `${differenceInMonths(now, date)}か月前`;
+            return `${differenceInMonths(now, date)}か月`;
         if (differenceInWeeks(now, date) > 0)
-            return `${differenceInWeeks(now, date)}週間前`;
+            return `${differenceInWeeks(now, date)}週間`;
         if (differenceInDays(now, date) > 0)
-            return `${differenceInDays(now, date)}日前`;
+            return `${differenceInDays(now, date)}日`;
         if (differenceInHours(now, date) > 0)
-            return `${differenceInHours(now, date)}時間前`;
+            return `${differenceInHours(now, date)}時間`;
         if (differenceInMinutes(now, date) > 0)
-            return `${differenceInMinutes(now, date)}分前`;
-        return `${differenceInSeconds(now, date)}秒前`;
+            return `${differenceInMinutes(now, date)}分`;
+        return `${differenceInSeconds(now, date)}秒`;
     };
 
     let online = $state(0);
