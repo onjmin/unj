@@ -1,5 +1,6 @@
 <script lang="ts">
-    import Drawer, { Content, Header, Title, Subtitle } from "@smui/drawer";
+    import Card from "@smui/card";
+    import { Header, Subtitle, Title } from "@smui/drawer";
     import List, {
         Item,
         Text,
@@ -20,123 +21,147 @@
     </div>
 {/snippet}
 
-<div class="drawer-container-left">
-    <Drawer variant="modal" fixed bind:open>
-        {@render margin()}
-        <Header>
-            <Title>メインメニュー</Title>
-            <Subtitle>うんｊのサイトマップです。</Subtitle>
-        </Header>
-        <Content>
-            <List>
-                <Item
-                    onclick={() => navigate(makePathname("/new"))}
-                    activated={pathname().startsWith("/new")}
+<Card class="drawer-container-left {open ? '' : 'hidden'}">
+    {@render margin()}
+    <Header>
+        <Title class="left-menu-title">メインメニュー</Title>
+        <Subtitle class="left-menu-subtitle"
+            >うんｊのサイトマップです。</Subtitle
+        >
+    </Header>
+    <div class="content">
+        <List>
+            <Item
+                onclick={() => navigate(makePathname("/new"))}
+                activated={pathname().startsWith("/new")}
+            >
+                <Graphic class="material-icons" aria-hidden="true"
+                    >edit_note</Graphic
                 >
-                    <Graphic class="material-icons" aria-hidden="true"
-                        >edit_note</Graphic
-                    >
-                    <Text>スレ立て</Text>
-                </Item>
-                <Item
-                    onclick={() => navigate(makePathname("/headline"))}
-                    activated={pathname().startsWith("/headline")}
+                <Text>スレ立て</Text>
+            </Item>
+            <Item
+                onclick={() => navigate(makePathname("/headline"))}
+                activated={pathname().startsWith("/headline")}
+            >
+                <Graphic class="material-icons" aria-hidden="true"
+                    >article</Graphic
                 >
-                    <Graphic class="material-icons" aria-hidden="true"
-                        >article</Graphic
-                    >
-                    <Text>ヘッドライン</Text>
-                </Item>
-                <Item
-                    onclick={() => navigate(makePathname("/history"))}
-                    activated={pathname().startsWith("/history")}
+                <Text>ヘッドライン</Text>
+            </Item>
+            <Item
+                onclick={() => navigate(makePathname("/history"))}
+                activated={pathname().startsWith("/history")}
+            >
+                <Graphic class="material-icons" aria-hidden="true"
+                    >history</Graphic
                 >
-                    <Graphic class="material-icons" aria-hidden="true"
-                        >history</Graphic
-                    >
-                    <Text>閲覧履歴</Text>
-                </Item>
-                <Item
-                    onclick={() => navigate(makePathname("/bookmark"))}
-                    activated={pathname().startsWith("/bookmark")}
+                <Text>閲覧履歴</Text>
+            </Item>
+            <Item
+                onclick={() => navigate(makePathname("/bookmark"))}
+                activated={pathname().startsWith("/bookmark")}
+            >
+                <Graphic class="material-icons" aria-hidden="true">star</Graphic
                 >
-                    <Graphic class="material-icons" aria-hidden="true"
-                        >star</Graphic
-                    >
-                    <Text>#後で見る</Text>
-                </Item>
-                <Item
-                    onclick={() => navigate(makePathname("/config"))}
-                    activated={pathname().startsWith("/config")}
+                <Text>#後で見る</Text>
+            </Item>
+            <Item
+                onclick={() => navigate(makePathname("/config"))}
+                activated={pathname().startsWith("/config")}
+            >
+                <Graphic class="material-icons" aria-hidden="true"
+                    >settings</Graphic
                 >
-                    <Graphic class="material-icons" aria-hidden="true"
-                        >settings</Graphic
-                    >
-                    <Text>個人設定</Text>
-                </Item>
+                <Text>個人設定</Text>
+            </Item>
 
-                <Separator />
-                <Subheader tag="h6">サイト情報</Subheader>
-                <Item
-                    onclick={() => navigate(makePathname("/terms"))}
-                    activated={pathname().startsWith("/terms")}
+            <Separator />
+            <Subheader tag="h6">サイト情報</Subheader>
+            <Item
+                onclick={() => navigate(makePathname("/terms"))}
+                activated={pathname().startsWith("/terms")}
+            >
+                <Graphic class="material-icons" aria-hidden="true"
+                    >gavel</Graphic
                 >
-                    <Graphic class="material-icons" aria-hidden="true"
-                        >gavel</Graphic
-                    >
-                    <Text>利用規約</Text>
-                </Item>
-                <Item
-                    onclick={() => navigate(makePathname("/contact"))}
-                    activated={pathname().startsWith("/contact")}
+                <Text>利用規約</Text>
+            </Item>
+            <Item
+                onclick={() => navigate(makePathname("/contact"))}
+                activated={pathname().startsWith("/contact")}
+            >
+                <Graphic class="material-icons" aria-hidden="true">help</Graphic
                 >
-                    <Graphic class="material-icons" aria-hidden="true"
-                        >help</Graphic
-                    >
-                    <Text>お問い合わせ</Text>
-                </Item>
-                <Item
-                    onclick={() => navigate(makePathname("/update"))}
-                    activated={pathname().startsWith("/update")}
+                <Text>お問い合わせ</Text>
+            </Item>
+            <Item
+                onclick={() => navigate(makePathname("/update"))}
+                activated={pathname().startsWith("/update")}
+            >
+                <Graphic class="material-icons" aria-hidden="true"
+                    >new_releases</Graphic
                 >
-                    <Graphic class="material-icons" aria-hidden="true"
-                        >new_releases</Graphic
-                    >
-                    <Text>新機能のお知らせ</Text>
-                </Item>
-                <Item
-                    onclick={() => navigate(makePathname("/art"))}
-                    activated={pathname().startsWith("/art")}
+                <Text>新機能のお知らせ</Text>
+            </Item>
+            <Item
+                onclick={() => navigate(makePathname("/art"))}
+                activated={pathname().startsWith("/art")}
+            >
+                <Graphic class="material-icons" aria-hidden="true"
+                    >view_carousel</Graphic
                 >
-                    <Graphic class="material-icons" aria-hidden="true"
-                        >view_carousel</Graphic
-                    >
-                    <Text>TOP絵集</Text>
-                </Item>
-                <Item
-                    onclick={() => navigate(makePathname("/links"))}
-                    activated={pathname().startsWith("/links")}
+                <Text>TOP絵集</Text>
+            </Item>
+            <Item
+                onclick={() => navigate(makePathname("/links"))}
+                activated={pathname().startsWith("/links")}
+            >
+                <Graphic class="material-icons" aria-hidden="true">link</Graphic
                 >
-                    <Graphic class="material-icons" aria-hidden="true"
-                        >link</Graphic
-                    >
-                    <Text>リンク集</Text>
-                </Item>
-            </List>
-        </Content>
-        {@render margin()}
-    </Drawer>
-</div>
+                <Text>リンク集</Text>
+            </Item>
+        </List>
+    </div>
+    {@render margin()}
+</Card>
 
 <style>
-    .drawer-container-left {
+    :global(.drawer-container-left) {
+        left: 0;
         opacity: 0.92;
         position: fixed;
         z-index: 16;
         top: 0;
         bottom: 0;
         overflow-y: auto;
+        transition: transform 0.3s ease;
+        max-width: 100svw;
+        width: 256px;
+        transform: translateX(0);
+        border: 1px solid
+            var(--mdc-theme-text-hint-on-background, rgba(255, 255, 255, 0.1));
+        box-shadow:
+            -0px 8px 10px -5px rgba(0, 0, 0, 0.2),
+            -0px 16px 24px 2px rgba(0, 0, 0, 0.14),
+            -0px 6px 30px 5px rgba(0, 0, 0, 0.12);
+    }
+    :global(body.dark .drawer-container-left) {
         border: 1px solid
             var(--mdc-theme-text-hint-on-background, rgba(0, 0, 0, 0.1));
+    }
+    :global(.drawer-container-left.hidden) {
+        transform: translateX(calc(-100% - 32px));
+    }
+    :global(.left-menu-title) {
+        opacity: 0.87;
+        font-size: var(--mdc-typography-headline6-font-size, 1.25rem);
+    }
+    :global(.left-menu-subtitle) {
+        opacity: 0.6;
+        font-size: var(--mdc-typography-body2-font-size, 0.875rem);
+    }
+    .content {
+        padding: 0 8px;
     }
 </style>
