@@ -81,11 +81,11 @@
     } catch (err) {}
     if (!url) return;
     let _contentType = 0;
-    if (!!findIn(unjGames, url.hostname)) _contentType = 4;
-    else if (!!findIn(image, url.hostname)) _contentType = 8;
-    else if (!!findIn(gif, url.hostname)) _contentType = 16;
-    else if (!!findIn(video, url.hostname)) _contentType = 32;
-    else if (!!findIn(audio, url.hostname)) _contentType = 64;
+    if (!!findIn(image, url.hostname)) _contentType = 4;
+    else if (!!findIn(gif, url.hostname)) _contentType = 8;
+    else if (!!findIn(video, url.hostname)) _contentType = 16;
+    else if (!!findIn(audio, url.hostname)) _contentType = 32;
+    else if (!!findIn(unjGames, url.hostname)) _contentType = 64;
     else _contentType = 2;
     if ((_contentType & contentTypesBitmask) !== 0) {
       contentType = _contentType;
