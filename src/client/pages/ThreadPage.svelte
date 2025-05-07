@@ -388,6 +388,7 @@
         // }
         if (emitting) return;
         emitting = true;
+        if (!contentUrl) contentType = 1;
         const data = {
             nonce: genNonce(nonceKey.value ?? ""),
             threadId,
