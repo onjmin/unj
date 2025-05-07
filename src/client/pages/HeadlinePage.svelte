@@ -57,11 +57,14 @@
     };
 
     let threadList: HeadlineThread[] | null = $state(null);
+    const cache = headlineCache.json;
+    if (cache) threadList = cache as HeadlineThread[];
+
     const handleHeadline = (data: { ok: boolean; list: HeadlineThread[] }) => {
         if (!data.ok) return;
         ok();
         threadList = data.list;
-        headlineCache.json = threadList;
+        headlineCache.json = data.list;
     };
 
     const handleMakeThread = (data: { ok: boolean; new: HeadlineThread }) => {
@@ -99,13 +102,6 @@
             laaaaaaaag = true;
         }, 4096);
         return () => clearTimeout(id);
-    });
-
-    $effect(() => {
-        const cache = headlineCache.json;
-        if (cache) {
-            threadList = cache as HeadlineThread[];
-        }
     });
 </script>
 

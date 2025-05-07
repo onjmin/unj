@@ -152,6 +152,14 @@
     };
 
     let thread: Thread | null = $state(null);
+
+    const delimiter = "###";
+    const threadCache = new UnjsonStorage(
+        ["threadCache", threadId].join(delimiter),
+    );
+    const cache = threadCache.json;
+    if (cache) thread = cache as Thread;
+
     let topCursor = $state("");
     let bottomCursor = $state("");
     let title = $state("スレ読み込み中");
@@ -167,10 +175,11 @@
         if (!data.ok) return;
         ok();
         thread = data.thread;
-        threadCache.json = thread;
+        threadCache.json = data.thread;
         loadThread();
     };
 
+    setTimeout(() => loadThread());
     const loadThread = async () => {
         if (!thread) return;
         if (thread.resList.length) {
@@ -384,18 +393,6 @@
             laaaaaaaag = true;
         }, 4096);
         return () => clearTimeout(id);
-    });
-
-    const delimiter = "###";
-    const threadCache = new UnjsonStorage(
-        ["threadCache", threadId].join(delimiter),
-    );
-    $effect(() => {
-        const cache = threadCache.json;
-        if (cache) {
-            thread = cache as Thread;
-            loadThread();
-        }
     });
 
     let emitting = $state(false);
