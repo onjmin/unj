@@ -50,6 +50,7 @@
         sAnimsId,
         termsAgreement,
     } from "../mylib/unj-storage.js";
+    import { UnjsonStorage } from "../mylib/unjson-storage.js";
     import AccessCounterPart from "../parts/AccessCounterPart.svelte";
     import BackgroundEmbedPart from "../parts/BackgroundEmbedPart.svelte";
     import BalsPart from "../parts/BalsPart.svelte";
@@ -166,6 +167,12 @@
         if (!data.ok) return;
         ok();
         thread = data.thread;
+        threadCache.json = thread;
+        loadThread();
+    };
+
+    const loadThread = async () => {
+        if (!thread) return;
         if (thread.resList.length) {
             if (thread.desc) thread.resList.reverse();
             topCursor = thread.resList[0].cursor;
@@ -377,6 +384,18 @@
             laaaaaaaag = true;
         }, 4096);
         return () => clearTimeout(id);
+    });
+
+    const delimiter = "###";
+    const threadCache = new UnjsonStorage(
+        ["threadCache", threadId].join(delimiter),
+    );
+    $effect(() => {
+        const cache = threadCache.json;
+        if (cache) {
+            thread = cache as Thread;
+            loadThread();
+        }
     });
 
     let emitting = $state(false);

@@ -1,5 +1,3 @@
-const delimiter = "###";
-
 const load = (key: string): string | null => {
 	return localStorage.getItem(key);
 };
@@ -46,4 +44,4 @@ export class UnjsonStorage {
 	}
 }
 
-export const headline = new UnjsonStorage("headline");
+export const headlineCache = new UnjsonStorage("headline");

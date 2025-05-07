@@ -22,7 +22,7 @@
     import { makePathname } from "../mylib/env.js";
     import { goodbye, hello, ok, socket } from "../mylib/socket.js";
     import { nonceKey } from "../mylib/unj-storage.js";
-    import { headline } from "../mylib/unjson-storage.js";
+    import { headlineCache } from "../mylib/unjson-storage.js";
     import AccessCounterPart from "../parts/AccessCounterPart.svelte";
     import TwemojiPart from "../parts/TwemojiPart.svelte";
 
@@ -61,7 +61,7 @@
         if (!data.ok) return;
         ok();
         threadList = data.list;
-        headline.json = data.list;
+        headlineCache.json = threadList;
     };
 
     const handleMakeThread = (data: { ok: boolean; new: HeadlineThread }) => {
@@ -102,7 +102,7 @@
     });
 
     $effect(() => {
-        const cache = headline.json;
+        const cache = headlineCache.json;
         if (cache) {
             threadList = cache as HeadlineThread[];
         }
