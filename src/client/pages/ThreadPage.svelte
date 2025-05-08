@@ -34,6 +34,7 @@
     import { genNonce } from "../mylib/anti-debug.js";
     import { visible } from "../mylib/dom.js";
     import { makePathname } from "../mylib/env.js";
+    import { ObjectStorage } from "../mylib/object-storage.js";
     import { goodbye, hello, ok, socket } from "../mylib/socket.js";
     import {
         changeNewResSound,
@@ -50,7 +51,6 @@
         sAnimsId,
         termsAgreement,
     } from "../mylib/unj-storage.js";
-    import { UnjsonStorage } from "../mylib/unjson-storage.js";
     import AccessCounterPart from "../parts/AccessCounterPart.svelte";
     import BackgroundEmbedPart from "../parts/BackgroundEmbedPart.svelte";
     import BalsPart from "../parts/BalsPart.svelte";
@@ -152,14 +152,6 @@
     };
 
     let thread: Thread | null = $state(null);
-
-    const delimiter = "###";
-    const threadCache = new UnjsonStorage(
-        ["threadCache", threadId].join(delimiter),
-    );
-    const cache = threadCache.json;
-    if (cache) thread = cache as Thread;
-
     let topCursor = $state("");
     let bottomCursor = $state("");
     let title = $state("スレ読み込み中");
@@ -171,16 +163,9 @@
     let goodRatio = $state(0);
     let badRatio = $state(0);
     let shouldScrollTo2 = $state(cursor !== "" && !desc);
-    const handleReadThread = async (data: { ok: boolean; thread: Thread }) => {
-        if (!data.ok) return;
-        ok();
-        thread = data.thread;
-        threadCache.json = data.thread;
-        loadThread();
-    };
 
-    setTimeout(() => loadThread());
-    const loadThread = async () => {
+    const loadThread = async (_thread: Thread) => {
+        thread = _thread;
         if (!thread) return;
         if (thread.resList.length) {
             if (thread.desc) thread.resList.reverse();
@@ -198,6 +183,19 @@
             await sleep(512);
             scrollTo2();
         }
+    };
+
+    const threadCache = new ObjectStorage<Thread>(`threadCache###${threadId}`);
+    $effect(() => {
+        threadCache.get().then((v) => {
+            if (v && !thread) loadThread(v);
+        });
+    });
+    const handleReadThread = async (data: { ok: boolean; thread: Thread }) => {
+        if (!data.ok) return;
+        ok();
+        loadThread(data.thread);
+        threadCache.set(data.thread);
     };
 
     let openNewResNotice = $state(false);

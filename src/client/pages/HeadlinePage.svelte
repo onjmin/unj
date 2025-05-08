@@ -20,9 +20,9 @@
     import type { HeadlineThread } from "../../common/response/schema.js";
     import { genNonce } from "../mylib/anti-debug.js";
     import { makePathname } from "../mylib/env.js";
+    import { ObjectStorage } from "../mylib/object-storage.js";
     import { goodbye, hello, ok, socket } from "../mylib/socket.js";
     import { nonceKey } from "../mylib/unj-storage.js";
-    import { headlineCache } from "../mylib/unjson-storage.js";
     import AccessCounterPart from "../parts/AccessCounterPart.svelte";
     import TwemojiPart from "../parts/TwemojiPart.svelte";
 
@@ -57,14 +57,17 @@
     };
 
     let threadList: HeadlineThread[] | null = $state(null);
-    const cache = headlineCache.json;
-    if (cache) threadList = cache as HeadlineThread[];
-
+    const headlineCache = new ObjectStorage<HeadlineThread[]>("headlineCache");
+    $effect(() => {
+        headlineCache.get().then((v) => {
+            if (v && !threadList) threadList = v;
+        });
+    });
     const handleHeadline = (data: { ok: boolean; list: HeadlineThread[] }) => {
         if (!data.ok) return;
         ok();
         threadList = data.list;
-        headlineCache.json = data.list;
+        headlineCache.set(data.list);
     };
 
     const handleMakeThread = (data: { ok: boolean; new: HeadlineThread }) => {
