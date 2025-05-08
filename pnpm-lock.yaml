@@ -7,6 +7,8 @@ settings:
 overrides:
   vite@>=6.2.0 <6.2.4: '>=6.2.4'
   vite@>=6.2.0 <6.2.5: '>=6.2.5'
+  vite@>=6.2.0 <6.2.6: '>=6.2.6'
+  vite@>=6.2.0 <=6.2.6: '>=6.2.7'
 
 importers:
 
@@ -17,7 +19,7 @@ importers:
         version: 1.0.0
       '@sveltejs/vite-plugin-svelte':
         specifier: ^5.0.3
-        version: 5.0.3(svelte@5.20.5)(vite@6.2.5(@types/node@22.13.8)(sass@1.85.0)(tsx@4.19.3))
+        version: 5.0.3(svelte@5.20.5)(vite@6.3.5(@types/node@22.13.8)(sass@1.85.0)(tsx@4.19.3))
       '@types/express':
         specifier: ^5.0.0
         version: 5.0.0
@@ -60,6 +62,9 @@ importers:
       js-sha256:
         specifier: ^0.11.0
         version: 0.11.0
+      localforage:
+        specifier: 1.10.0
+        version: 1.10.0
       pg:
         specifier: ^8.14.1
         version: 8.14.1
@@ -68,7 +73,7 @@ importers:
         version: 1.8.0
       rpgen-map:
         specifier: github:onjmin/rpgen-map
-        version: https://codeload.github.com/onjmin/rpgen-map/tar.gz/7416fdbcb273ce9ad3c22b08acabe395434f4a31
+        version: https://codeload.github.com/onjmin/rpgen-map/tar.gz/b4a26c20b23f68667ce7d17a304e7f682035ede3
       socket.io:
         specifier: ^4.8.1
         version: 4.8.1
@@ -85,8 +90,8 @@ importers:
         specifier: 1.0.0-rc.2
         version: 1.0.0-rc.2(typescript@5.8.2)
       vite:
-        specifier: '>=6.2.5'
-        version: 6.2.5(@types/node@22.13.8)(sass@1.85.0)(tsx@4.19.3)
+        specifier: '>=6.2.7'
+        version: 6.3.5(@types/node@22.13.8)(sass@1.85.0)(tsx@4.19.3)
       winston:
         specifier: ^3.17.0
         version: 3.17.0
@@ -928,14 +933,14 @@ packages:
     peerDependencies:
       '@sveltejs/vite-plugin-svelte': ^5.0.0
       svelte: ^5.0.0
-      vite: '>=6.2.5'
+      vite: '>=6.2.7'
 
   '@sveltejs/vite-plugin-svelte@5.0.3':
     resolution: {integrity: sha512-MCFS6CrQDu1yGwspm4qtli0e63vaPCehf6V7pIMP15AsWgMKrqDGCPFF/0kn4SP0ii4aySu4Pa62+fIRGFMjgw==}
     engines: {node: ^18.0.0 || ^20.0.0 || >=22}
     peerDependencies:
       svelte: ^5.0.0
-      vite: '>=6.2.5'
+      vite: '>=6.2.7'
 
   '@tsconfig/node10@1.0.11':
     resolution: {integrity: sha512-DcRjDCujK/kCk/cUe8Xz8ZSpm8mS3mNNpta+jGCA6USEDfktlNvm1+IuZ9eTcDbNk41BHwpHHeW+N1lKCz4zOw==}
@@ -1401,6 +1406,14 @@ packages:
   fast-levenshtein@2.0.6:
     resolution: {integrity: sha512-DCXu6Ifhqcks7TZKY3Hxp3y6qphY5SJZmrWMDrKcERSOXWQdMhU9Ig/PYrzyw/ul9jOIyh0N4M0tbC5hodg8dw==}
 
+  fdir@6.4.4:
+    resolution: {integrity: sha512-1NZP+GK4GfuAv3PqKvxQRDMjdSRZjnkq7KfhlNrCNNlZ0ygQFpebfrnfnq/W7fpUnAv9aGWmY1zKx7FYL3gwhg==}
+    peerDependencies:
+      picomatch: ^3 || ^4
+    peerDependenciesMeta:
+      picomatch:
+        optional: true
+
   fecha@4.2.3:
     resolution: {integrity: sha512-OP2IUU6HeYKJi3i0z4A19kHMQoLVs4Hc+DPqqxI2h/DPZHTm/vjsfC6P0b4jCMy14XizLBqvndQ+UilD7707Jw==}
 
@@ -1494,6 +1507,9 @@ packages:
   iconv-lite@0.4.24:
     resolution: {integrity: sha512-v3MXnZAcvnywkTUEZomIActle7RXXeedOR31wwl7VlyoXO4Qi9arvSenNQWne1TcRwhCL1HwLI21bEqdpj8/rA==}
     engines: {node: '>=0.10.0'}
+
+  immediate@3.0.6:
+    resolution: {integrity: sha512-XXOFtyqDjNDAQxVfYxuF7g9Il/IbWmmlQg2MYKOH8ExIT1qg6xc4zyS3HaEEATgs1btfzxq15ciUiY7gjSXRGQ==}
 
   immutable@5.0.3:
     resolution: {integrity: sha512-P8IdPQHq3lA1xVeBRi5VPqUm5HDgKnx0Ru51wZz5mjxHr5n3RWhjIpOFU7ybkUxfB+5IToy+OLaHYDBIWsv+uw==}
@@ -1593,6 +1609,12 @@ packages:
 
   libphonenumber-js@1.12.4:
     resolution: {integrity: sha512-vLmhg7Gan7idyAKfc6pvCtNzvar4/eIzrVVk3hjNFH5+fGqyjD0gQRovdTrDl20wsmZhBtmZpcsR0tOfquwb8g==}
+
+  lie@3.1.1:
+    resolution: {integrity: sha512-RiNhHysUjhrDQntfYSfY4MU24coXXdEOgw9WGcKHNeEwffDYbF//u87M1EWaMGzuFoSbqW0C9C6lEEhDOAswfw==}
+
+  localforage@1.10.0:
+    resolution: {integrity: sha512-14/H1aX7hzBBmmh7sGPd+AOMkkIrHM3Z1PAyGgZigA1H1p5O5ANnMyWzvpAETtG68/dC4pC0ncy3+PPGzXZHPg==}
 
   locate-character@3.0.0:
     resolution: {integrity: sha512-SW13ws7BjaeJ6p7Q6CO2nchbYEc3X3J6WrmTTDto7yMPqVSZTUyY5Tjbid+Ab8gLnATtygYtiDIJGQRRn2ZOiA==}
@@ -1798,6 +1820,10 @@ packages:
     resolution: {integrity: sha512-JU3teHTNjmE2VCGFzuY8EXzCDVwEqB2a8fsIvwaStHhAWJEeVd1o1QD80CU6+ZdEXXSLbSsuLwJjkCBWqRQUVA==}
     engines: {node: '>=8.6'}
 
+  picomatch@4.0.2:
+    resolution: {integrity: sha512-M7BAV6Rlcy5u+m6oPhAPFgJTzAioX/6B0DxyvDlo9l8+T3nLKbrczg2WLUyzd45L8RqfUMyGPzekbMvX2Ldkwg==}
+    engines: {node: '>=12'}
+
   possible-typed-array-names@1.1.0:
     resolution: {integrity: sha512-/+5VFTchJDoVj3bhoqi6UeymcD00DAwb1nJwamzPvHEszJ4FpF6SNNbUbOS8yI56qHzdV8eK0qEfOSiodkTdxg==}
     engines: {node: '>= 0.4'}
@@ -1892,8 +1918,8 @@ packages:
     engines: {node: '>=18.0.0', npm: '>=8.0.0'}
     hasBin: true
 
-  rpgen-map@https://codeload.github.com/onjmin/rpgen-map/tar.gz/7416fdbcb273ce9ad3c22b08acabe395434f4a31:
-    resolution: {tarball: https://codeload.github.com/onjmin/rpgen-map/tar.gz/7416fdbcb273ce9ad3c22b08acabe395434f4a31}
+  rpgen-map@https://codeload.github.com/onjmin/rpgen-map/tar.gz/b4a26c20b23f68667ce7d17a304e7f682035ede3:
+    resolution: {tarball: https://codeload.github.com/onjmin/rpgen-map/tar.gz/b4a26c20b23f68667ce7d17a304e7f682035ede3}
     version: 1.0.0
 
   safe-buffer@5.2.1:
@@ -2050,6 +2076,10 @@ packages:
   thenify@3.3.1:
     resolution: {integrity: sha512-RVZSIV5IG10Hk3enotrhvz0T9em6cyHBLkH/YAZuKqd8hRkKhSfCGIcP2KUY0EPxndzANBmNllzWPwak+bheSw==}
 
+  tinyglobby@0.2.13:
+    resolution: {integrity: sha512-mEwzpUgrLySlveBwEVDMKk5B57bhLPYovRfPAXD5gA/98Opn0rCDj3GtLwFvCvH5RK9uPCExUROW5NjDwvqkxw==}
+    engines: {node: '>=12.0.0'}
+
   to-regex-range@5.0.1:
     resolution: {integrity: sha512-65P7iz6X5yEr1cwcgvQxbbIw7Uk3gOy5dIdtZ4rDveLqhrdJP+Li/Hx6tyK0NEb+2GCyneCMJiGqrADCSNk8sQ==}
     engines: {node: '>=8.0'}
@@ -2136,8 +2166,8 @@ packages:
     resolution: {integrity: sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==}
     engines: {node: '>= 0.8'}
 
-  vite@6.2.5:
-    resolution: {integrity: sha512-j023J/hCAa4pRIUH6J9HemwYfjB5llR2Ps0CWeikOtdR8+pAURAk0DoJC5/mm9kd+UgdnIy7d6HE4EAvlYhPhA==}
+  vite@6.3.5:
+    resolution: {integrity: sha512-cZn6NDFE7wdTpINgs++ZJ4N49W2vRp8LCKrn3Ob1kYNtOo21vfDoaV5GzBfLU4MovSAB8uNRm4jgzVQZ+mBzPQ==}
     engines: {node: ^18.0.0 || ^20.0.0 || >=22.0.0}
     hasBin: true
     peerDependencies:
@@ -2179,7 +2209,7 @@ packages:
   vitefu@1.0.6:
     resolution: {integrity: sha512-+Rex1GlappUyNN6UfwbVZne/9cYC4+R2XDk9xkNXBKMw6HQagdX9PgZ8V2v1WUSK1wfBLp7qbI1+XSNIlB1xmA==}
     peerDependencies:
-      vite: '>=6.2.5'
+      vite: '>=6.2.7'
     peerDependenciesMeta:
       vite:
         optional: true
@@ -3397,25 +3427,25 @@ snapshots:
 
   '@socket.io/component-emitter@3.1.2': {}
 
-  '@sveltejs/vite-plugin-svelte-inspector@4.0.1(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.20.5)(vite@6.2.5(@types/node@22.13.8)(sass@1.85.0)(tsx@4.19.3)))(svelte@5.20.5)(vite@6.2.5(@types/node@22.13.8)(sass@1.85.0)(tsx@4.19.3))':
+  '@sveltejs/vite-plugin-svelte-inspector@4.0.1(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.20.5)(vite@6.3.5(@types/node@22.13.8)(sass@1.85.0)(tsx@4.19.3)))(svelte@5.20.5)(vite@6.3.5(@types/node@22.13.8)(sass@1.85.0)(tsx@4.19.3))':
     dependencies:
-      '@sveltejs/vite-plugin-svelte': 5.0.3(svelte@5.20.5)(vite@6.2.5(@types/node@22.13.8)(sass@1.85.0)(tsx@4.19.3))
+      '@sveltejs/vite-plugin-svelte': 5.0.3(svelte@5.20.5)(vite@6.3.5(@types/node@22.13.8)(sass@1.85.0)(tsx@4.19.3))
       debug: 4.4.0
       svelte: 5.20.5
-      vite: 6.2.5(@types/node@22.13.8)(sass@1.85.0)(tsx@4.19.3)
+      vite: 6.3.5(@types/node@22.13.8)(sass@1.85.0)(tsx@4.19.3)
     transitivePeerDependencies:
       - supports-color
 
-  '@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.20.5)(vite@6.2.5(@types/node@22.13.8)(sass@1.85.0)(tsx@4.19.3))':
+  '@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.20.5)(vite@6.3.5(@types/node@22.13.8)(sass@1.85.0)(tsx@4.19.3))':
     dependencies:
-      '@sveltejs/vite-plugin-svelte-inspector': 4.0.1(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.20.5)(vite@6.2.5(@types/node@22.13.8)(sass@1.85.0)(tsx@4.19.3)))(svelte@5.20.5)(vite@6.2.5(@types/node@22.13.8)(sass@1.85.0)(tsx@4.19.3))
+      '@sveltejs/vite-plugin-svelte-inspector': 4.0.1(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.20.5)(vite@6.3.5(@types/node@22.13.8)(sass@1.85.0)(tsx@4.19.3)))(svelte@5.20.5)(vite@6.3.5(@types/node@22.13.8)(sass@1.85.0)(tsx@4.19.3))
       debug: 4.4.0
       deepmerge: 4.3.1
       kleur: 4.1.5
       magic-string: 0.30.17
       svelte: 5.20.5
-      vite: 6.2.5(@types/node@22.13.8)(sass@1.85.0)(tsx@4.19.3)
-      vitefu: 1.0.6(vite@6.2.5(@types/node@22.13.8)(sass@1.85.0)(tsx@4.19.3))
+      vite: 6.3.5(@types/node@22.13.8)(sass@1.85.0)(tsx@4.19.3)
+      vitefu: 1.0.6(vite@6.3.5(@types/node@22.13.8)(sass@1.85.0)(tsx@4.19.3))
     transitivePeerDependencies:
       - supports-color
 
@@ -3902,6 +3932,10 @@ snapshots:
 
   fast-levenshtein@2.0.6: {}
 
+  fdir@6.4.4(picomatch@4.0.2):
+    optionalDependencies:
+      picomatch: 4.0.2
+
   fecha@4.2.3: {}
 
   file-stream-rotator@0.6.1:
@@ -4009,6 +4043,8 @@ snapshots:
   iconv-lite@0.4.24:
     dependencies:
       safer-buffer: 2.1.2
+
+  immediate@3.0.6: {}
 
   immutable@5.0.3:
     optional: true
@@ -4118,6 +4154,14 @@ snapshots:
       type-check: 0.3.2
 
   libphonenumber-js@1.12.4: {}
+
+  lie@3.1.1:
+    dependencies:
+      immediate: 3.0.6
+
+  localforage@1.10.0:
+    dependencies:
+      lie: 3.1.1
 
   locate-character@3.0.0: {}
 
@@ -4306,6 +4350,8 @@ snapshots:
   picomatch@2.3.1:
     optional: true
 
+  picomatch@4.0.2: {}
+
   possible-typed-array-names@1.1.0: {}
 
   postcss@8.5.3:
@@ -4405,7 +4451,7 @@ snapshots:
       '@rollup/rollup-win32-x64-msvc': 4.34.9
       fsevents: 2.3.3
 
-  rpgen-map@https://codeload.github.com/onjmin/rpgen-map/tar.gz/7416fdbcb273ce9ad3c22b08acabe395434f4a31: {}
+  rpgen-map@https://codeload.github.com/onjmin/rpgen-map/tar.gz/b4a26c20b23f68667ce7d17a304e7f682035ede3: {}
 
   safe-buffer@5.2.1: {}
 
@@ -4673,6 +4719,11 @@ snapshots:
     dependencies:
       any-promise: 1.3.0
 
+  tinyglobby@0.2.13:
+    dependencies:
+      fdir: 6.4.4(picomatch@4.0.2)
+      picomatch: 4.0.2
+
   to-regex-range@5.0.1:
     dependencies:
       is-number: 7.0.0
@@ -4748,20 +4799,23 @@ snapshots:
 
   vary@1.1.2: {}
 
-  vite@6.2.5(@types/node@22.13.8)(sass@1.85.0)(tsx@4.19.3):
+  vite@6.3.5(@types/node@22.13.8)(sass@1.85.0)(tsx@4.19.3):
     dependencies:
       esbuild: 0.25.0
+      fdir: 6.4.4(picomatch@4.0.2)
+      picomatch: 4.0.2
       postcss: 8.5.3
       rollup: 4.34.9
+      tinyglobby: 0.2.13
     optionalDependencies:
       '@types/node': 22.13.8
       fsevents: 2.3.3
       sass: 1.85.0
       tsx: 4.19.3
 
-  vitefu@1.0.6(vite@6.2.5(@types/node@22.13.8)(sass@1.85.0)(tsx@4.19.3)):
+  vitefu@1.0.6(vite@6.3.5(@types/node@22.13.8)(sass@1.85.0)(tsx@4.19.3)):
     optionalDependencies:
-      vite: 6.2.5(@types/node@22.13.8)(sass@1.85.0)(tsx@4.19.3)
+      vite: 6.3.5(@types/node@22.13.8)(sass@1.85.0)(tsx@4.19.3)
 
   which-typed-array@1.1.18:
     dependencies:
