@@ -218,7 +218,7 @@
     text-decoration: underline;
   }
   .sage:before {
-    content: "🠋";
+    content: "↓";
   }
   .reply {
     background-color: transparent; /* 背景を透明に */
