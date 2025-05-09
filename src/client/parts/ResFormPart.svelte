@@ -3,6 +3,7 @@
   import Select, { Option } from "@smui/select";
   import Textfield from "@smui/textfield";
   import CharacterCounter from "@smui/textfield/character-counter";
+  import { avatarMap } from "../../common/request/avatar.js";
   import { contentTypeOptions } from "../../common/request/content-schema.js";
   import audio from "../../common/request/whitelist/audio.js";
   import gif from "../../common/request/whitelist/gif.js";
@@ -46,12 +47,24 @@
   $effect(() => {
     userAvatarUnjStorage.value = String(userAvatar);
   });
+
+  let avatarSrc = $state("");
+  $effect(() => {
+    avatarSrc = avatarMap.get(userAvatar)?.src ?? "";
+  });
 </script>
 
 <AvatarPart bind:open={openAvatar} bind:userAvatar />
 <UrlTemplatePart bind:open={openUrlTemplate} bind:contentUrl {contentType} />
 
-<Textfield {disabled} label="名前" bind:value={userName} input$maxlength={32}>
+<Textfield
+  {disabled}
+  label="名前"
+  bind:value={userName}
+  input$maxlength={32}
+  class="unj-username-textfield"
+  style={avatarSrc ? `background-image:url(${avatarSrc});` : ""}
+>
   {#snippet trailingIcon()}
     <IconButton
       {disabled}
@@ -129,3 +142,11 @@
     />
   {/snippet}
 </Textfield>
+
+<style>
+  :global(.unj-username-textfield) {
+    background-repeat: no-repeat;
+    background-position: right center;
+    background-size: auto 200%;
+  }
+</style>
