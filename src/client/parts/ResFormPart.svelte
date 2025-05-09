@@ -56,10 +56,10 @@
     avatarSrc = avatarMap.get(userAvatar)?.src ?? "";
   });
 
-  const visibilityUrlField = (contentType: number) =>
-    contentType === Enum.Url || visibilityTemplate(contentType);
+  const visibleUrlField = (contentType: number) =>
+    contentType === Enum.Url || visibleTemplate(contentType);
 
-  const visibilityTemplate = (contentType: number) =>
+  const visibleTemplate = (contentType: number) =>
     contentType === Enum.Image ||
     contentType === Enum.Gif ||
     contentType === Enum.Video ||
@@ -138,23 +138,20 @@
   label="URL欄"
   bind:value={contentUrl}
   input$maxlength={256}
-  style="visibility:{visibilityUrlField(contentType) ? 'visible' : 'hidden'};"
+  style="visibility:{visibleUrlField(contentType) ? 'visible' : 'hidden'};"
 >
   {#snippet trailingIcon()}
     <IconButton
       {disabled}
       class="material-icons"
       onclick={() => (openUrlTemplate = true)}
-      style="visibility:{visibilityTemplate(contentType)
-        ? 'visible'
-        : 'hidden'};">add_link</IconButton
+      style="visibility:{visibleTemplate(contentType) ? 'visible' : 'hidden'};"
+      >add_link</IconButton
     >
   {/snippet}
   {#snippet helper()}
     <CharacterCounter
-      style="visibility:{visibilityUrlField(contentType)
-        ? 'visible'
-        : 'hidden'};"
+      style="visibility:{visibleUrlField(contentType) ? 'visible' : 'hidden'};"
     />
   {/snippet}
 </Textfield>
