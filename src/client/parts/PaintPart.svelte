@@ -64,26 +64,26 @@
   let brushColor = $state("#000000");
 
   let choices = [
-    "edit",
-    "format_paint",
     "brush",
+    "blur_on",
+    "join_left",
     "crop_portrait",
     "format_color_fill",
   ];
   let choiced = $state("edit");
   $effect(() => {
     switch (choiced) {
-      case "edit":
+      case "brush":
         canvas.freeDrawingBrush = new PencilBrush(canvas);
         canvas.freeDrawingBrush.width = pencilWidth;
         canvas.freeDrawingBrush.color = brushColor;
         break;
-      case "format_paint":
+      case "blur_on":
         canvas.freeDrawingBrush = new SprayBrush(canvas);
         canvas.freeDrawingBrush.width = SprayWidth;
         canvas.freeDrawingBrush.color = brushColor;
         break;
-      case "brush":
+      case "join_left":
         canvas.freeDrawingBrush = new CircleBrush(canvas);
         canvas.freeDrawingBrush.width = CircleWidth;
         canvas.freeDrawingBrush.color = brushColor;
