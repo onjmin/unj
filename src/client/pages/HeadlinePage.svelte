@@ -129,7 +129,7 @@
     <div class="unj-headline-container">
         <List class="demo-list" dense nonInteractive>
             {#each threadList ?? [] as thread, i}
-                <Item>
+                <Item disabled>
                     <Graphic
                         ><TwemojiPart seed={thread.id} height="16" /></Graphic
                     >
