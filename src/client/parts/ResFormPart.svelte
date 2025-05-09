@@ -16,6 +16,7 @@
   import video from "../../common/request/whitelist/video.js";
   import { UnjStorage } from "../mylib/unj-storage.js";
   import AvatarPart from "./AvatarPart.svelte";
+  import PaintPart from "./PaintPart.svelte";
   import UrlTemplatePart from "./UrlTemplatePart.svelte";
 
   const regexUrl =
@@ -30,6 +31,8 @@
     contentUrl = $bindable(""),
     contentType = $bindable(0),
     contentTypesBitmask = 0,
+    threadId,
+    paint,
   } = $props();
 
   let openUrlTemplate = $state(false);
@@ -155,6 +158,12 @@
     />
   {/snippet}
 </Textfield>
+
+{#key contentType}
+  {#if paint && contentType === Enum.Paint}
+    <PaintPart {threadId} />
+  {/if}
+{/key}
 
 <style>
   :global(.unj-username-textfield) {

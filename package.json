@@ -59,6 +59,7 @@
 		"typescript": "^5.8.2"
 	},
 	"dependencies": {
+		"@erase2d/fabric": "1.1.7",
 		"@neondatabase/serverless": "^1.0.0",
 		"@sveltejs/vite-plugin-svelte": "^5.0.3",
 		"@types/express": "^5.0.0",
@@ -72,6 +73,7 @@
 		"date-picker-svelte": "^2.15.1",
 		"esbuild": "^0.25.0",
 		"express": "^4.21.2",
+		"fabric": "6.6.4",
 		"hashids": "^2.3.0",
 		"howler": "^2.2.4",
 		"js-sha256": "^0.11.0",

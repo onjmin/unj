@@ -59,7 +59,7 @@ export const Enum = {
 	Video: 16,
 	Audio: 32,
 	Games: 64,
-	Drawing: 1024,
+	Paint: 1024,
 } as const;
 
 const TextSchema = v.object({
@@ -173,7 +173,7 @@ export const contentTemplateMap = new Map(
  * プルダウンに表示する順番（入れ替え可能）
  */
 export const contentTypeOptions = [
-	{ bit: Enum.Drawing, label: "お絵描き" },
+	{ bit: Enum.Paint, label: "お絵描き" },
 	{ bit: Enum.Text, label: "テキスト" },
 	{ bit: Enum.Url, label: "+URL" },
 	{ bit: Enum.Image, label: "+画像" },

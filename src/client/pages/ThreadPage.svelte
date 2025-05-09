@@ -466,7 +466,7 @@
     });
 </script>
 
-{#snippet form()}
+{#snippet form(paint = false)}
     <ResFormPart
         disabled={emitting}
         bind:textarea
@@ -476,6 +476,8 @@
         bind:contentUrl
         bind:contentType
         contentTypesBitmask={thread?.contentTypesBitmask ?? 0}
+        {threadId}
+        {paint}
     />
     <Button disabled={emitting} onclick={tryRes} variant="raised"
         >投稿する</Button
@@ -740,7 +742,7 @@
         <Paper>
             <Title>レス書き込み欄</Title>
             <Subtitle>適当に書き込んでってクレメンス</Subtitle>
-            <Content>{@render form()}</Content>
+            <Content>{@render form(true)}</Content>
         </Paper>
     {/if}
 </MainPart>

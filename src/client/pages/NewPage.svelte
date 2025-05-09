@@ -13,6 +13,7 @@
     import Select, { Option } from "@smui/select";
     import Textfield from "@smui/textfield";
     import CharacterCounter from "@smui/textfield/character-counter";
+    import { sha256 } from "js-sha256";
     import { navigate } from "svelte-routing";
     import * as v from "valibot";
     import {
@@ -66,7 +67,7 @@
 
     let ccBitmask = $state([1, 4, 8]);
     let contentTypesBitmask = $state([
-        Enum.Drawing,
+        Enum.Paint,
         Enum.Text,
         Enum.Url,
         Enum.Image,
@@ -283,6 +284,8 @@
             bind:contentUrl
             bind:contentType
             contentTypesBitmask={bits2Int(contentTypesBitmask)}
+            threadId={sha256(Math.random().toString())}
+            paint
         />
         <FormField>
             <Checkbox disabled={emitting} bind:checked={check1} />
