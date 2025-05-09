@@ -18,6 +18,12 @@
   const history = new LinkedList<string>();
 
   let locked = false;
+  const loadFromJSON = async (json: string) => {
+    locked = true;
+    await canvas.loadFromJSON(json);
+    canvas.renderAll();
+    locked = false;
+  };
   const trace = (save = true) => {
     if (locked) return;
     history.add(canvas.toJSON());
@@ -25,23 +31,13 @@
   };
   const undo = async () => {
     if (locked) return;
-    locked = true;
-    const value = history.undo();
-    if (value !== null) {
-      await canvas.loadFromJSON(value);
-      canvas.renderAll();
-    }
-    locked = false;
+    const v = history.undo();
+    if (v) await loadFromJSON(v);
   };
   const redo = async () => {
     if (locked) return;
-    locked = true;
-    const value = history.redo();
-    if (value !== null) {
-      await canvas.loadFromJSON(value);
-      canvas.renderAll();
-    }
-    locked = false;
+    const v = history.redo();
+    if (v) await loadFromJSON(v);
   };
 
   const paintCache = new ObjectStorage<string>(`paintCache###${threadId}`);
@@ -57,12 +53,7 @@
   });
   $effect(() => {
     paintCache.get().then(async (v) => {
-      if (!v) return;
-      locked = true;
-      await canvas.loadFromJSON(v);
-      canvas.renderAll();
-      locked = false;
-      trace(false);
+      if (v) await loadFromJSON(v);
     });
   });
 
