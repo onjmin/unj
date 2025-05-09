@@ -48,17 +48,21 @@
   $effect(() => {
     canvas = new Canvas(canvasEl);
     trace(false);
-    paintCache.get().then(async (v) => {
-      if (!v) return;
-      await canvas.loadFromJSON(v);
-      canvas.renderAll();
-      trace(false);
-    });
     canvas.isDrawingMode = true;
     canvas.on("object:added", (e: { target: FabricObject }) => {
       e.target.erasable = true;
       const { canvas } = e.target;
       if (canvas) trace();
+    });
+  });
+  $effect(() => {
+    paintCache.get().then(async (v) => {
+      if (!v) return;
+      locked = true;
+      await canvas.loadFromJSON(v);
+      canvas.renderAll();
+      locked = false;
+      trace(false);
     });
   });
 
