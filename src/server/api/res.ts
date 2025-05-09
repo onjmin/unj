@@ -171,6 +171,8 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 				poolClient,
 			});
 
+			const sage = sageCache.get(threadId) || res.output.sage;
+
 			await poolClient.query("BEGIN"); // トランザクション開始
 
 			// レスの作成
@@ -190,8 +192,9 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 						"thread_id",
 						"num",
 						"is_owner",
+						"sage",
 					].join(",")})`,
-					"VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)",
+					"VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)",
 					"RETURNING *",
 				].join(" "),
 				[
@@ -208,6 +211,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 					threadId,
 					nextResNum,
 					isOwner,
+					sage,
 				],
 			);
 			if (rowCount === 0) return;
@@ -237,8 +241,6 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 				query.set("age_res_num", ageResNumCache.get(threadId) ?? 0);
 				query.set("bals_res_num", balsResNumCache.get(threadId) ?? 0);
 			}
-
-			const sage = sageCache.get(threadId) || res.output.sage;
 
 			// スレッドの更新
 			await poolClient.query(
