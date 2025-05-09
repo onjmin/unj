@@ -10,7 +10,10 @@
     SecondaryText,
   } from "@smui/list";
   import Portal from "svelte-portal";
-  import { contentTemplateMap } from "../../common/request/content-schema.js";
+  import {
+    Enum,
+    contentTemplateMap,
+  } from "../../common/request/content-schema.js";
   import type { SiteInfo } from "../../common/request/whitelist/site-info.js";
 
   let {
@@ -40,15 +43,15 @@
     <Title>URLテンプレ機能</Title>
     <Content>
       <div>
-        {#if contentType === 4}
+        {#if contentType === Enum.Image}
           <p>画像を貼れます。</p>
-        {:else if contentType === 8}
+        {:else if contentType === Enum.Gif}
           <p>GIFを貼れます。</p>
-        {:else if contentType === 16}
+        {:else if contentType === Enum.Video}
           <p>動画を貼れます。</p>
-        {:else if contentType === 32}
+        {:else if contentType === Enum.Audio}
           <p>音楽を貼れます。</p>
-        {:else if contentType === 64}
+        {:else if contentType === Enum.Games}
           <p>みんなで遊べるブラウザゲームを集めました。</p>
         {/if}
       </div>

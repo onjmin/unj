@@ -1,6 +1,7 @@
 import type { PoolClient } from "@neondatabase/serverless";
 import { addMinutes } from "date-fns";
 import type { Socket } from "socket.io";
+import { Enum } from "../../common/request/content-schema.js";
 import { randInt } from "../../common/util.js";
 import { coolTimes as makeThreadCoolTimes } from "../api/makeThread.js";
 import {
@@ -324,7 +325,7 @@ export const parseCommand = async ({
 				case "!nopic":
 					{
 						if (!isModerator) break;
-						const picbit = 8 | 16;
+						const picbit = Enum.Image | Enum.Gif;
 						let bit = contentTypesBitmaskCache.get(threadId) ?? 0;
 						if (bit & picbit) {
 							bit &= ~picbit;

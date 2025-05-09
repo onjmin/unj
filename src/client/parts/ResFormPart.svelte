@@ -4,7 +4,10 @@
   import Textfield from "@smui/textfield";
   import CharacterCounter from "@smui/textfield/character-counter";
   import { avatarMap } from "../../common/request/avatar.js";
-  import { contentTypeOptions } from "../../common/request/content-schema.js";
+  import {
+    Enum,
+    contentTypeOptions,
+  } from "../../common/request/content-schema.js";
   import audio from "../../common/request/whitelist/audio.js";
   import gif from "../../common/request/whitelist/gif.js";
   import image from "../../common/request/whitelist/image.js";
@@ -52,6 +55,16 @@
   $effect(() => {
     avatarSrc = avatarMap.get(userAvatar)?.src ?? "";
   });
+
+  const visibilityUrlField = (contentType: number) =>
+    contentType === Enum.Url || visibilityTemplate(contentType);
+
+  const visibilityTemplate = (contentType: number) =>
+    contentType === Enum.Image ||
+    contentType === Enum.Gif ||
+    contentType === Enum.Video ||
+    contentType === Enum.Audio ||
+    contentType === Enum.Games;
 </script>
 
 <AvatarPart bind:open={openAvatar} bind:userAvatar />
@@ -94,12 +107,12 @@
     } catch (err) {}
     if (!url) return;
     let _contentType = 0;
-    if (!!findIn(image, url.hostname)) _contentType = 4;
-    else if (!!findIn(gif, url.hostname)) _contentType = 8;
-    else if (!!findIn(video, url.hostname)) _contentType = 16;
-    else if (!!findIn(audio, url.hostname)) _contentType = 32;
-    else if (!!findIn(unjGames, url.hostname)) _contentType = 64;
-    else _contentType = 2;
+    if (!!findIn(image, url.hostname)) _contentType = Enum.Image;
+    else if (!!findIn(gif, url.hostname)) _contentType = Enum.Gif;
+    else if (!!findIn(video, url.hostname)) _contentType = Enum.Video;
+    else if (!!findIn(audio, url.hostname)) _contentType = Enum.Audio;
+    else if (!!findIn(unjGames, url.hostname)) _contentType = Enum.Games;
+    else _contentType = Enum.Url;
     if ((_contentType & contentTypesBitmask) !== 0) {
       contentType = _contentType;
       contentUrl = url.href;
@@ -125,20 +138,23 @@
   label="URL欄"
   bind:value={contentUrl}
   input$maxlength={256}
-  style="visibility:{contentType <= 1 ? 'hidden' : 'visible'};"
+  style="visibility:{visibilityUrlField(contentType) ? 'visible' : 'hidden'};"
 >
   {#snippet trailingIcon()}
     <IconButton
       {disabled}
       class="material-icons"
       onclick={() => (openUrlTemplate = true)}
-      style="visibility:{contentType <= 2 ? 'hidden' : 'visible'};"
-      >add_link</IconButton
+      style="visibility:{visibilityTemplate(contentType)
+        ? 'visible'
+        : 'hidden'};">add_link</IconButton
     >
   {/snippet}
   {#snippet helper()}
     <CharacterCounter
-      style="visibility:{contentType <= 1 ? 'hidden' : 'visible'};"
+      style="visibility:{visibilityUrlField(contentType)
+        ? 'visible'
+        : 'hidden'};"
     />
   {/snippet}
 </Textfield>

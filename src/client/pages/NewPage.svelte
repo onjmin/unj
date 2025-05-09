@@ -16,6 +16,7 @@
     import { navigate } from "svelte-routing";
     import * as v from "valibot";
     import {
+        Enum,
         ccOptions,
         contentSchemaMap,
         contentTypeOptions,
@@ -42,7 +43,7 @@
     let userAvatar = $state(0);
     let contentText = $state("");
     let contentUrl = $state("");
-    let contentType = $state(1);
+    let contentType = $state(Enum.Text);
 
     // UnjStorage
     const titleUnjStorage = new UnjStorage("title");
@@ -64,7 +65,16 @@
     const bits2Int = (bits: number[]) => bits.reduce((p, x) => p | x);
 
     let ccBitmask = $state([1, 4, 8]);
-    let contentTypesBitmask = $state([1, 2, 4, 8, 16, 32, 64]);
+    let contentTypesBitmask = $state([
+        Enum.Drawing,
+        Enum.Text,
+        Enum.Url,
+        Enum.Image,
+        Enum.Gif,
+        Enum.Video,
+        Enum.Audio,
+        Enum.Games,
+    ]);
     let max = $state(1000);
 
     const timerOptions = [
@@ -114,7 +124,7 @@
         // }
         if (emitting) return;
         emitting = true;
-        if (!contentUrl) contentType = 1;
+        if (!contentUrl) contentType = Enum.Text;
         const data = {
             nonce: genNonce(nonceKey.value ?? ""),
             userName,

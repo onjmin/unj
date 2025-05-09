@@ -20,6 +20,7 @@
     import { navigate } from "svelte-routing";
     import * as v from "valibot";
     import {
+        Enum,
         contentSchemaMap,
         contentTemplateMap,
     } from "../../common/request/content-schema.js";
@@ -402,7 +403,7 @@
         // }
         if (emitting) return;
         emitting = true;
-        if (!contentUrl) contentType = 1;
+        if (!contentUrl) contentType = Enum.Text;
         const data = {
             nonce: genNonce(nonceKey.value ?? ""),
             threadId,
@@ -544,7 +545,7 @@
             ccUserAvatar={thread?.ageRes.ccUserAvatar}
             contentText={thread?.ageRes.contentText}
             contentUrl={thread?.ageRes.contentUrl}
-            contentType={1}
+            contentType={Enum.Text}
             cursor={thread?.ageRes.cursor}
             num={thread?.ageRes.num}
             isOwner={thread?.ageRes.isOwner}

@@ -51,11 +51,19 @@ const SAFE_URL = v.pipe(
 	v.url(), // 暗黙的に空文字が許容されなくなる
 );
 
-/**
- * 1: text
- */
+export const Enum = {
+	Text: 1,
+	Url: 2,
+	Image: 4,
+	Gif: 8,
+	Video: 16,
+	Audio: 32,
+	Games: 64,
+	Drawing: 1024,
+} as const;
+
 const TextSchema = v.object({
-	contentType: v.pipe(v.number(), v.value(1)),
+	contentType: v.pipe(v.number(), v.value(Enum.Text)),
 	contentText: v.pipe(SAFE_TEXT_MULTILINE, v.minLength(1)),
 	contentUrl: v.pipe(v.string(), v.length(0)),
 });
@@ -66,11 +74,8 @@ const TextSchema = v.object({
 const sliceDomain = (url: string, n: number) =>
 	new URL(url).hostname.split(".").slice(-n).join(".");
 
-/**
- * 2: url
- */
 const UrlSchema = v.object({
-	contentType: v.pipe(v.number(), v.value(2)),
+	contentType: v.pipe(v.number(), v.value(Enum.Url)),
 	contentText: SAFE_TEXT_MULTILINE,
 	contentUrl: v.pipe(
 		SAFE_URL,
@@ -87,11 +92,8 @@ const UrlSchema = v.object({
 	),
 });
 
-/**
- * 4: url_of_image(Imgur|アル)
- */
 const UrlOfImageSchema = v.object({
-	contentType: v.pipe(v.number(), v.value(4)),
+	contentType: v.pipe(v.number(), v.value(Enum.Image)),
 	contentText: SAFE_TEXT_MULTILINE,
 	contentUrl: v.pipe(
 		SAFE_URL,
@@ -99,11 +101,8 @@ const UrlOfImageSchema = v.object({
 	),
 });
 
-/**
- * 8: url_of_gif(Imgur)
- */
 const UrlOfGifSchema = v.object({
-	contentType: v.pipe(v.number(), v.value(8)),
+	contentType: v.pipe(v.number(), v.value(Enum.Gif)),
 	contentText: SAFE_TEXT_MULTILINE,
 	contentUrl: v.pipe(
 		SAFE_URL,
@@ -111,11 +110,8 @@ const UrlOfGifSchema = v.object({
 	),
 });
 
-/**
- * 16: url_of_video(YouTube||Nicovideo||Vimeo)
- */
 const UrlOfVideoSchema = v.object({
-	contentType: v.pipe(v.number(), v.value(16)),
+	contentType: v.pipe(v.number(), v.value(Enum.Video)),
 	contentText: SAFE_TEXT_MULTILINE,
 	contentUrl: v.pipe(
 		SAFE_URL,
@@ -123,11 +119,8 @@ const UrlOfVideoSchema = v.object({
 	),
 });
 
-/**
- * 32: url_of_audio(SoundCloud||Spotify)
- */
 const UrlOfAudioSchema = v.object({
-	contentType: v.pipe(v.number(), v.value(32)),
+	contentType: v.pipe(v.number(), v.value(Enum.Audio)),
 	contentText: SAFE_TEXT_MULTILINE,
 	contentUrl: v.pipe(
 		SAFE_URL,
@@ -135,11 +128,8 @@ const UrlOfAudioSchema = v.object({
 	),
 });
 
-/**
- * 64: url_of_unj_games
- */
 const UrlOfUnjGamesSchema = v.object({
-	contentType: v.pipe(v.number(), v.value(64)),
+	contentType: v.pipe(v.number(), v.value(Enum.Games)),
 	contentText: SAFE_TEXT_MULTILINE,
 	contentUrl: v.pipe(
 		SAFE_URL,
@@ -152,13 +142,13 @@ const UrlOfUnjGamesSchema = v.object({
  */
 export const contentSchemaMap = new Map(
 	Object.entries({
-		1: TextSchema,
-		2: UrlSchema,
-		4: UrlOfImageSchema,
-		8: UrlOfGifSchema,
-		16: UrlOfVideoSchema,
-		32: UrlOfAudioSchema,
-		64: UrlOfUnjGamesSchema,
+		[Enum.Text]: TextSchema,
+		[Enum.Url]: UrlSchema,
+		[Enum.Image]: UrlOfImageSchema,
+		[Enum.Gif]: UrlOfGifSchema,
+		[Enum.Video]: UrlOfVideoSchema,
+		[Enum.Audio]: UrlOfAudioSchema,
+		[Enum.Games]: UrlOfUnjGamesSchema,
 	}).map(([k, v]) => [Number(k), v]),
 );
 
@@ -168,13 +158,13 @@ export const contentSchemaMap = new Map(
  */
 export const contentTemplateMap = new Map(
 	Object.entries({
-		1: [],
-		2: [],
-		4: whitelistImage,
-		8: whitelistGif,
-		16: whitelistVideo,
-		32: whitelistAudio,
-		64: whitelistUnjGames,
+		[Enum.Text]: [],
+		[Enum.Url]: [],
+		[Enum.Image]: whitelistImage,
+		[Enum.Gif]: whitelistGif,
+		[Enum.Video]: whitelistVideo,
+		[Enum.Audio]: whitelistAudio,
+		[Enum.Games]: whitelistUnjGames,
 	}).map(([k, v]) => [Number(k), v]),
 );
 
@@ -183,13 +173,14 @@ export const contentTemplateMap = new Map(
  * プルダウンに表示する順番（入れ替え可能）
  */
 export const contentTypeOptions = [
-	{ bit: 1, label: "テキスト" },
-	{ bit: 2, label: "+URL" },
-	{ bit: 4, label: "+画像" },
-	{ bit: 8, label: "+GIF" },
-	{ bit: 16, label: "+動画" },
-	{ bit: 32, label: "+音楽" },
-	{ bit: 64, label: "+ゲーム" },
+	{ bit: Enum.Drawing, label: "お絵描き" },
+	{ bit: Enum.Text, label: "テキスト" },
+	{ bit: Enum.Url, label: "+URL" },
+	{ bit: Enum.Image, label: "+画像" },
+	{ bit: Enum.Gif, label: "+GIF" },
+	{ bit: Enum.Video, label: "+動画" },
+	{ bit: Enum.Audio, label: "+音楽" },
+	{ bit: Enum.Games, label: "+ゲーム" },
 ];
 
 /**
