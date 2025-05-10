@@ -259,8 +259,8 @@
     h2 = h * 0.6;
     w2 = h2 * (16 / 9);
   }
-  const width = w2;
-  const height = h2;
+  const width = w2 | 0;
+  const height = h2 | 0;
 </script>
 
 <div class="canvas-wrapper">
@@ -271,7 +271,10 @@
     class="canvas"
     style={`${isFlip ? "transform:scaleX(-1);" : ""}${isInvert ? "filter:invert(1);" : ""}`}
   ></canvas>
-  <div class="grid-overlay" style="opacity:{isGrid ? 0.4 : 0};"></div>
+  <div
+    class="grid-overlay"
+    style="width:{width}px;height:{height}px;opacity:{isGrid ? 0.4 : 0};"
+  ></div>
 </div>
 
 <SegmentedButton
@@ -379,10 +382,6 @@
   }
   .grid-overlay {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
     background-image: linear-gradient(to right, gray 1px, transparent 1px),
       linear-gradient(to bottom, gray 1px, transparent 1px);
     background-size: 20px 20px; /* 格子の間隔を20pxに設定 */

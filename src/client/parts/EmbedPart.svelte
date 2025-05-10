@@ -100,8 +100,8 @@
       h2 = h * 0.6;
       w2 = h2 * (16 / 9);
     }
-    width = w2;
-    height = h2;
+    width = w2 | 0;
+    height = h2 | 0;
   };
 
   $effect(() => {
