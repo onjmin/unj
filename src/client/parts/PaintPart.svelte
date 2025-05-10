@@ -70,7 +70,7 @@
     "crop_portrait",
     "format_color_fill",
   ];
-  let choiced = $state("edit");
+  let choiced = $state("brush");
   $effect(() => {
     switch (choiced) {
       case "brush":
