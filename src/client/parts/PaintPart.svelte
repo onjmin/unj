@@ -1,6 +1,22 @@
 <script lang="ts">
   import { EraserBrush, type ErasingEvent } from "@erase2d/fabric";
-  import Chip, { Set as ChipSet, LeadingIcon } from "@smui/chips";
+  import {
+    mdiBrush,
+    mdiCircle,
+    mdiContentSaveOutline,
+    mdiEraser,
+    mdiExportVariant,
+    mdiFlipHorizontal,
+    mdiFormatColorFill,
+    mdiGrid,
+    mdiRedo,
+    mdiSpray,
+    mdiTrashCanOutline,
+    mdiUndo,
+  } from "@mdi/js";
+  import { preventDefault } from "@smui/common/events";
+  import SegmentedButton, { Segment, Icon } from "@smui/segmented-button";
+  import Slider from "@smui/slider";
   import {
     Canvas,
     CircleBrush,
@@ -57,38 +73,46 @@
     });
   });
 
-  let pencilWidth = $state(2);
-  let SprayWidth = $state(32);
-  let CircleWidth = $state(32);
   let eraserWidth = $state(32);
-  let brushColor = $state("#000000");
 
+  let pencilWidth = $state(2);
+  let sprayWidth = $state(32);
+  let circleWidth = $state(32);
+
+  let pencilColor = $state("#000000");
+  let sprayColor = $state("#000000");
+  let circleColor = $state("#000000");
+
+  interface Tool {
+    name: string;
+    icon: string;
+  }
   let choices = [
-    "brush",
-    "blur_on",
-    "join_left",
-    "crop_portrait",
-    "format_color_fill",
+    { name: "pencil", icon: mdiBrush },
+    { name: "spray", icon: mdiSpray },
+    { name: "circle", icon: mdiCircle },
+    { name: "eraser", icon: mdiEraser },
+    { name: "fill", icon: mdiFormatColorFill },
   ];
-  let choiced = $state("brush");
+  let choiced = $state(choices[0]);
   $effect(() => {
-    switch (choiced) {
-      case "brush":
+    switch (choiced.name) {
+      case "pencil":
         canvas.freeDrawingBrush = new PencilBrush(canvas);
         canvas.freeDrawingBrush.width = pencilWidth;
-        canvas.freeDrawingBrush.color = brushColor;
+        canvas.freeDrawingBrush.color = pencilColor;
         break;
-      case "blur_on":
+      case "spray":
         canvas.freeDrawingBrush = new SprayBrush(canvas);
-        canvas.freeDrawingBrush.width = SprayWidth;
-        canvas.freeDrawingBrush.color = brushColor;
+        canvas.freeDrawingBrush.width = sprayWidth;
+        canvas.freeDrawingBrush.color = sprayColor;
         break;
-      case "join_left":
+      case "circle":
         canvas.freeDrawingBrush = new CircleBrush(canvas);
-        canvas.freeDrawingBrush.width = CircleWidth;
-        canvas.freeDrawingBrush.color = brushColor;
+        canvas.freeDrawingBrush.width = circleWidth;
+        canvas.freeDrawingBrush.color = circleColor;
         break;
-      case "crop_portrait":
+      case "eraser":
         {
           const eraser = new EraserBrush(canvas);
           eraser.on("end", async (e: ErasingEvent) => {
@@ -101,46 +125,166 @@
             canvas.freeDrawingBrush.width = eraserWidth;
         }
         break;
-      case "format_color_fill":
+      case "fill":
         break;
     }
   });
 
-  const exportBase64 = (): void => {
-    const base64 = canvas.toDataURL({ multiplier: 1, format: "png" });
-    console.log("Base64 image:", base64);
+  let toggles = [
+    { name: "flip", icon: mdiFlipHorizontal },
+    { name: "toggleGrid", icon: mdiGrid },
+  ];
+  let toggle: Tool[] = $state([]);
+  let isFlip = $state(false);
+  $effect(() => {
+    isFlip = toggle.map((v) => v.name).includes("flip");
+    const enabled = !isFlip;
+    canvas.isDrawingMode = enabled;
+    canvas.selection = enabled;
+    for (const obj of canvas.getObjects()) {
+      obj.selectable = enabled;
+      obj.evented = enabled;
+    }
+  });
+  let isGrid = $state(false);
+  $effect(() => {
+    isGrid = toggle.map((v) => v.name).includes("toggleGrid");
+  });
+
+  let actions = [
+    { name: "undo", icon: mdiUndo },
+    { name: "redo", icon: mdiRedo },
+    { name: "clear", icon: mdiTrashCanOutline },
+    { name: "save", icon: mdiContentSaveOutline },
+    { name: "export", icon: mdiExportVariant },
+  ];
+  const doAction = (action: Tool) => {
+    switch (action.name) {
+      case "undo":
+        undo();
+        break;
+      case "redo":
+        redo();
+        break;
+      case "clear":
+        canvas.clear();
+        trace(false);
+        break;
+      case "save":
+        {
+          const dataURL = canvas.toDataURL({
+            multiplier: 1,
+            format: "png",
+            quality: 1.0,
+          });
+          const link = document.createElement("a");
+          link.href = dataURL;
+          link.download = "drawing.png";
+          link.click();
+        }
+        break;
+      case "export":
+        break;
+    }
   };
 </script>
 
-<canvas
-  bind:this={canvasEl}
-  width="800"
-  height="600"
-  style="border: 1px solid #ccc;"
-></canvas>
-
-<div>
-  <ChipSet chips={choices} choice bind:selected={choiced}>
-    {#snippet chip(chip: string)}
-      <Chip {chip}>
-        <LeadingIcon class="material-icons">{chip}</LeadingIcon>
-      </Chip>
-    {/snippet}
-  </ChipSet>
+<div class="canvas-wrapper">
+  <canvas
+    bind:this={canvasEl}
+    width="800"
+    height="600"
+    class="canvas"
+    style={isFlip ? "transform:scaleX(-1);" : ""}
+  ></canvas>
+  <div class="grid-overlay" style="opacity:{isGrid ? 1 : 0};"></div>
 </div>
 
-<div class="toolbar">
-  <input type="color" bind:value={brushColor} />
-  <input type="range" min="1" max="20" bind:value={pencilWidth} />
-  <button onclick={undo}>Undo</button>
-  <button onclick={redo}>Redo</button>
-  <button onclick={exportBase64}>Export Base64</button>
+<SegmentedButton
+  segments={choices}
+  singleSelect
+  bind:selected={choiced}
+  key={(segment: Tool) => segment.name}
+>
+  {#snippet segment(segment: Tool)}
+    <Segment {segment} title={segment.name}>
+      <Icon tag="svg" style="width: 1em; height: auto;" viewBox="0 0 24 24">
+        <path fill="currentColor" d={segment.icon} />
+      </Icon>
+    </Segment>
+  {/snippet}
+</SegmentedButton>
+
+<SegmentedButton
+  segments={toggles}
+  bind:selected={toggle}
+  key={(segment: Tool) => segment.name}
+>
+  {#snippet segment(segment: Tool)}
+    <Segment {segment} title={segment.name}>
+      <Icon tag="svg" style="width: 1em; height: auto;" viewBox="0 0 24 24">
+        <path fill="currentColor" d={segment.icon} />
+      </Icon>
+    </Segment>
+  {/snippet}
+</SegmentedButton>
+
+<SegmentedButton segments={actions} key={(segment: Tool) => segment.name}>
+  {#snippet segment(segment: Tool)}
+    <Segment {segment} onclick={preventDefault(() => doAction(segment))}>
+      <Icon tag="svg" style="width: 1em; height: auto;" viewBox="0 0 24 24">
+        <path fill="currentColor" d={segment.icon} />
+      </Icon>
+    </Segment>
+  {/snippet}
+</SegmentedButton>
+
+<div class="tool">
+  {#if choiced.name === "pencil"}
+    <span class="brush-width">{pencilWidth}px</span>
+    <input type="color" bind:value={pencilColor} />
+    <Slider min="1" max="64" bind:value={pencilWidth} />
+  {:else if choiced.name === "spray"}
+    <span class="brush-width">{sprayWidth}px</span>
+    <input type="color" bind:value={sprayColor} />
+    <Slider min="1" max="64" bind:value={sprayWidth} />
+  {:else if choiced.name === "circle"}
+    <span class="brush-width">{circleWidth}px</span>
+    <input type="color" bind:value={circleColor} />
+    <Slider min="1" max="64" bind:value={circleWidth} />
+  {/if}
 </div>
 
 <style>
-  .toolbar {
-    display: flex;
-    gap: 0.5rem;
-    margin-top: 1rem;
+  .tool {
+    min-height: 8rem;
+  }
+  .brush-width {
+    display: inline-block;
+    width: 4rem;
+  }
+
+  .canvas-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+  .canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1; /* Canvasを格子より前面に表示 */
+  }
+  .grid-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: linear-gradient(to right, gray 1px, transparent 1px),
+      linear-gradient(to bottom, gray 1px, transparent 1px);
+    background-size: 20px 20px; /* 格子の間隔を20pxに設定 */
+    pointer-events: none; /* 格子に対してユーザーの操作ができないようにする */
+    z-index: 0; /* 格子をキャンバスの後ろに表示 */
   }
 </style>
