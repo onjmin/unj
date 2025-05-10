@@ -116,8 +116,7 @@
     const base64 = btoa(
       '<svg xmlns="http://www.w3.org/2000/svg" width="4" height="4"><circle cx="2" cy="2" r="2" fill="black"/></svg>',
     );
-    const cursorUrl = `url('data:image/svg+xml;base64,${base64}') 2 2, auto`;
-    canvas.freeDrawingCursor = cursorUrl;
+    canvas.freeDrawingCursor = `url('data:image/svg+xml;base64,${base64}') 2 2, auto`;
   });
   $effect(() => {
     paintCache.get().then(async (v) => {
