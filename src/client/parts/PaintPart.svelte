@@ -9,6 +9,7 @@
     mdiFlipHorizontal,
     mdiFormatColorFill,
     mdiGrid,
+    mdiInvertColors,
     mdiRedo,
     mdiSpray,
     mdiTrashCanOutline,
@@ -133,6 +134,7 @@
   let toggles = [
     { name: "flip", icon: mdiFlipHorizontal },
     { name: "toggleGrid", icon: mdiGrid },
+    { name: "invert", icon: mdiInvertColors },
   ];
   let toggle: Tool[] = $state([]);
   let isFlip = $state(false);
@@ -149,6 +151,10 @@
   let isGrid = $state(false);
   $effect(() => {
     isGrid = toggle.map((v) => v.name).includes("toggleGrid");
+  });
+  let isInvert = $state(false);
+  $effect(() => {
+    isInvert = toggle.map((v) => v.name).includes("invert");
   });
 
   let actions = [
@@ -195,7 +201,7 @@
     width="800"
     height="600"
     class="canvas"
-    style={isFlip ? "transform:scaleX(-1);" : ""}
+    style={`${isFlip ? "transform:scaleX(-1);" : ""}${isInvert ? "filter:invert(1);" : ""}`}
   ></canvas>
   <div class="grid-overlay" style="opacity:{isGrid ? 0.4 : 0};"></div>
 </div>
