@@ -113,6 +113,11 @@
         fill(touch.clientX, touch.clientY);
       }
     });
+    const base64 = btoa(
+      '<svg xmlns="http://www.w3.org/2000/svg" width="4" height="4"><circle cx="2" cy="2" r="2" fill="black"/></svg>',
+    );
+    const cursorUrl = `url('data:image/svg+xml;base64,${base64}') 2 2, auto`;
+    canvas.freeDrawingCursor = cursorUrl;
   });
   $effect(() => {
     paintCache.get().then(async (v) => {
@@ -243,13 +248,27 @@
         break;
     }
   };
+
+  const w = window.innerWidth * 0.7 - 32;
+  const h = window.innerHeight * 0.7;
+  let w2 = 0;
+  let h2 = 0;
+  if (w < h) {
+    w2 = w;
+    h2 = w2 * (9 / 16);
+  } else {
+    h2 = h * 0.6;
+    w2 = h2 * (16 / 9);
+  }
+  const width = w2;
+  const height = h2;
 </script>
 
 <div class="canvas-wrapper">
   <canvas
     bind:this={canvasEl}
-    width="800"
-    height="600"
+    {width}
+    {height}
     class="canvas"
     style={`${isFlip ? "transform:scaleX(-1);" : ""}${isInvert ? "filter:invert(1);" : ""}`}
   ></canvas>
