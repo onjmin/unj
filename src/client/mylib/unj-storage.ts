@@ -41,18 +41,17 @@ const save = (key: string, value: string | null): void => {
 
 export class UnjStorage {
 	#key;
-	#onChange?: () => void;
-	constructor(key: string, onChange?: () => void) {
+	#reactive?: () => void;
+	constructor(key: string, reactive?: () => void) {
 		this.#key = key;
-		this.#onChange = onChange;
+		this.#reactive = reactive;
 	}
 	get value() {
 		return load(this.#key);
 	}
 	set value(value: string | null) {
-		if (this.value === value) return;
-		save(this.#key, value);
-		this.#onChange?.();
+		if (this.value !== value) save(this.#key, value);
+		this.#reactive?.();
 	}
 }
 
