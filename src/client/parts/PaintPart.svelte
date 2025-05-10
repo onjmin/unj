@@ -5,7 +5,6 @@
     mdiCircle,
     mdiContentSaveOutline,
     mdiEraser,
-    mdiExportVariant,
     mdiFlipHorizontal,
     mdiFormatColorFill,
     mdiGrid,
@@ -18,20 +17,15 @@
   import { preventDefault } from "@smui/common/events";
   import SegmentedButton, { Segment, Icon } from "@smui/segmented-button";
   import Slider from "@smui/slider";
-  import {
-    Canvas,
-    CircleBrush,
-    FabricObject,
-    PencilBrush,
-    SprayBrush,
-  } from "fabric";
+  import * as fabric from "fabric";
+  import { floodFill } from "../mylib/flood-fill.js";
   import { LinkedList } from "../mylib/linked-list.js";
   import { ObjectStorage } from "../mylib/object-storage.js";
 
   let { threadId } = $props();
 
   let canvasEl: HTMLCanvasElement;
-  let canvas: Canvas;
+  let canvas: fabric.Canvas;
   const history = new LinkedList<string>();
 
   let locked = false;
@@ -57,15 +51,43 @@
     if (v) await loadFromJSON(v);
   };
 
+  const fill = async (x: number, y: number) => {
+    if (!isFill || isFlip) return;
+    const canvasEl = canvas.lowerCanvasEl;
+    const rgb = fillColor
+      .slice(1)
+      .match(/.{2}/g)
+      ?.map((v) => Number.parseInt(v, 16));
+    if (rgb?.length !== 3) return;
+    const [r, g, b] = rgb;
+    floodFill(canvasEl, x, y, [r, g, b, 255]);
+    const dataUrl = canvas.lowerCanvasEl.toDataURL();
+    const img = await fabric.FabricImage.fromURL(dataUrl);
+    canvas.clear();
+    canvas.add(img);
+  };
+
   const paintCache = new ObjectStorage<string>(`paintCache###${threadId}`);
   $effect(() => {
-    canvas = new Canvas(canvasEl);
+    canvas = new fabric.Canvas(canvasEl);
     trace(false);
     canvas.isDrawingMode = true;
-    canvas.on("object:added", (e: { target: FabricObject }) => {
+    canvas.on("object:added", (e: { target: fabric.FabricObject }) => {
       e.target.erasable = true;
       const { canvas } = e.target;
       if (canvas) trace();
+    });
+    canvas.upperCanvasEl.addEventListener("click", (e) => {
+      const rect = canvasEl.getBoundingClientRect();
+      const x = Math.floor(e.clientX - rect.left);
+      const y = Math.floor(e.clientY - rect.top);
+      fill(x, y);
+    });
+    canvas.upperCanvasEl.addEventListener("touchstart", (e) => {
+      if (e.touches.length > 0) {
+        const touch = e.touches[0];
+        fill(touch.clientX, touch.clientY);
+      }
     });
   });
   $effect(() => {
@@ -83,6 +105,7 @@
   let pencilColor = $state("#000000");
   let sprayColor = $state("#000000");
   let circleColor = $state("#000000");
+  let fillColor = $state("#000000");
 
   interface Tool {
     name: string;
@@ -99,17 +122,17 @@
   $effect(() => {
     switch (choiced.name) {
       case "pencil":
-        canvas.freeDrawingBrush = new PencilBrush(canvas);
+        canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
         canvas.freeDrawingBrush.width = pencilWidth;
         canvas.freeDrawingBrush.color = pencilColor;
         break;
       case "spray":
-        canvas.freeDrawingBrush = new SprayBrush(canvas);
+        canvas.freeDrawingBrush = new fabric.SprayBrush(canvas);
         canvas.freeDrawingBrush.width = sprayWidth;
         canvas.freeDrawingBrush.color = sprayColor;
         break;
       case "circle":
-        canvas.freeDrawingBrush = new CircleBrush(canvas);
+        canvas.freeDrawingBrush = new fabric.CircleBrush(canvas);
         canvas.freeDrawingBrush.width = circleWidth;
         canvas.freeDrawingBrush.color = circleColor;
         break;
@@ -127,8 +150,13 @@
         }
         break;
       case "fill":
+        canvas.freeDrawingBrush = undefined;
         break;
     }
+  });
+  let isFill = $state(false);
+  $effect(() => {
+    isFill = choiced.name === "fill";
   });
 
   let toggles = [
@@ -140,13 +168,7 @@
   let isFlip = $state(false);
   $effect(() => {
     isFlip = toggle.map((v) => v.name).includes("flip");
-    const enabled = !isFlip;
-    canvas.isDrawingMode = enabled;
-    canvas.selection = enabled;
-    for (const obj of canvas.getObjects()) {
-      obj.selectable = enabled;
-      obj.evented = enabled;
-    }
+    canvas.upperCanvasEl.style.pointerEvents = isFlip ? "none" : "auto";
   });
   let isGrid = $state(false);
   $effect(() => {
@@ -162,7 +184,6 @@
     { name: "redo", icon: mdiRedo },
     { name: "clear", icon: mdiTrashCanOutline },
     { name: "save", icon: mdiContentSaveOutline },
-    { name: "export", icon: mdiExportVariant },
   ];
   const doAction = (action: Tool) => {
     switch (action.name) {
@@ -188,8 +209,6 @@
           link.download = "drawing.png";
           link.click();
         }
-        break;
-      case "export":
         break;
     }
   };
@@ -258,6 +277,8 @@
     <span class="brush-width">{circleWidth}px</span>
     <input type="color" bind:value={circleColor} />
     <Slider min="1" max="64" bind:value={circleWidth} />
+  {:else if choiced.name === "fill"}
+    <input type="color" bind:value={fillColor} />
   {/if}
 </div>
 
