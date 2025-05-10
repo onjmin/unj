@@ -51,10 +51,24 @@
     if (v) await loadFromJSON(v);
   };
 
+  const handleKeyDown = (e: KeyboardEvent) => {
+    if (e.ctrlKey && e.key === "z" && !e.shiftKey) {
+      e.preventDefault();
+      undo();
+    } else if (e.ctrlKey && e.key === "Z" && e.shiftKey) {
+      e.preventDefault();
+      redo();
+    }
+  };
+  $effect(() => {
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  });
+
   const fill = async (x: number, y: number) => {
     if (!isFill || isFlip) return;
     const canvasEl = canvas.lowerCanvasEl;
-    const rgb = fillColor
+    const rgb = brushColor
       .slice(1)
       .match(/.{2}/g)
       ?.map((v) => Number.parseInt(v, 16));
@@ -65,6 +79,7 @@
     const img = await fabric.FabricImage.fromURL(dataUrl);
     canvas.clear();
     canvas.add(img);
+    addRecent();
   };
 
   const paintCache = new ObjectStorage<string>(`paintCache###${threadId}`);
@@ -76,6 +91,15 @@
       e.target.erasable = true;
       const { canvas } = e.target;
       if (canvas) trace();
+    });
+    canvas.on("path:created", (e) => {
+      switch (choiced.name) {
+        case "pencil":
+        case "spray":
+        case "circle":
+          addRecent();
+          break;
+      }
     });
     canvas.upperCanvasEl.addEventListener("click", (e) => {
       const rect = canvasEl.getBoundingClientRect();
@@ -93,19 +117,26 @@
   $effect(() => {
     paintCache.get().then(async (v) => {
       if (v) await loadFromJSON(v);
+      trace(false);
     });
   });
-
-  let eraserWidth = $state(32);
 
   let pencilWidth = $state(2);
   let sprayWidth = $state(32);
   let circleWidth = $state(32);
+  let eraserWidth = $state(32);
+  let brushColor = $state("#222222"); // 濃いめの黒（自然な線画）
 
-  let pencilColor = $state("#222222"); // 濃いめの黒（自然な線画）
-  let sprayColor = $state("#ff6f00"); // オレンジ（スプレーっぽい雰囲気）
-  let circleColor = $state("#2962ff"); // 青（ドット感ある円ブラシに合う）
-  let fillColor = $state("#f44336"); // 赤（バケツ塗りの視認性が高い）
+  let recent: string[] = $state([]);
+  const maxRecent = 16;
+  const addRecent = () => {
+    const idx = recent.indexOf(brushColor);
+    if (idx === 0) return;
+    if (idx !== -1) recent.splice(idx, 1);
+    recent.unshift(brushColor);
+    if (recent.length > maxRecent) recent.pop();
+    recent = [...recent]; // 新しい配列を代入する（Svelte のリアクティブ性を保つため）
+  };
 
   interface Tool {
     name: string;
@@ -124,17 +155,17 @@
       case "pencil":
         canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
         canvas.freeDrawingBrush.width = pencilWidth;
-        canvas.freeDrawingBrush.color = pencilColor;
+        canvas.freeDrawingBrush.color = brushColor;
         break;
       case "spray":
         canvas.freeDrawingBrush = new fabric.SprayBrush(canvas);
         canvas.freeDrawingBrush.width = sprayWidth;
-        canvas.freeDrawingBrush.color = sprayColor;
+        canvas.freeDrawingBrush.color = brushColor;
         break;
       case "circle":
         canvas.freeDrawingBrush = new fabric.CircleBrush(canvas);
         canvas.freeDrawingBrush.width = circleWidth;
-        canvas.freeDrawingBrush.color = circleColor;
+        canvas.freeDrawingBrush.color = brushColor;
         break;
       case "eraser":
         {
@@ -264,31 +295,53 @@
   {/snippet}
 </SegmentedButton>
 
+{#snippet palette()}
+  <input type="color" bind:value={brushColor} />
+  {#each recent as color}
+    <button
+      aria-label="Select color"
+      class="palette"
+      style="background-color:{color};"
+      onclick={() => {
+        brushColor = color;
+      }}
+    ></button>
+  {/each}
+{/snippet}
+
 <div class="tool">
   {#if choiced.name === "pencil"}
     <span class="brush-width">{pencilWidth}px</span>
-    <input type="color" bind:value={pencilColor} />
+    {@render palette()}
     <Slider min="1" max="64" bind:value={pencilWidth} />
   {:else if choiced.name === "spray"}
     <span class="brush-width">{sprayWidth}px</span>
-    <input type="color" bind:value={sprayColor} />
+    {@render palette()}
     <Slider min="1" max="64" bind:value={sprayWidth} />
   {:else if choiced.name === "circle"}
     <span class="brush-width">{circleWidth}px</span>
-    <input type="color" bind:value={circleColor} />
+    {@render palette()}
     <Slider min="1" max="64" bind:value={circleWidth} />
   {:else if choiced.name === "fill"}
-    <input type="color" bind:value={fillColor} />
+    <span class="brush-width"></span>
+    {@render palette()}
   {/if}
 </div>
 
 <style>
   .tool {
+    text-align: left;
     min-height: 8rem;
   }
   .brush-width {
     display: inline-block;
     width: 4rem;
+  }
+
+  .palette {
+    width: 1.6rem;
+    height: 1.6rem;
+    border-radius: 50%;
   }
 
   .canvas-wrapper {
