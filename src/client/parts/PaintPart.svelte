@@ -102,10 +102,10 @@
   let sprayWidth = $state(32);
   let circleWidth = $state(32);
 
-  let pencilColor = $state("#000000");
-  let sprayColor = $state("#000000");
-  let circleColor = $state("#000000");
-  let fillColor = $state("#000000");
+  let pencilColor = $state("#222222"); // 濃いめの黒（自然な線画）
+  let sprayColor = $state("#ff6f00"); // オレンジ（スプレーっぽい雰囲気）
+  let circleColor = $state("#2962ff"); // 青（ドット感ある円ブラシに合う）
+  let fillColor = $state("#f44336"); // 赤（バケツ塗りの視認性が高い）
 
   interface Tool {
     name: string;
