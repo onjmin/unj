@@ -107,7 +107,7 @@
       if (canvas) trace();
     });
     canvas.on("path:created", (e) => {
-      switch (choiced.name) {
+      switch (choiced.key) {
         case "pencil":
         case "spray":
         case "circle":
@@ -161,20 +161,21 @@
   };
 
   interface Tool {
-    name: string;
+    label: string;
+    key: string;
     icon: string;
   }
   let choices = [
-    { name: "pencil", icon: mdiBrush },
-    { name: "spray", icon: mdiSpray },
-    { name: "circle", icon: mdiCircle },
-    { name: "eraser", icon: mdiEraser },
-    { name: "dropper", icon: mdiEyedropper },
-    { name: "fill", icon: mdiFormatColorFill },
+    { label: "鉛筆", key: "pencil", icon: mdiBrush },
+    { label: "霧吹き", key: "spray", icon: mdiSpray },
+    { label: "点描ブラシ", key: "circle", icon: mdiCircle },
+    { label: "消しゴム", key: "eraser", icon: mdiEraser },
+    { label: "カラーピッカー", key: "dropper", icon: mdiEyedropper },
+    { label: "塗りつぶし", key: "fill", icon: mdiFormatColorFill },
   ];
   let choiced = $state(choices[0]);
   $effect(() => {
-    switch (choiced.name) {
+    switch (choiced.key) {
       case "pencil":
         canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
         canvas.freeDrawingBrush.width = pencilWidth;
@@ -213,36 +214,36 @@
   });
   let isDropper = $state(false);
   $effect(() => {
-    isDropper = choiced.name === "dropper";
+    isDropper = choiced.key === "dropper";
   });
   let isFill = $state(false);
   $effect(() => {
-    isFill = choiced.name === "fill";
+    isFill = choiced.key === "fill";
   });
 
   let toggles = [
-    { name: "flip", icon: mdiFlipHorizontal },
-    { name: "toggleGrid", icon: mdiGrid },
+    { label: "左右反転", key: "flip", icon: mdiFlipHorizontal },
+    { label: "グリッド線", key: "toggleGrid", icon: mdiGrid },
   ];
   let toggle: Tool[] = $state([]);
   let isFlip = $state(false);
   $effect(() => {
-    isFlip = toggle.map((v) => v.name).includes("flip");
+    isFlip = toggle.map((v) => v.key).includes("flip");
     canvas.upperCanvasEl.style.pointerEvents = isFlip ? "none" : "auto";
   });
   let isGrid = $state(false);
   $effect(() => {
-    isGrid = toggle.map((v) => v.name).includes("toggleGrid");
+    isGrid = toggle.map((v) => v.key).includes("toggleGrid");
   });
 
   let actions = [
-    { name: "undo", icon: mdiUndo },
-    { name: "redo", icon: mdiRedo },
-    { name: "clear", icon: mdiTrashCanOutline },
-    { name: "save", icon: mdiContentSaveOutline },
+    { label: "戻る", key: "undo", icon: mdiUndo },
+    { label: "進む", key: "redo", icon: mdiRedo },
+    { label: "全消し", key: "clear", icon: mdiTrashCanOutline },
+    { label: "画像を保存", key: "save", icon: mdiContentSaveOutline },
   ];
   const doAction = (action: Tool) => {
-    switch (action.name) {
+    switch (action.key) {
       case "undo":
         undo();
         break;
@@ -302,10 +303,10 @@
   segments={choices}
   singleSelect
   bind:selected={choiced}
-  key={(segment: Tool) => segment.name}
+  key={(segment: Tool) => segment.key}
 >
   {#snippet segment(segment: Tool)}
-    <Segment {segment} title={segment.name}>
+    <Segment {segment} title={segment.label}>
       <Icon tag="svg" style="width: 1em; height: auto;" viewBox="0 0 24 24">
         <path fill="currentColor" d={segment.icon} />
       </Icon>
@@ -316,10 +317,10 @@
 <SegmentedButton
   segments={toggles}
   bind:selected={toggle}
-  key={(segment: Tool) => segment.name}
+  key={(segment: Tool) => segment.key}
 >
   {#snippet segment(segment: Tool)}
-    <Segment {segment} title={segment.name}>
+    <Segment {segment} title={segment.label}>
       <Icon tag="svg" style="width: 1em; height: auto;" viewBox="0 0 24 24">
         <path fill="currentColor" d={segment.icon} />
       </Icon>
@@ -327,9 +328,13 @@
   {/snippet}
 </SegmentedButton>
 
-<SegmentedButton segments={actions} key={(segment: Tool) => segment.name}>
+<SegmentedButton segments={actions} key={(segment: Tool) => segment.key}>
   {#snippet segment(segment: Tool)}
-    <Segment {segment} onclick={preventDefault(() => doAction(segment))}>
+    <Segment
+      {segment}
+      title={segment.label}
+      onclick={preventDefault(() => doAction(segment))}
+    >
       <Icon tag="svg" style="width: 1em; height: auto;" viewBox="0 0 24 24">
         <path fill="currentColor" d={segment.icon} />
       </Icon>
@@ -352,22 +357,22 @@
 {/snippet}
 
 <div class="tool">
-  {#if choiced.name === "pencil"}
+  {#if choiced.key === "pencil"}
     <span class="brush-width">{pencilWidth}px</span>
     {@render palette()}
     <Slider min={1} max={64} bind:value={pencilWidth} />
-  {:else if choiced.name === "spray"}
+  {:else if choiced.key === "spray"}
     <span class="brush-width">{sprayWidth}px</span>
     {@render palette()}
     <Slider min={1} max={64} bind:value={sprayWidth} />
-  {:else if choiced.name === "circle"}
+  {:else if choiced.key === "circle"}
     <span class="brush-width">{circleWidth}px</span>
     {@render palette()}
     <Slider min={1} max={64} bind:value={circleWidth} />
-  {:else if choiced.name === "dropper"}
+  {:else if choiced.key === "dropper"}
     <span class="brush-width"></span>
     {@render palette()}
-  {:else if choiced.name === "fill"}
+  {:else if choiced.key === "fill"}
     <span class="brush-width"></span>
     {@render palette()}
   {/if}
