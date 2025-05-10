@@ -366,12 +366,16 @@
     position: relative;
     width: 100%;
     height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   .canvas {
     position: absolute;
     top: 0;
     left: 0;
     z-index: 1; /* Canvasを格子より前面に表示 */
+    border: 1px solid rgba(0, 0, 0, 0.2); /* 薄いグレーの境界線 */
   }
   .grid-overlay {
     position: absolute;
