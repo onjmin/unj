@@ -5,10 +5,10 @@
     mdiCircle,
     mdiContentSaveOutline,
     mdiEraser,
+    mdiEyedropper,
     mdiFlipHorizontal,
     mdiFormatColorFill,
     mdiGrid,
-    mdiInvertColors,
     mdiRedo,
     mdiSpray,
     mdiTrashCanOutline,
@@ -65,6 +65,20 @@
     return () => window.removeEventListener("keydown", handleKeyDown);
   });
 
+  const dropper = (x: number, y: number) => {
+    if (!isDropper || isFlip) return;
+    const canvasEl = canvas.lowerCanvasEl;
+    const ctx = canvasEl.getContext("2d");
+    if (!ctx) return;
+    const { width, height } = canvas;
+    const imageData = ctx.getImageData(0, 0, width, height);
+    const data: Uint8ClampedArray = imageData.data;
+    const index = (y * width + x) * 4;
+    brushColor = `#${Array.from(data.slice(index, index + 3))
+      .map((v) => v.toString(16).padStart(2, "0"))
+      .join("")}`;
+  };
+
   const fill = async (x: number, y: number) => {
     if (!isFill || isFlip) return;
     const canvasEl = canvas.lowerCanvasEl;
@@ -105,12 +119,16 @@
       const rect = canvasEl.getBoundingClientRect();
       const x = Math.floor(e.clientX - rect.left);
       const y = Math.floor(e.clientY - rect.top);
+      dropper(x, y);
       fill(x, y);
     });
     canvas.upperCanvasEl.addEventListener("touchstart", (e) => {
       if (e.touches.length > 0) {
         const touch = e.touches[0];
-        fill(touch.clientX, touch.clientY);
+        const x = touch.clientX | 0;
+        const y = touch.clientY | 0;
+        dropper(x, y);
+        fill(x, y);
       }
     });
     const base64 = btoa(
@@ -151,6 +169,7 @@
     { name: "spray", icon: mdiSpray },
     { name: "circle", icon: mdiCircle },
     { name: "eraser", icon: mdiEraser },
+    { name: "dropper", icon: mdiEyedropper },
     { name: "fill", icon: mdiFormatColorFill },
   ];
   let choiced = $state(choices[0]);
@@ -184,10 +203,17 @@
             canvas.freeDrawingBrush.width = eraserWidth;
         }
         break;
+      case "dropper":
+        canvas.freeDrawingBrush = undefined;
+        break;
       case "fill":
         canvas.freeDrawingBrush = undefined;
         break;
     }
+  });
+  let isDropper = $state(false);
+  $effect(() => {
+    isDropper = choiced.name === "dropper";
   });
   let isFill = $state(false);
   $effect(() => {
@@ -197,7 +223,6 @@
   let toggles = [
     { name: "flip", icon: mdiFlipHorizontal },
     { name: "toggleGrid", icon: mdiGrid },
-    { name: "invert", icon: mdiInvertColors },
   ];
   let toggle: Tool[] = $state([]);
   let isFlip = $state(false);
@@ -208,10 +233,6 @@
   let isGrid = $state(false);
   $effect(() => {
     isGrid = toggle.map((v) => v.name).includes("toggleGrid");
-  });
-  let isInvert = $state(false);
-  $effect(() => {
-    isInvert = toggle.map((v) => v.name).includes("invert");
   });
 
   let actions = [
@@ -269,7 +290,7 @@
     {width}
     {height}
     class="canvas"
-    style={`${isFlip ? "transform:scaleX(-1);" : ""}${isInvert ? "filter:invert(1);" : ""}`}
+    style={`${isFlip ? "transform:scaleX(-1);" : ""}`}
   ></canvas>
   <div
     class="grid-overlay"
@@ -334,15 +355,18 @@
   {#if choiced.name === "pencil"}
     <span class="brush-width">{pencilWidth}px</span>
     {@render palette()}
-    <Slider min="1" max="64" bind:value={pencilWidth} />
+    <Slider min={1} max={64} bind:value={pencilWidth} />
   {:else if choiced.name === "spray"}
     <span class="brush-width">{sprayWidth}px</span>
     {@render palette()}
-    <Slider min="1" max="64" bind:value={sprayWidth} />
+    <Slider min={1} max={64} bind:value={sprayWidth} />
   {:else if choiced.name === "circle"}
     <span class="brush-width">{circleWidth}px</span>
     {@render palette()}
-    <Slider min="1" max="64" bind:value={circleWidth} />
+    <Slider min={1} max={64} bind:value={circleWidth} />
+  {:else if choiced.name === "dropper"}
+    <span class="brush-width"></span>
+    {@render palette()}
   {:else if choiced.name === "fill"}
     <span class="brush-width"></span>
     {@render palette()}
@@ -384,7 +408,7 @@
     position: absolute;
     background-image: linear-gradient(to right, gray 1px, transparent 1px),
       linear-gradient(to bottom, gray 1px, transparent 1px);
-    background-size: 20px 20px; /* 格子の間隔を20pxに設定 */
+    background-size: 32px 32px; /* 格子の間隔を32pxに設定 */
     pointer-events: none; /* 格子に対してユーザーの操作ができないようにする */
     z-index: 0; /* 格子をキャンバスの後ろに表示 */
   }
