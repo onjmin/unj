@@ -197,7 +197,7 @@
     class="canvas"
     style={isFlip ? "transform:scaleX(-1);" : ""}
   ></canvas>
-  <div class="grid-overlay" style="opacity:{isGrid ? 1 : 0};"></div>
+  <div class="grid-overlay" style="opacity:{isGrid ? 0.4 : 0};"></div>
 </div>
 
 <SegmentedButton
