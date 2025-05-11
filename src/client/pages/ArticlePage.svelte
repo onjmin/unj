@@ -30,7 +30,10 @@
     const cache = new ObjectStorage<BloggerItem>(`articleCache###${newsId}`);
     $effect(() => {
         cache.get().then((v) => {
-            if (v && !item) item = v;
+            if (v && !item) {
+                item = v;
+                title = item?.title ?? "ニュース取得失敗";
+            }
         });
     });
 
