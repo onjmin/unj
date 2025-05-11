@@ -3,6 +3,7 @@
   import { Route, Router } from "svelte-routing";
   import { makePathname } from "./mylib/env.js";
   import ArtPage from "./pages/ArtPage.svelte";
+  import ArticlePage from "./pages/ArticlePage.svelte";
   import BanCodeVerifyPage from "./pages/BanCodeVerifyPage.svelte";
   import BannedPage from "./pages/BannedPage.svelte";
   import BookmarkPage from "./pages/BookmarkPage.svelte";
@@ -14,10 +15,11 @@
   import HomePage from "./pages/HomePage.svelte";
   import LinksPage from "./pages/LinksPage.svelte";
   import NewPage from "./pages/NewPage.svelte";
+  import NewsPage from "./pages/NewsPage.svelte";
   import NotFoundPage from "./pages/NotFoundPage.svelte";
   import TermsPage from "./pages/TermsPage.svelte";
+  import TestPage from "./pages/TestPage.svelte";
   import ThreadPage from "./pages/ThreadPage.svelte";
-  import UpdatePage from "./pages/UpdatePage.svelte";
   import BannedCheck from "./plugs/BannedCheck.svelte";
   import TraversalCheck from "./plugs/TraversalCheck.svelte";
   import UnbannedCheck from "./plugs/UnbannedCheck.svelte";
@@ -47,13 +49,13 @@
     </BannedCheck>
   </Route>
 
-  <!-- ヘッドライン -->
+  <!-- スレ一覧 -->
   <Route path={makePathname("/headline")}>
     <BannedCheck>
       <HeadlinePage />
     </BannedCheck>
   </Route>
-  <!-- スレッド -->
+  <!-- スレ個別 -->
   <Route path="{makePathname('/thread')}/:threadId" let:params>
     <BannedCheck>
       <ThreadPage threadId={params.threadId} />
@@ -116,10 +118,16 @@
       <ContactPage />
     </BannedCheck>
   </Route>
-  <!-- 新機能のお知らせ -->
-  <Route path={makePathname("/update")}>
+  <!-- ブログ一覧 -->
+  <Route path={makePathname("/news")}>
     <BannedCheck>
-      <UpdatePage />
+      <NewsPage />
+    </BannedCheck>
+  </Route>
+  <!-- ブログ個別 -->
+  <Route path="{makePathname('/news')}/:newsId" let:params>
+    <BannedCheck>
+      <ArticlePage newsId={params.newsId} />
     </BannedCheck>
   </Route>
   <!-- TOP絵集 -->
@@ -132,6 +140,12 @@
   <Route path={makePathname("/links")}>
     <BannedCheck>
       <LinksPage />
+    </BannedCheck>
+  </Route>
+  <!-- 後で消す -->
+  <Route path={makePathname("/test")}>
+    <BannedCheck>
+      <TestPage />
     </BannedCheck>
   </Route>
 

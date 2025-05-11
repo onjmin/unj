@@ -96,13 +96,13 @@
                 <Text>お問い合わせ</Text>
             </Item>
             <Item
-                onclick={() => navigate(makePathname("/update"))}
-                activated={pathname().startsWith("/update")}
+                onclick={() => navigate(makePathname("/news"))}
+                activated={pathname().startsWith("/news")}
             >
                 <Graphic class="material-icons" aria-hidden="true"
-                    >new_releases</Graphic
+                    >newspaper</Graphic
                 >
-                <Text>新機能のお知らせ</Text>
+                <Text>ニュース</Text>
             </Item>
             <Item
                 onclick={() => navigate(makePathname("/art"))}

@@ -115,7 +115,7 @@
 
 <MainPart>
     {#if threadList === null}
-        <p>ヘッドライン読み込み中…</p>
+        <p>ヘッドライン取得中…</p>
         <Paper
             color="primary"
             variant="outlined"

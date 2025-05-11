@@ -155,7 +155,7 @@
     let thread: Thread | null = $state(null);
     let topCursor = $state("");
     let bottomCursor = $state("");
-    let title = $state("スレ読み込み中");
+    let title = $state("スレ取得中");
     let lolCount = $state(0);
     let goodVotes = $state(0);
     let badVotes = $state(0);
@@ -620,7 +620,7 @@
 
 <MainPart>
     {#if thread === null}
-        <p>スレ読み込み中…</p>
+        <p>スレ取得中…</p>
         <Paper
             color="primary"
             variant="outlined"
@@ -638,7 +638,7 @@
                     style="padding-left: 5px;">{thread.title}</span
                 >
             </p>
-            <ChipSet {chips}>
+            <ChipSet {chips} nonInteractive>
                 {#snippet chip(chip: string)}
                     <Chip {chip}>
                         <LeadingIcon class="material-icons"
