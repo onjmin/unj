@@ -15,6 +15,7 @@
         label2icon,
     } from "../mylib/blogger.js";
     import { decodeEnv, makePathname } from "../mylib/env.js";
+    import { ObjectStorage } from "../mylib/object-storage.js";
 
     const VITE_BLOGGER_BLOG_ID = decodeEnv(
         import.meta.env.VITE_BLOGGER_BLOG_ID,
@@ -24,6 +25,13 @@
     );
 
     let items: BloggerItem[] | null = $state(null);
+    const cache = new ObjectStorage<BloggerItem[]>("newsCache");
+    $effect(() => {
+        cache.get().then((v) => {
+            if (v && !items) items = v;
+        });
+    });
+
     let error = $state(false);
     $effect(() => {
         (async () => {
@@ -32,6 +40,7 @@
                     `https://www.googleapis.com/blogger/v3/blogs/${VITE_BLOGGER_BLOG_ID}/posts?key=${VITE_BLOGGER_API_KEY}&fields=items(id,title,published,labels)`,
                 ).then((response) => response.json());
                 items = res.items;
+                cache.set(items);
             } catch (err) {
                 error = true;
             }

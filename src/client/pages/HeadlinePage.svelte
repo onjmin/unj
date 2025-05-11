@@ -57,17 +57,18 @@
     };
 
     let threadList: HeadlineThread[] | null = $state(null);
-    const headlineCache = new ObjectStorage<HeadlineThread[]>("headlineCache");
+    const cache = new ObjectStorage<HeadlineThread[]>("headlineCache");
     $effect(() => {
-        headlineCache.get().then((v) => {
+        cache.get().then((v) => {
             if (v && !threadList) threadList = v;
         });
     });
+
     const handleHeadline = (data: { ok: boolean; list: HeadlineThread[] }) => {
         if (!data.ok) return;
         ok();
         threadList = data.list;
-        headlineCache.set(data.list);
+        cache.set(data.list);
     };
 
     const handleMakeThread = (data: { ok: boolean; new: HeadlineThread }) => {

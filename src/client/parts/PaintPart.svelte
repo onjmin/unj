@@ -38,7 +38,7 @@
   const trace = (save = true) => {
     if (locked) return;
     history.add(canvas.toJSON());
-    if (save) paintCache.set(canvas.toJSON());
+    if (save) cache.set(canvas.toJSON());
   };
   const undo = async () => {
     if (locked) return;
@@ -96,7 +96,6 @@
     addRecent();
   };
 
-  const paintCache = new ObjectStorage<string>(`paintCache###${threadId}`);
   $effect(() => {
     canvas = new fabric.Canvas(canvasEl);
     trace(false);
@@ -136,8 +135,10 @@
     );
     canvas.freeDrawingCursor = `url('data:image/svg+xml;base64,${base64}') 2 2, auto`;
   });
+
+  const cache = new ObjectStorage<string>(`paintCache###${threadId}`);
   $effect(() => {
-    paintCache.get().then(async (v) => {
+    cache.get().then(async (v) => {
       if (v) await loadFromJSON(v);
       trace(false);
     });

@@ -15,6 +15,7 @@
         label2icon,
     } from "../mylib/blogger.js";
     import { decodeEnv, makePathname } from "../mylib/env.js";
+    import { ObjectStorage } from "../mylib/object-storage.js";
 
     let { newsId = "" } = $props();
 
@@ -26,6 +27,13 @@
     );
 
     let item: BloggerItem | null = $state(null);
+    const cache = new ObjectStorage<BloggerItem>(`articleCache###${newsId}`);
+    $effect(() => {
+        cache.get().then((v) => {
+            if (v && !item) item = v;
+        });
+    });
+
     let error = $state(false);
     let title = $state("ニュース取得中");
     $effect(() => {
@@ -36,6 +44,7 @@
                 ).then((response) => response.json());
                 item = res;
                 title = item?.title ?? "ニュース取得失敗";
+                cache.set(item);
             } catch (err) {
                 error = true;
             }

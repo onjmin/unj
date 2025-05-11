@@ -11,6 +11,8 @@ export class ObjectStorage<T> {
 		return (await localforage.getItem<T>(this.key)) ?? null;
 	}
 	set(value: T | null): void {
-		localforage.setItem(this.key, value);
+		try {
+			localforage.setItem(this.key, JSON.parse(JSON.stringify(value)));
+		} catch (err) {}
 	}
 }

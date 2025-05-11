@@ -153,6 +153,13 @@
     };
 
     let thread: Thread | null = $state(null);
+    const cache = new ObjectStorage<Thread>(`threadCache###${threadId}`);
+    $effect(() => {
+        cache.get().then((v) => {
+            if (v && !thread) loadThread(v);
+        });
+    });
+
     let topCursor = $state("");
     let bottomCursor = $state("");
     let title = $state("スレ取得中");
@@ -186,17 +193,11 @@
         }
     };
 
-    const threadCache = new ObjectStorage<Thread>(`threadCache###${threadId}`);
-    $effect(() => {
-        threadCache.get().then((v) => {
-            if (v && !thread) loadThread(v);
-        });
-    });
     const handleReadThread = async (data: { ok: boolean; thread: Thread }) => {
         if (!data.ok) return;
         ok();
         loadThread(data.thread);
-        threadCache.set(data.thread);
+        cache.set(data.thread);
     };
 
     let openNewResNotice = $state(false);
