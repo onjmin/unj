@@ -26,27 +26,59 @@
         import.meta.env.VITE_BLOGGER_API_KEY,
     );
 
-    let item: BloggerItem | null = $state(null);
-    const cache = new ObjectStorage<BloggerItem>(`articleCache###${newsId}`);
+    let items: BloggerItem[] | null = $state(null);
+    const cache = new ObjectStorage<BloggerItem[]>("newsCache");
     $effect(() => {
         cache.get().then((v) => {
-            if (v && !item) {
-                item = v;
-                title = item?.title ?? "ニュース取得失敗";
+            if (v && !items) {
+                items = v.reverse();
+                updatePagination();
             }
         });
     });
 
-    let error = $state(false);
+    let first: string | null = $state(null);
+    let prev: string | null = $state(null);
+    let next: string | null = $state(null);
+    let last: string | null = $state(null);
+    const updatePagination = () => {
+        if (!items) return;
+        const lastIdx = items.length - 1;
+        const idx = items.map((v) => v.id).indexOf(newsId);
+        if (idx === -1) return;
+        const a = idx !== 0;
+        first = !a ? null : items[0].id;
+        prev = !a ? null : items[idx - 1].id;
+        const b = idx !== lastIdx;
+        next = !b ? null : items[idx + 1].id;
+        last = !b ? null : items[lastIdx].id;
+    };
+
+    let item: BloggerItem | null = $state(null);
     let title = $state("ニュース取得中");
+    let error = $state(false);
     $effect(() => {
+        const _newsId = newsId;
+        const cache = new ObjectStorage<BloggerItem>(
+            `articleCache###${newsId}`,
+        );
+        cache.get().then((v) => {
+            if (v) {
+                if (_newsId !== newsId) return;
+                item = v;
+                title = item?.title ?? "ニュース取得失敗";
+                updatePagination();
+            }
+        });
         (async () => {
             try {
                 const res = await fetch(
                     `https://www.googleapis.com/blogger/v3/blogs/${VITE_BLOGGER_BLOG_ID}/posts/${newsId}?key=${VITE_BLOGGER_API_KEY}&fields=id,title,published,labels,content`,
                 ).then((response) => response.json());
+                if (_newsId !== newsId) return;
                 item = res;
                 title = item?.title ?? "ニュース取得失敗";
+                updatePagination();
                 cache.set(item);
             } catch (err) {
                 error = true;
@@ -66,15 +98,34 @@
 <HeaderPart {title} />
 
 {#snippet paginationControls()}
-    <IconButton class="material-icons" disabled={true}>first_page</IconButton>
-    <IconButton class="material-icons" disabled={true}>chevron_left</IconButton>
+    <IconButton
+        class="material-icons"
+        disabled={first === null}
+        onclick={() => navigate(makePathname(`/news/${first}`))}
+        >first_page</IconButton
+    >
+    <IconButton
+        class="material-icons"
+        disabled={prev === null}
+        onclick={() => navigate(makePathname(`/news/${prev}`))}
+        >chevron_left</IconButton
+    >
     <IconButton
         class="material-icons"
         onclick={() => navigate(makePathname("/news"))}>home</IconButton
     >
-    <IconButton class="material-icons" disabled={true}>chevron_right</IconButton
+    <IconButton
+        class="material-icons"
+        disabled={next === null}
+        onclick={() => navigate(makePathname(`/news/${next}`))}
+        >chevron_right</IconButton
     >
-    <IconButton class="material-icons" disabled={true}>last_page</IconButton>
+    <IconButton
+        class="material-icons"
+        disabled={last === null}
+        onclick={() => navigate(makePathname(`/news/${last}`))}
+        >last_page</IconButton
+    >
 {/snippet}
 
 <MainPart>
