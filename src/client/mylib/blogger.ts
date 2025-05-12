@@ -1,13 +1,13 @@
 import { format } from "date-fns";
 import { ja } from "date-fns/locale";
 
-export interface BloggerItem {
+export type BloggerItem = {
 	id: string;
 	title: string;
 	published: string;
 	labels: string[];
 	content: string;
-}
+};
 
 export const formatDate = (date: string): string =>
 	format(new Date(date), "MM月dd日", { locale: ja });

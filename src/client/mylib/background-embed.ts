@@ -20,15 +20,15 @@ export const clearActiveController = () => {
 	activeController = null;
 };
 
-interface Controller {
+type Controller = {
 	target: any | null;
 	play(): void;
 	pause(): void;
-}
-interface NicovideoController extends Controller {
+};
+type NicovideoController = Controller & {
 	origin: string;
 	post(data: object): void;
-}
+};
 const youTubeController = new (class implements Controller {
 	target: any | null = null;
 	play() {
