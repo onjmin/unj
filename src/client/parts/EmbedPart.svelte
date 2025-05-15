@@ -5,7 +5,6 @@
     Graphic,
     Text,
     PrimaryText,
-    Meta,
     SecondaryText,
   } from "@smui/list";
   import Paper, { Title, Content, Subtitle } from "@smui/paper";
@@ -134,8 +133,8 @@
           <PrimaryText>{siteInfo.name}</PrimaryText>
           <SecondaryText>{siteInfo.description}</SecondaryText>
         </Text>
-        <Meta class="material-icons"
-          >{temp === unjGames ? "open_in_new" : "touch_app"}</Meta
+        <IconButton class="material-icons"
+          >{temp === unjGames ? "open_in_new" : "touch_app"}</IconButton
         >
       </Item>
     </List>
