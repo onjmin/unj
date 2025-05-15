@@ -113,7 +113,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			poolClient = await pool.connect();
 
 			if (PROD_MODE)
-				coolTimes.set(userId, addSeconds(new Date(), randInt(8, 32)));
+				coolTimes.set(userId, addSeconds(new Date(), randInt(2, 16)));
 
 			// 忍法帖の読み込み
 			if (!userCached.has(userId)) {

@@ -79,7 +79,7 @@ export default ({ socket }: { socket: Socket }) => {
 			poolClient = await pool.connect();
 
 			if (PROD_MODE)
-				coolTimes.set(userId, addSeconds(new Date(), randInt(32, 256)));
+				coolTimes.set(userId, addSeconds(new Date(), randInt(8, 128)));
 
 			await poolClient.query("BEGIN"); // トランザクション開始
 
