@@ -127,6 +127,13 @@ export const onDraw = (
 	g_upper.canvas.addEventListener("pointermove", (e) => {
 		if (drawing) callback(...f(e));
 	});
+	// スクロールとピンチインとピンチアウトを抑止
+	g_upper.canvas.addEventListener("touchstart", (e) => e.preventDefault(), {
+		passive: false,
+	});
+	g_upper.canvas.addEventListener("touchmove", (e) => e.preventDefault(), {
+		passive: false,
+	});
 };
 
 let drawing = false;
