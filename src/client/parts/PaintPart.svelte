@@ -7,6 +7,7 @@
     mdiFlipHorizontal,
     mdiFormatColorFill,
     mdiGrid,
+    mdiLayers,
     mdiPencil,
     mdiRedo,
     mdiSquare,
@@ -15,8 +16,10 @@
     mdiUndo,
   } from "@mdi/js";
   import { preventDefault } from "@smui/common/events";
+  import IconButton from "@smui/icon-button";
   import SegmentedButton, { Segment, Icon } from "@smui/segmented-button";
   import Slider from "@smui/slider";
+  import Textfield from "@smui/textfield";
   import { ObjectStorage } from "../mylib/object-storage.js";
   import { floodFill } from "../mylib/oekaki/flood-fill.js";
   import * as oekaki from "../mylib/oekaki/layered-canvas.js";
@@ -86,6 +89,13 @@
     }
 
     activeLayer = new oekaki.LayeredCanvas("test");
+    setTimeout(() => {
+      if (!activeLayer) return;
+      layerVisible = activeLayer.visible;
+      opacity = activeLayer.opacity;
+      layerName = activeLayer.name;
+      layerLocked = activeLayer.locked;
+    });
 
     let prevX: number | null = null;
     let prevY: number | null = null;
@@ -94,23 +104,26 @@
       if (prevY === null) prevY = y;
       if (choiced.label === tool.dropper.label) {
         dropper(x, y);
-      } else if (choiced.label === tool.brush.label) {
-        activeLayer?.drawLine(x, y, prevX, prevY);
-      } else {
-        const lerps = lerp(x, y, prevX, prevY);
-        switch (choiced.label) {
-          case tool.pen.label:
-            for (const [x, y] of lerps) activeLayer?.draw(x, y);
-            break;
-          case tool.eraser.label:
-            for (const [x, y] of lerps) activeLayer?.erase(x, y);
-            break;
-          case tool.dotPen.label:
-            for (const [x, y] of lerps) activeLayer?.drawDot(x, y);
-            break;
-          case tool.dotEraser.label:
-            for (const [x, y] of lerps) activeLayer?.eraseDot(x, y);
-            break;
+      }
+      if (!activeLayer?.locked) {
+        if (choiced.label === tool.brush.label) {
+          activeLayer?.drawLine(x, y, prevX, prevY);
+        } else {
+          const lerps = lerp(x, y, prevX, prevY);
+          switch (choiced.label) {
+            case tool.pen.label:
+              for (const [x, y] of lerps) activeLayer?.draw(x, y);
+              break;
+            case tool.eraser.label:
+              for (const [x, y] of lerps) activeLayer?.erase(x, y);
+              break;
+            case tool.dotPen.label:
+              for (const [x, y] of lerps) activeLayer?.drawDot(x, y);
+              break;
+            case tool.dotEraser.label:
+              for (const [x, y] of lerps) activeLayer?.eraseDot(x, y);
+              break;
+          }
         }
       }
       prevX = x;
@@ -125,9 +138,11 @@
     oekaki.onDrawn((x, y, buttons) => {
       prevX = null;
       prevY = null;
+      if (activeLayer?.locked) return;
       fin();
     });
     oekaki.onClick((x, y, buttons) => {
+      if (activeLayer?.locked) return;
       if (choiced.label === tool.fill.label) {
         fill(x, y);
         fin();
@@ -143,11 +158,31 @@
   //   });
   // });
 
+  let opacity = $state(100);
+  let layerVisible = $state(true);
+  let layerName = $state("");
+  let layerNameDisabled = $state(true);
+  let layerLocked = $state(false);
+  $effect(() => {
+    if (activeLayer) activeLayer.opacity = opacity;
+  });
+  $effect(() => {
+    if (activeLayer) activeLayer.visible = layerVisible;
+  });
+  $effect(() => {
+    if (activeLayer) activeLayer.name = layerName;
+  });
+  $effect(() => {
+    if (activeLayer) activeLayer.locked = layerLocked;
+  });
+
   let color = $state(oekaki.color.value);
   let penSize = $state(oekaki.penSize.value);
   let brushSize = $state(oekaki.brushSize.value);
   let eraserSize = $state(oekaki.eraserSize.value);
-
+  $effect(() => {
+    if (activeLayer) activeLayer.opacity = opacity;
+  });
   $effect(() => {
     oekaki.color.value = color;
   });
@@ -195,8 +230,9 @@
     // アクション系
     undo: { label: "戻る", icon: mdiUndo },
     redo: { label: "進む", icon: mdiRedo },
-    clear: { label: "全消し", icon: mdiTrashCanOutline },
+    layersPanel: { label: "レイヤーパネル", icon: mdiLayers },
     save: { label: "画像を保存", icon: mdiContentSaveOutline },
+    clear: { label: "全消し", icon: mdiTrashCanOutline },
   } as const;
 
   let choices = [
@@ -220,7 +256,7 @@
     isGrid = toggle.map((v) => v.label).includes(tool.grid.label);
   });
 
-  let actions = [tool.undo, tool.redo, tool.clear, tool.save];
+  let actions = [tool.undo, tool.redo, tool.layersPanel, tool.save, tool.clear];
   const doAction = (action: Tool) => {
     switch (action.label) {
       case tool.undo.label:
@@ -229,9 +265,7 @@
       case tool.redo.label:
         activeLayer?.redo();
         break;
-      case tool.clear.label:
-        activeLayer?.clear();
-        activeLayer?.trace();
+      case tool.layersPanel.label:
         break;
       case tool.save.label:
         {
@@ -241,6 +275,10 @@
           link.download = "drawing.png";
           link.click();
         }
+        break;
+      case tool.clear.label:
+        activeLayer?.clear();
+        activeLayer?.trace();
         break;
     }
   };
@@ -260,9 +298,47 @@
   const height = h2 | 0;
 </script>
 
+<div class="top-tools-wrapper">
+  <span class="size">{opacity}%</span>
+  <IconButton
+    class="material-icons"
+    onclick={() => {
+      layerVisible = !layerVisible;
+    }}>{layerVisible ? "visibility" : "visibility_off"}</IconButton
+  >
+  <Textfield
+    disabled={layerNameDisabled}
+    label="レイヤー名"
+    bind:value={layerName}
+    input$maxlength={32}
+  ></Textfield>
+  <IconButton
+    class="material-icons"
+    onclick={() => {
+      layerNameDisabled = !layerNameDisabled;
+    }}>{layerNameDisabled ? "edit" : "check"}</IconButton
+  >
+  <IconButton
+    class="material-icons"
+    onclick={() => {
+      layerLocked = !layerLocked;
+    }}
+  >
+    {layerLocked ? "lock" : "lock_open"}
+  </IconButton>
+  <IconButton
+    class="material-icons"
+    onclick={() => {
+      // TODO
+    }}>delete_forever</IconButton
+  >
+
+  <Slider min={0} max={100} bind:value={opacity} />
+</div>
+
 <div class={isGrid ? "grid" : ""} bind:this={oekakiWrapper}></div>
 
-<div class="tool">
+<div class="bottom-tools-wrapper">
   <SegmentedButton
     segments={choices}
     singleSelect
@@ -321,7 +397,7 @@
   {/each}
 {/snippet}
 
-<div class="sub-tool">
+<div class="bottom-tools-wrapper-sub">
   {#if choiced.label === tool.pen.label}
     <span class="size">{penSize}px</span>
     {@render palette()}
@@ -350,10 +426,10 @@
 </div>
 
 <style>
-  .tool :global(svg:focus) {
+  .bottom-tools-wrapper :global(svg:focus) {
     outline: 0;
   }
-  .sub-tool {
+  .bottom-tools-wrapper-sub {
     text-align: left;
     min-height: 8rem;
   }

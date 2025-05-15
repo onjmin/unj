@@ -154,6 +154,9 @@ export class LayeredCanvas {
 	index = g_layers.length;
 	history = new LinkedList<Uint8ClampedArray>();
 	hash = 0;
+	#visible = true;
+	#opacity = 100;
+	locked = false;
 	constructor(name: string) {
 		this.name = name;
 		const canvas = document.createElement("canvas");
@@ -188,16 +191,18 @@ export class LayeredCanvas {
 		];
 	}
 	get visible() {
-		return this.canvas.style.visibility === "hidden";
+		return this.#visible;
 	}
 	set visible(visible: boolean) {
-		this.canvas.style.visibility = visible ? "visible" : "hidden";
+		this.#visible = visible;
+		this.canvas.style.visibility = this.#visible ? "visible" : "hidden";
 	}
 	get opacity() {
-		return Number(this.canvas.style.opacity);
+		return this.#opacity;
 	}
-	set opacity(n: number) {
-		this.canvas.style.opacity = String(n);
+	set opacity(opacity: number) {
+		this.#opacity = opacity;
+		this.canvas.style.opacity = `${opacity}%`;
 	}
 	get data() {
 		return this.ctx.getImageData(0, 0, g_width, g_height).data;
@@ -218,25 +223,30 @@ export class LayeredCanvas {
 		this.history.add(this.data);
 	}
 	undo() {
+		if (this.locked) return;
 		const data = this.history.undo();
 		if (!data) return;
 		this.data = data;
 	}
 	redo() {
+		if (this.locked) return;
 		const data = this.history.redo();
 		if (!data) return;
 		this.data = data;
 	}
 	clear() {
+		if (this.locked) return;
 		this.ctx.clearRect(0, 0, g_width, g_height);
 	}
 	eraseDot(x: number, y: number) {
+		if (this.locked) return;
 		const size = dotSize.value;
 		const _x = Math.floor(x / size) * size;
 		const _y = Math.floor(y / size) * size;
 		this.ctx.clearRect(_x, _y, size, size);
 	}
 	drawDot(x: number, y: number) {
+		if (this.locked) return;
 		this.ctx.fillStyle = color.value;
 		const size = dotSize.value;
 		const _x = Math.floor(x / size) * size;
@@ -244,6 +254,7 @@ export class LayeredCanvas {
 		this.ctx.fillRect(_x, _y, size, size);
 	}
 	erase(x: number, y: number) {
+		if (this.locked) return;
 		this.ctx.globalCompositeOperation = "destination-out";
 		this.ctx.beginPath();
 		this.ctx.arc(x, y, eraserSize.value >> 1, 0, Math.PI * 2);
@@ -251,12 +262,14 @@ export class LayeredCanvas {
 		this.ctx.globalCompositeOperation = "source-over";
 	}
 	draw(x: number, y: number) {
+		if (this.locked) return;
 		this.ctx.fillStyle = color.value;
 		const size = penSize.value;
 		const radius = size >> 1;
 		this.ctx.fillRect(x - radius, y - radius, size, size);
 	}
 	drawLine(fromX: number, fromY: number, toX: number, toY: number) {
+		if (this.locked) return;
 		this.ctx.strokeStyle = color.value;
 		this.ctx.lineWidth = brushSize.value;
 		this.ctx.lineCap = "round";
