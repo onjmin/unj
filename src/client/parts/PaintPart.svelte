@@ -1,63 +1,42 @@
 <script lang="ts">
-  import { EraserBrush, type ErasingEvent } from "@erase2d/fabric";
   import {
     mdiBrush,
-    mdiCircle,
     mdiContentSaveOutline,
     mdiEraser,
     mdiEyedropper,
     mdiFlipHorizontal,
     mdiFormatColorFill,
     mdiGrid,
+    mdiPencil,
     mdiRedo,
-    mdiSpray,
+    mdiSquare,
+    mdiSquareOutline,
     mdiTrashCanOutline,
     mdiUndo,
   } from "@mdi/js";
   import { preventDefault } from "@smui/common/events";
   import SegmentedButton, { Segment, Icon } from "@smui/segmented-button";
   import Slider from "@smui/slider";
-  import * as fabric from "fabric";
-  import { floodFill } from "../mylib/flood-fill.js";
-  import { LinkedList } from "../mylib/linked-list.js";
   import { ObjectStorage } from "../mylib/object-storage.js";
+  import { floodFill } from "../mylib/oekaki/flood-fill.js";
+  import * as oekaki from "../mylib/oekaki/layered-canvas.js";
+  import { lerp } from "../mylib/oekaki/lerp.js";
 
   let { threadId } = $props();
 
-  let canvasEl: HTMLCanvasElement;
-  let canvas: fabric.Canvas;
-  const history = new LinkedList<string>();
+  let oekakiWrapper: HTMLDivElement;
+  let activeLayer: oekaki.LayeredCanvas | null = $state(null);
 
-  let locked = false;
-  const loadFromJSON = async (json: string) => {
-    locked = true;
-    await canvas.loadFromJSON(json);
-    canvas.renderAll();
-    locked = false;
-  };
-  const trace = (save = true) => {
-    if (locked) return;
-    history.add(canvas.toJSON());
-    if (save) cache.set(canvas.toJSON());
-  };
-  const undo = async () => {
-    if (locked) return;
-    const v = history.undo();
-    if (v) await loadFromJSON(v);
-  };
-  const redo = async () => {
-    if (locked) return;
-    const v = history.redo();
-    if (v) await loadFromJSON(v);
-  };
-
+  /**
+   * PC版ショートカット
+   */
   const handleKeyDown = (e: KeyboardEvent) => {
     if (e.ctrlKey && e.key === "z" && !e.shiftKey) {
       e.preventDefault();
-      undo();
+      activeLayer?.undo();
     } else if (e.ctrlKey && e.key === "Z" && e.shiftKey) {
       e.preventDefault();
-      redo();
+      activeLayer?.redo();
     }
   };
   $effect(() => {
@@ -66,202 +45,197 @@
   });
 
   const dropper = (x: number, y: number) => {
-    if (!isDropper || isFlip) return;
-    const canvasEl = canvas.lowerCanvasEl;
-    const ctx = canvasEl.getContext("2d");
-    if (!ctx) return;
-    const { width, height } = canvas;
-    const imageData = ctx.getImageData(0, 0, width, height);
-    const data: Uint8ClampedArray = imageData.data;
+    if (!activeLayer) return;
     const index = (y * width + x) * 4;
-    brushColor = `#${Array.from(data.slice(index, index + 3))
+    color = `#${Array.from(activeLayer.data.slice(index, index + 3))
       .map((v) => v.toString(16).padStart(2, "0"))
       .join("")}`;
   };
 
   const fill = async (x: number, y: number) => {
-    if (!isFill || isFlip) return;
-    const canvasEl = canvas.lowerCanvasEl;
-    const rgb = brushColor
+    if (!activeLayer) return;
+    const rgb = color
       .slice(1)
       .match(/.{2}/g)
       ?.map((v) => Number.parseInt(v, 16));
     if (rgb?.length !== 3) return;
     const [r, g, b] = rgb;
-    floodFill(canvasEl, x, y, [r, g, b, 255]);
-    const dataUrl = canvas.lowerCanvasEl.toDataURL();
-    const img = await fabric.FabricImage.fromURL(dataUrl);
-    canvas.clear();
-    canvas.add(img);
-    addRecent();
+    const data = floodFill(activeLayer.data, width, height, x, y, [
+      r,
+      g,
+      b,
+      255,
+    ]);
+    if (data) activeLayer.data = data;
   };
 
   $effect(() => {
-    canvas = new fabric.Canvas(canvasEl);
-    trace(false);
-    canvas.isDrawingMode = true;
-    canvas.on("object:added", (e: { target: fabric.FabricObject }) => {
-      e.target.erasable = true;
-      const { canvas } = e.target;
-      if (canvas) trace();
-    });
-    canvas.on("path:created", (e) => {
-      switch (choiced.key) {
-        case "pencil":
-        case "spray":
-        case "circle":
-          addRecent();
-          break;
-      }
-    });
-    canvas.upperCanvasEl.addEventListener("click", (e) => {
-      const rect = canvasEl.getBoundingClientRect();
-      const x = Math.floor(e.clientX - rect.left);
-      const y = Math.floor(e.clientY - rect.top);
-      dropper(x, y);
-      fill(x, y);
-    });
-    canvas.upperCanvasEl.addEventListener("touchstart", (e) => {
-      if (e.touches.length > 0) {
-        const touch = e.touches[0];
-        const x = touch.clientX | 0;
-        const y = touch.clientY | 0;
+    oekaki.init(oekakiWrapper, width, height, Math.ceil(16 * (16 / 9)));
+
+    const upper = oekaki.upperLayer.value;
+    if (upper) {
+      upper.canvas.classList.add("upper-canvas");
+      document.documentElement.style.setProperty(
+        "--grid-cell-size",
+        `${oekaki.dotSize.value}px`,
+      );
+    }
+    const lower = oekaki.lowerLayer.value;
+    if (lower) {
+      lower.canvas.classList.add("lower-canvas");
+    }
+
+    activeLayer = new oekaki.LayeredCanvas("test");
+
+    let prevX: number | null = null;
+    let prevY: number | null = null;
+    oekaki.onDraw((x, y, buttons) => {
+      if (prevX === null) prevX = x;
+      if (prevY === null) prevY = y;
+      if (choiced.label === tool.dropper.label) {
         dropper(x, y);
+      } else if (choiced.label === tool.brush.label) {
+        activeLayer?.drawLine(x, y, prevX, prevY);
+      } else {
+        const lerps = lerp(x, y, prevX, prevY);
+        switch (choiced.label) {
+          case tool.pen.label:
+            for (const [x, y] of lerps) activeLayer?.draw(x, y);
+            break;
+          case tool.eraser.label:
+            for (const [x, y] of lerps) activeLayer?.erase(x, y);
+            break;
+          case tool.dotPen.label:
+            for (const [x, y] of lerps) activeLayer?.drawDot(x, y);
+            break;
+          case tool.dotEraser.label:
+            for (const [x, y] of lerps) activeLayer?.eraseDot(x, y);
+            break;
+        }
+      }
+      prevX = x;
+      prevY = y;
+    });
+    const fin = () => {
+      if (activeLayer?.modified()) {
+        activeLayer?.trace();
+        addRecent();
+      }
+    };
+    oekaki.onDrawn((x, y, buttons) => {
+      prevX = null;
+      prevY = null;
+      fin();
+    });
+    oekaki.onClick((x, y, buttons) => {
+      if (choiced.label === tool.fill.label) {
         fill(x, y);
+        fin();
       }
     });
-    const base64 = btoa(
-      '<svg xmlns="http://www.w3.org/2000/svg" width="4" height="4"><circle cx="2" cy="2" r="2" fill="black"/></svg>',
-    );
-    canvas.freeDrawingCursor = `url('data:image/svg+xml;base64,${base64}') 2 2, auto`;
   });
 
-  const cache = new ObjectStorage<string>(`paintCache###${threadId}`);
+  // const cache = new ObjectStorage<string>(`paintCache###${threadId}`);
+  // $effect(() => {
+  //   cache.get().then(async (v) => {
+  //     if (v) await loadFromJSON(v);
+  //     trace(false);
+  //   });
+  // });
+
+  let color = $state(oekaki.color.value);
+  let penSize = $state(oekaki.penSize.value);
+  let brushSize = $state(oekaki.brushSize.value);
+  let eraserSize = $state(oekaki.eraserSize.value);
+
   $effect(() => {
-    cache.get().then(async (v) => {
-      if (v) await loadFromJSON(v);
-      trace(false);
-    });
+    oekaki.color.value = color;
   });
-
-  let pencilWidth = $state(2);
-  let sprayWidth = $state(32);
-  let circleWidth = $state(32);
-  let eraserWidth = $state(32);
-  let brushColor = $state("#222222"); // 濃いめの黒（自然な線画）
+  $effect(() => {
+    oekaki.penSize.value = penSize;
+  });
+  $effect(() => {
+    oekaki.brushSize.value = brushSize;
+  });
+  $effect(() => {
+    oekaki.eraserSize.value = eraserSize;
+  });
 
   let recent: string[] = $state([]);
   const maxRecent = 16;
   const addRecent = () => {
-    const idx = recent.indexOf(brushColor);
+    const idx = recent.indexOf(color);
     if (idx === 0) return;
     if (idx !== -1) recent.splice(idx, 1);
-    recent.unshift(brushColor);
+    recent.unshift(color);
     if (recent.length > maxRecent) recent.pop();
     recent = [...recent]; // 新しい配列を代入する（Svelte のリアクティブ性を保つため）
   };
 
-  interface Tool {
+  type Tool = {
     label: string;
-    key: string;
     icon: string;
-  }
-  let choices = [
-    { label: "鉛筆", key: "pencil", icon: mdiBrush },
-    { label: "霧吹き", key: "spray", icon: mdiSpray },
-    { label: "点描ブラシ", key: "circle", icon: mdiCircle },
-    { label: "消しゴム", key: "eraser", icon: mdiEraser },
-    { label: "カラーピッカー", key: "dropper", icon: mdiEyedropper },
-    { label: "塗りつぶし", key: "fill", icon: mdiFormatColorFill },
-  ];
-  let choiced = $state(choices[0]);
-  $effect(() => {
-    switch (choiced.key) {
-      case "pencil":
-        canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
-        canvas.freeDrawingBrush.width = pencilWidth;
-        canvas.freeDrawingBrush.color = brushColor;
-        break;
-      case "spray":
-        canvas.freeDrawingBrush = new fabric.SprayBrush(canvas);
-        canvas.freeDrawingBrush.width = sprayWidth;
-        canvas.freeDrawingBrush.color = brushColor;
-        break;
-      case "circle":
-        canvas.freeDrawingBrush = new fabric.CircleBrush(canvas);
-        canvas.freeDrawingBrush.width = circleWidth;
-        canvas.freeDrawingBrush.color = brushColor;
-        break;
-      case "eraser":
-        {
-          const eraser = new EraserBrush(canvas);
-          eraser.on("end", async (e: ErasingEvent) => {
-            e.preventDefault();
-            await eraser.commit(e.detail);
-            trace();
-          });
-          canvas.freeDrawingBrush = eraser;
-          if (canvas.freeDrawingBrush)
-            canvas.freeDrawingBrush.width = eraserWidth;
-        }
-        break;
-      case "dropper":
-        canvas.freeDrawingBrush = undefined;
-        break;
-      case "fill":
-        canvas.freeDrawingBrush = undefined;
-        break;
-    }
-  });
-  let isDropper = $state(false);
-  $effect(() => {
-    isDropper = choiced.key === "dropper";
-  });
-  let isFill = $state(false);
-  $effect(() => {
-    isFill = choiced.key === "fill";
-  });
+  };
 
-  let toggles = [
-    { label: "左右反転", key: "flip", icon: mdiFlipHorizontal },
-    { label: "グリッド線", key: "toggleGrid", icon: mdiGrid },
+  const tool = {
+    // 描画系
+    pen: { label: "ペン", icon: mdiPencil },
+    brush: { label: "ブラシ", icon: mdiBrush },
+    eraser: { label: "消しゴム", icon: mdiEraser },
+    dotPen: { label: "ドットペン", icon: mdiSquare },
+    dotEraser: {
+      label: "ドット消しゴム",
+      icon: mdiSquareOutline,
+    },
+    dropper: { label: "カラーピッカー", icon: mdiEyedropper },
+    fill: { label: "塗りつぶし", icon: mdiFormatColorFill },
+    // 切り替え系
+    flip: { label: "左右反転", icon: mdiFlipHorizontal },
+    grid: { label: "グリッド線", icon: mdiGrid },
+    // アクション系
+    undo: { label: "戻る", icon: mdiUndo },
+    redo: { label: "進む", icon: mdiRedo },
+    clear: { label: "全消し", icon: mdiTrashCanOutline },
+    save: { label: "画像を保存", icon: mdiContentSaveOutline },
+  } as const;
+
+  let choices = [
+    tool.pen,
+    tool.brush,
+    tool.eraser,
+    tool.dotPen,
+    tool.dotEraser,
+    tool.dropper,
+    tool.fill,
   ];
+  let choiced: Tool = $state(tool.brush);
+
+  let toggles = [tool.flip, tool.grid];
   let toggle: Tool[] = $state([]);
-  let isFlip = $state(false);
   $effect(() => {
-    isFlip = toggle.map((v) => v.key).includes("flip");
-    canvas.upperCanvasEl.style.pointerEvents = isFlip ? "none" : "auto";
+    oekaki.flipped.value = toggle.map((v) => v.label).includes(tool.flip.label);
   });
   let isGrid = $state(false);
   $effect(() => {
-    isGrid = toggle.map((v) => v.key).includes("toggleGrid");
+    isGrid = toggle.map((v) => v.label).includes(tool.grid.label);
   });
 
-  let actions = [
-    { label: "戻る", key: "undo", icon: mdiUndo },
-    { label: "進む", key: "redo", icon: mdiRedo },
-    { label: "全消し", key: "clear", icon: mdiTrashCanOutline },
-    { label: "画像を保存", key: "save", icon: mdiContentSaveOutline },
-  ];
+  let actions = [tool.undo, tool.redo, tool.clear, tool.save];
   const doAction = (action: Tool) => {
-    switch (action.key) {
-      case "undo":
-        undo();
+    switch (action.label) {
+      case tool.undo.label:
+        activeLayer?.undo();
         break;
-      case "redo":
-        redo();
+      case tool.redo.label:
+        activeLayer?.redo();
         break;
-      case "clear":
-        canvas.clear();
-        trace(false);
+      case tool.clear.label:
+        activeLayer?.clear();
+        activeLayer?.trace();
         break;
-      case "save":
+      case tool.save.label:
         {
-          const dataURL = canvas.toDataURL({
-            multiplier: 1,
-            format: "png",
-            quality: 1.0,
-          });
+          const dataURL = oekaki.toDataURL();
           const link = document.createElement("a");
           link.href = dataURL;
           link.download = "drawing.png";
@@ -286,136 +260,129 @@
   const height = h2 | 0;
 </script>
 
-<div class="canvas-wrapper">
-  <canvas
-    bind:this={canvasEl}
-    {width}
-    {height}
-    class="canvas"
-    style={`${isFlip ? "transform:scaleX(-1);" : ""}`}
-  ></canvas>
-  <div
-    class="grid-overlay"
-    style="width:{width}px;height:{height}px;opacity:{isGrid ? 0.4 : 0};"
-  ></div>
+<div class={isGrid ? "grid" : ""} bind:this={oekakiWrapper}></div>
+
+<div class="tool">
+  <SegmentedButton
+    segments={choices}
+    singleSelect
+    bind:selected={choiced}
+    key={(segment: Tool) => segment.label}
+  >
+    {#snippet segment(segment: Tool)}
+      <Segment {segment} title={segment.label}>
+        <Icon tag="svg" style="width: 1em; height: auto;" viewBox="0 0 24 24">
+          <path fill="currentColor" d={segment.icon} />
+        </Icon>
+      </Segment>
+    {/snippet}
+  </SegmentedButton>
+
+  <SegmentedButton
+    segments={toggles}
+    bind:selected={toggle}
+    key={(segment: Tool) => segment.label}
+  >
+    {#snippet segment(segment: Tool)}
+      <Segment {segment} title={segment.label}>
+        <Icon tag="svg" style="width: 1em; height: auto;" viewBox="0 0 24 24">
+          <path fill="currentColor" d={segment.icon} />
+        </Icon>
+      </Segment>
+    {/snippet}
+  </SegmentedButton>
+
+  <SegmentedButton segments={actions} key={(segment: Tool) => segment.label}>
+    {#snippet segment(segment: Tool)}
+      <Segment
+        {segment}
+        title={segment.label}
+        onclick={preventDefault(() => doAction(segment))}
+      >
+        <Icon tag="svg" style="width: 1em; height: auto;" viewBox="0 0 24 24">
+          <path fill="currentColor" d={segment.icon} />
+        </Icon>
+      </Segment>
+    {/snippet}
+  </SegmentedButton>
 </div>
 
-<SegmentedButton
-  segments={choices}
-  singleSelect
-  bind:selected={choiced}
-  key={(segment: Tool) => segment.key}
->
-  {#snippet segment(segment: Tool)}
-    <Segment {segment} title={segment.label}>
-      <Icon tag="svg" style="width: 1em; height: auto;" viewBox="0 0 24 24">
-        <path fill="currentColor" d={segment.icon} />
-      </Icon>
-    </Segment>
-  {/snippet}
-</SegmentedButton>
-
-<SegmentedButton
-  segments={toggles}
-  bind:selected={toggle}
-  key={(segment: Tool) => segment.key}
->
-  {#snippet segment(segment: Tool)}
-    <Segment {segment} title={segment.label}>
-      <Icon tag="svg" style="width: 1em; height: auto;" viewBox="0 0 24 24">
-        <path fill="currentColor" d={segment.icon} />
-      </Icon>
-    </Segment>
-  {/snippet}
-</SegmentedButton>
-
-<SegmentedButton segments={actions} key={(segment: Tool) => segment.key}>
-  {#snippet segment(segment: Tool)}
-    <Segment
-      {segment}
-      title={segment.label}
-      onclick={preventDefault(() => doAction(segment))}
-    >
-      <Icon tag="svg" style="width: 1em; height: auto;" viewBox="0 0 24 24">
-        <path fill="currentColor" d={segment.icon} />
-      </Icon>
-    </Segment>
-  {/snippet}
-</SegmentedButton>
-
 {#snippet palette()}
-  <input type="color" bind:value={brushColor} />
-  {#each recent as color}
+  <input type="color" bind:value={color} />
+  {#each recent as _color}
     <button
       aria-label="Select color"
       class="palette"
-      style="background-color:{color};"
+      style="background-color:{_color};"
       onclick={() => {
-        brushColor = color;
+        color = _color;
       }}
     ></button>
   {/each}
 {/snippet}
 
-<div class="tool">
-  {#if choiced.key === "pencil"}
-    <span class="brush-width">{pencilWidth}px</span>
+<div class="sub-tool">
+  {#if choiced.label === tool.pen.label}
+    <span class="size">{penSize}px</span>
     {@render palette()}
-    <Slider min={1} max={64} bind:value={pencilWidth} />
-  {:else if choiced.key === "spray"}
-    <span class="brush-width">{sprayWidth}px</span>
+    <Slider min={1} max={64} bind:value={penSize} />
+  {:else if choiced.label === tool.brush.label}
+    <span class="size">{brushSize}px</span>
     {@render palette()}
-    <Slider min={1} max={64} bind:value={sprayWidth} />
-  {:else if choiced.key === "circle"}
-    <span class="brush-width">{circleWidth}px</span>
+    <Slider min={1} max={64} bind:value={brushSize} />
+  {:else if choiced.label === tool.eraser.label}
+    <span class="size">{eraserSize}px</span>
     {@render palette()}
-    <Slider min={1} max={64} bind:value={circleWidth} />
-  {:else if choiced.key === "dropper"}
-    <span class="brush-width"></span>
+    <Slider min={1} max={64} bind:value={eraserSize} />
+  {:else if choiced.label === tool.dotPen.label}
+    <span class="size"></span>
     {@render palette()}
-  {:else if choiced.key === "fill"}
-    <span class="brush-width"></span>
+  {:else if choiced.label === tool.dotEraser.label}
+    <span class="size"></span>
+    {@render palette()}
+  {:else if choiced.label === tool.dropper.label}
+    <span class="size"></span>
+    {@render palette()}
+  {:else if choiced.label === tool.fill.label}
+    <span class="size"></span>
     {@render palette()}
   {/if}
 </div>
 
 <style>
-  .tool {
+  .tool :global(svg:focus) {
+    outline: 0;
+  }
+  .sub-tool {
     text-align: left;
     min-height: 8rem;
   }
-  .brush-width {
+  .size {
     display: inline-block;
     width: 4rem;
   }
-
   .palette {
     width: 1.6rem;
     height: 1.6rem;
     border-radius: 50%;
   }
-
-  .canvas-wrapper {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .canvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 1; /* Canvasを格子より前面に表示 */
-    border: 1px solid rgba(0, 0, 0, 0.2); /* 薄いグレーの境界線 */
-  }
-  .grid-overlay {
-    position: absolute;
+  :global(.grid .upper-canvas) {
+    opacity: 0.4;
     background-image: linear-gradient(to right, gray 1px, transparent 1px),
       linear-gradient(to bottom, gray 1px, transparent 1px);
-    background-size: 32px 32px; /* 格子の間隔を32pxに設定 */
-    pointer-events: none; /* 格子に対してユーザーの操作ができないようにする */
-    z-index: 0; /* 格子をキャンバスの後ろに表示 */
+    background-size: var(--grid-cell-size) var(--grid-cell-size);
+  }
+  :global(.lower-canvas) {
+    opacity: 0.4;
+    background-image: linear-gradient(45deg, #ccc 25%, transparent 25%),
+      linear-gradient(-45deg, #ccc 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #ccc 75%),
+      linear-gradient(-45deg, transparent 75%, #ccc 75%);
+    background-size: 16px 16px;
+    background-position:
+      0 0,
+      0 8px,
+      8px -8px,
+      -8px 0px;
   }
 </style>

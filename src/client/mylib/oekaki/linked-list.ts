@@ -1,14 +1,17 @@
-interface ListNode<T> {
+type ListNode<T> = {
 	value: T | null;
 	prev: ListNode<T> | null;
 	next: ListNode<T> | null;
-}
+};
+
+/**
+ * お絵描きログ特化型の連結リスト
+ */
 export class LinkedList<T> {
-	#first: ListNode<T>;
 	#cursor: ListNode<T>;
 	constructor() {
-		this.#first = { value: null, prev: null, next: null };
-		this.#cursor = this.#first;
+		const node = { value: null, prev: null, next: null };
+		this.#cursor = node;
 	}
 	add(value: T) {
 		const node: ListNode<T> = {
@@ -21,13 +24,13 @@ export class LinkedList<T> {
 	}
 	undo(): T | null {
 		const { prev } = this.#cursor;
-		if (prev === null) return null;
+		if (prev === null || prev.value === null) return null;
 		this.#cursor = prev;
 		return this.#cursor.value;
 	}
 	redo(): T | null {
 		const { next } = this.#cursor;
-		if (next === null) return null;
+		if (next === null || next.value === null) return null;
 		this.#cursor = next;
 		return this.#cursor.value;
 	}
