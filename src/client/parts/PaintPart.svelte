@@ -283,8 +283,8 @@
     }
   };
 
-  const w = window.innerWidth * 0.7 - 32;
-  const h = window.innerHeight * 0.7;
+  const w = window.innerWidth * 1.0;
+  const h = window.innerHeight * 1.0;
   let w2 = 0;
   let h2 = 0;
   if (w < h) {
