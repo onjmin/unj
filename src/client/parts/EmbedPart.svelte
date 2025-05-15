@@ -5,6 +5,7 @@
     Graphic,
     Text,
     PrimaryText,
+    Meta,
     SecondaryText,
   } from "@smui/list";
   import Paper, { Title, Content, Subtitle } from "@smui/paper";
@@ -133,11 +134,9 @@
           <PrimaryText>{siteInfo.name}</PrimaryText>
           <SecondaryText>{siteInfo.description}</SecondaryText>
         </Text>
-        {#if temp === unjGames}
-          <IconButton class="material-icons">open_in_new</IconButton>
-        {:else}
-          <IconButton class="material-icons">touch_app</IconButton>
-        {/if}
+        <Meta class="material-icons"
+          >{temp === unjGames ? "open_in_new" : "touch_app"}</Meta
+        >
       </Item>
     </List>
     {#if embedError}

@@ -1,12 +1,12 @@
 <script lang="ts">
   import Button, { Label } from "@smui/button";
   import Dialog, { Title, Content, Actions } from "@smui/dialog";
-  import IconButton from "@smui/icon-button";
   import List, {
     Item,
     Graphic,
     Text,
     PrimaryText,
+    Meta,
     SecondaryText,
   } from "@smui/list";
   import Portal from "svelte-portal";
@@ -70,10 +70,10 @@
                 <PrimaryText>{siteInfo.name}</PrimaryText>
                 <SecondaryText>{siteInfo.description}</SecondaryText>
               </Text>
-              <IconButton
+              <Meta
                 class="material-icons"
                 onclick={() => window.open(siteInfo.href, "_blank")}
-                >open_in_new</IconButton
+                >open_in_new</Meta
               >
             </Item>
           {/each}

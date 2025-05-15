@@ -1,13 +1,13 @@
 <script lang="ts">
   import Button, { Label } from "@smui/button";
   import Dialog, { Title, Content, Actions } from "@smui/dialog";
-  import IconButton from "@smui/icon-button";
   import List, {
     Item,
     Graphic,
     Text,
     PrimaryText,
     SecondaryText,
+    Meta,
   } from "@smui/list";
   import Portal from "svelte-portal";
   import { sAnimsMap } from "../../common/request/s-anims.js";
@@ -50,10 +50,10 @@
                 <SecondaryText>{sAnim.description}</SecondaryText>
               </Text>
               {#if sAnim.href}
-                <IconButton
+                <Meta
                   class="material-icons"
                   onclick={() => window.open(String(sAnim.href), "_blank")}
-                  >open_in_new</IconButton
+                  >open_in_new</Meta
                 >
               {/if}
             </Item>
