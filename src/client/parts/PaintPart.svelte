@@ -34,13 +34,64 @@
   /**
    * PC版ショートカット
    */
-  const handleKeyDown = (e: KeyboardEvent) => {
-    if (e.ctrlKey && e.key === "z" && !e.shiftKey) {
-      e.preventDefault();
-      activeLayer?.undo();
-    } else if (e.ctrlKey && e.key === "Z" && e.shiftKey) {
-      e.preventDefault();
-      activeLayer?.redo();
+  const handleKeyDown = async (e: KeyboardEvent) => {
+    if (!e.ctrlKey) return;
+    switch (e.key) {
+      case "f":
+        e.preventDefault();
+        oekaki.flipped.value = !oekaki.flipped.value;
+        break;
+      case "g":
+        e.preventDefault();
+        isGrid = !isGrid;
+        break;
+      case "z":
+        e.preventDefault();
+        doAction(tool.undo);
+        break;
+      case "Z":
+        e.preventDefault();
+        doAction(tool.redo);
+        break;
+      case "l":
+        e.preventDefault();
+        doAction(tool.layersPanel);
+        break;
+      case "s":
+        e.preventDefault();
+        doAction(tool.save);
+        break;
+      case "c": // クリップボードにコピー
+        {
+          e.preventDefault();
+          const blob = await new Promise<Blob | null>((resolve) =>
+            activeLayer?.canvas.toBlob(resolve),
+          );
+          if (!blob) return;
+          const item = new ClipboardItem({ [blob.type]: blob });
+          await navigator.clipboard.write([item]);
+        }
+        break;
+      case "v": // クリップボードから貼り付け
+        {
+          e.preventDefault();
+          if (!activeLayer || activeLayer?.locked) return;
+          const items = await navigator.clipboard.read();
+          const item = items[0];
+          if (!item) return;
+          const imageType = item.types.find((t) => t.startsWith("image/"));
+          if (!imageType) return;
+          const blob = await item.getType(imageType);
+          const bitmap = await createImageBitmap(blob);
+          const ratio = Math.min(width / bitmap.width, height / bitmap.height);
+          const w = bitmap.width * ratio;
+          const h = bitmap.height * ratio;
+          const offsetX = (width - w) / 2;
+          const offsetY = (height - h) / 2;
+          activeLayer.ctx.drawImage(bitmap, offsetX, offsetY, w, h);
+          activeLayer?.trace();
+        }
+        break;
     }
   };
   $effect(() => {
@@ -282,7 +333,7 @@
         break;
       case tool.save.label:
         {
-          const dataURL = oekaki.toDataURL();
+          const dataURL = oekaki.render().toDataURL("image/png");
           const link = document.createElement("a");
           link.href = dataURL;
           link.download = "drawing.png";

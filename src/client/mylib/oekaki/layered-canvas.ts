@@ -317,18 +317,20 @@ export class LayeredCanvas {
 }
 
 /**
- * 画像化
+ * 1枚のcanvasに書き出す
  */
-export const toDataURL = () => {
+export const render = () => {
 	const canvas = document.createElement("canvas");
 	canvas.width = g_width;
 	canvas.height = g_height;
 	const ctx = canvas.getContext("2d");
 	if (!ctx) throw new Error("Failed to get 2D rendering context");
 	for (const layer of g_layers) {
-		if (layer) ctx.drawImage(layer.canvas, 0, 0);
+		if (!layer || !layer.visible) continue;
+		ctx.globalAlpha = layer.opacity / 100;
+		ctx.drawImage(layer.canvas, 0, 0);
 	}
-	return canvas.toDataURL("image/png");
+	return canvas;
 };
 
 /**
