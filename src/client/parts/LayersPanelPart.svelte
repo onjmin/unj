@@ -60,7 +60,13 @@
               />
               <Text>
                 <PrimaryText>{layer.name}</PrimaryText>
-                <SecondaryText>{layer.opacity}</SecondaryText>
+                <SecondaryText
+                  ><Icon class="material-icons"
+                    >{layer.locked ? "lock" : "lock_open"}</Icon
+                  ><Icon class="material-icons"
+                    >{layer.visible ? "visibility" : "visibility_off"}</Icon
+                  >{layer.opacity}%</SecondaryText
+                >
               </Text>
               <Meta
                 class="material-icons"
