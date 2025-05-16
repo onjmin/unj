@@ -397,7 +397,11 @@
   <IconButton
     class="material-icons"
     onclick={() => {
-      if (layerLocked || !activeLayer || !confirm("レイヤーを削除しますか？"))
+      if (
+        layerLocked ||
+        !activeLayer ||
+        !confirm(`${activeLayer.name}を削除しますか？`)
+      )
         return;
       activeLayer.delete();
       const { prev, next } = activeLayer;
