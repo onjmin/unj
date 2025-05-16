@@ -193,6 +193,23 @@ export class LayeredCanvas {
 		g_layers[this.index] = null; // 欠番
 		this.canvas.remove();
 	}
+	/**
+	 * 1つ背面のレイヤー
+	 */
+	get prev(): LayeredCanvas | null {
+		const prev = g_layers.slice(0, this.index).findLast((v) => v);
+		return prev ? prev : null;
+	}
+	/**
+	 * 1つ前面のレイヤー
+	 */
+	get next(): LayeredCanvas | null {
+		const next = g_layers.slice(this.index + 1).find((v) => v);
+		return next ? next : null;
+	}
+	/**
+	 * レイヤーの入れ替え
+	 */
 	swap(to: number) {
 		const from = this.index;
 		if (to === from) return;
@@ -226,6 +243,9 @@ export class LayeredCanvas {
 		const imageData = new ImageData(data, g_width, g_height);
 		this.ctx.putImageData(imageData, 0, 0);
 	}
+	/**
+	 * 差分検出
+	 */
 	modified() {
 		const hash = calcHash(this.data);
 		if (this.hash !== hash) {

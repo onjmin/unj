@@ -346,7 +346,16 @@
   <IconButton
     class="material-icons"
     onclick={() => {
-      // TODO
+      if (layerLocked || !activeLayer || !confirm("レイヤーを削除しますか？"))
+        return;
+      activeLayer.delete();
+      const { prev, next } = activeLayer;
+      if (next) activeLayer = next;
+      else if (prev) activeLayer = prev;
+      else {
+        oekaki.refresh();
+        activeLayer = new oekaki.LayeredCanvas("レイヤー #1");
+      }
     }}>delete_forever</IconButton
   >
 

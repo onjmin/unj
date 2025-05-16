@@ -65,7 +65,7 @@
               <Meta
                 class="material-icons"
                 onclick={() => {
-                  const next = layers.slice(layer.index + 1).find((v) => v);
+                  const { next } = layer;
                   if (next) {
                     layer.swap(next.index);
                     layers = oekaki.getLayers();
@@ -75,7 +75,7 @@
               <Meta
                 class="material-icons"
                 onclick={() => {
-                  const prev = layers.slice(0, layer.index).findLast((v) => v);
+                  const { prev } = layer;
                   if (prev) {
                     layer.swap(prev.index);
                     layers = oekaki.getLayers();
