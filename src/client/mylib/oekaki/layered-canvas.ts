@@ -3,6 +3,7 @@ import { LinkedList } from "./linked-list.js";
 let g_layer_container: HTMLElement | null = null;
 let g_width: number;
 let g_height: number;
+let g_dot_size: number;
 let g_upper: LayeredCanvas; // 描画検出用
 let g_lower: LayeredCanvas; // 背景用
 let g_serial_number = 0;
@@ -45,17 +46,22 @@ export const brushSize = new Config(2);
 export const eraserSize = new Config(32);
 
 /**
- * 1ドットの大きさ(set非推奨)
- */
-export const dotSize = new Config(32);
-
-/**
  * 左右反転
  */
 export const flipped = new Config(false, () => {
 	if (g_layer_container)
 		g_layer_container.style.transform = `scaleX(${flipped.value ? -1 : 1})`;
 });
+
+/**
+ * 1ドットの大きさ
+ */
+export const getDotSize = () => g_dot_size;
+
+/**
+ * レイヤーリストを取得
+ */
+export const getLayers = () => g_layers;
 
 export const lowerLayer = new Config<LayeredCanvas | null>(null);
 export const upperLayer = new Config<LayeredCanvas | null>(null);
@@ -75,7 +81,7 @@ export const init = (
 	g_layer_container = layerContainer;
 	g_width = Math.floor(width);
 	g_height = Math.floor(height);
-	dotSize.value = Math.floor(width / dotWidth);
+	g_dot_size = Math.floor(width / dotWidth);
 	layerContainer.innerHTML = "";
 	layerContainer.style.position = "relative";
 	layerContainer.style.display = "inline-block";
@@ -158,12 +164,13 @@ export class LayeredCanvas {
 	canvas: HTMLCanvasElement;
 	ctx: CanvasRenderingContext2D;
 	name: string;
-	index = g_layers.length;
+	index: number;
 	history = new LinkedList<Uint8ClampedArray>();
 	hash = 0;
 	#visible = true;
 	#opacity = 100;
 	locked = false;
+	used = false;
 	constructor(name: string) {
 		this.name = name;
 		const canvas = document.createElement("canvas");
@@ -179,6 +186,7 @@ export class LayeredCanvas {
 		if (!ctx) throw new Error("Failed to get 2D rendering context");
 		this.ctx = ctx;
 		g_layers.push(this);
+		this.index = g_layers.length - 1;
 		this.trace();
 	}
 	delete() {
@@ -222,6 +230,7 @@ export class LayeredCanvas {
 		const hash = calcHash(this.data);
 		if (this.hash !== hash) {
 			this.hash = hash;
+			this.used = true;
 			return true;
 		}
 		return false;
@@ -247,7 +256,7 @@ export class LayeredCanvas {
 	}
 	eraseDot(x: number, y: number) {
 		if (this.locked) return;
-		const size = dotSize.value;
+		const size = g_dot_size;
 		const _x = Math.floor(x / size) * size;
 		const _y = Math.floor(y / size) * size;
 		this.ctx.clearRect(_x, _y, size, size);
@@ -255,7 +264,7 @@ export class LayeredCanvas {
 	drawDot(x: number, y: number) {
 		if (this.locked) return;
 		this.ctx.fillStyle = color.value;
-		const size = dotSize.value;
+		const size = g_dot_size;
 		const _x = Math.floor(x / size) * size;
 		const _y = Math.floor(y / size) * size;
 		this.ctx.fillRect(_x, _y, size, size);

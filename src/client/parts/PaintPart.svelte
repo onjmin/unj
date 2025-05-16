@@ -24,6 +24,7 @@
   import { floodFill } from "../mylib/oekaki/flood-fill.js";
   import * as oekaki from "../mylib/oekaki/layered-canvas.js";
   import { lerp } from "../mylib/oekaki/lerp.js";
+  import LayersPanelPart from "./LayersPanelPart.svelte";
 
   let { threadId } = $props();
 
@@ -80,7 +81,7 @@
       upper.canvas.classList.add("upper-canvas");
       document.documentElement.style.setProperty(
         "--grid-cell-size",
-        `${oekaki.dotSize.value}px`,
+        `${oekaki.getDotSize()}px`,
       );
     }
     const lower = oekaki.lowerLayer.value;
@@ -157,6 +158,8 @@
   //     trace(false);
   //   });
   // });
+
+  let layersPanelOpen = $state(false);
 
   let opacity = $state(100);
   let layerVisible = $state(true);
@@ -266,6 +269,7 @@
         activeLayer?.redo();
         break;
       case tool.layersPanel.label:
+        layersPanelOpen = true;
         break;
       case tool.save.label:
         {
@@ -297,6 +301,10 @@
   const width = w2 | 0;
   const height = h2 | 0;
 </script>
+
+{#key layersPanelOpen}
+  <LayersPanelPart bind:open={layersPanelOpen} bind:activeLayer />
+{/key}
 
 <div class="top-tools-wrapper">
   <span class="size">{opacity}%</span>
