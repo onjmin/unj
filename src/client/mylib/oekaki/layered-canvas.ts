@@ -54,6 +54,20 @@ export const flipped = new Config(false, () => {
 });
 
 /**
+ * キャンバスの幅基準でドットを設定する
+ */
+export const setDotWidth = (dot: number) => {
+	g_dot_size = Math.floor(g_width / dot);
+};
+
+/**
+ * キャンバスの高さ基準でドットを設定する
+ */
+export const setDotHeight = (dot: number) => {
+	g_dot_size = Math.floor(g_height / dot);
+};
+
+/**
  * 1ドットの大きさ
  */
 export const getDotSize = () => g_dot_size;
@@ -69,19 +83,13 @@ export const upperLayer = new Config<LayeredCanvas | null>(null);
 /**
  * レイヤーキャンバス初期化
  */
-export const init = (
-	mountTarget: HTMLElement,
-	width = 640,
-	height = 360,
-	dotWidth = 32,
-) => {
+export const init = (mountTarget: HTMLElement, width = 640, height = 360) => {
 	const layerContainer = document.createElement("div");
 	mountTarget.innerHTML = "";
 	mountTarget.append(layerContainer);
 	g_layer_container = layerContainer;
 	g_width = Math.floor(width);
 	g_height = Math.floor(height);
-	g_dot_size = Math.floor(width / dotWidth);
 	layerContainer.innerHTML = "";
 	layerContainer.style.position = "relative";
 	layerContainer.style.display = "inline-block";
@@ -182,7 +190,7 @@ export class LayeredCanvas {
 		canvas.style.left = "0";
 		canvas.style.top = "0";
 		this.canvas = canvas;
-		const ctx = canvas.getContext("2d");
+		const ctx = canvas.getContext("2d", { willReadFrequently: true }); // 頻繁にgetImageData()を呼び出すための最適化
 		if (!ctx) throw new Error("Failed to get 2D rendering context");
 		this.ctx = ctx;
 		g_layers.push(this);

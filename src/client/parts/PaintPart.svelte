@@ -125,20 +125,12 @@
   };
 
   $effect(() => {
-    oekaki.init(oekakiWrapper, width, height, Math.ceil(16 * (16 / 9)));
+    oekaki.init(oekakiWrapper, width, height);
 
     const upper = oekaki.upperLayer.value;
-    if (upper) {
-      upper.canvas.classList.add("upper-canvas");
-      document.documentElement.style.setProperty(
-        "--grid-cell-size",
-        `${oekaki.getDotSize()}px`,
-      );
-    }
     const lower = oekaki.lowerLayer.value;
-    if (lower) {
-      lower.canvas.classList.add("lower-canvas");
-    }
+    if (upper) upper.canvas.classList.add("upper-canvas");
+    if (lower) lower.canvas.classList.add("lower-canvas");
 
     activeLayer = new oekaki.LayeredCanvas("レイヤー #1");
     setTimeout(() => {
@@ -243,6 +235,7 @@
   let penSize = $state(oekaki.penSize.value);
   let brushSize = $state(oekaki.brushSize.value);
   let eraserSize = $state(oekaki.eraserSize.value);
+  let dotHeight = $state(16);
   $effect(() => {
     if (activeLayer) activeLayer.opacity = opacity;
   });
@@ -257,6 +250,13 @@
   });
   $effect(() => {
     oekaki.eraserSize.value = eraserSize;
+  });
+  $effect(() => {
+    oekaki.setDotHeight(dotHeight);
+    document.documentElement.style.setProperty(
+      "--grid-cell-size",
+      `${oekaki.getDotSize()}px`,
+    );
   });
 
   let recent: string[] = $state([]);
@@ -414,7 +414,7 @@
     }}>delete_forever</IconButton
   >
 
-  <Slider min={0} max={100} bind:value={opacity} />
+  <Slider min={0} max={100} discrete bind:value={opacity} />
 </div>
 
 <div class={isGrid ? "grid" : ""} bind:this={oekakiWrapper}></div>
@@ -428,7 +428,11 @@
   >
     {#snippet segment(segment: Tool)}
       <Segment {segment} title={segment.label}>
-        <Icon tag="svg" style="width: 1em; height: auto;" viewBox="0 0 24 24">
+        <Icon
+          tag="svg"
+          style="width: 1em; height: auto; pointer-events: none;"
+          viewBox="0 0 24 24"
+        >
           <path fill="currentColor" d={segment.icon} />
         </Icon>
       </Segment>
@@ -442,7 +446,11 @@
   >
     {#snippet segment(segment: Tool)}
       <Segment {segment} title={segment.label}>
-        <Icon tag="svg" style="width: 1em; height: auto;" viewBox="0 0 24 24">
+        <Icon
+          tag="svg"
+          style="width: 1em; height: auto; pointer-events: none;"
+          viewBox="0 0 24 24"
+        >
           <path fill="currentColor" d={segment.icon} />
         </Icon>
       </Segment>
@@ -456,7 +464,11 @@
         title={segment.label}
         onclick={preventDefault(() => doAction(segment))}
       >
-        <Icon tag="svg" style="width: 1em; height: auto;" viewBox="0 0 24 24">
+        <Icon
+          tag="svg"
+          style="width: 1em; height: auto; pointer-events: none;"
+          viewBox="0 0 24 24"
+        >
           <path fill="currentColor" d={segment.icon} />
         </Icon>
       </Segment>
@@ -482,21 +494,37 @@
   {#if choiced.label === tool.pen.label}
     <span class="size">{penSize}px</span>
     {@render palette()}
-    <Slider min={1} max={64} bind:value={penSize} />
+    <Slider min={1} max={64} discrete bind:value={penSize} />
   {:else if choiced.label === tool.brush.label}
     <span class="size">{brushSize}px</span>
     {@render palette()}
-    <Slider min={1} max={64} bind:value={brushSize} />
+    <Slider min={1} max={64} discrete bind:value={brushSize} />
   {:else if choiced.label === tool.eraser.label}
     <span class="size">{eraserSize}px</span>
     {@render palette()}
-    <Slider min={1} max={64} bind:value={eraserSize} />
+    <Slider min={1} max={64} discrete bind:value={eraserSize} />
   {:else if choiced.label === tool.dotPen.label}
-    <span class="size"></span>
+    <span class="size">{dotHeight}px</span>
     {@render palette()}
+    <Slider
+      min={16}
+      max={64}
+      step={16}
+      discrete
+      tickMarks
+      bind:value={dotHeight}
+    />
   {:else if choiced.label === tool.dotEraser.label}
-    <span class="size"></span>
+    <span class="size">{dotHeight}px</span>
     {@render palette()}
+    <Slider
+      min={16}
+      max={64}
+      step={16}
+      discrete
+      tickMarks
+      bind:value={dotHeight}
+    />
   {:else if choiced.label === tool.dropper.label}
     <span class="size"></span>
     {@render palette()}
@@ -507,9 +535,6 @@
 </div>
 
 <style>
-  .bottom-tools-wrapper :global(svg:focus) {
-    outline: 0;
-  }
   .bottom-tools-wrapper-sub {
     text-align: left;
     min-height: 8rem;
