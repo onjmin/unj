@@ -89,7 +89,7 @@
       lower.canvas.classList.add("lower-canvas");
     }
 
-    activeLayer = new oekaki.LayeredCanvas("test");
+    activeLayer = new oekaki.LayeredCanvas("レイヤー #1");
     setTimeout(() => {
       if (!activeLayer) return;
       layerVisible = activeLayer.visible;
@@ -161,6 +161,16 @@
 
   let layersPanelOpen = $state(false);
 
+  // activeLayerが変わったときにstateを同期する
+  $effect(() => {
+    if (!activeLayer) return;
+    opacity = activeLayer.opacity;
+    layerVisible = activeLayer.visible;
+    layerName = activeLayer.name;
+    layerNameDisabled = true;
+    layerLocked = activeLayer.locked;
+  });
+
   let opacity = $state(100);
   let layerVisible = $state(true);
   let layerName = $state("");
@@ -178,7 +188,6 @@
   $effect(() => {
     if (activeLayer) activeLayer.locked = layerLocked;
   });
-
   let color = $state(oekaki.color.value);
   let penSize = $state(oekaki.penSize.value);
   let brushSize = $state(oekaki.brushSize.value);

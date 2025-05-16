@@ -94,7 +94,9 @@
     <Button
       variant="raised"
       onclick={() => {
-        activeLayer = new oekaki.LayeredCanvas("test2");
+        activeLayer = new oekaki.LayeredCanvas(
+          `レイヤー #${layers.length + 1}`,
+        );
         layers = oekaki.getLayers();
       }}>レイヤー追加</Button
     >
