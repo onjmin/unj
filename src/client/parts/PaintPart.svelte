@@ -296,8 +296,8 @@
     }
   };
 
-  const w = window.innerWidth * 1.0;
-  const h = window.innerHeight * 1.0;
+  const w = window.innerWidth * 0.9;
+  const h = window.innerHeight * 0.9;
   let w2 = 0;
   let h2 = 0;
   if (w < h) {
