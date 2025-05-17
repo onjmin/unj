@@ -43,16 +43,18 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			];
 			if (cursor !== null) {
 				if (desc) {
-					query.push(`AND id <= ${cursor}`);
+					query.push("AND id <= $1");
 				} else {
-					query.push(`AND id >= ${cursor}`);
+					query.push("AND id >= $1");
 				}
 			}
 			query.push(`ORDER BY latest_res_at ${desc ? "DESC" : "ASC"}`);
-			query.push(`LIMIT ${size}`);
+			query.push("LIMIT $2");
+
+			const { rows } = await pool.query(query.join(" "), [cursor, size]);
 
 			const list: HeadlineThread[] = [];
-			for (const record of (await pool.query(query.join(" "))).rows) {
+			for (const record of rows) {
 				const latestResAt = new Date(record.latest_res_at);
 				const resCount = record.res_count;
 				list.push({

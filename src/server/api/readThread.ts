@@ -168,21 +168,26 @@ export default ({ socket }: { socket: Socket }) => {
 			}
 
 			// レスの取得
-			const query = [`SELECT * FROM res WHERE thread_id = ${threadId}`];
+			const query = ["SELECT * FROM res WHERE thread_id = $1"];
 			const { size, desc } = readThread.output;
 			if (cursor !== null) {
 				if (desc) {
-					query.push(`AND id <= ${cursor}`);
+					query.push("AND id <= $2");
 				} else {
-					query.push(`AND id >= ${cursor}`);
+					query.push("AND id >= $2");
 				}
 			}
 			query.push(`ORDER BY num ${desc ? "DESC" : "ASC"}`);
-			query.push(`LIMIT ${size}`);
+			query.push("LIMIT $3");
 
 			const userId = auth.getUserId(socket);
 			const list: Res[] = [];
-			for (const record of (await pool.query(query.join(" "))).rows) {
+			const { rows } = await pool.query(query.join(" "), [
+				threadId,
+				cursor,
+				size,
+			]);
+			for (const record of rows) {
 				const resId = encodeResId(record.id);
 				if (resId === null) return;
 				list.push({

@@ -110,8 +110,8 @@ export const parseCommand = async ({
 			const without1 = anka.filter((v) => v !== 1);
 			if (without1.length) {
 				const { rows } = await poolClient.query(
-					`SELECT num,is_owner,user_id,cc_user_id FROM res WHERE thread_id = $1 AND num IN (${without1.join(",")})`,
-					[threadId],
+					`SELECT num,is_owner,user_id,cc_user_id FROM res WHERE thread_id = $1 AND num IN (${without1.map((v, i) => `$${i + 2}`).join(",")})`,
+					[threadId, ...without1],
 				);
 				for (const record of rows) {
 					const userId = record.user_id;
