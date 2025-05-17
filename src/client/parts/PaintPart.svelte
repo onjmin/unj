@@ -244,6 +244,7 @@
           const layers = oekaki.getLayers();
           activeLayer = layers.at(-1) ?? null;
         }
+        oekaki.refresh();
       } else {
         activeLayer = new oekaki.LayeredCanvas("レイヤー #1");
       }
