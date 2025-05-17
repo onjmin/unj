@@ -171,7 +171,19 @@
     };
   };
   const metaCacheByUuid = factory<oekaki.LayeredCanvasMeta>("meta");
+  const saveMeta = () => {
+    if (!activeLayer) return;
+    metaCacheByUuid(activeLayer.uuid).set(activeLayer.meta);
+  };
+  $effect(() => {
+    document.addEventListener("click", saveMeta);
+    return () => document.removeEventListener("touchend", saveMeta);
+  });
   const dataCacheByUuid = factory<number[]>("data");
+  const saveData = () => {
+    if (!activeLayer) return;
+    dataCacheByUuid(activeLayer.uuid).set(Array.from(activeLayer.data));
+  };
 
   let width = 0;
   let height = 0;
@@ -273,7 +285,7 @@
       if (activeLayer?.modified()) {
         activeLayer.trace();
         addRecent();
-        dataCacheByUuid(activeLayer.uuid).set(Array.from(activeLayer.data));
+        saveData();
       }
     };
     oekaki.onDrawn((x, y, buttons) => {
