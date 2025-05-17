@@ -155,22 +155,23 @@
   const prefix = `paintCache###${threadId}`;
   const widthCache = new ObjectStorage<number>(`${prefix}###width`);
   const heightCache = new ObjectStorage<number>(`${prefix}###height`);
-  const metaCache = new ObjectStorage<oekaki.LayeredCanvasMeta[]>(
-    `${prefix}###meta`,
-  );
+  const uuidsCache = new ObjectStorage<string[]>(`${prefix}###uuids`);
   const activeUuidCache = new ObjectStorage<string>(`${prefix}###activeUuid`);
-  const dataCacheByUuid = (() => {
-    const map = new Map<string, ObjectStorage<number[]>>();
-    return (uuid: string): ObjectStorage<number[]> => {
+
+  const factory = <T,>(tag: string) => {
+    const map = new Map<string, ObjectStorage<T>>();
+    return (uuid: string): ObjectStorage<T> => {
       const cache = map.get(uuid);
       if (cache) return cache;
-      const objectStorage = new ObjectStorage<number[]>(
-        `${prefix}###data###${uuid}`,
+      const objectStorage = new ObjectStorage<T>(
+        `${prefix}###${tag}###${uuid}`,
       );
       map.set(uuid, objectStorage);
       return objectStorage;
     };
-  })();
+  };
+  const metaCacheByUuid = factory<oekaki.LayeredCanvasMeta>("meta");
+  const dataCacheByUuid = factory<number[]>("data");
 
   let width = 0;
   let height = 0;
@@ -201,35 +202,40 @@
     }
 
     oekaki.init(oekakiWrapper, width, height);
+    setDotSize();
 
     const upper = oekaki.upperLayer.value;
     const lower = oekaki.lowerLayer.value;
     if (upper) upper.canvas.classList.add("upper-canvas");
     if (lower) lower.canvas.classList.add("lower-canvas");
 
-    Promise.all([metaCache.get(), activeUuidCache.get()]).then(
-      async ([meta, uuid]) => {
-        if (meta?.length) {
-          for (const v of meta) {
-            const layer = new oekaki.LayeredCanvas(v.name, v.uuid);
-            layer.meta = v;
-            if (v.uuid === uuid) activeLayer = layer;
-            dataCacheByUuid(v.uuid)
-              .get()
-              .then((v) => {
-                if (v) layer.data = new Uint8ClampedArray(v);
-              });
-          }
-          oekaki.refresh();
-          if (!activeLayer) {
-            const layers = oekaki.getLayers();
-            activeLayer = layers.at(-1) ?? null;
-          }
-        } else {
-          activeLayer = new oekaki.LayeredCanvas("レイヤー #1");
+    (async () => {
+      const [uuids, activeUuid] = await Promise.all([
+        uuidsCache.get(),
+        activeUuidCache.get(),
+      ]);
+      if (uuids?.length) {
+        const [metaArray, dataArray] = await Promise.all([
+          Promise.all(uuids.map((v) => metaCacheByUuid(v).get())),
+          Promise.all(uuids.map((v) => dataCacheByUuid(v).get())),
+        ]);
+        for (const i of uuids.keys()) {
+          const meta = metaArray[i];
+          const data = dataArray[i];
+          if (!meta || !data) continue;
+          const layer = new oekaki.LayeredCanvas(meta.name, meta.uuid);
+          layer.meta = meta;
+          layer.data = new Uint8ClampedArray(data);
+          if (meta.uuid === activeUuid) activeLayer = layer;
         }
-      },
-    );
+        if (!activeLayer) {
+          const layers = oekaki.getLayers();
+          activeLayer = layers.at(-1) ?? null;
+        }
+      } else {
+        activeLayer = new oekaki.LayeredCanvas("レイヤー #1");
+      }
+    })();
 
     let prevX: number | null = null;
     let prevY: number | null = null;
@@ -296,7 +302,7 @@
     layerNameDisabled = true;
     layerLocked = activeLayer.locked;
     activeUuidCache.set(activeLayer.uuid);
-    metaCache.set(oekaki.getLayers());
+    uuidsCache.set(oekaki.getLayers().map((v) => v.uuid));
   });
 
   let opacity = $state(100);
@@ -336,13 +342,14 @@
   $effect(() => {
     oekaki.eraserSize.value = eraserSize;
   });
-  $effect(() => {
+  const setDotSize = () => {
     oekaki.setDotSize(dotPenScale);
     document.documentElement.style.setProperty(
       "--grid-cell-size",
       `${oekaki.getDotSize()}px`,
     );
-  });
+  };
+  $effect(setDotSize);
 
   let recent: string[] = $state([]);
   const maxRecent = 16;
@@ -498,8 +505,9 @@
       await Promise.all([
         widthCache.set(null),
         heightCache.set(null),
-        metaCache.set(null),
+        uuidsCache.set(null),
         activeUuidCache.set(null),
+        ...oekaki.getLayers().map((v) => metaCacheByUuid(v.uuid).set(null)),
         ...oekaki.getLayers().map((v) => dataCacheByUuid(v.uuid).set(null)),
       ]);
       init();
@@ -596,11 +604,11 @@
     {@render palette()}
     <Slider min={1} max={64} discrete bind:value={eraserSize} />
   {:else if choiced.label === tool.dotPen.label}
-    <span class="size">{dotPenScale}px</span>
+    <span class="size">{dotPenScale}倍</span>
     {@render palette()}
     <Slider min={1} max={4} discrete tickMarks bind:value={dotPenScale} />
   {:else if choiced.label === tool.dotEraser.label}
-    <span class="size">{dotPenScale}px</span>
+    <span class="size">{dotPenScale}倍</span>
     {@render palette()}
     <Slider min={1} max={4} discrete tickMarks bind:value={dotPenScale} />
   {:else if choiced.label === tool.dropper.label}
