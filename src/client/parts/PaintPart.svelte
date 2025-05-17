@@ -152,7 +152,54 @@
     if (data) activeLayer.data = data;
   };
 
+  const prefix = `paintCache###${threadId}`;
+  const widthCache = new ObjectStorage<number>(`${prefix}###width`);
+  const heightCache = new ObjectStorage<number>(`${prefix}###height`);
+  const metaCache = new ObjectStorage<oekaki.LayeredCanvasMeta[]>(
+    `${prefix}###meta`,
+  );
+  const activeUuidCache = new ObjectStorage<string>(`${prefix}###activeUuid`);
+  const dataCacheByUuid = (() => {
+    const map = new Map<string, ObjectStorage<number[]>>();
+    return (uuid: string): ObjectStorage<number[]> => {
+      const cache = map.get(uuid);
+      if (cache) return cache;
+      const objectStorage = new ObjectStorage<number[]>(
+        `${prefix}###data###${uuid}`,
+      );
+      map.set(uuid, objectStorage);
+      return objectStorage;
+    };
+  })();
+
+  let width = 0;
+  let height = 0;
   $effect(() => {
+    init();
+  });
+  const init = async () => {
+    const [w, h] = await Promise.all([widthCache.get(), heightCache.get()]);
+    if (w && h) {
+      width = w;
+      height = h;
+    } else {
+      const w = window.innerWidth * 0.9;
+      const h = window.innerHeight * 0.9;
+      let w2 = 0;
+      let h2 = 0;
+      if (w < h) {
+        w2 = w;
+        h2 = w2 * (9 / 16);
+      } else {
+        h2 = h * 0.6;
+        w2 = h2 * (16 / 9);
+      }
+      width = w2 | 0;
+      height = h2 | 0;
+      widthCache.set(width);
+      heightCache.set(height);
+    }
+
     oekaki.init(oekakiWrapper, width, height);
 
     const upper = oekaki.upperLayer.value;
@@ -160,14 +207,29 @@
     if (upper) upper.canvas.classList.add("upper-canvas");
     if (lower) lower.canvas.classList.add("lower-canvas");
 
-    activeLayer = new oekaki.LayeredCanvas("レイヤー #1");
-    setTimeout(() => {
-      if (!activeLayer) return;
-      layerVisible = activeLayer.visible;
-      opacity = activeLayer.opacity;
-      layerName = activeLayer.name;
-      layerLocked = activeLayer.locked;
-    });
+    Promise.all([metaCache.get(), activeUuidCache.get()]).then(
+      async ([meta, uuid]) => {
+        if (meta?.length) {
+          for (const v of meta) {
+            const layer = new oekaki.LayeredCanvas(v.name, v.uuid);
+            layer.meta = v;
+            if (v.uuid === uuid) activeLayer = layer;
+            dataCacheByUuid(v.uuid)
+              .get()
+              .then((v) => {
+                if (v) layer.data = new Uint8ClampedArray(v);
+              });
+          }
+          oekaki.refresh();
+          if (!activeLayer) {
+            const layers = oekaki.getLayers();
+            activeLayer = layers.at(-1) ?? null;
+          }
+        } else {
+          activeLayer = new oekaki.LayeredCanvas("レイヤー #1");
+        }
+      },
+    );
 
     let prevX: number | null = null;
     let prevY: number | null = null;
@@ -203,8 +265,9 @@
     });
     const fin = () => {
       if (activeLayer?.modified()) {
-        activeLayer?.trace();
+        activeLayer.trace();
         addRecent();
+        dataCacheByUuid(activeLayer.uuid).set(Array.from(activeLayer.data));
       }
     };
     oekaki.onDrawn((x, y, buttons) => {
@@ -220,15 +283,7 @@
         fin();
       }
     });
-  });
-
-  // const cache = new ObjectStorage<string>(`paintCache###${threadId}`);
-  // $effect(() => {
-  //   cache.get().then(async (v) => {
-  //     if (v) await loadFromJSON(v);
-  //     trace(false);
-  //   });
-  // });
+  };
 
   let layersPanelOpen = $state(false);
 
@@ -240,6 +295,8 @@
     layerName = activeLayer.name;
     layerNameDisabled = true;
     layerLocked = activeLayer.locked;
+    activeUuidCache.set(activeLayer.uuid);
+    metaCache.set(oekaki.getLayers());
   });
 
   let opacity = $state(100);
@@ -374,20 +431,6 @@
         break;
     }
   };
-
-  const w = window.innerWidth * 0.9;
-  const h = window.innerHeight * 0.9;
-  let w2 = 0;
-  let h2 = 0;
-  if (w < h) {
-    w2 = w;
-    h2 = w2 * (9 / 16);
-  } else {
-    h2 = h * 0.6;
-    w2 = h2 * (16 / 9);
-  }
-  const width = w2 | 0;
-  const height = h2 | 0;
 </script>
 
 {#key layersPanelOpen}
@@ -439,6 +482,27 @@
         oekaki.refresh();
         activeLayer = new oekaki.LayeredCanvas("レイヤー #1");
       }
+    }}>delete</IconButton
+  >
+  <IconButton
+    class="material-icons"
+    onclick={async () => {
+      if (
+        layerLocked ||
+        !activeLayer ||
+        !confirm("全レイヤーを削除しますか？") ||
+        !confirm("一度消すと二度と復元できません。本当に消しますか？") ||
+        !confirm("後悔しませんね？")
+      )
+        return;
+      await Promise.all([
+        widthCache.set(null),
+        heightCache.set(null),
+        metaCache.set(null),
+        activeUuidCache.set(null),
+        ...oekaki.getLayers().map((v) => dataCacheByUuid(v.uuid).set(null)),
+      ]);
+      init();
     }}>delete_forever</IconButton
   >
 

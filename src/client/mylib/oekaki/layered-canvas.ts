@@ -75,7 +75,13 @@ export const setDotSize = (
 /**
  * レイヤーリストを取得
  */
-export const getLayers = () => g_layers;
+export const getLayers = (): LayeredCanvas[] => {
+	const layers = [];
+	for (const v of g_layers) {
+		if (v) layers.push(v);
+	}
+	return layers;
+};
 
 export const lowerLayer = new Config<LayeredCanvas | null>(null);
 export const upperLayer = new Config<LayeredCanvas | null>(null);
@@ -166,6 +172,20 @@ export const onDrawn = (
 };
 
 /**
+ * レイヤーの一時保存が可能な情報
+ */
+export type LayeredCanvasMeta = {
+	name: string;
+	index: number;
+	hash: number;
+	visible: boolean;
+	opacity: number;
+	locked: boolean;
+	used: boolean;
+	uuid: string;
+};
+
+/**
  * レイヤークラス
  */
 export class LayeredCanvas {
@@ -179,8 +199,10 @@ export class LayeredCanvas {
 	#opacity = 100;
 	locked = false;
 	used = false;
-	constructor(name: string) {
+	uuid: string;
+	constructor(name = "", uuid = "") {
 		this.name = name;
+		this.uuid = uuid || crypto.randomUUID();
 		const canvas = document.createElement("canvas");
 		g_layer_container?.append(canvas);
 		canvas.width = g_width;
@@ -196,6 +218,20 @@ export class LayeredCanvas {
 		g_layers.push(this);
 		this.index = g_layers.length - 1;
 		this.trace();
+	}
+	get meta() {
+		const { name, index, hash, visible, opacity, locked, used, uuid } = this;
+		return { name, index, hash, visible, opacity, locked, used, uuid };
+	}
+	set meta(meta: LayeredCanvasMeta) {
+		this.name = meta.name;
+		this.index = meta.index;
+		this.hash = meta.hash;
+		this.visible = meta.visible;
+		this.opacity = meta.opacity;
+		this.locked = meta.locked;
+		this.used = meta.used;
+		this.uuid = meta.uuid;
 	}
 	delete() {
 		g_layers[this.index] = null; // 欠番
@@ -345,14 +381,11 @@ export const render = () => {
  * nullを詰める
  */
 export const refresh = () => {
-	const refreshed: LayeredCanvas[] = [];
-	for (const layer of g_layers) {
-		if (layer) refreshed.push(layer);
-	}
-	for (const [i, layer] of refreshed.entries()) {
+	const layers = getLayers();
+	for (const [i, layer] of layers.entries()) {
 		layer.index = i;
 	}
-	g_layers = refreshed;
+	g_layers = layers;
 };
 
 /**
