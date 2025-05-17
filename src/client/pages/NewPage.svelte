@@ -18,7 +18,7 @@
     import * as v from "valibot";
     import {
         Enum,
-        EnumType,
+        type EnumType,
         ccOptions,
         contentSchemaMap,
         contentTypeOptions,
@@ -28,6 +28,7 @@
     import { sleep } from "../../common/util.js";
     import { genNonce } from "../mylib/anti-debug.js";
     import { makePathname } from "../mylib/env.js";
+    import { uploadImgur } from "../mylib/imgur.js";
     import { goodbye, hello, ok, socket } from "../mylib/socket.js";
     import {
         UnjStorage,
@@ -118,6 +119,7 @@
     });
 
     let emitting = $state(false);
+    let toDataURL = $state(() => "");
     const tryMakeThread = async () => {
         // 利用規約同意
         // if (termsAgreement.value !== "yes") {
@@ -127,7 +129,19 @@
         if (emitting) return;
         emitting = true;
         if (contentType === Enum.Oekaki) {
-            contentUrl = "";
+            // TODO
+            const dataURL = toDataURL();
+            if (!dataURL) return;
+            try {
+                const res = await uploadImgur(dataURL);
+                const json = await res.json();
+                console.log(json.data);
+                const { id, deletehash } = json.data;
+            } catch (err) {
+                console.error(err);
+            }
+            return;
+            // TODO
         }
         if (!contentUrl) contentType = Enum.Text;
         const data = {
@@ -290,6 +304,7 @@
             contentTypesBitmask={bits2Int(contentTypesBitmask)}
             threadId={sha256(Math.random().toString())}
             oekaki
+            bind:toDataURL
         />
         <FormField>
             <Checkbox disabled={emitting} bind:checked={check1} />

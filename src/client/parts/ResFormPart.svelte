@@ -33,6 +33,7 @@
     contentTypesBitmask = 0,
     threadId,
     oekaki,
+    toDataURL = $bindable(),
   } = $props();
 
   let openUrlTemplate = $state(false);
@@ -161,7 +162,7 @@
 
 {#key contentType}
   {#if oekaki && contentType === Enum.Oekaki}
-    <OekakiPart {threadId} />
+    <OekakiPart {threadId} bind:toDataURL />
   {/if}
 {/key}
 

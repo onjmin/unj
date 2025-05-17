@@ -34,6 +34,7 @@
     import { genNonce } from "../mylib/anti-debug.js";
     import { visible } from "../mylib/dom.js";
     import { makePathname } from "../mylib/env.js";
+    import { uploadImgur } from "../mylib/imgur.js";
     import { ObjectStorage } from "../mylib/object-storage.js";
     import { goodbye, hello, ok, socket } from "../mylib/socket.js";
     import {
@@ -395,6 +396,7 @@
     });
 
     let emitting = $state(false);
+    let toDataURL = $state(() => "");
     const tryRes = async () => {
         // 利用規約同意
         // if (termsAgreement.value !== "yes") {
@@ -404,7 +406,19 @@
         if (emitting) return;
         emitting = true;
         if (contentType === Enum.Oekaki) {
-            contentUrl = "";
+            // TODO
+            const dataURL = toDataURL();
+            if (!dataURL) return;
+            try {
+                const res = await uploadImgur(dataURL);
+                const json = await res.json();
+                console.log(json.data);
+                const { id, deletehash } = json.data;
+            } catch (err) {
+                console.error(err);
+            }
+            return;
+            // TODO
         }
         if (!contentUrl) contentType = Enum.Text;
         const data = {
@@ -480,7 +494,8 @@
         bind:contentType
         contentTypesBitmask={thread?.contentTypesBitmask ?? 0}
         {threadId}
-        {oekaki}
+        oekaki
+        bind:toDataURL
     />
     <Button disabled={emitting} onclick={tryRes} variant="raised"
         >投稿する</Button

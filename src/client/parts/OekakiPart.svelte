@@ -26,7 +26,11 @@
   import { lerp } from "../mylib/oekaki/lerp.js";
   import LayersPanelPart from "./LayersPanelPart.svelte";
 
-  let { threadId } = $props();
+  let { threadId, toDataURL = $bindable() } = $props();
+  toDataURL = () => {
+    if (oekaki.getLayers().every((v) => !v.used)) return "";
+    return oekaki.render().toDataURL();
+  };
 
   let oekakiWrapper: HTMLDivElement;
   let activeLayer: oekaki.LayeredCanvas | null = $state(null);
