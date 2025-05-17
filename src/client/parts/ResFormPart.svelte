@@ -16,7 +16,7 @@
   import video from "../../common/request/whitelist/video.js";
   import { UnjStorage } from "../mylib/unj-storage.js";
   import AvatarPart from "./AvatarPart.svelte";
-  import PaintPart from "./PaintPart.svelte";
+  import OekakiPart from "./OekakiPart.svelte";
   import UrlTemplatePart from "./UrlTemplatePart.svelte";
 
   const regexUrl =
@@ -32,7 +32,7 @@
     contentType = $bindable(0),
     contentTypesBitmask = 0,
     threadId,
-    paint,
+    oekaki,
   } = $props();
 
   let openUrlTemplate = $state(false);
@@ -160,8 +160,8 @@
 </Textfield>
 
 {#key contentType}
-  {#if paint && contentType === Enum.Paint}
-    <PaintPart {threadId} />
+  {#if oekaki && contentType === Enum.Oekaki}
+    <OekakiPart {threadId} />
   {/if}
 {/key}
 

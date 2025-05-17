@@ -7,6 +7,7 @@ import blacklistUploader3 from "./blacklist/uploader/domain3.js";
 import whitelistAudio from "./whitelist/audio.js";
 import whitelistGif from "./whitelist/gif.js";
 import whitelistImage from "./whitelist/image.js";
+import whitelistOekaki from "./whitelist/oekaki.js";
 import { findIn } from "./whitelist/site-info.js";
 import whitelistUnjGames from "./whitelist/unj-games.js";
 import whitelistVideo from "./whitelist/video.js";
@@ -59,8 +60,9 @@ export const Enum = {
 	Video: 16,
 	Audio: 32,
 	Games: 64,
-	Paint: 1024,
+	Oekaki: 1024,
 } as const;
+export type EnumType = (typeof Enum)[keyof typeof Enum];
 
 const TextSchema = v.object({
 	contentType: v.pipe(v.number(), v.value(Enum.Text)),
@@ -137,6 +139,15 @@ const UrlOfUnjGamesSchema = v.object({
 	),
 });
 
+const UrlOfOekakiSchema = v.object({
+	contentType: v.pipe(v.number(), v.value(Enum.Oekaki)),
+	contentText: SAFE_TEXT_MULTILINE,
+	contentUrl: v.pipe(
+		SAFE_URL,
+		v.check((input) => !!findIn(whitelistOekaki, new URL(input).hostname)),
+	),
+});
+
 /**
  * content_typeに対応するスキーマ
  */
@@ -149,6 +160,7 @@ export const contentSchemaMap = new Map(
 		[Enum.Video]: UrlOfVideoSchema,
 		[Enum.Audio]: UrlOfAudioSchema,
 		[Enum.Games]: UrlOfUnjGamesSchema,
+		[Enum.Oekaki]: UrlOfOekakiSchema,
 	}).map(([k, v]) => [Number(k), v]),
 );
 
@@ -165,6 +177,7 @@ export const contentTemplateMap = new Map(
 		[Enum.Video]: whitelistVideo,
 		[Enum.Audio]: whitelistAudio,
 		[Enum.Games]: whitelistUnjGames,
+		[Enum.Oekaki]: [],
 	}).map(([k, v]) => [Number(k), v]),
 );
 
@@ -173,7 +186,7 @@ export const contentTemplateMap = new Map(
  * プルダウンに表示する順番（入れ替え可能）
  */
 export const contentTypeOptions = [
-	{ bit: Enum.Paint, label: "お絵描き" },
+	{ bit: Enum.Oekaki, label: "お絵描き" },
 	{ bit: Enum.Text, label: "テキスト" },
 	{ bit: Enum.Url, label: "+URL" },
 	{ bit: Enum.Image, label: "+画像" },

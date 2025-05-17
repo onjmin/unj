@@ -18,6 +18,7 @@
     import * as v from "valibot";
     import {
         Enum,
+        EnumType,
         ccOptions,
         contentSchemaMap,
         contentTypeOptions,
@@ -44,7 +45,7 @@
     let userAvatar = $state(0);
     let contentText = $state("");
     let contentUrl = $state("");
-    let contentType = $state(Enum.Text);
+    let contentType: EnumType = $state(Enum.Text);
 
     // UnjStorage
     const titleUnjStorage = new UnjStorage("title");
@@ -67,7 +68,7 @@
 
     let ccBitmask = $state([1, 4, 8]);
     let contentTypesBitmask = $state([
-        Enum.Paint,
+        Enum.Oekaki,
         Enum.Text,
         Enum.Url,
         Enum.Image,
@@ -125,6 +126,9 @@
         // }
         if (emitting) return;
         emitting = true;
+        if (contentType === Enum.Oekaki) {
+            contentUrl = "";
+        }
         if (!contentUrl) contentType = Enum.Text;
         const data = {
             nonce: genNonce(nonceKey.value ?? ""),
@@ -285,7 +289,7 @@
             bind:contentType
             contentTypesBitmask={bits2Int(contentTypesBitmask)}
             threadId={sha256(Math.random().toString())}
-            paint
+            oekaki
         />
         <FormField>
             <Checkbox disabled={emitting} bind:checked={check1} />

@@ -24,7 +24,6 @@
         contentSchemaMap,
         contentTemplateMap,
     } from "../../common/request/content-schema.js";
-    import { RpgPatchSchema } from "../../common/request/rpg-schema.js";
     import { ResSchema, myConfig } from "../../common/request/schema.js";
     import {
         SiteInfo,
@@ -404,6 +403,9 @@
         // }
         if (emitting) return;
         emitting = true;
+        if (contentType === Enum.Oekaki) {
+            contentUrl = "";
+        }
         if (!contentUrl) contentType = Enum.Text;
         const data = {
             nonce: genNonce(nonceKey.value ?? ""),
@@ -467,7 +469,7 @@
     });
 </script>
 
-{#snippet form(paint = false)}
+{#snippet form(oekaki = false)}
     <ResFormPart
         disabled={emitting}
         bind:textarea
@@ -478,7 +480,7 @@
         bind:contentType
         contentTypesBitmask={thread?.contentTypesBitmask ?? 0}
         {threadId}
-        {paint}
+        {oekaki}
     />
     <Button disabled={emitting} onclick={tryRes} variant="raised"
         >投稿する</Button
