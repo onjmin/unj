@@ -235,7 +235,7 @@
   let penSize = $state(oekaki.penSize.value);
   let brushSize = $state(oekaki.brushSize.value);
   let eraserSize = $state(oekaki.eraserSize.value);
-  let dotHeight = $state(16);
+  let dotPenScale = $state(1);
   $effect(() => {
     if (activeLayer) activeLayer.opacity = opacity;
   });
@@ -252,7 +252,7 @@
     oekaki.eraserSize.value = eraserSize;
   });
   $effect(() => {
-    oekaki.setDotHeight(dotHeight);
+    oekaki.setDotSize(dotPenScale);
     document.documentElement.style.setProperty(
       "--grid-cell-size",
       `${oekaki.getDotSize()}px`,
@@ -504,27 +504,13 @@
     {@render palette()}
     <Slider min={1} max={64} discrete bind:value={eraserSize} />
   {:else if choiced.label === tool.dotPen.label}
-    <span class="size">{dotHeight}px</span>
+    <span class="size">{dotPenScale}px</span>
     {@render palette()}
-    <Slider
-      min={16}
-      max={64}
-      step={16}
-      discrete
-      tickMarks
-      bind:value={dotHeight}
-    />
+    <Slider min={1} max={4} discrete tickMarks bind:value={dotPenScale} />
   {:else if choiced.label === tool.dotEraser.label}
-    <span class="size">{dotHeight}px</span>
+    <span class="size">{dotPenScale}px</span>
     {@render palette()}
-    <Slider
-      min={16}
-      max={64}
-      step={16}
-      discrete
-      tickMarks
-      bind:value={dotHeight}
-    />
+    <Slider min={1} max={4} discrete tickMarks bind:value={dotPenScale} />
   {:else if choiced.label === tool.dropper.label}
     <span class="size"></span>
     {@render palette()}

@@ -54,23 +54,23 @@ export const flipped = new Config(false, () => {
 });
 
 /**
- * キャンバスの幅基準でドットを設定する
- */
-export const setDotWidth = (dot: number) => {
-	g_dot_size = Math.floor(g_width / dot);
-};
-
-/**
- * キャンバスの高さ基準でドットを設定する
- */
-export const setDotHeight = (dot: number) => {
-	g_dot_size = Math.floor(g_height / dot);
-};
-
-/**
  * 1ドットの大きさ
  */
 export const getDotSize = () => g_dot_size;
+
+/**
+ * 1ドットの大きさを変更する
+ * @param dotPenScale ドットペンの太さの倍率（1なら最細）
+ * @param maxDotCount ドットを最大でいくつに分割するか（解像度的な意味）
+ * @param canvasLength 対象キャンバスの一辺の長さ（幅または高さ）
+ */
+export const setDotSize = (
+	dotPenScale = 1,
+	maxDotCount = 64,
+	canvasLength = g_height,
+) => {
+	g_dot_size = Math.floor(Math.floor(canvasLength / maxDotCount) * dotPenScale);
+};
 
 /**
  * レイヤーリストを取得
