@@ -37,6 +37,34 @@
   const handleKeyDown = async (e: KeyboardEvent) => {
     if (!e.ctrlKey) return;
     switch (e.key) {
+      case "1":
+        e.preventDefault();
+        choiced = tool.pen;
+        break;
+      case "2":
+        e.preventDefault();
+        choiced = tool.brush;
+        break;
+      case "3":
+        e.preventDefault();
+        choiced = tool.eraser;
+        break;
+      case "4":
+        e.preventDefault();
+        choiced = tool.dotPen;
+        break;
+      case "5":
+        e.preventDefault();
+        choiced = tool.dotEraser;
+        break;
+      case "6":
+        e.preventDefault();
+        choiced = tool.dropper;
+        break;
+      case "7":
+        e.preventDefault();
+        choiced = tool.fill;
+        break;
       case "f":
         e.preventDefault();
         oekaki.flipped.value = !oekaki.flipped.value;
