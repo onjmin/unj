@@ -98,6 +98,7 @@ export const init = (mountTarget: HTMLElement, width = 640, height = 360) => {
 	g_height = Math.floor(height);
 	layerContainer.innerHTML = "";
 	layerContainer.style.position = "relative";
+	layerContainer.style.zIndex = "0"; // スタックコンテキスト
 	layerContainer.style.display = "inline-block";
 	layerContainer.style.width = `${width}px`;
 	layerContainer.style.height = `${height}px`;
