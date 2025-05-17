@@ -177,7 +177,7 @@
   };
   $effect(() => {
     document.addEventListener("click", saveMeta);
-    return () => document.removeEventListener("touchend", saveMeta);
+    return () => document.removeEventListener("click", saveMeta);
   });
   const dataCacheByUuid = factory<number[]>("data");
   const saveData = () => {
