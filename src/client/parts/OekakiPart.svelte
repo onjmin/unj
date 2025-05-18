@@ -308,14 +308,11 @@
       prevX = null;
       prevY = null;
       if (activeLayer?.locked) return;
+      if (choiced.label === tool.fill.label) fill(x, y);
       fin();
     });
     oekaki.onClick((x, y, buttons) => {
-      if (activeLayer?.locked) return;
-      if (choiced.label === tool.fill.label) {
-        fill(x, y);
-        fin();
-      }
+      // TODO: 右クリックでカラーピッカー
     });
   };
 

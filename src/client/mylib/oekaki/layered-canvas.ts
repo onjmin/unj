@@ -122,6 +122,7 @@ const f = (e: MouseEvent | PointerEvent): [number, number, number] => {
 
 /**
  * ユーザーのクリックイベント
+ * PC専用ショートカットを考えるときなどに
  */
 export const onClick = (
 	callback: (x: number, y: number, buttons: number) => void,
