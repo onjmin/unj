@@ -270,27 +270,28 @@
     oekaki.onDraw((x, y, buttons) => {
       if (prevX === null) prevX = x;
       if (prevY === null) prevY = y;
-      if (choiced.label === tool.dropper.label) {
+      if (choiced.label === tool.dropper.label || (buttons & 2) === 2) {
         dropper(x, y);
-      }
-      if (!activeLayer?.locked) {
-        if (choiced.label === tool.brush.label) {
-          activeLayer?.drawLine(x, y, prevX, prevY);
-        } else {
-          const lerps = lerp(x, y, prevX, prevY);
-          switch (choiced.label) {
-            case tool.pen.label:
-              for (const [x, y] of lerps) activeLayer?.draw(x, y);
-              break;
-            case tool.eraser.label:
-              for (const [x, y] of lerps) activeLayer?.erase(x, y);
-              break;
-            case tool.dotPen.label:
-              for (const [x, y] of lerps) activeLayer?.drawDot(x, y);
-              break;
-            case tool.dotEraser.label:
-              for (const [x, y] of lerps) activeLayer?.eraseDot(x, y);
-              break;
+      } else {
+        if (!activeLayer?.locked) {
+          if (choiced.label === tool.brush.label) {
+            activeLayer?.drawLine(x, y, prevX, prevY);
+          } else {
+            const lerps = lerp(x, y, prevX, prevY);
+            switch (choiced.label) {
+              case tool.pen.label:
+                for (const [x, y] of lerps) activeLayer?.draw(x, y);
+                break;
+              case tool.eraser.label:
+                for (const [x, y] of lerps) activeLayer?.erase(x, y);
+                break;
+              case tool.dotPen.label:
+                for (const [x, y] of lerps) activeLayer?.drawDot(x, y);
+                break;
+              case tool.dotEraser.label:
+                for (const [x, y] of lerps) activeLayer?.eraseDot(x, y);
+                break;
+            }
           }
         }
       }
@@ -311,9 +312,7 @@
       if (choiced.label === tool.fill.label) fill(x, y);
       fin();
     });
-    oekaki.onClick((x, y, buttons) => {
-      // TODO: 右クリックでカラーピッカー
-    });
+    oekaki.onClick((x, y, buttons) => {});
   };
 
   let layersPanelOpen = $state(false);
