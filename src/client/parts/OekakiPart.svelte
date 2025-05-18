@@ -199,6 +199,9 @@
     dataCacheByUuid(activeLayer.uuid).set(Array.from(activeLayer.data));
   };
 
+  let upperLayer: oekaki.LayeredCanvas | null = $state(null);
+  let lowerLayer: oekaki.LayeredCanvas | null = $state(null);
+
   let width = 0;
   let height = 0;
   $effect(() => {
@@ -230,10 +233,10 @@
     oekaki.init(oekakiWrapper, width, height);
     setDotSize();
 
-    const upper = oekaki.upperLayer.value;
-    const lower = oekaki.lowerLayer.value;
-    if (upper) upper.canvas.classList.add("upper-canvas");
-    if (lower) lower.canvas.classList.add("lower-canvas");
+    upperLayer = oekaki.upperLayer.value;
+    lowerLayer = oekaki.lowerLayer.value;
+    if (upperLayer) upperLayer.canvas.classList.add("upper-canvas");
+    if (lowerLayer) lowerLayer.canvas.classList.add("lower-canvas");
 
     (async () => {
       const [uuids, activeUuid] = await Promise.all([
@@ -424,6 +427,17 @@
     tool.fill,
   ];
   let choiced: Tool = $state(tool.brush);
+
+  const mdi2DataUrl = (mdi: string) => {
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"><path d="${mdi}" fill="black"/></svg>`;
+    const base64 = btoa(svg);
+    return `data:image/svg+xml;base64,${base64}`;
+  };
+
+  $effect(() => {
+    if (upperLayer)
+      upperLayer.canvas.style.cursor = `url('${mdi2DataUrl(choiced.icon)}') 3 21, auto`;
+  });
 
   let toggles = [tool.flip, tool.grid];
   let toggle: Tool[] = $state([]);
