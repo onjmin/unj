@@ -144,9 +144,10 @@
   </Route>
   <!-- 後で消す -->
   <Route path={makePathname("/test")}>
-    <BannedCheck>
-      <TestPage />
-    </BannedCheck>
+    <TestPage />
+  </Route>
+  <Route path={makePathname("/oekaki/demo")}>
+    <TestPage />
   </Route>
 
   <!-- 直リンでは辿り着けない -->
