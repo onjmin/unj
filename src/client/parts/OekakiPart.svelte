@@ -679,11 +679,12 @@
     background-size: var(--grid-cell-size) var(--grid-cell-size);
   }
   :global(.lower-canvas) {
-    opacity: 0.4;
-    background-image: linear-gradient(45deg, #ccc 25%, transparent 25%),
-      linear-gradient(-45deg, #ccc 25%, transparent 25%),
-      linear-gradient(45deg, transparent 75%, #ccc 75%),
-      linear-gradient(-45deg, transparent 75%, #ccc 75%);
+    /* GIMPの背景のアレ */
+    background-color: #fff;
+    background-image: linear-gradient(45deg, #eee 25%, transparent 25%),
+      linear-gradient(-45deg, #eee 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #eee 75%),
+      linear-gradient(-45deg, transparent 75%, #eee 75%);
     background-size: 16px 16px;
     background-position:
       0 0,
