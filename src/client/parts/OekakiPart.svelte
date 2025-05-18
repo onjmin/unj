@@ -100,7 +100,10 @@
             activeLayer?.canvas.toBlob(resolve),
           );
           if (!blob) return;
-          const item = new ClipboardItem({ [blob.type]: blob });
+          const item = new ClipboardItem({
+            [blob.type]: blob,
+            "text/plain": new Blob([MAGIC_STRING], { type: "text/plain" }),
+          });
           await navigator.clipboard.write([item]);
         }
         break;
@@ -111,6 +114,12 @@
           const items = await navigator.clipboard.read();
           const item = items[0];
           if (!item) return;
+          // レイヤー以外からのコピーを弾く（※画像のハッシュと比較すれば更にセキュアに）
+          const textBlob = await item.getType("text/plain").catch(() => null);
+          if (!textBlob) return;
+          const text = await textBlob.text();
+          if (!text.includes(MAGIC_STRING)) return;
+          // クリップボードから画像を取得
           const imageType = item.types.find((t) => t.startsWith("image/"));
           if (!imageType) return;
           const blob = await item.getType(imageType);
@@ -126,6 +135,7 @@
         break;
     }
   };
+  const MAGIC_STRING = "__AUTHORIZED_IMAGE__";
   $effect(() => {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
@@ -242,6 +252,7 @@
           const layer = new oekaki.LayeredCanvas(meta.name, meta.uuid);
           layer.meta = meta;
           layer.data = new Uint8ClampedArray(data);
+          layer.trace();
           if (meta.uuid === activeUuid) activeLayer = layer;
         }
         if (!activeLayer) {
