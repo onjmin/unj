@@ -68,10 +68,10 @@
                     <IconButton
                         class="material-icons"
                         aria-label="help"
-                        onclick={() => navigate(makePathname("/contact"))}
-                        >help</IconButton
+                        onclick={() => navigate(makePathname("/news"))}
+                        >newspaper</IconButton
                     >
-                    <div class="label-overlay">FAQ</div>
+                    <div class="label-overlay">NEWS</div>
                 </div>
             </Section>
             <Section align="end" toolbar>
