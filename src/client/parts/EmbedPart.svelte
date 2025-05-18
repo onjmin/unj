@@ -224,6 +224,7 @@
     object-fit: contain; /* はみ出さないようにする（切り抜きたくないなら contain） */
     border-radius: 8px; /* 角丸にしたい場合。お好み！ */
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* 軽い影で浮かせる */
+    background-color: white; /* 透過部分の背景を白に */
   }
   iframe {
     border-radius: 12px;
