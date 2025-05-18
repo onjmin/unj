@@ -353,7 +353,7 @@
   let penSize = $state(oekaki.penSize.value);
   let brushSize = $state(oekaki.brushSize.value);
   let eraserSize = $state(oekaki.eraserSize.value);
-  let dotPenScale = $state(1);
+  let dotPenScale = $state(8);
   $effect(() => {
     if (activeLayer) activeLayer.opacity = opacity;
   });
@@ -644,11 +644,11 @@
   {:else if choiced.label === tool.dotPen.label}
     <span class="size">{dotPenScale}倍</span>
     {@render palette()}
-    <Slider min={1} max={4} discrete tickMarks bind:value={dotPenScale} />
+    <Slider min={1} max={8} discrete tickMarks bind:value={dotPenScale} />
   {:else if choiced.label === tool.dotEraser.label}
     <span class="size">{dotPenScale}倍</span>
     {@render palette()}
-    <Slider min={1} max={4} discrete tickMarks bind:value={dotPenScale} />
+    <Slider min={1} max={8} discrete tickMarks bind:value={dotPenScale} />
   {:else if choiced.label === tool.dropper.label}
     <span class="size"></span>
     {@render palette()}
