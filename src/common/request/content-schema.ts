@@ -183,7 +183,7 @@ export const contentTemplateMap = new Map(
 		[Enum.Video]: whitelistVideo,
 		[Enum.Audio]: whitelistAudio,
 		[Enum.Games]: whitelistUnjGames,
-		[Enum.Oekaki]: [],
+		[Enum.Oekaki]: whitelistOekaki,
 	}).map(([k, v]) => [Number(k), v]),
 );
 

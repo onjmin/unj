@@ -9,6 +9,7 @@
   } from "@smui/list";
   import Paper, { Title, Content, Subtitle } from "@smui/paper";
   import { contentTemplateMap } from "../../common/request/content-schema.js";
+  import oekaki from "../../common/request/whitelist/oekaki.js";
   import {
     SiteInfo,
     findIn,
@@ -78,6 +79,10 @@
           audioEmbedSpotify = true;
           embedUrl = parseAudioEmbedSpotify(url) ?? "";
           break;
+        case 102401:
+          imageEmbed = true;
+          embedUrl = parseImageEmbedImgur(url) ?? "";
+          break;
       }
       if (!embedUrl) throw 114514;
     } catch (err) {
@@ -112,6 +117,9 @@
 </script>
 
 {#if siteInfo}
+  {#if temp === oekaki}
+    <div class="system-color">※お絵描き機能</div>
+  {/if}
   {#if !embedding}
     <List twoLine
       ><Item
@@ -198,6 +206,9 @@
 {/if}
 
 <style>
+  .system-color {
+    color: #e57373;
+  }
   :global(.embed-favicon-item-graphic) {
     background-repeat: no-repeat;
     background-size: cover;
