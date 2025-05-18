@@ -41,17 +41,20 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			const query = [
 				"SELECT * FROM threads WHERE deleted_at IS NULL OR deleted_at > CURRENT_TIMESTAMP",
 			];
+			const values = [];
 			if (cursor !== null) {
 				if (desc) {
 					query.push("AND id <= $1");
 				} else {
 					query.push("AND id >= $1");
 				}
+				values.push(cursor);
 			}
 			query.push(`ORDER BY latest_res_at ${desc ? "DESC" : "ASC"}`);
-			query.push("LIMIT $2");
+			query.push(`LIMIT $${values.length + 1}`);
+			values.push(size);
 
-			const { rows } = await pool.query(query.join(" "), [cursor, size]);
+			const { rows } = await pool.query(query.join(" "), values);
 
 			const list: HeadlineThread[] = [];
 			for (const record of rows) {

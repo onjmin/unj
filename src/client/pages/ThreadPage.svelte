@@ -45,7 +45,11 @@
         replyResSoundHowl,
     } from "../mylib/sound.js";
     import { openRight } from "../mylib/store.js";
-    import { UnjStorage, rpgMode } from "../mylib/unj-storage.js";
+    import {
+        UnjStorage,
+        oekakiUploaded,
+        rpgMode,
+    } from "../mylib/unj-storage.js";
     import {
         latestReadThreadId,
         nonceKey,
@@ -406,19 +410,35 @@
         if (emitting) return;
         emitting = true;
         if (contentType === Enum.Oekaki) {
-            // TODO
-            const dataURL = toDataURL();
-            if (!dataURL) return;
-            try {
-                const res = await uploadImgur(dataURL);
-                const json = await res.json();
-                console.log(json.data);
-                const { id, deletehash } = json.data;
-            } catch (err) {
-                console.error(err);
+            const result = await (async () => {
+                const last = oekakiUploaded.value;
+                if (last) {
+                    const limit = 256;
+                    const diffSeconds = differenceInSeconds(
+                        new Date(),
+                        new Date(last),
+                    );
+                    if (diffSeconds < limit) {
+                        alert(`${limit - diffSeconds}秒後に再投稿できます`);
+                        return;
+                    }
+                }
+                oekakiUploaded.value = new Date().toString();
+                const dataURL = toDataURL();
+                if (!dataURL) return;
+                try {
+                    const res = await uploadImgur(dataURL);
+                    const json = await res.json();
+                    const { link, id, deletehash } = json.data;
+                    contentUrl = link;
+                    return true;
+                } catch (err) {}
+            })();
+            if (!result) {
+                await sleep(4096);
+                emitting = false;
+                return;
             }
-            return;
-            // TODO
         }
         if (!contentUrl) contentType = Enum.Text;
         const data = {
@@ -494,7 +514,7 @@
         bind:contentType
         contentTypesBitmask={thread?.contentTypesBitmask ?? 0}
         {threadId}
-        oekaki
+        {oekaki}
         bind:toDataURL
     />
     <Button disabled={emitting} onclick={tryRes} variant="raised"

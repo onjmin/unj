@@ -99,3 +99,4 @@ export const authToken = new UnjStorage("authToken");
 export const nonceKey = new UnjStorage("nonceKey");
 export const ninjaPokemon = new UnjStorage("ninjaPokemon");
 export const ninjaScore = new UnjStorage("ninjaScore");
+export const oekakiUploaded = new UnjStorage("oekakiUploaded");

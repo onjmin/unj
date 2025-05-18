@@ -7,7 +7,6 @@ export const uploadImgur = (base64: string) => {
 	return fetch("https://api.imgur.com/3/upload.json", {
 		method: "POST",
 		headers: {
-			"Content-Type": "application/json",
 			Authorization: `Client-ID ${VITE_IMGUR_CLIENT_ID}`,
 		},
 		body: new URLSearchParams({ image }),
