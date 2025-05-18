@@ -476,7 +476,7 @@
             emitting = false;
             return;
         }
-        socket.emit("res", result);
+        socket.emit("res", { ...result, contentMeta });
         await sleep(4096);
         emitting = false;
         ok();

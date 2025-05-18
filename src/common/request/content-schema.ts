@@ -144,9 +144,9 @@ export const oekakiSchema = v.object({
 	contentText: SAFE_TEXT_MULTILINE,
 	// 雑なバリデーション
 	contentMeta: v.strictObject({
-		link: v.pipe(v.string(), v.length(32)),
-		id: v.pipe(v.string(), v.length(32)),
-		deletehash: v.pipe(v.string(), v.length(32)),
+		link: v.pipe(v.string(), v.maxLength(64)),
+		id: v.pipe(v.string(), v.maxLength(64)),
+		deletehash: v.pipe(v.string(), v.maxLength(64)),
 	}),
 	contentUrl: v.pipe(
 		SAFE_URL,

@@ -201,7 +201,7 @@
             emitting = false;
             return;
         }
-        socket.emit("makeThread", result);
+        socket.emit("makeThread", { ...result, contentMeta });
         await sleep(4096);
         emitting = false;
         ok();
