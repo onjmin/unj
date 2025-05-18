@@ -2,7 +2,10 @@ import type { PoolClient } from "@neondatabase/serverless";
 import { addSeconds, isBefore } from "date-fns";
 import type { Server, Socket } from "socket.io";
 import * as v from "valibot";
-import { contentSchemaMap } from "../../common/request/content-schema.js";
+import {
+	contentSchemaMap,
+	oekakiSchema,
+} from "../../common/request/content-schema.js";
 import { ResSchema, myConfig } from "../../common/request/schema.js";
 import type { Meta, Player, Res } from "../../common/response/schema.js";
 import { randInt } from "../../common/util.js";
@@ -67,6 +70,13 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		if (!schema) return;
 		const content = v.safeParse(schema, data, myConfig);
 		if (!content.success) return;
+
+		if (schema === oekakiSchema) {
+			const oekaki = v.safeParse(oekakiSchema, data, myConfig);
+			if (!oekaki.success) return;
+			const { link, id, deletehash } = oekaki.output.contentMeta;
+			logger.info(`🎨 ${link} ${id} ${deletehash}`);
+		}
 
 		if (isDeleted(threadId)) return;
 		if (balsResNumCache.get(threadId)) return;

@@ -139,9 +139,15 @@ const UrlOfUnjGamesSchema = v.object({
 	),
 });
 
-const UrlOfOekakiSchema = v.object({
+export const oekakiSchema = v.object({
 	contentType: v.pipe(v.number(), v.value(Enum.Oekaki)),
 	contentText: SAFE_TEXT_MULTILINE,
+	// 雑なバリデーション
+	contentMeta: v.strictObject({
+		link: v.pipe(v.string(), v.length(32)),
+		id: v.pipe(v.string(), v.length(32)),
+		deletehash: v.pipe(v.string(), v.length(32)),
+	}),
 	contentUrl: v.pipe(
 		SAFE_URL,
 		v.check((input) => !!findIn(whitelistOekaki, new URL(input).hostname)),
@@ -160,7 +166,7 @@ export const contentSchemaMap = new Map(
 		[Enum.Video]: UrlOfVideoSchema,
 		[Enum.Audio]: UrlOfAudioSchema,
 		[Enum.Games]: UrlOfUnjGamesSchema,
-		[Enum.Oekaki]: UrlOfOekakiSchema,
+		[Enum.Oekaki]: oekakiSchema,
 	}).map(([k, v]) => [Number(k), v]),
 );
 

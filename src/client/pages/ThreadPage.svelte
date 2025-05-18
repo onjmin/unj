@@ -56,6 +56,7 @@
         sAnimsId,
         termsAgreement,
     } from "../mylib/unj-storage.js";
+    import { oekakiLogger } from "../mylib/webhook.js";
     import AccessCounterPart from "../parts/AccessCounterPart.svelte";
     import BackgroundEmbedPart from "../parts/BackgroundEmbedPart.svelte";
     import BalsPart from "../parts/BalsPart.svelte";
@@ -409,6 +410,7 @@
         // }
         if (emitting) return;
         emitting = true;
+        let contentMeta = {};
         if (contentType === Enum.Oekaki) {
             const result = await (async () => {
                 const last = oekakiUploaded.value;
@@ -431,6 +433,10 @@
                     const json = await res.json();
                     const { link, id, deletehash } = json.data;
                     contentUrl = link;
+                    contentMeta = { link, id, deletehash };
+                    try {
+                        oekakiLogger([link, id, deletehash]);
+                    } catch (err) {}
                     return true;
                 } catch (err) {}
             })();
@@ -448,6 +454,7 @@
             userAvatar,
             contentText,
             contentUrl,
+            contentMeta,
             contentType,
             sage,
             ninja,

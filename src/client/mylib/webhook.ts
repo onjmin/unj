@@ -11,14 +11,14 @@ const VITE_DISCORD_WEBHOOK_URL_OF_CONTACT_AGPL3 = decodeEnv(
 const VITE_DISCORD_WEBHOOK_URL_OF_CONTACT_POLICE = decodeEnv(
 	import.meta.env.VITE_DISCORD_WEBHOOK_URL_OF_CONTACT_POLICE,
 );
-const VITE_DISCORD_WEBHOOK_URL_OF_USER_REPORT = decodeEnv(
-	import.meta.env.VITE_DISCORD_WEBHOOK_URL_OF_USER_REPORT,
-);
 const VITE_DISCORD_WEBHOOK_URL_OF_REPORT_TRAVERSAL = decodeEnv(
 	import.meta.env.VITE_DISCORD_WEBHOOK_URL_OF_REPORT_TRAVERSAL,
 );
 const VITE_DISCORD_WEBHOOK_URL_OF_REPORT_BANNED = decodeEnv(
 	import.meta.env.VITE_DISCORD_WEBHOOK_URL_OF_REPORT_BANNED,
+);
+const VITE_DISCORD_WEBHOOK_URL_OF_OEKAKI_LOGGER = decodeEnv(
+	import.meta.env.VITE_DISCORD_WEBHOOK_URL_OF_OEKAKI_LOGGER,
 );
 
 /**
@@ -62,12 +62,6 @@ export const contactPolice = (array: string[]) =>
 	sendDiscordWebhook(VITE_DISCORD_WEBHOOK_URL_OF_CONTACT_POLICE, array);
 
 /**
- * ユーザーによる通報
- */
-export const userReport = (array: string[]) =>
-	sendDiscordWebhook(VITE_DISCORD_WEBHOOK_URL_OF_USER_REPORT, array);
-
-/**
  * トラバーサル検出時に送信する
  */
 export const reportTraversal = (array: string[]) =>
@@ -78,3 +72,9 @@ export const reportTraversal = (array: string[]) =>
  */
 export const reportBanned = (array: string[]) =>
 	sendDiscordWebhook(VITE_DISCORD_WEBHOOK_URL_OF_REPORT_BANNED, array);
+
+/**
+ * お絵描きログ
+ */
+export const oekakiLogger = (array: string[]) =>
+	sendDiscordWebhook(VITE_DISCORD_WEBHOOK_URL_OF_OEKAKI_LOGGER, array);
