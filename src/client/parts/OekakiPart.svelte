@@ -78,11 +78,9 @@
         isGrid = !isGrid;
         break;
       case "z":
-        e.preventDefault();
         doAction(tool.undo);
         break;
       case "Z":
-        e.preventDefault();
         doAction(tool.redo);
         break;
       case "l":
@@ -95,7 +93,6 @@
         break;
       case "c": // クリップボードにコピー
         {
-          e.preventDefault();
           const blob = await new Promise<Blob | null>((resolve) =>
             activeLayer?.canvas.toBlob(resolve),
           );
@@ -107,38 +104,52 @@
           await navigator.clipboard.write([item]);
         }
         break;
-      case "v": // クリップボードから貼り付け
-        {
-          e.preventDefault();
-          if (!activeLayer || activeLayer?.locked) return;
-          const items = await navigator.clipboard.read();
-          const item = items[0];
-          if (!item) return;
-          // レイヤー以外からのコピーを弾く（※画像のハッシュと比較すれば更にセキュアに）
-          const textBlob = await item.getType("text/plain").catch(() => null);
-          if (!textBlob) return;
-          const text = await textBlob.text();
-          if (!text.includes(MAGIC_STRING)) return;
-          // クリップボードから画像を取得
-          const imageType = item.types.find((t) => t.startsWith("image/"));
-          if (!imageType) return;
-          const blob = await item.getType(imageType);
-          const bitmap = await createImageBitmap(blob);
-          const ratio = Math.min(width / bitmap.width, height / bitmap.height);
-          const w = bitmap.width * ratio;
-          const h = bitmap.height * ratio;
-          const offsetX = (width - w) / 2;
-          const offsetY = (height - h) / 2;
-          activeLayer.ctx.drawImage(bitmap, offsetX, offsetY, w, h);
-          activeLayer?.trace();
-        }
-        break;
     }
   };
-  const MAGIC_STRING = "__AUTHORIZED_IMAGE__";
   $effect(() => {
+    if (!upperLayer) return;
+    window.removeEventListener("keydown", handleKeyDown);
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
+  });
+
+  const MAGIC_STRING = "レイヤーコピー";
+
+  /**
+   * PC版ショートカット
+   */
+  const handlePaste = async (e: ClipboardEvent) => {
+    if (!activeLayer || activeLayer?.locked) return;
+    const items = e.clipboardData?.items;
+    let imageItem: DataTransferItem | null = null;
+    let textItem: DataTransferItem | null = null;
+    for (const v of e.clipboardData?.items ?? []) {
+      if (v.kind === "file" && v.type.startsWith("image/")) imageItem = v;
+      if (v.kind === "string" && v.type === "text/plain") textItem = v;
+    }
+    if (!imageItem || !textItem) return;
+    const blob = imageItem.getAsFile();
+    if (!blob) return;
+    // レイヤー以外からのコピーを弾く（※画像のハッシュと比較すれば更にセキュアに）
+    const text = await new Promise<string>((resolve) =>
+      textItem.getAsString(resolve),
+    );
+    if (!text.includes(MAGIC_STRING)) return;
+    // クリップボードから画像を取得
+    const bitmap = await createImageBitmap(blob);
+    const ratio = Math.min(width / bitmap.width, height / bitmap.height);
+    const w = bitmap.width * ratio;
+    const h = bitmap.height * ratio;
+    const offsetX = (width - w) / 2;
+    const offsetY = (height - h) / 2;
+    activeLayer.ctx.drawImage(bitmap, offsetX, offsetY, w, h);
+    activeLayer?.trace();
+  };
+  $effect(() => {
+    if (!upperLayer) return;
+    window.removeEventListener("paste", handlePaste);
+    window.addEventListener("paste", handlePaste);
+    return () => window.removeEventListener("paste", handlePaste);
   });
 
   const dropper = (x: number, y: number) => {
@@ -240,7 +251,11 @@
     lowerLayer = oekaki.lowerLayer.value;
     if (upperLayer) upperLayer.canvas.classList.add("upper-canvas");
     if (lowerLayer) lowerLayer.canvas.classList.add("lower-canvas");
+  };
 
+  // 描画データ復元
+  $effect(() => {
+    if (!upperLayer) return;
     (async () => {
       const [uuids, activeUuid] = await Promise.all([
         uuidsCache.get(),
@@ -270,7 +285,11 @@
         activeLayer = new oekaki.LayeredCanvas("レイヤー #1");
       }
     })();
+  });
 
+  // 描画イベント登録
+  $effect(() => {
+    if (!upperLayer) return;
     let prevX: number | null = null;
     let prevY: number | null = null;
     oekaki.onDraw((x, y, buttons) => {
@@ -319,7 +338,7 @@
       fin();
     });
     oekaki.onClick((x, y, buttons) => {});
-  };
+  });
 
   let layersPanelOpen = $state(false);
 
