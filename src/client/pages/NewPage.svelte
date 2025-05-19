@@ -123,6 +123,8 @@
 
     let emitting = $state(false);
     let toDataURL = $state(() => "");
+    type Imgur = { link: string; id: string; deletehash: string };
+    let uploadedImgur: Imgur | null = null;
     const tryMakeThread = async () => {
         // 利用規約同意
         // if (termsAgreement.value !== "yes") {
@@ -134,9 +136,14 @@
         let contentMeta = {};
         if (contentType === Enum.Oekaki) {
             const result = await (async () => {
+                if (uploadedImgur) {
+                    contentUrl = uploadedImgur.link;
+                    contentMeta = uploadedImgur;
+                    return true;
+                }
                 const last = oekakiUploaded.value;
                 if (last) {
-                    const limit = 256;
+                    const limit = 128;
                     const diffSeconds = differenceInSeconds(
                         new Date(),
                         new Date(last),
@@ -155,6 +162,7 @@
                     const { link, id, deletehash } = json.data;
                     contentUrl = link;
                     contentMeta = { link, id, deletehash };
+                    uploadedImgur = { link, id, deletehash };
                     try {
                         oekakiLogger([link, id, deletehash]);
                     } catch (err) {}
