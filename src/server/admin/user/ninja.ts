@@ -6,7 +6,7 @@ import { ninjaScoreCache } from "../../mylib/cache.js";
 const api = "/user/ninja";
 
 export default (router: Router) => {
-	// GET: クエリパラメータの userId に対応するスコア取得
+	// GET: クエリパラメータの userId に対応するスコアを取得
 	router.get(api, (req: Request, res: Response) => {
 		const userId = v.safeParse(SERIAL, Number(req.query.userId));
 		if (!userId.success) {
@@ -34,9 +34,7 @@ export default (router: Router) => {
 			return;
 		}
 		if (!ninjaScoreCache.has(userId.output)) {
-			res
-				.status(404)
-				.json({ error: "指定されたユーザーIDのスコアは存在しません。" });
+			res.status(404).json({ error: "指定されたユーザーIDは存在しません。" });
 			return;
 		}
 		const ninjaScore = v.safeParse(SMALLINT, req.body.ninjaScore);
