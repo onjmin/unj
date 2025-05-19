@@ -30,7 +30,7 @@
         findIn,
     } from "../../common/request/whitelist/site-info.js";
     import type { Meta, Res, Thread } from "../../common/response/schema.js";
-    import { sleep } from "../../common/util.js";
+    import { randInt, sleep } from "../../common/util.js";
     import { genNonce } from "../mylib/anti-debug.js";
     import { visible } from "../mylib/dom.js";
     import { makePathname } from "../mylib/env.js";
@@ -423,7 +423,7 @@
                 }
                 const last = oekakiUploaded.value;
                 if (last) {
-                    const limit = 128;
+                    const limit = randInt(16, 256);
                     const diffSeconds = differenceInSeconds(
                         new Date(),
                         new Date(last),

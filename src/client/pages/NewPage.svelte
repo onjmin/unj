@@ -26,7 +26,7 @@
     } from "../../common/request/content-schema.js";
     import { MakeThreadSchema, myConfig } from "../../common/request/schema.js";
     import type { HeadlineThread } from "../../common/response/schema.js";
-    import { sleep } from "../../common/util.js";
+    import { randInt, sleep } from "../../common/util.js";
     import { genNonce } from "../mylib/anti-debug.js";
     import { makePathname } from "../mylib/env.js";
     import { uploadImgur } from "../mylib/imgur.js";
@@ -143,7 +143,7 @@
                 }
                 const last = oekakiUploaded.value;
                 if (last) {
-                    const limit = 128;
+                    const limit = randInt(16, 256);
                     const diffSeconds = differenceInSeconds(
                         new Date(),
                         new Date(last),
