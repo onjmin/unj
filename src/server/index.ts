@@ -15,8 +15,10 @@ import registerBlacklistID, { blacklist } from "./admin/blacklist/id.js";
 import registerBlacklistIP from "./admin/blacklist/ip.js";
 import registerBlacklistTor from "./admin/blacklist/tor.js";
 import registerBlacklistVpngate from "./admin/blacklist/vpngate.js";
+import registerDebugZombie from "./admin/debug/zombie.js";
 import registerLogGrep from "./admin/log/grep.js";
 import registerLogLevel from "./admin/log/level.js";
+import registerThreadOwner from "./admin/thread/owner.js";
 import registerUserNinja from "./admin/user/ninja.js";
 import handleGetNonceKey from "./api/getNonceKey.js";
 import handleHeadline from "./api/headline.js";
@@ -95,6 +97,11 @@ app.get("/ping", bannedCheckMiddleware, (req, res) => {
 	res.send("pong");
 });
 
+const multipleConnectionsLimit = 3;
+const online: Online = new Map();
+let accessCount = 0;
+const accessCounter = () => accessCount;
+
 const router = express.Router();
 router.use(bannedCheckMiddleware, adminAuthMiddleware);
 registerLogGrep(router);
@@ -103,6 +110,8 @@ registerBlacklistID(router);
 registerBlacklistIP(router);
 registerBlacklistTor(router);
 registerBlacklistVpngate(router);
+registerDebugZombie(router, io, online);
+registerThreadOwner(router);
 registerUserNinja(router);
 // TODO: 自動BANの基準を変更
 // TODO: 一律Socket新規発行停止
@@ -123,11 +132,6 @@ if (DEV_MODE || STG_MODE) {
 } else if (PROD_MODE) {
 	app.use(express.static(path.resolve(ROOT_PATH, "public")));
 }
-
-const multipleConnectionsLimit = 3;
-const online: Online = new Map();
-let accessCount = 0;
-const accessCounter = () => accessCount;
 
 const verifyIP = (socket: Socket, ip: string) => {
 	if (isBannedIP(ip)) {
