@@ -139,7 +139,11 @@
         />
         <Text>
           <PrimaryText>{siteInfo.name}</PrimaryText>
-          <SecondaryText>{siteInfo.description}</SecondaryText>
+          <SecondaryText
+            >{temp === unjGames
+              ? "タップしてゲーム起動"
+              : "タップして表示"}</SecondaryText
+          >
         </Text>
         <IconButton class="material-icons"
           >{temp === unjGames ? "open_in_new" : "touch_app"}</IconButton
