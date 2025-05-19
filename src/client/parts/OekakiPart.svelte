@@ -143,8 +143,11 @@
 
   const dropper = (x: number, y: number) => {
     if (!activeLayer) return;
+    const ctx = oekaki.render().getContext("2d", { willReadFrequently: true });
+    if (!ctx) return;
+    const { data } = ctx.getImageData(0, 0, width, height);
     const index = (y * width + x) * 4;
-    color = `#${Array.from(activeLayer.data.slice(index, index + 3))
+    color = `#${Array.from(data.slice(index, index + 3))
       .map((v) => v.toString(16).padStart(2, "0"))
       .join("")}`;
   };
