@@ -111,8 +111,9 @@
     } catch (err) {}
     if (!url) return;
     let _contentType = 0;
-    if (!!findIn(image, url.hostname)) _contentType = Enum.Image;
-    else if (!!findIn(gif, url.hostname)) _contentType = Enum.Gif;
+    if (!!findIn(gif, url.hostname) && url.href.slice(-4) === ".gif") {
+      _contentType = Enum.Gif;
+    } else if (!!findIn(image, url.hostname)) _contentType = Enum.Image;
     else if (!!findIn(video, url.hostname)) _contentType = Enum.Video;
     else if (!!findIn(audio, url.hostname)) _contentType = Enum.Audio;
     else if (!!findIn(unjGames, url.hostname)) _contentType = Enum.Games;
