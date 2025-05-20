@@ -296,7 +296,7 @@
     oekaki.onDraw((x, y, buttons) => {
       if (prevX === null) prevX = x;
       if (prevY === null) prevY = y;
-      if (choiced.label === tool.dropper.label || (buttons & 2) === 2) {
+      if (choiced.label === tool.dropper.label || (buttons & 2) !== 0) {
         dropper(x, y);
       } else {
         if (!activeLayer?.locked) {

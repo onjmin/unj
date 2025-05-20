@@ -12,6 +12,7 @@
     import FormField from "@smui/form-field";
     import IconButton from "@smui/icon-button";
     import Paper, { Title, Content, Subtitle } from "@smui/paper";
+    import Switch from "@smui/switch";
     import {
         differenceInDays,
         differenceInSeconds,
@@ -156,6 +157,14 @@
         if ((contentTypesBitmask & contentType) !== 0) return;
         contentType = contentTypesBitmask & -contentTypesBitmask;
     };
+
+    let checkedOekaki = $state(false);
+    $effect(() => {
+        if (!thread) return;
+        const { contentTypesBitmask } = thread;
+        if (checkedOekaki && (contentTypesBitmask & Enum.Oekaki) !== 0)
+            contentType = Enum.Oekaki;
+    });
 
     let thread: Thread | null = $state(null);
     const cache = new ObjectStorage<Thread>(`threadCache###${threadId}`);
@@ -563,6 +572,14 @@
                 openDressUp = true;
             }}>checkroom</IconButton
         >
+    {/if}
+    {#if oekaki}
+        <FormField>
+            <Switch bind:checked={checkedOekaki} />
+            {#snippet label()}
+                お絵描き
+            {/snippet}
+        </FormField>
     {/if}
 {/snippet}
 

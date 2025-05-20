@@ -15,7 +15,7 @@ export const makeCcUserId = ({
 	userId: number;
 	socket: Socket;
 }): string => {
-	if ((ccBitmask & 2) === 2) {
+	if ((ccBitmask & 2) !== 0) {
 		// 2: 自演防止ID表示 # （ID:8z.8u.L60）
 		const result = encodeUserId(userId, new Date());
 		if (result !== null) {
@@ -30,7 +30,7 @@ export const makeCcUserId = ({
 				`L${ninjaLv}`,
 			].join(".");
 		}
-	} else if ((ccBitmask & 1) === 1) {
+	} else if ((ccBitmask & 1) !== 0) {
 		// 1: ID表示 # （ID:byNL）
 		const result = encodeUserId(userId, new Date());
 		if (result !== null) {
@@ -64,7 +64,7 @@ export const makeCcUserName = ({
 	socket: Socket;
 	ninja: boolean;
 }): string => {
-	if ((ccBitmask & 4) === 4) {
+	if ((ccBitmask & 4) !== 0) {
 		const index = userName.indexOf("#");
 		if (index === -1) {
 			let suffix = "";
@@ -106,7 +106,7 @@ export const makeCcUserAvatar = ({
 	ccBitmask: number;
 	userAvatar: number;
 }): number => {
-	if ((ccBitmask & 8) === 8) {
+	if ((ccBitmask & 8) !== 0) {
 		return userAvatar;
 	}
 	return 0;
