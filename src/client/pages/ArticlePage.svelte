@@ -181,6 +181,10 @@
     .left {
         text-align: left;
         inline-size: 768px;
+        max-width: 90svw;
+        word-break: break-word;
+        overflow-wrap: break-word;
+        white-space: normal;
     }
     .title {
         font-size: 1.5rem;
