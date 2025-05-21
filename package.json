@@ -63,7 +63,7 @@
 		"@erase2d/fabric": "1.1.7",
 		"@mdi/js": "7.4.47",
 		"@neondatabase/serverless": "^1.0.0",
-		"@onjmin/oekaki": "1.0.3",
+		"@onjmin/oekaki": "1.0.26",
 		"@sveltejs/vite-plugin-svelte": "^5.0.3",
 		"@types/express": "^5.0.0",
 		"@types/howler": "^2.2.12",
