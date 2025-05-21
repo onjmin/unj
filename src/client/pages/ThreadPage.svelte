@@ -574,10 +574,10 @@
         >
     {/if}
     {#if oekaki}
-        <FormField>
+        <FormField align="end">
             <Switch bind:checked={checkedOekaki} />
             {#snippet label()}
-                お絵描き
+                お絵描き機能
             {/snippet}
         </FormField>
     {/if}
