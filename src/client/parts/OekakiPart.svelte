@@ -3,6 +3,7 @@
     mdiBrush,
     mdiContentSaveOutline,
     mdiEraser,
+    mdiEraserVariant,
     mdiEyedropper,
     mdiFlipHorizontal,
     mdiFormatColorFill,
@@ -66,6 +67,10 @@
       case "7":
         e.preventDefault();
         choiced = tool.fill;
+        break;
+      case "e":
+        e.preventDefault();
+        erasable = !erasable;
         break;
       case "f":
         e.preventDefault();
@@ -169,12 +174,14 @@
       ?.map((v) => Number.parseInt(v, 16));
     if (rgb?.length !== 3) return;
     const [r, g, b] = rgb;
-    const data = oekaki.floodFill(activeLayer.data, width, height, x, y, [
-      r,
-      g,
-      b,
-      255,
-    ]);
+    const data = oekaki.floodFill(
+      activeLayer.data,
+      width,
+      height,
+      x,
+      y,
+      erasable ? [0, 0, 0, 0] : [r, g, b, 255],
+    );
     if (data) activeLayer.data = data;
   };
 
@@ -304,13 +311,17 @@
             const lerps = oekaki.lerp(x, y, prevX, prevY);
             switch (choiced.label) {
               case tool.pen.label:
-                for (const [x, y] of lerps) activeLayer?.draw(x, y);
+                for (const [x, y] of lerps)
+                  erasable ? activeLayer?.erase(x, y) : activeLayer?.draw(x, y);
                 break;
               case tool.eraser.label:
                 for (const [x, y] of lerps) activeLayer?.erase(x, y);
                 break;
               case tool.dotPen.label:
-                for (const [x, y] of lerps) activeLayer?.drawDot(x, y);
+                for (const [x, y] of lerps)
+                  erasable
+                    ? activeLayer?.eraseDot(x, y)
+                    : activeLayer?.drawDot(x, y);
                 break;
               case tool.dotEraser.label:
                 for (const [x, y] of lerps) activeLayer?.eraseDot(x, y);
@@ -428,6 +439,7 @@
     dropper: { label: "カラーピッカー", icon: mdiEyedropper },
     fill: { label: "塗りつぶし", icon: mdiFormatColorFill },
     // 切り替え系
+    erasable: { label: "透明色", icon: mdiEraserVariant },
     flip: { label: "左右反転", icon: mdiFlipHorizontal },
     grid: { label: "グリッド線", icon: mdiGrid },
     // アクション系
@@ -460,8 +472,12 @@
       upperLayer.canvas.style.cursor = `url('${mdi2DataUrl(choiced.icon)}') 3 21, auto`;
   });
 
-  let toggles = [tool.flip, tool.grid];
+  let toggles = [tool.erasable, tool.flip, tool.grid];
   let toggle: Tool[] = $state([]);
+  let erasable = $state(false);
+  $effect(() => {
+    erasable = toggle.map((v) => v.label).includes(tool.erasable.label);
+  });
   $effect(() => {
     oekaki.flipped.value = toggle.map((v) => v.label).includes(tool.flip.label);
   });
