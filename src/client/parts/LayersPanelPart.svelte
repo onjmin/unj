@@ -1,4 +1,5 @@
 <script lang="ts">
+  import * as oekaki from "@onjmin/oekaki";
   import Button, { Label, Icon } from "@smui/button";
   import Dialog, { Title, Content, Actions } from "@smui/dialog";
   import List, {
@@ -9,7 +10,6 @@
     SecondaryText,
     Meta,
   } from "@smui/list";
-  import * as oekaki from "../mylib/oekaki/layered-canvas.js";
 
   let { open = $bindable(false), activeLayer = $bindable(null) } = $props();
 

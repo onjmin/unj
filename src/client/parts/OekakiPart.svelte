@@ -15,15 +15,13 @@
     mdiTrashCanOutline,
     mdiUndo,
   } from "@mdi/js";
+  import * as oekaki from "@onjmin/oekaki";
   import { preventDefault } from "@smui/common/events";
   import IconButton from "@smui/icon-button";
   import SegmentedButton, { Segment, Icon } from "@smui/segmented-button";
   import Slider from "@smui/slider";
   import Textfield from "@smui/textfield";
   import { ObjectStorage } from "../mylib/object-storage.js";
-  import { floodFill } from "../mylib/oekaki/flood-fill.js";
-  import * as oekaki from "../mylib/oekaki/layered-canvas.js";
-  import { lerp } from "../mylib/oekaki/lerp.js";
   import LayersPanelPart from "./LayersPanelPart.svelte";
 
   let { threadId, toDataURL = $bindable() } = $props();
@@ -171,7 +169,7 @@
       ?.map((v) => Number.parseInt(v, 16));
     if (rgb?.length !== 3) return;
     const [r, g, b] = rgb;
-    const data = floodFill(activeLayer.data, width, height, x, y, [
+    const data = oekaki.floodFill(activeLayer.data, width, height, x, y, [
       r,
       g,
       b,
@@ -303,7 +301,7 @@
           if (choiced.label === tool.brush.label) {
             activeLayer?.drawLine(x, y, prevX, prevY);
           } else {
-            const lerps = lerp(x, y, prevX, prevY);
+            const lerps = oekaki.lerp(x, y, prevX, prevY);
             switch (choiced.label) {
               case tool.pen.label:
                 for (const [x, y] of lerps) activeLayer?.draw(x, y);
