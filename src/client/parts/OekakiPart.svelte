@@ -43,11 +43,11 @@
     switch (e.key) {
       case "1":
         e.preventDefault();
-        choiced = tool.pen;
+        choiced = tool.brush;
         break;
       case "2":
         e.preventDefault();
-        choiced = tool.brush;
+        choiced = tool.pen;
         break;
       case "3":
         e.preventDefault();
