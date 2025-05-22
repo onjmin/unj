@@ -16,7 +16,7 @@
     const r = t.getBoundingClientRect();
     const dx = e.clientX - (r.left + r.width / 2);
     const dy = e.clientY - (r.top + r.height / 2);
-    const deg = ((Math.atan2(dy, dx) * 180) / Math.PI + 360) % 360;
+    const deg = ((Math.atan2(dy, dx) * 180) / Math.PI + 360 + 90) % 360;
     hsv.h = deg;
   };
 
@@ -25,8 +25,10 @@
   $effect(() => {
     const radius = 100; // .wheel の width/height / 2
     const indicatorRadius = radius * 0.9; // 少し内側
-    indicatorX = radius + Math.cos((hsv.h * Math.PI) / 180) * indicatorRadius;
-    indicatorY = radius + Math.sin((hsv.h * Math.PI) / 180) * indicatorRadius;
+    indicatorX =
+      radius + Math.cos((hsv.h * Math.PI - 270) / 180) * indicatorRadius;
+    indicatorY =
+      radius + Math.sin((hsv.h * Math.PI - 270) / 180) * indicatorRadius;
   });
 
   let wheel: HTMLElement | undefined = $state();
