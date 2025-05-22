@@ -491,9 +491,11 @@
     switch (action.label) {
       case tool.undo.label:
         activeLayer?.undo();
+        saveData();
         break;
       case tool.redo.label:
         activeLayer?.redo();
+        saveData();
         break;
       case tool.layersPanel.label:
         layersPanelOpen = true;
