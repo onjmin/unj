@@ -29,7 +29,7 @@
     indicatorY = radius + Math.sin((hsv.h * Math.PI) / 180) * indicatorRadius;
   });
 
-  let wheel: HTMLDivElement | undefined = $state();
+  let wheel: HTMLElement | undefined = $state();
   let wheeling = $state(false);
   $effect(() => {
     if (!wheel) return;
@@ -49,6 +49,15 @@
       wheeling = false;
     });
   });
+
+  let pickerScale: HTMLElement;
+  const stop = (e: Event) => e.stopPropagation();
+  $effect(() => {
+    if (!pickerScale) return;
+    pickerScale.addEventListener("pointerdown", stop);
+    pickerScale.addEventListener("pointermove", stop);
+    pickerScale.addEventListener("pointerup", stop);
+  });
 </script>
 
 <div
@@ -57,14 +66,8 @@
   class="wheel"
   bind:this={wheel}
 >
-  <div
-    class="indicator"
-    style="
-      left: {indicatorX}px;
-      top: {indicatorY}px;
-    "
-  ></div>
-  <div class="center">
+  <div class="indicator" style="left:{indicatorX}px; top:{indicatorY}px;"></div>
+  <div class="center" bind:this={pickerScale}>
     <div class="picker-scale">
       <ColorPicker
         label=""
