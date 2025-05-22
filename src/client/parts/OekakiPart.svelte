@@ -24,6 +24,7 @@
   import Textfield from "@smui/textfield";
   import { ObjectStorage } from "../mylib/object-storage.js";
   import * as unjStorage from "../mylib/unj-storage.js";
+  import ColorWheelPart from "./ColorWheelPart.svelte";
   import LayersPanelPart from "./LayersPanelPart.svelte";
 
   let { threadId, toDataURL = $bindable() } = $props();
@@ -673,6 +674,7 @@
 
 {#snippet palette()}
   <input type="color" bind:value={color} />
+  <ColorWheelPart bind:value={color} />
   {#each recent as _color}
     <button
       aria-label="Select color"
@@ -686,14 +688,14 @@
 {/snippet}
 
 <div class="bottom-tools-wrapper-sub">
-  {#if choiced.label === tool.pen.label}
-    <span class="size">{penSize}px</span>
-    {@render palette()}
-    <Slider min={1} max={64} discrete bind:value={penSize} />
-  {:else if choiced.label === tool.brush.label}
+  {#if choiced.label === tool.brush.label}
     <span class="size">{brushSize}px</span>
     {@render palette()}
     <Slider min={1} max={64} discrete bind:value={brushSize} />
+  {:else if choiced.label === tool.pen.label}
+    <span class="size">{penSize}px</span>
+    {@render palette()}
+    <Slider min={1} max={64} discrete bind:value={penSize} />
   {:else if choiced.label === tool.eraser.label}
     <span class="size">{eraserSize}px</span>
     {@render palette()}

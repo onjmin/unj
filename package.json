@@ -53,6 +53,7 @@
 		"dotenv": "^16.4.7",
 		"javascript-obfuscator": "^4.1.1",
 		"rimraf": "^6.0.1",
+		"svelte-awesome-color-picker": "4.0.2",
 		"svelte-material-ui": "8.0.0-beta.3",
 		"svelte-routing": "^2.13.0",
 		"ts-node": "^10.9.2",

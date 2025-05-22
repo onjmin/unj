@@ -213,6 +213,9 @@ importers:
       rimraf:
         specifier: ^6.0.1
         version: 6.0.1
+      svelte-awesome-color-picker:
+        specifier: 4.0.2
+        version: 4.0.2(svelte@5.20.5)
       svelte-material-ui:
         specifier: 8.0.0-beta.3
         version: 8.0.0-beta.3
@@ -1247,6 +1250,9 @@ packages:
 
   color@3.2.1:
     resolution: {integrity: sha512-aBl7dZI9ENN6fUGC7mWpMTPNHmWUSNan9tuWN6ahh5ZLNk9baLJOnSMlrQkHcrfFgz2/RigjUVAjdx36VcemKA==}
+
+  colord@2.9.3:
+    resolution: {integrity: sha512-jeC1axXpnb0/2nn/Y1LPuLdgXBLH7aDcHu4KEKfqw3CUhX7ZpfBSlPKyqXE6btIgEzfWtrX3/tyBCaCvXvMkOw==}
 
   colorspace@1.1.4:
     resolution: {integrity: sha512-BgvKJiuVu1igBUF2kEjRCZXol6wiiGbY5ipL/oVPwm0BL9sIpMIzM8IK7vwuxIIzOXMV3Ey5w+vxhm0rR/TN8w==}
@@ -2341,6 +2347,16 @@ packages:
   supports-color@7.2.0:
     resolution: {integrity: sha512-qpCAvRl9stuOHveKsn7HncJRvv501qIacKzQlO/+Lwxc9+0q2wLyv4Dfvt80/DPn2pqOBsJdDiogXGR9+OvwRw==}
     engines: {node: '>=8'}
+
+  svelte-awesome-color-picker@4.0.2:
+    resolution: {integrity: sha512-Ez72goMMNmw6sZhB1/BXEA8984lEkudPrdlNS+y3nHm2Lnk1w4nwy5NFyWPxTP7nFnLxhIqyV3VuJVG4PokKwg==}
+    peerDependencies:
+      svelte: ^5.0.0
+
+  svelte-awesome-slider@2.0.0:
+    resolution: {integrity: sha512-YBkOdYm1Feaqsn2JkJBRs+Kc/X3Qy/3GuVmI7GmoYDjBaHkjx9uH4khTuED22z57Hg3gGWeDhp/clIjWDdLNaw==}
+    peerDependencies:
+      svelte: ^5.0.0
 
   svelte-material-ui@8.0.0-beta.3:
     resolution: {integrity: sha512-X1qifLdsIGgsfu3WkaAEbDumFYc6KpdHTZwwSaSFgO5se4wUs5LuLCszFG2GYdBcOi+wVa3Ko7FenMu+zz28XQ==}
@@ -4117,6 +4133,8 @@ snapshots:
       color-convert: 1.9.3
       color-string: 1.9.1
 
+  colord@2.9.3: {}
+
   colorspace@1.1.4:
     dependencies:
       color: 3.2.1
@@ -5371,6 +5389,16 @@ snapshots:
   supports-color@7.2.0:
     dependencies:
       has-flag: 4.0.0
+
+  svelte-awesome-color-picker@4.0.2(svelte@5.20.5):
+    dependencies:
+      colord: 2.9.3
+      svelte: 5.20.5
+      svelte-awesome-slider: 2.0.0(svelte@5.20.5)
+
+  svelte-awesome-slider@2.0.0(svelte@5.20.5):
+    dependencies:
+      svelte: 5.20.5
 
   svelte-material-ui@8.0.0-beta.3:
     dependencies:
