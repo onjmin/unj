@@ -471,7 +471,10 @@
     tool.dropper,
     tool.fill,
   ];
-  let choiced: Tool = $state(tool.brush);
+  let choiced: Tool = $state(
+    Object.values(tool).find((v) => v.label === unjStorage.tool.value) ??
+      tool.brush,
+  );
 
   const mdi2DataUrl = (mdi: string) => {
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"><path d="${mdi}" fill="black"/></svg>`;
@@ -480,6 +483,7 @@
   };
 
   $effect(() => {
+    unjStorage.tool.value = choiced.label;
     if (upperLayer) {
       const xy = choiced.label === tool.fill.label ? "21 19" : "3 21";
       upperLayer.canvas.style.cursor = `url('${mdi2DataUrl(choiced.icon)}') ${xy}, auto`;

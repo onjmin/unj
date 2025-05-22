@@ -92,6 +92,7 @@ rpgMode.value = rpgMode.value ?? "0";
 export const sAnimsId = new UnjStorage("sAnimsId");
 
 // oekaki
+export const tool = new UnjStorage("tool");
 export const color = new UnjStorage("color");
 export const brushSize = new UnjStorage("brushSize");
 export const penSize = new UnjStorage("penSize");
