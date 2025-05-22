@@ -9,10 +9,10 @@
     mdiFormatColorFill,
     mdiGrid,
     mdiLayers,
+    mdiPen,
     mdiPencil,
+    mdiPencilOutline,
     mdiRedo,
-    mdiSquare,
-    mdiSquareOutline,
     mdiTrashCanOutline,
     mdiUndo,
   } from "@mdi/js";
@@ -428,13 +428,13 @@
 
   const tool = {
     // 描画系
-    pen: { label: "ペン", icon: mdiPencil },
     brush: { label: "ブラシ", icon: mdiBrush },
+    pen: { label: "ペン", icon: mdiPen },
     eraser: { label: "消しゴム", icon: mdiEraser },
-    dotPen: { label: "ドットペン", icon: mdiSquare },
+    dotPen: { label: "ドットペン", icon: mdiPencil },
     dotEraser: {
       label: "ドット消しゴム",
-      icon: mdiSquareOutline,
+      icon: mdiPencilOutline,
     },
     dropper: { label: "カラーピッカー", icon: mdiEyedropper },
     fill: { label: "塗りつぶし", icon: mdiFormatColorFill },
@@ -468,8 +468,10 @@
   };
 
   $effect(() => {
-    if (upperLayer)
-      upperLayer.canvas.style.cursor = `url('${mdi2DataUrl(choiced.icon)}') 3 21, auto`;
+    if (upperLayer) {
+      const xy = choiced.label === tool.fill.label ? "21 19" : "3 21";
+      upperLayer.canvas.style.cursor = `url('${mdi2DataUrl(choiced.icon)}') ${xy}, auto`;
+    }
   });
 
   let toggles = [tool.erasable, tool.flip, tool.grid];
