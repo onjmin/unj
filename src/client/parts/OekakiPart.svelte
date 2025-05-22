@@ -23,6 +23,7 @@
   import Slider from "@smui/slider";
   import Textfield from "@smui/textfield";
   import { ObjectStorage } from "../mylib/object-storage.js";
+  import * as unjStorage from "../mylib/unj-storage.js";
   import LayersPanelPart from "./LayersPanelPart.svelte";
 
   let { threadId, toDataURL = $bindable() } = $props();
@@ -381,27 +382,38 @@
   $effect(() => {
     if (activeLayer) activeLayer.locked = layerLocked;
   });
-  let color = $state(oekaki.color.value);
-  let penSize = $state(oekaki.penSize.value);
-  let brushSize = $state(oekaki.brushSize.value);
-  let eraserSize = $state(oekaki.eraserSize.value);
-  let dotPenScale = $state(8);
+  let color = $state(unjStorage.color.value ?? oekaki.color.value);
+  let brushSize = $state(
+    Number(unjStorage.brushSize.value ?? oekaki.brushSize.value),
+  );
+  let penSize = $state(
+    Number(unjStorage.penSize.value ?? oekaki.penSize.value),
+  );
+  let eraserSize = $state(
+    Number(unjStorage.eraserSize.value ?? oekaki.eraserSize.value),
+  );
+  let dotPenScale = $state(Number(unjStorage.dotPenScale.value ?? 8));
   $effect(() => {
     if (activeLayer) activeLayer.opacity = opacity;
   });
   $effect(() => {
+    unjStorage.color.value = color;
     oekaki.color.value = color;
   });
   $effect(() => {
-    oekaki.penSize.value = penSize;
-  });
-  $effect(() => {
+    unjStorage.brushSize.value = String(brushSize);
     oekaki.brushSize.value = brushSize;
   });
   $effect(() => {
+    unjStorage.penSize.value = String(penSize);
+    oekaki.penSize.value = penSize;
+  });
+  $effect(() => {
+    unjStorage.eraserSize.value = String(eraserSize);
     oekaki.eraserSize.value = eraserSize;
   });
   const setDotSize = () => {
+    unjStorage.dotPenScale.value = String(dotPenScale);
     oekaki.setDotSize(dotPenScale);
     document.documentElement.style.setProperty(
       "--grid-cell-size",

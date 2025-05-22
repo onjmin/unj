@@ -91,6 +91,14 @@ export const rpgMode = new UnjStorage("rpgMode");
 rpgMode.value = rpgMode.value ?? "0";
 export const sAnimsId = new UnjStorage("sAnimsId");
 
+// oekaki
+export const color = new UnjStorage("color");
+export const brushSize = new UnjStorage("brushSize");
+export const penSize = new UnjStorage("penSize");
+export const eraserSize = new UnjStorage("eraserSize");
+export const dotPenScale = new UnjStorage("dotPenScale");
+export const oekakiUploaded = new UnjStorage("oekakiUploaded");
+
 // other
 export const latestReadThreadId = new UnjStorage("latestReadThreadId");
 export const termsAgreement = new UnjStorage("termsAgreement");
@@ -99,4 +107,3 @@ export const authToken = new UnjStorage("authToken");
 export const nonceKey = new UnjStorage("nonceKey");
 export const ninjaPokemon = new UnjStorage("ninjaPokemon");
 export const ninjaScore = new UnjStorage("ninjaScore");
-export const oekakiUploaded = new UnjStorage("oekakiUploaded");
