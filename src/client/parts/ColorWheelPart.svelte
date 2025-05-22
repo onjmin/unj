@@ -11,30 +11,6 @@
     a: 1,
   });
 
-  let dragging = false;
-
-  const hueToHex = (h: number) => {
-    const c = 1;
-    const x = 1 - Math.abs(((h / 60) % 2) - 1);
-    const [r, g, b] =
-      h < 60
-        ? [c, x, 0]
-        : h < 120
-          ? [x, c, 0]
-          : h < 180
-            ? [0, c, x]
-            : h < 240
-              ? [0, x, c]
-              : h < 300
-                ? [x, 0, c]
-                : [c, 0, x];
-    const toHex = (v: number) =>
-      Math.round(v * 255)
-        .toString(16)
-        .padStart(2, "0");
-    return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
-  };
-
   const updateHueFromEvent = (e: PointerEvent) => {
     const t = e.currentTarget as HTMLElement;
     const r = t.getBoundingClientRect();
@@ -81,7 +57,6 @@
   class="wheel"
   bind:this={wheel}
 >
-  <!-- インジケーター -->
   <div
     class="indicator"
     style="
@@ -117,11 +92,12 @@
   }
   .indicator {
     position: absolute;
-    width: 12px;
-    height: 12px;
-    background: white;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
-    border: 2px solid black;
+    box-shadow:
+      0 0 0 2px black,
+      0 0 0 4px white;
     transform: translate(-50%, -50%);
     pointer-events: none;
     z-index: 1;
