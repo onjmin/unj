@@ -16,6 +16,7 @@
   import video from "../../common/request/whitelist/video.js";
   import { UnjStorage } from "../mylib/unj-storage.js";
   import AvatarPart from "./AvatarPart.svelte";
+  import ColorWheelPart from "./ColorWheelPart.svelte";
   import OekakiPart from "./OekakiPart.svelte";
   import UrlTemplatePart from "./UrlTemplatePart.svelte";
 
@@ -162,8 +163,12 @@
 </Textfield>
 
 {#key contentType}
-  {#if oekaki && contentType === Enum.Oekaki}
-    <OekakiPart {threadId} bind:toDataURL />
+  {#if contentType === Enum.Oekaki}
+    {#if oekaki}
+      <OekakiPart {threadId} bind:toDataURL />
+    {:else}
+      <ColorWheelPart />
+    {/if}
   {/if}
 {/key}
 

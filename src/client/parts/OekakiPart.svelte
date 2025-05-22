@@ -22,9 +22,10 @@
   import SegmentedButton, { Segment, Icon } from "@smui/segmented-button";
   import Slider from "@smui/slider";
   import Textfield from "@smui/textfield";
+  import ColorPicker from "svelte-awesome-color-picker";
   import { ObjectStorage } from "../mylib/object-storage.js";
+  import { color } from "../mylib/store.js";
   import * as unjStorage from "../mylib/unj-storage.js";
-  import ColorWheelPart from "./ColorWheelPart.svelte";
   import LayersPanelPart from "./LayersPanelPart.svelte";
 
   let { threadId, toDataURL = $bindable() } = $props();
@@ -163,14 +164,15 @@
     if (!ctx) return;
     const { data } = ctx.getImageData(0, 0, width, height);
     const index = (y * width + x) * 4;
-    color = `#${Array.from(data.slice(index, index + 3))
+    const hex = `#${Array.from(data.slice(index, index + 3))
       .map((v) => v.toString(16).padStart(2, "0"))
       .join("")}`;
+    color.update(() => hex);
   };
 
   const fill = async (x: number, y: number) => {
     if (!activeLayer) return;
-    const rgb = color
+    const rgb = $color
       .slice(1)
       .match(/.{2}/g)
       ?.map((v) => Number.parseInt(v, 16));
@@ -383,7 +385,6 @@
   $effect(() => {
     if (activeLayer) activeLayer.locked = layerLocked;
   });
-  let color = $state(unjStorage.color.value ?? oekaki.color.value);
   let brushSize = $state(
     Number(unjStorage.brushSize.value ?? oekaki.brushSize.value),
   );
@@ -398,8 +399,8 @@
     if (activeLayer) activeLayer.opacity = opacity;
   });
   $effect(() => {
-    unjStorage.color.value = color;
-    oekaki.color.value = color;
+    unjStorage.color.value = $color;
+    oekaki.color.value = $color;
   });
   $effect(() => {
     unjStorage.brushSize.value = String(brushSize);
@@ -426,10 +427,10 @@
   let recent: string[] = $state([]);
   const maxRecent = 16;
   const addRecent = () => {
-    const idx = recent.indexOf(color);
+    const idx = recent.indexOf($color);
     if (idx === 0) return;
     if (idx !== -1) recent.splice(idx, 1);
-    recent.unshift(color);
+    recent.unshift($color);
     if (recent.length > maxRecent) recent.pop();
     recent = [...recent]; // 新しい配列を代入する（Svelte のリアクティブ性を保つため）
   };
@@ -673,15 +674,15 @@
 </div>
 
 {#snippet palette()}
-  <input type="color" bind:value={color} />
-  <ColorWheelPart bind:value={color} />
+  <input type="color" bind:value={$color} />
+  <ColorPicker label="" bind:hex={$color} isAlpha={false} />
   {#each recent as _color}
     <button
       aria-label="Select color"
       class="palette"
       style="background-color:{_color};"
       onclick={() => {
-        color = _color;
+        color.update(() => _color);
       }}
     ></button>
   {/each}
