@@ -451,8 +451,8 @@
   } as const;
 
   let choices = [
-    tool.pen,
     tool.brush,
+    tool.pen,
     tool.eraser,
     tool.dotPen,
     tool.dotEraser,
