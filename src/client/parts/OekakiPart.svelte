@@ -233,8 +233,8 @@
       width = w;
       height = h;
     } else {
-      const w = window.innerWidth * 0.9;
-      const h = window.innerHeight * 0.9;
+      const w = window.innerWidth * 0.8;
+      const h = window.innerHeight * 0.8;
       let w2 = 0;
       let h2 = 0;
       if (w < h) {
