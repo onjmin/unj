@@ -674,10 +674,10 @@
 </div>
 
 {#snippet palette()}
-  <input type="color" bind:value={$color} />
   <span class="color-picker-wrapper">
     <ColorPicker label="" bind:hex={$color} isAlpha={false} />
   </span>
+  <input type="color" bind:value={$color} />
   {#each recent as _color}
     <button
       aria-label="Select color"
