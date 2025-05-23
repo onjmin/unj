@@ -52,6 +52,7 @@
 		"@smui/top-app-bar": "8.0.0-beta.3",
 		"dotenv": "^16.4.7",
 		"javascript-obfuscator": "^4.1.1",
+		"reinvented-color-wheel": "0.4.0",
 		"rimraf": "^6.0.1",
 		"svelte-awesome-color-picker": "4.0.2",
 		"svelte-material-ui": "8.0.0-beta.3",
