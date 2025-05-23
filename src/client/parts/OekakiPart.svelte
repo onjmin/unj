@@ -675,7 +675,9 @@
 
 {#snippet palette()}
   <input type="color" bind:value={$color} />
-  <ColorPicker label="" bind:hex={$color} isAlpha={false} />
+  <span class="color-picker-wrapper">
+    <ColorPicker label="" bind:hex={$color} isAlpha={false} />
+  </span>
   {#each recent as _color}
     <button
       aria-label="Select color"
@@ -719,6 +721,12 @@
 </div>
 
 <style>
+  :global(.color-picker-wrapper label) {
+    border-radius: 50%;
+    box-shadow:
+      0 0 0 2px black,
+      0 0 0 4px white;
+  }
   .bottom-tools-wrapper-sub {
     text-align: left;
     min-height: 8rem;
