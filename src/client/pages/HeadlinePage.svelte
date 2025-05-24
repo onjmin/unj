@@ -17,6 +17,7 @@
         differenceInYears,
     } from "date-fns";
     import { Link } from "svelte-routing";
+    import { queryResultLimit } from "../../common/request/schema.js";
     import type { HeadlineThread } from "../../common/response/schema.js";
     import { genNonce } from "../mylib/anti-debug.js";
     import { makePathname } from "../mylib/env.js";
@@ -85,7 +86,7 @@
             socket.emit("headline", {
                 nonce: genNonce(nonceKey.value ?? ""),
                 cursor: null,
-                size: 32,
+                size: queryResultLimit,
                 desc: true,
             });
         });
@@ -143,7 +144,7 @@
                     <div class="thread-title">
                         <Link
                             to={makePathname(
-                                `/thread/${thread.id}${thread.latestCursor ? `/${thread.latestCursor}/1` : ""}`,
+                                `/thread/${thread.id}${thread.resCount > queryResultLimit && thread.latestCursor ? `/${thread.latestCursor}/1` : ""}`,
                             )}>{thread.title}</Link
                         >
                     </div>

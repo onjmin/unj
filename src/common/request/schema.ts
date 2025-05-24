@@ -2,10 +2,18 @@ import * as v from "valibot";
 import { avatarMap } from "./avatar.js";
 import { SAFE_TEXT_SINGLELINE } from "./content-schema.js";
 
+/**
+ * valibotに早期リターンさせるためのオプション
+ */
 export const myConfig = {
 	abortEarly: true,
 	abortPipeEarly: true,
 };
+
+/**
+ * 一度に取得できるレコード数上限
+ */
+export const queryResultLimit = 32;
 
 const smallintMax = 2 ** 15 - 1;
 const intMax = 2 ** 31 - 1;
@@ -144,7 +152,7 @@ export const ResSchema = v.strictObject({
 export const ReadThreadSchema = v.strictObject({
 	nonce: NONCE,
 	cursor: v.nullable(RES_ID),
-	size: v.pipe(RES_NUM, v.maxValue(32)),
+	size: v.pipe(RES_NUM, v.maxValue(queryResultLimit)),
 	desc: v.boolean(),
 	threadId: THREAD_ID,
 });
@@ -155,7 +163,12 @@ export const ReadThreadSchema = v.strictObject({
 export const HeadlineSchema = v.strictObject({
 	nonce: NONCE,
 	cursor: v.nullable(THREAD_ID),
-	size: v.pipe(v.number(), v.integer(), v.minValue(1), v.maxValue(32)),
+	size: v.pipe(
+		v.number(),
+		v.integer(),
+		v.minValue(1),
+		v.maxValue(queryResultLimit),
+	),
 	desc: v.boolean(),
 });
 
@@ -165,7 +178,12 @@ export const HeadlineSchema = v.strictObject({
 export const SearchThreadSchema = v.strictObject({
 	nonce: NONCE,
 	cursor: v.nullable(THREAD_ID),
-	size: v.pipe(v.number(), v.integer(), v.minValue(1), v.maxValue(32)),
+	size: v.pipe(
+		v.number(),
+		v.integer(),
+		v.minValue(1),
+		v.maxValue(queryResultLimit),
+	),
 	desc: v.boolean(),
 	from: v.date(),
 	to: v.date(),
@@ -178,7 +196,12 @@ export const SearchThreadSchema = v.strictObject({
 export const SearchResSchema = v.strictObject({
 	nonce: NONCE,
 	cursor: v.nullable(RES_ID),
-	size: v.pipe(v.number(), v.integer(), v.minValue(1), v.maxValue(32)),
+	size: v.pipe(
+		v.number(),
+		v.integer(),
+		v.minValue(1),
+		v.maxValue(queryResultLimit),
+	),
 	desc: v.boolean(),
 	from: v.date(),
 	to: v.date(),

@@ -25,7 +25,11 @@
         contentSchemaMap,
         contentTemplateMap,
     } from "../../common/request/content-schema.js";
-    import { ResSchema, myConfig } from "../../common/request/schema.js";
+    import {
+        ResSchema,
+        myConfig,
+        queryResultLimit,
+    } from "../../common/request/schema.js";
     import {
         SiteInfo,
         findIn,
@@ -357,7 +361,7 @@
             socket.emit("readThread", {
                 nonce: genNonce(nonceKey.value ?? ""),
                 cursor: cursor || null,
-                size: 16,
+                size: queryResultLimit,
                 desc: latestReadThreadId.value === threadId ? false : desc,
                 threadId,
             });
@@ -393,7 +397,7 @@
         socket.emit("readThread", {
             nonce: genNonce(nonceKey.value ?? ""),
             cursor: cursor || null,
-            size: 32,
+            size: queryResultLimit,
             desc,
             threadId,
         });
