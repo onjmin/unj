@@ -1,4 +1,3 @@
-import { addMinutes, isAfter } from "date-fns";
 import {
 	ANIMATION_SPRITE_FLIP_INTERVAL,
 	RPGEN_CHIP_SIZE,
@@ -6,7 +5,8 @@ import {
 	SpriteType,
 	type TileChipMap,
 	getDQAnimationSpritePosition,
-} from "rpgen-map";
+} from "@rpgja/rpgen-map";
+import { addMinutes, isAfter } from "date-fns";
 import { HEIGHT, WIDTH } from "../../common/request/rpg-schema.js";
 import type { Player } from "../../common/response/schema.js";
 import { seededRandArray } from "../../common/util.js";

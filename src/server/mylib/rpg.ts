@@ -1,4 +1,4 @@
-import { Direction } from "rpgen-map";
+import { Direction } from "@rpgja/rpgen-map";
 import { HEIGHT, WIDTH } from "../../common/request/rpg-schema.js";
 import { randInt } from "../../common/util.js";
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Direction, RPGMap } from "rpgen-map";
+  import { Direction, RPGMap } from "@rpgja/rpgen-map";
   import * as v from "valibot";
   import { RpgPatchSchema } from "../../common/request/rpg-schema.js";
   import { myConfig } from "../../common/request/schema.js";

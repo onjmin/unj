@@ -26,6 +26,9 @@ importers:
       '@onjmin/oekaki':
         specifier: 1.0.31
         version: 1.0.31
+      '@rpgja/rpgen-map':
+        specifier: 1.0.0
+        version: 1.0.0
       '@sveltejs/vite-plugin-svelte':
         specifier: ^5.0.3
         version: 5.0.3(svelte@5.20.5)(vite@6.3.5(@types/node@22.13.8)(sass@1.85.0)(tsx@4.19.3))
@@ -83,9 +86,6 @@ importers:
       read-last-lines:
         specifier: ^1.8.0
         version: 1.8.0
-      rpgen-map:
-        specifier: github:onjmin/rpgen-map
-        version: https://codeload.github.com/onjmin/rpgen-map/tar.gz/b4a26c20b23f68667ce7d17a304e7f682035ede3
       socket.io:
         specifier: ^4.8.1
         version: 4.8.1
@@ -830,6 +830,9 @@ packages:
     resolution: {integrity: sha512-AyleYRPU7+rgkMWbEh71fQlrzRfeP6SyMnRf9XX4fCdDPAJumdSBqYEcWPMzVQ4ScAl7E4oFfK0GUVn77xSwbw==}
     cpu: [x64]
     os: [win32]
+
+  '@rpgja/rpgen-map@1.0.0':
+    resolution: {integrity: sha512-pHc4zldpcnNYnTXvo9Owr97SIvFqFzdT2yIJVd64G0zo1PkkxzljIHBRSmqkEOuWB37xtXLFHrInLTgj5rqsWA==}
 
   '@smui-extra/accordion@8.0.0-beta.3':
     resolution: {integrity: sha512-uZPvjd2qZj80WYMvjOS2S2jVFq0qI809Y2f4LHEoshxBuck56HyC96ryh9333mcFqD60/DgpplsTIaV/XxqUxg==}
@@ -2197,10 +2200,6 @@ packages:
     engines: {node: '>=18.0.0', npm: '>=8.0.0'}
     hasBin: true
 
-  rpgen-map@https://codeload.github.com/onjmin/rpgen-map/tar.gz/b4a26c20b23f68667ce7d17a304e7f682035ede3:
-    resolution: {tarball: https://codeload.github.com/onjmin/rpgen-map/tar.gz/b4a26c20b23f68667ce7d17a304e7f682035ede3}
-    version: 1.0.0
-
   safe-buffer@5.2.1:
     resolution: {integrity: sha512-rp3So07KcdmmKbGvgaNxQSJr7bGVSVk5S9Eq1F+ppbRo70+YeaDxkw5Dd8NPN+GD6bjnYm2VuPuCXmpuYvmCXQ==}
 
@@ -3515,6 +3514,8 @@ snapshots:
 
   '@rollup/rollup-win32-x64-msvc@4.34.9':
     optional: true
+
+  '@rpgja/rpgen-map@1.0.0': {}
 
   '@smui-extra/accordion@8.0.0-beta.3':
     dependencies:
@@ -5186,8 +5187,6 @@ snapshots:
       '@rollup/rollup-win32-ia32-msvc': 4.34.9
       '@rollup/rollup-win32-x64-msvc': 4.34.9
       fsevents: 2.3.3
-
-  rpgen-map@https://codeload.github.com/onjmin/rpgen-map/tar.gz/b4a26c20b23f68667ce7d17a304e7f682035ede3: {}
 
   safe-buffer@5.2.1: {}
 
