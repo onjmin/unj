@@ -21,7 +21,6 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "1.9.4",
-		"@onjmin/oekaki": "1.0.30",
 		"@smui-extra/accordion": "8.0.0-beta.3",
 		"@smui-extra/autocomplete": "8.0.0-beta.3",
 		"@smui-extra/bottom-app-bar": "8.0.0-beta.3",
@@ -66,6 +65,7 @@
 		"@erase2d/fabric": "1.1.7",
 		"@mdi/js": "7.4.47",
 		"@neondatabase/serverless": "^1.0.0",
+		"@onjmin/oekaki": "1.0.31",
 		"@sveltejs/vite-plugin-svelte": "^5.0.3",
 		"@types/express": "^5.0.0",
 		"@types/howler": "^2.2.12",
