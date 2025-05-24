@@ -23,9 +23,6 @@ importers:
       '@neondatabase/serverless':
         specifier: ^1.0.0
         version: 1.0.0
-      '@onjmin/oekaki':
-        specifier: 1.0.26
-        version: 1.0.26
       '@sveltejs/vite-plugin-svelte':
         specifier: ^5.0.3
         version: 5.0.3(svelte@5.20.5)(vite@6.3.5(@types/node@22.13.8)(sass@1.85.0)(tsx@4.19.3))
@@ -117,6 +114,9 @@ importers:
       '@biomejs/biome':
         specifier: 1.9.4
         version: 1.9.4
+      '@onjmin/oekaki':
+        specifier: 1.0.30
+        version: 1.0.30
       '@smui-extra/accordion':
         specifier: 8.0.0-beta.3
         version: 8.0.0-beta.3
@@ -651,8 +651,8 @@ packages:
     resolution: {integrity: sha512-XWmEeWpBXIoksZSDN74kftfTnXFEGZ3iX8jbANWBc+ag6dsiQuvuR4LgB0WdCOKMb5AQgjqgufc0TgAsZubUYw==}
     engines: {node: '>=19.0.0'}
 
-  '@onjmin/oekaki@1.0.26':
-    resolution: {integrity: sha512-Ti0MXZnhpAECWNz8v6cyfdMOFySqbe6Xtrpu24C7NTuuuurLCPxG9p92FL/bzqcZSh4cb6ZJwxr4hIX8SdcnPw==}
+  '@onjmin/oekaki@1.0.30':
+    resolution: {integrity: sha512-ZCOfZVmsXPunYKzGPdNJdiCPtlavD7BoFbF8kKyOAsRLBPpQZF2GL2NjWj15lW3k8Hhcn8wKlYW309vPRO5LtA==}
 
   '@parcel/watcher-android-arm64@2.5.1':
     resolution: {integrity: sha512-KF8+j9nNbUN8vzOFDpRMsaKBHZ/mcjEjMToVMJOhTozkDonQFFrRcfdLWn6yWKCmJKmdVxSgHiYvTCef4/qcBA==}
@@ -3396,7 +3396,7 @@ snapshots:
       '@types/node': 22.13.8
       '@types/pg': 8.11.11
 
-  '@onjmin/oekaki@1.0.26': {}
+  '@onjmin/oekaki@1.0.30': {}
 
   '@parcel/watcher-android-arm64@2.5.1':
     optional: true
