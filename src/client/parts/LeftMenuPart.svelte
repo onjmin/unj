@@ -33,7 +33,7 @@
         <List>
             <Item
                 onclick={() => navigate(makePathname("/new"))}
-                activated={pathname().startsWith("/new")}
+                activated={pathname().split("/")[1] === "new"}
             >
                 <Graphic class="material-icons" aria-hidden="true"
                     >edit_note</Graphic
@@ -42,7 +42,7 @@
             </Item>
             <Item
                 onclick={() => navigate(makePathname("/headline"))}
-                activated={pathname().startsWith("/headline")}
+                activated={pathname().split("/")[1] === "headline"}
             >
                 <Graphic class="material-icons" aria-hidden="true"
                     >article</Graphic
@@ -51,7 +51,7 @@
             </Item>
             <Item
                 onclick={() => navigate(makePathname("/history"))}
-                activated={pathname().startsWith("/history")}
+                activated={pathname().split("/")[1] === "history"}
             >
                 <Graphic class="material-icons" aria-hidden="true"
                     >history</Graphic
@@ -60,7 +60,7 @@
             </Item>
             <Item
                 onclick={() => navigate(makePathname("/bookmark"))}
-                activated={pathname().startsWith("/bookmark")}
+                activated={pathname().split("/")[1] === "bookmark"}
             >
                 <Graphic class="material-icons" aria-hidden="true">star</Graphic
                 >
@@ -68,7 +68,7 @@
             </Item>
             <Item
                 onclick={() => navigate(makePathname("/config"))}
-                activated={pathname().startsWith("/config")}
+                activated={pathname().split("/")[1] === "config"}
             >
                 <Graphic class="material-icons" aria-hidden="true"
                     >settings</Graphic
@@ -80,7 +80,7 @@
             <Subheader tag="h6">サイト情報</Subheader>
             <Item
                 onclick={() => navigate(makePathname("/terms"))}
-                activated={pathname().startsWith("/terms")}
+                activated={pathname().split("/")[1] === "terms"}
             >
                 <Graphic class="material-icons" aria-hidden="true"
                     >gavel</Graphic
@@ -89,7 +89,7 @@
             </Item>
             <Item
                 onclick={() => navigate(makePathname("/contact"))}
-                activated={pathname().startsWith("/contact")}
+                activated={pathname().split("/")[1] === "contact"}
             >
                 <Graphic class="material-icons" aria-hidden="true">help</Graphic
                 >
@@ -97,7 +97,7 @@
             </Item>
             <Item
                 onclick={() => navigate(makePathname("/news"))}
-                activated={pathname().startsWith("/news")}
+                activated={pathname().split("/")[1] === "news"}
             >
                 <Graphic class="material-icons" aria-hidden="true"
                     >newspaper</Graphic
@@ -106,7 +106,7 @@
             </Item>
             <Item
                 onclick={() => navigate(makePathname("/art"))}
-                activated={pathname().startsWith("/art")}
+                activated={pathname().split("/")[1] === "art"}
             >
                 <Graphic class="material-icons" aria-hidden="true"
                     >view_carousel</Graphic
@@ -115,7 +115,7 @@
             </Item>
             <Item
                 onclick={() => navigate(makePathname("/links"))}
-                activated={pathname().startsWith("/links")}
+                activated={pathname().split("/")[1] === "links"}
             >
                 <Graphic class="material-icons" aria-hidden="true">link</Graphic
                 >
