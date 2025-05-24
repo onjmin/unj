@@ -101,3 +101,17 @@ new Avatar({
 	src: "https://i.imgur.com/uMdNy0s.png",
 	href: "https://w.atwiki.jp/openj3/pages/26.html",
 });
+new Avatar({
+	id: 206,
+	name: "おんちゃん",
+	description: "(o'ω'n)",
+	src: "https://i.imgur.com/cDxzdE2.png",
+	href: "https://w.atwiki.jp/openj3/pages/31.html",
+});
+new Avatar({
+	id: 207,
+	name: "ミニワイ",
+	description: "ミニワイ(9cm)「もきゅっ！」←お前らに飼われにきた",
+	src: "https://i.imgur.com/jsX6Uzj.png",
+	href: "https://hayabusa.open2ch.net/test/read.cgi/livejupiter/1747923319/l50",
+});
