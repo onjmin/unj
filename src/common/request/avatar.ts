@@ -112,6 +112,6 @@ new Avatar({
 	id: 207,
 	name: "ミニワイ",
 	description: "ミニワイ(9cm)「もきゅっ！」←お前らに飼われにきた",
-	src: "https://i.imgur.com/jsX6Uzj.png",
+	src: "https://i.imgur.com/S0gkZCj.png",
 	href: "https://hayabusa.open2ch.net/test/read.cgi/livejupiter/1747923319/l50",
 });

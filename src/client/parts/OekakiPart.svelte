@@ -99,6 +99,7 @@
         break;
       case "c": // クリップボードにコピー
         {
+          if (!getSelection()?.isCollapsed) return; // 何か選択中ならそれを優先させる
           const blob = await new Promise<Blob | null>((resolve) =>
             activeLayer?.canvas.toBlob(resolve),
           );
