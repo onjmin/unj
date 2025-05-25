@@ -107,6 +107,7 @@ const updateAuthToken = (socket: Socket) => {
 	socket.emit("updateAuthToken", {
 		ok: true,
 		token,
+		timestamp: new Date(),
 	});
 	lazyUpdate(rawUserId, token, getIP(socket));
 };

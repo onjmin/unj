@@ -105,6 +105,7 @@ export const latestReadThreadId = new UnjStorage("latestReadThreadId");
 export const termsAgreement = new UnjStorage("termsAgreement");
 export const contactedAt = new UnjStorage("contactedAt");
 export const authToken = new UnjStorage("authToken");
+export const authTokenUpdatedAt = new UnjStorage("authTokenUpdatedAt");
 export const nonceKey = new UnjStorage("nonceKey");
 export const ninjaPokemon = new UnjStorage("ninjaPokemon");
 export const ninjaScore = new UnjStorage("ninjaScore");

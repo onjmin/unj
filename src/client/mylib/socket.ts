@@ -1,3 +1,4 @@
+import { isBefore } from "date-fns";
 import { type Socket, io } from "socket.io-client";
 import { navigate } from "svelte-routing";
 import type { Ninja } from "../../common/response/schema.js";
@@ -5,6 +6,7 @@ import { sleep } from "../../common/util.js";
 import { PROD_MODE, decodeEnv, makePathname, pathname } from "./env.js";
 import {
 	authToken,
+	authTokenUpdatedAt,
 	banReason,
 	banStatus,
 	ninjaPokemon,
@@ -75,10 +77,19 @@ export const hello = (callback: (() => void) | null = null) => {
 					break;
 			}
 		});
-		socket.on("updateAuthToken", (data: { ok: boolean; token: string }) => {
-			if (!data.ok || !data.token) return;
-			authToken.value = data.token;
-		});
+		socket.on(
+			"updateAuthToken",
+			(data: { ok: boolean; token: string; timestamp: Date }) => {
+				if (!data.ok || !data.token) return;
+				if (
+					!authTokenUpdatedAt.value ||
+					isBefore(data.timestamp, new Date(Number(authTokenUpdatedAt.value)))
+				)
+					return;
+				authToken.value = data.token;
+				authTokenUpdatedAt.value = `${+data.timestamp}`;
+			},
+		);
 		socket.on("ninja", (data: { ok: boolean; ninja: Ninja }) => {
 			if (!data.ok) return;
 			ninjaPokemon.value = String(data.ninja.pokemon);
