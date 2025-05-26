@@ -6,7 +6,7 @@
     ///////////////
 </script>
 
-<HeaderPart title="閲覧履歴" />
+<HeaderPart title="履歴" />
 
 <MainPart>
     <p>めんてちゅ</p>

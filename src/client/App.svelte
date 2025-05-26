@@ -87,7 +87,7 @@
       <NewPage isRef />
     </BannedCheck>
   </Route>
-  <!-- 閲覧履歴 -->
+  <!-- 履歴 -->
   <Route path={makePathname("/history")}>
     <BannedCheck>
       <HistoryPage />

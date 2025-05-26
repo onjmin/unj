@@ -56,7 +56,7 @@
                 <Graphic class="material-icons" aria-hidden="true"
                     >history</Graphic
                 >
-                <Text>閲覧履歴</Text>
+                <Text>履歴</Text>
             </Item>
             <Item
                 onclick={() => navigate(makePathname("/bookmark"))}
