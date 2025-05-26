@@ -13,7 +13,7 @@ export const myConfig = {
 /**
  * 一度に取得できるレコード数上限
  */
-export const queryResultLimit = 32;
+export const queryResultLimit = 64;
 
 const smallintMax = 2 ** 15 - 1;
 const intMax = 2 ** 31 - 1;
