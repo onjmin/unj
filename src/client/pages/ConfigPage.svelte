@@ -216,50 +216,63 @@
                 </Content>
             </Panel>
             <Panel>
-                <Header>お絵描きログ</Header>
+                <Header>お絵描き履歴</Header>
                 <Content>
-                    <div style="text-align:left;">
-                        <List twoLine avatarList>
-                            {#each imgurList as imgurResponse, i}
-                                <Item>
-                                    <Graphic
-                                        class="uploaded-imgur-item-graphic"
-                                        style="background-image: url({imgurResponse.link});"
-                                    />
-                                    <Text>
-                                        <PrimaryText
-                                            >{imgurResponse.id}</PrimaryText
-                                        >
-                                        <SecondaryText
-                                            >{imgurResponse.link}</SecondaryText
-                                        >
-                                    </Text>
-                                    <Meta
-                                        class="material-icons"
-                                        onclick={async () => {
-                                            if (
-                                                !confirm("画像を削除しますか？")
-                                            )
-                                                return;
-                                            try {
-                                                await deleteImgur(
-                                                    imgurResponse.deletehash,
+                    {#if !imgurList.length}
+                        <div style="color:gray">
+                            <div>NO DATA...</div>
+                            <div>いまんとこお絵描き履歴は空っぽみたい。。</div>
+                            <div>お絵描きをうｐしてから出直してね。</div>
+                        </div>
+                    {:else}
+                        <div style="text-align:left;">
+                            <List twoLine avatarList>
+                                {#each imgurList as imgurResponse, i}
+                                    <Item>
+                                        <Graphic
+                                            class="uploaded-imgur-item-graphic"
+                                            style="background-image: url({imgurResponse.link});"
+                                        />
+                                        <Text>
+                                            <PrimaryText
+                                                >{imgurResponse.id}</PrimaryText
+                                            >
+                                            <SecondaryText
+                                                >{imgurResponse.link}</SecondaryText
+                                            >
+                                        </Text>
+                                        <Meta
+                                            class="material-icons"
+                                            onclick={async () => {
+                                                if (
+                                                    !confirm(
+                                                        `${imgurResponse.id}を削除しますか？`,
+                                                    )
+                                                )
+                                                    return;
+                                                try {
+                                                    await deleteImgur(
+                                                        imgurResponse.deletehash,
+                                                    );
+                                                } catch (err) {
+                                                    alert(
+                                                        `${imgurResponse.id}の削除に失敗しました`,
+                                                    );
+                                                    return;
+                                                }
+                                                imgurList = imgurList.filter(
+                                                    (v) =>
+                                                        v.id !==
+                                                        imgurResponse.id,
                                                 );
-                                            } catch (err) {
-                                                alert("削除に失敗しました");
-                                                return;
-                                            }
-                                            imgurList = imgurList.filter(
-                                                (v) =>
-                                                    v.id !== imgurResponse.id,
-                                            );
-                                            imgurHistory.set(imgurList);
-                                        }}>delete</Meta
-                                    >
-                                </Item>
-                            {/each}
-                        </List>
-                    </div>
+                                                imgurHistory.set(imgurList);
+                                            }}>delete</Meta
+                                        >
+                                    </Item>
+                                {/each}
+                            </List>
+                        </div>
+                    {/if}
                 </Content>
             </Panel>
         </Accordion>
