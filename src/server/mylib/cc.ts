@@ -48,7 +48,7 @@ const escapeUserName = (str: string) =>
 		.replace(/【/g, "｛")
 		.replace(/】/g, "｝");
 
-const bigDay = new Date(2025, 3 - 1, 21);
+const bigDay = new Date(Date.UTC(2025, 3 - 1, 21));
 
 /**
  * 名前に付加される系のコマンドもここで作成する

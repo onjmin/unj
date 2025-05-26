@@ -2,7 +2,7 @@ import { Direction } from "@rpgja/rpgen-map";
 import { HEIGHT, WIDTH } from "../../common/request/rpg-schema.js";
 import { randInt } from "../../common/util.js";
 
-export const bigDay = new Date(2025, 4 - 1, 4);
+export const bigDay = new Date(Date.UTC(2025, 4 - 1, 4));
 export const humans: Map<number, Human> = new Map();
 export const doppelgangers: Map<number, Map<number, Doppelganger>> = new Map();
 

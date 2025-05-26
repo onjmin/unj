@@ -32,7 +32,7 @@ import { logger } from "./log.js";
  * (署名).(ユーザーID).(有効期限)
  */
 
-const bigDay = new Date(2025, 2 - 1, 14);
+const bigDay = new Date(Date.UTC(2025, 2 - 1, 14));
 const finalDay = addDays(bigDay, 114514);
 
 const getTokenParam = (socket: Socket) => {
