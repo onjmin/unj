@@ -459,9 +459,12 @@
                     contentUrl = link;
                     contentMeta = { link, id, deletehash };
                     uploadedImgur = { link, id, deletehash };
-                    imgurHistory
-                        .get()
-                        .then((v) => v?.push({ link, id, deletehash }));
+                    imgurHistory.get().then((v) => {
+                        if (v) {
+                            v.push({ link, id, deletehash });
+                            imgurHistory.set(v);
+                        }
+                    });
                     try {
                         oekakiLogger([link, id, deletehash]);
                     } catch (err) {}
