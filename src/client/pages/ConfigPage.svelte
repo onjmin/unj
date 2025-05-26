@@ -266,7 +266,7 @@
                                                         imgurResponse.id,
                                                 );
                                                 imgurHistory.set(imgurList);
-                                            }}>delete</Meta
+                                            }}>delete_forever</Meta
                                         >
                                     </Item>
                                 {/each}
