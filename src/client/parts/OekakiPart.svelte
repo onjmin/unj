@@ -455,7 +455,7 @@
     dropper: { label: "カラーピッカー", icon: mdiEyedropper },
     fill: { label: "塗りつぶし", icon: mdiFormatColorFill },
     // 切り替え系
-    erasable: { label: "透明色", icon: mdiEraserVariant },
+    erasable: { label: "常に消しゴム", icon: mdiEraserVariant },
     flip: { label: "左右反転", icon: mdiFlipHorizontal },
     grid: { label: "グリッド線", icon: mdiGrid },
     // アクション系
