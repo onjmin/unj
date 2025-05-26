@@ -163,7 +163,11 @@
     >
     <br />
     {#if imageEmbed}
-      <img class="embed-image" src={embedUrl} alt="embed" />
+      <img
+        class="embed-image gimp-checkered-background"
+        src={embedUrl}
+        alt="embed"
+      />
     {:else if videoEmbedYouTube}
       <iframe
         title="embed"
@@ -228,20 +232,6 @@
     object-fit: contain; /* はみ出さないようにする（切り抜きたくないなら contain） */
     border-radius: 8px; /* 角丸にしたい場合。お好み！ */
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* 軽い影で浮かせる */
-  }
-  .embed-image {
-    /* GIMPの背景のアレ */
-    background-color: #fff;
-    background-image: linear-gradient(45deg, #eee 25%, transparent 25%),
-      linear-gradient(-45deg, #eee 25%, transparent 25%),
-      linear-gradient(45deg, transparent 75%, #eee 75%),
-      linear-gradient(-45deg, transparent 75%, #eee 75%);
-    background-size: 16px 16px;
-    background-position:
-      0 0,
-      0 8px,
-      8px -8px,
-      -8px 0px;
   }
   iframe {
     border-radius: 12px;
