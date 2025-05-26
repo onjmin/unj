@@ -16,4 +16,5 @@ export const label2icon = new Map([
 	["新機能", "update"],
 	["脆弱性", "security"],
 	["技術", "code"],
+	["バグ", "bug_report"],
 ]);
