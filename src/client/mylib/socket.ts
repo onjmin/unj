@@ -82,7 +82,7 @@ export const hello = (callback: (() => void) | null = null) => {
 			(data: { ok: boolean; token: string; timestamp: Date }) => {
 				if (!data.ok || !data.token) return;
 				if (
-					!authTokenUpdatedAt.value ||
+					authTokenUpdatedAt.value &&
 					isBefore(data.timestamp, new Date(Number(authTokenUpdatedAt.value)))
 				)
 					return;
