@@ -9,11 +9,24 @@
     import FormField from "@smui/form-field";
     import IconButton from "@smui/icon-button";
     import LayoutGrid, { Cell } from "@smui/layout-grid";
-    import List, { Item, Graphic, Label } from "@smui/list";
+    import List, {
+        Item,
+        Graphic,
+        Text,
+        PrimaryText,
+        Meta,
+        Label,
+        SecondaryText,
+    } from "@smui/list";
     import Radio from "@smui/radio";
     import SegmentedButton, { Segment } from "@smui/segmented-button";
     import Slider from "@smui/slider";
     import { Howler } from "howler";
+    import {
+        type ImgurResponse,
+        deleteImgur,
+        imgurHistory,
+    } from "../mylib/imgur.js";
     import {
         changeNewResSound,
         changeReplyResSound,
@@ -82,6 +95,13 @@
         if (segmentedSelected === "ダークモード") theme.value = "metro-dark";
         if (segmentedSelected === "ライトモード") theme.value = "unity";
     });
+
+    let imgurList: ImgurResponse[] = $state([]);
+    $effect(() => {
+        imgurHistory.get().then((v) => {
+            if (v) imgurList = v;
+        });
+    });
 </script>
 
 <HeaderPart title="個人設定">
@@ -111,7 +131,7 @@
                             </SegmentedButton>
                         </Cell>
                     </LayoutGrid>
-                    <List class="demo-list" radioList>
+                    <List radioList>
                         {#each themes as theme}
                             <Item>
                                 <Graphic>
@@ -144,7 +164,7 @@
             <Panel>
                 <Header>新着レスSE</Header>
                 <Content>
-                    <List class="demo-list" radioList>
+                    <List radioList>
                         {#each soundMap as [key, sound]}
                             <Item>
                                 <Graphic>
@@ -171,7 +191,7 @@
             <Panel>
                 <Header>安価レスSE</Header>
                 <Content>
-                    <List class="demo-list" radioList>
+                    <List radioList>
                         {#each soundMap as [key, sound]}
                             <Item>
                                 <Graphic>
@@ -195,8 +215,64 @@
                     </List>
                 </Content>
             </Panel>
+            <Panel>
+                <Header>お絵描きログ</Header>
+                <Content>
+                    <div style="text-align:left;">
+                        <List twoLine avatarList>
+                            {#each imgurList as imgurResponse, i}
+                                <Item>
+                                    <Graphic
+                                        class="uploaded-imgur-item-graphic"
+                                        style="background-image: url({imgurResponse.link});"
+                                    />
+                                    <Text>
+                                        <PrimaryText
+                                            >{imgurResponse.id}</PrimaryText
+                                        >
+                                        <SecondaryText
+                                            >{imgurResponse.link}</SecondaryText
+                                        >
+                                    </Text>
+                                    <Meta
+                                        class="material-icons"
+                                        onclick={async () => {
+                                            if (
+                                                !confirm("画像を削除しますか？")
+                                            )
+                                                return;
+                                            try {
+                                                await deleteImgur(
+                                                    imgurResponse.deletehash,
+                                                );
+                                            } catch (err) {
+                                                alert("削除に失敗しました");
+                                                return;
+                                            }
+                                            imgurList = imgurList.filter(
+                                                (v) =>
+                                                    v.id !== imgurResponse.id,
+                                            );
+                                            imgurHistory.set(imgurList);
+                                        }}>delete</Meta
+                                    >
+                                </Item>
+                            {/each}
+                        </List>
+                    </div>
+                </Content>
+            </Panel>
         </Accordion>
     </div>
 </MainPart>
 
 <FooterPart />
+
+<style>
+    :global(.uploaded-imgur-item-graphic) {
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: center;
+        border-radius: 0 !important;
+    }
+</style>

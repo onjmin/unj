@@ -39,7 +39,11 @@
     import { genNonce } from "../mylib/anti-debug.js";
     import { visible } from "../mylib/dom.js";
     import { makePathname } from "../mylib/env.js";
-    import { uploadImgur } from "../mylib/imgur.js";
+    import {
+        type ImgurResponse,
+        imgurHistory,
+        uploadImgur,
+    } from "../mylib/imgur.js";
     import { ObjectStorage } from "../mylib/object-storage.js";
     import { goodbye, hello, ok, socket } from "../mylib/socket.js";
     import {
@@ -416,8 +420,7 @@
 
     let emitting = $state(false);
     let toDataURL = $state(() => "");
-    type Imgur = { link: string; id: string; deletehash: string };
-    let uploadedImgur: Imgur | null = null;
+    let uploadedImgur: ImgurResponse | null = null;
     const tryRes = async () => {
         // 利用規約同意
         // if (termsAgreement.value !== "yes") {
@@ -456,6 +459,9 @@
                     contentUrl = link;
                     contentMeta = { link, id, deletehash };
                     uploadedImgur = { link, id, deletehash };
+                    imgurHistory
+                        .get()
+                        .then((v) => v?.push({ link, id, deletehash }));
                     try {
                         oekakiLogger([link, id, deletehash]);
                     } catch (err) {}
