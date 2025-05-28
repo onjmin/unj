@@ -3,6 +3,7 @@ export type HeadlineThread = {
 	ccUserId: string;
 	// メタ情報
 	id: string;
+	latestRes: string;
 	latestResAt: Date;
 	resCount: number;
 	latestCursor: string;

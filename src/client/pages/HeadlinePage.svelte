@@ -148,6 +148,7 @@
                             )}>{thread.title}</Link
                         >
                     </div>
+                    <div class="latest-res">{thread.latestRes}</div>
                 </Item>
                 {#if i % 4 === 3 && i !== (threadList ?? []).length - 1}
                     <Separator />
@@ -178,5 +179,10 @@
     }
     .thread-title {
         font-size: 1rem;
+    }
+    .latest-res {
+        opacity: 0.6;
+        font-size: 0.6rem;
+        padding-left: 1rem;
     }
 </style>

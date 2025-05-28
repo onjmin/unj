@@ -65,6 +65,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 					ccUserId: record.cc_user_id,
 					// メタ情報
 					id: encodeThreadId(record.id) ?? "",
+					latestRes: record.latest_res,
 					latestResAt,
 					resCount,
 					latestCursor: encodeResId(record.latest_cursor) ?? "",

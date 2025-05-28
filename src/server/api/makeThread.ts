@@ -93,6 +93,8 @@ export default ({ socket }: { socket: Socket }) => {
 
 			await poolClient.query("BEGIN"); // トランザクション開始
 
+			const latestRes = content.output.contentText || content.output.contentUrl;
+
 			// スレッドの作成
 			const { rows, rowCount } = await poolClient.query(
 				[
@@ -141,7 +143,7 @@ export default ({ socket }: { socket: Socket }) => {
 					makeThread.output.max,
 					deletedAt,
 					// メタ情報
-					content.output.contentText || content.output.contentUrl,
+					latestRes,
 				],
 			);
 			if (rowCount === 0) return;
@@ -152,6 +154,7 @@ export default ({ socket }: { socket: Socket }) => {
 				ccUserId,
 				// メタ情報
 				id: encodeThreadId(id) ?? "",
+				latestRes,
 				latestResAt: new Date(),
 				resCount: 1,
 				latestCursor: "",
