@@ -11,8 +11,6 @@
     mdiHandBackRight,
     mdiLayers,
     mdiPen,
-    mdiPencil,
-    mdiPencilOutline,
     mdiRedo,
     mdiTrashCanOutline,
     mdiUndo,
@@ -124,7 +122,6 @@
    */
   const handlePaste = async (e: ClipboardEvent) => {
     if (!activeLayer || activeLayer?.locked) return;
-    const items = e.clipboardData?.items;
     let imageItem: DataTransferItem | null = null;
     let textItem: DataTransferItem | null = null;
     for (const v of e.clipboardData?.items ?? []) {
@@ -310,6 +307,12 @@
         if (!activeLayer?.locked) {
           if (choiced.label === tool.brush.label) {
             activeLayer?.drawLine(x, y, prevX, prevY);
+          } else if (choiced.label === tool.translate.label) {
+            if (isGrid) {
+              activeLayer?.translateByDot(x - prevX, y - prevY);
+            } else {
+              activeLayer?.translate(x - prevX, y - prevY);
+            }
           } else {
             const lerps = oekaki.lerp(x, y, prevX, prevY);
             switch (choiced.label) {
