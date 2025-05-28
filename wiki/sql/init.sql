@@ -17,6 +17,8 @@ CREATE TABLE threads (
     id SERIAL PRIMARY KEY,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     deleted_at TIMESTAMP, -- 論理削除の予定日時（!timer用）
+    res_count SMALLINT NOT NULL DEFAULT 1, -- count()よりも軽量。レス投稿後に発行されるIDが真の値。
+    latest_res TEXT NOT NULL DEFAULT '', -- 最終レス
     latest_res_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 最終レスの日時
     first_cursor INT NOT NULL DEFAULT 0,
     latest_cursor INT NOT NULL DEFAULT 0,
@@ -30,7 +32,6 @@ CREATE TABLE threads (
     content_types_bitmask SMALLINT DEFAULT 1, -- 投稿可能なコンテンツの種類
     res_limit SMALLINT NOT NULL DEFAULT 1000, -- レスの上限
     -- 動的なデータ
-    res_count SMALLINT NOT NULL DEFAULT 1, -- count()よりも軽量。レス投稿後に発行されるIDが真の値。
     ps TEXT NOT NULL DEFAULT '', -- !add機能で>>1の末尾に追記する内容
     age_res_num INT NOT NULL DEFAULT 0, -- !age機能で表示するレスのID（0の場合はage無し）
     bals_res_num INT NOT NULL DEFAULT 0, -- !バルス

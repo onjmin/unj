@@ -252,6 +252,11 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 				query.set("bals_res_num", balsResNumCache.get(threadId) ?? 0);
 			}
 
+			query.set(
+				"latest_res",
+				content.output.contentText || content.output.contentUrl,
+			);
+
 			// スレッドの更新
 			await poolClient.query(
 				[

@@ -115,8 +115,10 @@ export default ({ socket }: { socket: Socket }) => {
 						"content_types_bitmask",
 						"res_limit",
 						"deleted_at",
+						// メタ情報
+						"latest_res",
 					].join(",")})`,
-					"VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)",
+					"VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)",
 					"RETURNING *",
 				].join(" "),
 				[
@@ -138,6 +140,8 @@ export default ({ socket }: { socket: Socket }) => {
 					makeThread.output.contentTypesBitmask,
 					makeThread.output.max,
 					deletedAt,
+					// メタ情報
+					content.output.contentText || content.output.contentUrl,
 				],
 			);
 			if (rowCount === 0) return;
