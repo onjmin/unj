@@ -65,7 +65,7 @@
 		"@erase2d/fabric": "1.1.7",
 		"@mdi/js": "7.4.47",
 		"@neondatabase/serverless": "^1.0.0",
-		"@onjmin/oekaki": "1.0.39",
+		"@onjmin/oekaki": "1.0.40",
 		"@rpgja/rpgen-map": "1.0.0",
 		"@sveltejs/vite-plugin-svelte": "^5.0.3",
 		"@types/express": "^5.0.0",
