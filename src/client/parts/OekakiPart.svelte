@@ -578,7 +578,7 @@
       if (
         layerLocked ||
         !activeLayer ||
-        !confirm(`${activeLayer.name}を削除しますか？`)
+        (activeLayer.used && !confirm(`${activeLayer.name}を削除しますか？`))
       )
         return;
       activeLayer.delete();
