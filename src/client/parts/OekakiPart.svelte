@@ -8,6 +8,7 @@
     mdiFlipHorizontal,
     mdiFormatColorFill,
     mdiGrid,
+    mdiHandBackRight,
     mdiLayers,
     mdiPen,
     mdiPencil,
@@ -326,11 +327,11 @@
               case tool.dotPen.label:
                 for (const [x, y] of lerps)
                   erasable
-                    ? activeLayer?.eraseDot(x, y)
-                    : activeLayer?.drawDot(x, y);
+                    ? activeLayer?.eraseByDot(x, y)
+                    : activeLayer?.drawByDot(x, y);
                 break;
               case tool.dotEraser.label:
-                for (const [x, y] of lerps) activeLayer?.eraseDot(x, y);
+                for (const [x, y] of lerps) activeLayer?.eraseByDot(x, y);
                 break;
             }
           }
@@ -454,6 +455,7 @@
     },
     dropper: { label: "カラーピッカー", icon: mdiEyedropper },
     fill: { label: "塗りつぶし", icon: mdiFormatColorFill },
+    move: { label: "ハンドツール", icon: mdiHandBackRight },
     // 切り替え系
     erasable: { label: "常に消しゴム", icon: mdiEraserVariant },
     flip: { label: "左右反転", icon: mdiFlipHorizontal },
@@ -474,6 +476,7 @@
     tool.dotEraser,
     tool.dropper,
     tool.fill,
+    tool.move,
   ];
   let choiced: Tool = $state(
     Object.values(tool).find((v) => v.label === unjStorage.tool.value) ??
@@ -481,7 +484,7 @@
   );
 
   const mdi2DataUrl = (mdi: string) => {
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"><path d="${mdi}" fill="black"/></svg>`;
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"><path d="${mdi}" fill="white" stroke="black" stroke-width="1"/></svg>`;
     const base64 = btoa(svg);
     return `data:image/svg+xml;base64,${base64}`;
   };

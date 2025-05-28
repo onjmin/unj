@@ -24,8 +24,8 @@ importers:
         specifier: ^1.0.0
         version: 1.0.0
       '@onjmin/oekaki':
-        specifier: 1.0.31
-        version: 1.0.31
+        specifier: 1.0.34
+        version: 1.0.34
       '@rpgja/rpgen-map':
         specifier: 1.0.0
         version: 1.0.0
@@ -651,8 +651,8 @@ packages:
     resolution: {integrity: sha512-XWmEeWpBXIoksZSDN74kftfTnXFEGZ3iX8jbANWBc+ag6dsiQuvuR4LgB0WdCOKMb5AQgjqgufc0TgAsZubUYw==}
     engines: {node: '>=19.0.0'}
 
-  '@onjmin/oekaki@1.0.31':
-    resolution: {integrity: sha512-8hrAn6Hn6vApEN6lhAEipy8nd5uiVGvzLRZkRl2iLCbfSxBVuI8eJicrr78QOlvmElfYMCGKGPKbqH8HyiNuuQ==}
+  '@onjmin/oekaki@1.0.34':
+    resolution: {integrity: sha512-m11GOgTYOTdXdP9n1Hs1npxuvPVYQgrGXswk4Sgq8ZNFOsIeiApzt5EcDDKRZQcDmMMf7ySXLMO2JTsGW5WJRA==}
 
   '@parcel/watcher-android-arm64@2.5.1':
     resolution: {integrity: sha512-KF8+j9nNbUN8vzOFDpRMsaKBHZ/mcjEjMToVMJOhTozkDonQFFrRcfdLWn6yWKCmJKmdVxSgHiYvTCef4/qcBA==}
@@ -1694,8 +1694,8 @@ packages:
   immediate@3.0.6:
     resolution: {integrity: sha512-XXOFtyqDjNDAQxVfYxuF7g9Il/IbWmmlQg2MYKOH8ExIT1qg6xc4zyS3HaEEATgs1btfzxq15ciUiY7gjSXRGQ==}
 
-  immutable@5.0.3:
-    resolution: {integrity: sha512-P8IdPQHq3lA1xVeBRi5VPqUm5HDgKnx0Ru51wZz5mjxHr5n3RWhjIpOFU7ybkUxfB+5IToy+OLaHYDBIWsv+uw==}
+  immutable@5.1.2:
+    resolution: {integrity: sha512-qHKXW1q6liAk1Oys6umoaZbDRqjcjgSrbnrifHsfsttza7zcvRAsL7mMV6xWcyhwQy7Xj5v4hhbr6b+iDYwlmQ==}
 
   inflight@1.0.6:
     resolution: {integrity: sha512-k92I/b08q4wvFscXCLvqfsHCrjrF7yiXsQuIVvVE7N82W3+aqpzuUdBbfhWcy/FZR3/4IgflMgKLOsvPDrGCJA==}
@@ -3395,7 +3395,7 @@ snapshots:
       '@types/node': 22.13.8
       '@types/pg': 8.11.11
 
-  '@onjmin/oekaki@1.0.31': {}
+  '@onjmin/oekaki@1.0.34': {}
 
   '@parcel/watcher-android-arm64@2.5.1':
     optional: true
@@ -4651,7 +4651,7 @@ snapshots:
 
   immediate@3.0.6: {}
 
-  immutable@5.0.3:
+  immutable@5.1.2:
     optional: true
 
   inflight@1.0.6:
@@ -5203,7 +5203,7 @@ snapshots:
   sass@1.85.0:
     dependencies:
       chokidar: 4.0.3
-      immutable: 5.0.3
+      immutable: 5.1.2
       source-map-js: 1.2.1
     optionalDependencies:
       '@parcel/watcher': 2.5.1
