@@ -58,19 +58,15 @@
         break;
       case "4":
         e.preventDefault();
-        choiced = tool.dotPen;
+        choiced = tool.dropper;
         break;
       case "5":
         e.preventDefault();
-        choiced = tool.dotEraser;
+        choiced = tool.fill;
         break;
       case "6":
         e.preventDefault();
-        choiced = tool.dropper;
-        break;
-      case "7":
-        e.preventDefault();
-        choiced = tool.fill;
+        choiced = tool.translate;
         break;
       case "e":
         e.preventDefault();
@@ -318,20 +314,26 @@
             const lerps = oekaki.lerp(x, y, prevX, prevY);
             switch (choiced.label) {
               case tool.pen.label:
-                for (const [x, y] of lerps)
-                  erasable ? activeLayer?.erase(x, y) : activeLayer?.draw(x, y);
+                for (const [x, y] of lerps) {
+                  if (isGrid) {
+                    erasable
+                      ? activeLayer?.eraseByDot(x, y)
+                      : activeLayer?.drawByDot(x, y);
+                  } else {
+                    erasable
+                      ? activeLayer?.erase(x, y)
+                      : activeLayer?.draw(x, y);
+                  }
+                }
                 break;
               case tool.eraser.label:
-                for (const [x, y] of lerps) activeLayer?.erase(x, y);
-                break;
-              case tool.dotPen.label:
-                for (const [x, y] of lerps)
-                  erasable
-                    ? activeLayer?.eraseByDot(x, y)
-                    : activeLayer?.drawByDot(x, y);
-                break;
-              case tool.dotEraser.label:
-                for (const [x, y] of lerps) activeLayer?.eraseByDot(x, y);
+                for (const [x, y] of lerps) {
+                  if (isGrid) {
+                    activeLayer?.eraseByDot(x, y);
+                  } else {
+                    activeLayer?.erase(x, y);
+                  }
+                }
                 break;
             }
           }
@@ -448,14 +450,9 @@
     brush: { label: "ブラシ", icon: mdiBrush },
     pen: { label: "ペン", icon: mdiPen },
     eraser: { label: "消しゴム", icon: mdiEraser },
-    dotPen: { label: "ドットペン", icon: mdiPencil },
-    dotEraser: {
-      label: "ドット消しゴム",
-      icon: mdiPencilOutline,
-    },
     dropper: { label: "カラーピッカー", icon: mdiEyedropper },
     fill: { label: "塗りつぶし", icon: mdiFormatColorFill },
-    move: { label: "ハンドツール", icon: mdiHandBackRight },
+    translate: { label: "ハンドツール", icon: mdiHandBackRight },
     // 切り替え系
     erasable: { label: "常に消しゴム", icon: mdiEraserVariant },
     flip: { label: "左右反転", icon: mdiFlipHorizontal },
@@ -472,19 +469,17 @@
     tool.brush,
     tool.pen,
     tool.eraser,
-    tool.dotPen,
-    tool.dotEraser,
     tool.dropper,
     tool.fill,
-    tool.move,
+    tool.translate,
   ];
   let choiced: Tool = $state(
     Object.values(tool).find((v) => v.label === unjStorage.tool.value) ??
-      tool.brush,
+      tool.pen,
   );
 
   const mdi2DataUrl = (mdi: string) => {
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"><path d="${mdi}" fill="white" stroke="black" stroke-width="1"/></svg>`;
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"><path d="${mdi}" fill="black" stroke="white" stroke-width="1"/></svg>`;
     const base64 = btoa(svg);
     return `data:image/svg+xml;base64,${base64}`;
   };
@@ -700,6 +695,10 @@
     <span class="size">{brushSize}px</span>
     {@render palette()}
     <Slider min={1} max={64} discrete bind:value={brushSize} />
+  {:else if isGrid}
+    <span class="size">{dotPenScale}倍</span>
+    {@render palette()}
+    <Slider min={1} max={8} discrete tickMarks bind:value={dotPenScale} />
   {:else if choiced.label === tool.pen.label}
     <span class="size">{penSize}px</span>
     {@render palette()}
@@ -708,18 +707,7 @@
     <span class="size">{eraserSize}px</span>
     {@render palette()}
     <Slider min={1} max={64} discrete bind:value={eraserSize} />
-  {:else if choiced.label === tool.dotPen.label}
-    <span class="size">{dotPenScale}倍</span>
-    {@render palette()}
-    <Slider min={1} max={8} discrete tickMarks bind:value={dotPenScale} />
-  {:else if choiced.label === tool.dotEraser.label}
-    <span class="size">{dotPenScale}倍</span>
-    {@render palette()}
-    <Slider min={1} max={8} discrete tickMarks bind:value={dotPenScale} />
-  {:else if choiced.label === tool.dropper.label}
-    <span class="size"></span>
-    {@render palette()}
-  {:else if choiced.label === tool.fill.label}
+  {:else if choiced.label === tool.dropper.label || choiced.label === tool.fill.label}
     <span class="size"></span>
     {@render palette()}
   {/if}
