@@ -179,10 +179,23 @@
     }
     .thread-title {
         font-size: 1rem;
+        /* 縮めたくない */
+        flex-shrink: 0;
+        /* 長すぎるときに…表示 */
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        /* 右余白を少し */
+        margin-right: 0.5rem;
     }
     .latest-res {
         opacity: 0.6;
         font-size: 0.6rem;
-        padding-left: 1rem;
+        /* ここは縮めても OK */
+        flex-shrink: 1;
+        /* お好みで省略…させる場合 */
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
     }
 </style>
