@@ -107,10 +107,11 @@
         ok: boolean;
         new: HeadlineThread;
         yours: boolean;
+        nonceKey: string | null;
     }) => {
         if (!data.ok) return;
         if (!data.yours) return;
-        ok();
+        ok(data.nonceKey ?? "");
         titleUnjStorage.value = null;
         contentTextUnjStorage.value = null;
         navigate(makePathname(`/thread/${data.new.id}`));

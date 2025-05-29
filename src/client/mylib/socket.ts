@@ -27,9 +27,13 @@ const getNonceKey = () => socket.emit("getNonceKey", {});
 /**
  * サーバーと対話が成立したのでNonce値を更新する
  */
-export const ok = () => {
+export const ok = (nextNonceKey = "") => {
 	isOK = true;
-	getNonceKey();
+	if (nextNonceKey) {
+		nonceKey.value = nextNonceKey;
+	} else {
+		getNonceKey();
+	}
 };
 
 /**

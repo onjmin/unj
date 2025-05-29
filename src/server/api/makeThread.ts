@@ -167,7 +167,12 @@ export default ({ socket }: { socket: Socket }) => {
 				goodCount: 0,
 				badCount: 0,
 			};
-			socket.emit(api, { ok: true, new: newThread, yours: true });
+			socket.emit(api, {
+				ok: true,
+				new: newThread,
+				yours: true,
+				nonceKey: nonce.getUnsafe(socket), // スレ立て直後のreadThreadを成功させるため
+			});
 			socket
 				.to(headlineRoom)
 				.emit(api, { ok: true, new: newThread, yours: false });

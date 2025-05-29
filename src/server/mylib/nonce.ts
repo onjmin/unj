@@ -22,9 +22,9 @@ export const unlock = (socket: Socket) =>
 export const update = (socket: Socket) =>
 	nonces.set(auth.getUserId(socket), genNonceKey());
 export const get = (socket: Socket): string | null =>
-	locks.get(auth.getUserId(socket))
-		? null
-		: (nonces.get(auth.getUserId(socket)) ?? null);
+	locks.get(auth.getUserId(socket)) ? null : getUnsafe(socket);
+export const getUnsafe = (socket: Socket): string | null =>
+	nonces.get(auth.getUserId(socket)) ?? null;
 export const isValid = (socket: Socket, nonce: string) =>
 	locks.get(auth.getUserId(socket))
 		? false
@@ -36,5 +36,6 @@ export default {
 	init,
 	update,
 	get,
+	getUnsafe,
 	isValid,
 };
