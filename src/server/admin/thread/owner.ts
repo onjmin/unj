@@ -27,7 +27,7 @@ export default (router: Router) => {
 	// POST: クエリパラメータの threadId に対応するスレ主IDを更新
 	router.post(api, async (req: Request, res: Response) => {
 		const threadId = v.safeParse(SERIAL, Number(req.query.threadId));
-		const userId = v.safeParse(SERIAL, Number(req.query.userId));
+		const userId = v.safeParse(SERIAL, Number(req.body.userId));
 		if (!threadId.success) {
 			res.status(400).json({ error: v.flatten(threadId.issues) });
 			return;
