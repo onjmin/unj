@@ -251,11 +251,16 @@
         text-overflow: ellipsis;
     }
     .latest-res {
-        flex: 0 1 6rem;
+        flex: 0 1 16rem;
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
         opacity: 0.6;
         font-size: 0.6rem;
+    }
+    @media screen and (max-width: 768px) {
+        .latest-res {
+            display: none;
+        }
     }
 </style>
