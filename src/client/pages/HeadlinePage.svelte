@@ -174,44 +174,48 @@
             <Subtitle>サーバーが落ちてるかも。。</Subtitle>
             <Content>ページ更新してみてね。</Content>
         </Paper>
-    {/if}
-    <div class="unj-headline-container">
-        <List class="demo-list" dense nonInteractive>
-            {#each threadList ?? [] as thread, i}
-                <Item disabled class="unj-headline-thread-item">
-                    <Graphic
-                        ><TwemojiPart seed={thread.id} height="16" /></Graphic
+    {:else}
+        <div class="unj-headline-container">
+            <List class="demo-list" dense nonInteractive>
+                {#each threadList as thread, i}
+                    <Item disabled class="unj-headline-thread-item">
+                        <Graphic
+                            ><TwemojiPart
+                                seed={thread.id}
+                                height="16"
+                            /></Graphic
+                        >
+                        <div class="time-and-count-container">
+                            <span class="res-time"
+                                >{formatTimeAgo(thread.latestResAt)}</span
+                            >
+                            <span class="res-count">{thread.resCount}レス</span>
+                        </div>
+                        <div class="thread-title">
+                            <Link
+                                to={makePathname(
+                                    `/thread/${thread.id}${thread.resCount > queryResultLimit && thread.latestCursor ? `/${thread.latestCursor}/1` : ""}`,
+                                )}>{thread.title}</Link
+                            >
+                        </div>
+                        <div class="latest-res">{thread.latestRes}</div>
+                    </Item>
+                    {#if i % 4 === 3 && i !== (threadList ?? []).length - 1}
+                        <Separator />
+                    {/if}
+                {/each}
+            </List>
+            <center>
+                {#if !allGone}
+                    <Button
+                        onclick={cursorBasedPagination}
+                        variant="raised"
+                        disabled={emitting}>続きを読む</Button
                     >
-                    <div class="time-and-count-container">
-                        <span class="res-time"
-                            >{formatTimeAgo(thread.latestResAt)}</span
-                        >
-                        <span class="res-count">{thread.resCount}レス</span>
-                    </div>
-                    <div class="thread-title">
-                        <Link
-                            to={makePathname(
-                                `/thread/${thread.id}${thread.resCount > queryResultLimit && thread.latestCursor ? `/${thread.latestCursor}/1` : ""}`,
-                            )}>{thread.title}</Link
-                        >
-                    </div>
-                    <div class="latest-res">{thread.latestRes}</div>
-                </Item>
-                {#if i % 4 === 3 && i !== (threadList ?? []).length - 1}
-                    <Separator />
                 {/if}
-            {/each}
-        </List>
-        <center>
-            {#if !allGone}
-                <Button
-                    onclick={cursorBasedPagination}
-                    variant="raised"
-                    disabled={emitting}>続きを読む</Button
-                >
-            {/if}
-        </center>
-    </div>
+            </center>
+        </div>
+    {/if}
 </MainPart>
 
 <FooterPart />
