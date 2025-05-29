@@ -69,11 +69,9 @@
     });
 
     const sortByDesc = (list: HeadlineThread[]) =>
-        list.length < 2
-            ? list
-            : isAfter(list[0].latestResAt, list[list.length - 1].latestResAt)
-              ? list
-              : list.reverse();
+        list.sort(
+            (a, b) => +new Date(b.latestResAt) - +new Date(a.latestResAt),
+        );
 
     let allGone = $state(false);
     const handleHeadline = (data: { ok: boolean; list: HeadlineThread[] }) => {
