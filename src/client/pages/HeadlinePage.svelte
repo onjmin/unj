@@ -91,6 +91,7 @@
                 const i = map.get(v.id);
                 if (i) threadList[i] = v;
             }
+            threadList = sortByDesc(threadList);
             if (newList.length) {
                 const sorted = sortByDesc(newList);
                 if (isAfter(threadList[0].latestResAt, sorted[0].latestResAt)) {
