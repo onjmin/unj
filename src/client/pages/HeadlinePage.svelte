@@ -97,12 +97,11 @@
                 } else {
                     threadList = sorted.concat(threadList);
                 }
-                cache.set(sorted);
             }
         } else {
             threadList = sortByDesc(data.list);
-            cache.set(threadList);
         }
+        cache.set(threadList);
     };
 
     const handleMakeThread = (data: { ok: boolean; new: HeadlineThread }) => {
