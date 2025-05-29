@@ -554,6 +554,7 @@
         {threadId}
         {oekaki}
         bind:toDataURL
+        {tryRes}
     />
     <Button disabled={emitting} onclick={tryRes} variant="raised"
         >投稿する</Button

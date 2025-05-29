@@ -35,6 +35,7 @@
     threadId,
     oekaki,
     toDataURL = $bindable(),
+    tryRes,
   } = $props();
 
   let openUrlTemplate = $state(false);
@@ -102,6 +103,11 @@
   bind:this={textarea}
   bind:value={contentText}
   input$maxlength={256}
+  onkeyup={(e: KeyboardEvent) => {
+    if (e.ctrlKey && e.key === "Enter") {
+      tryRes();
+    }
+  }}
   onpaste={(e: ClipboardEvent) => {
     const pasteText = e.clipboardData?.getData("text");
     const m = pasteText?.match(regexUrl);

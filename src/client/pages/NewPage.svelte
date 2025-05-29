@@ -135,7 +135,7 @@
         //     openConfirm = true;
         //     return;
         // }
-        if (emitting) return;
+        if (emitting || !check1) return;
         emitting = true;
         let contentMeta = {};
         if (contentType === Enum.Oekaki) {
@@ -348,6 +348,7 @@
             threadId={sha256(Math.random().toString())}
             oekaki
             bind:toDataURL
+            tryRes={tryMakeThread}
         />
         <FormField>
             <Checkbox disabled={emitting} bind:checked={check1} />
