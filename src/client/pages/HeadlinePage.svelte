@@ -5,6 +5,7 @@
     import MainPart from "../parts/MainPart.svelte";
     ///////////////
 
+    import Button from "@smui/button";
     import List, { Item, Graphic, Separator } from "@smui/list";
     import Paper, { Title, Content, Subtitle } from "@smui/paper";
     import {
@@ -15,10 +16,12 @@
         differenceInSeconds,
         differenceInWeeks,
         differenceInYears,
+        isAfter,
     } from "date-fns";
     import { Link } from "svelte-routing";
     import { queryResultLimit } from "../../common/request/schema.js";
     import type { HeadlineThread } from "../../common/response/schema.js";
+    import { sleep } from "../../common/util.js";
     import { genNonce } from "../mylib/anti-debug.js";
     import { makePathname } from "../mylib/env.js";
     import { ObjectStorage } from "../mylib/object-storage.js";
@@ -65,11 +68,42 @@
         });
     });
 
+    const sortByDesc = (list: HeadlineThread[]) =>
+        list.length < 2
+            ? list
+            : isAfter(list[0].latestResAt, list[list.length - 1].latestResAt)
+              ? list
+              : list.reverse();
+
+    let allGone = $state(false);
     const handleHeadline = (data: { ok: boolean; list: HeadlineThread[] }) => {
         if (!data.ok) return;
         ok();
-        threadList = data.list;
-        cache.set(data.list);
+        if (data.list.length <= 1) {
+            allGone = true;
+            return;
+        }
+        if (threadList?.length) {
+            const map = new Map(threadList.map((v, i) => [v.id, i]));
+            const exist = data.list.filter((v) => map.has(v.id));
+            const newList = data.list.filter((v) => !map.has(v.id));
+            for (const v of exist) {
+                const i = map.get(v.id);
+                if (i) threadList[i] = v;
+            }
+            if (newList.length) {
+                const sorted = sortByDesc(newList);
+                if (isAfter(threadList[0].latestResAt, sorted[0].latestResAt)) {
+                    threadList = threadList.concat(sorted);
+                } else {
+                    threadList = sorted.concat(threadList);
+                }
+                cache.set(sorted);
+            }
+        } else {
+            threadList = sortByDesc(data.list);
+            cache.set(threadList);
+        }
     };
 
     const handleMakeThread = (data: { ok: boolean; new: HeadlineThread }) => {
@@ -101,6 +135,21 @@
         };
     });
 
+    let emitting = $state(false);
+    const cursorBasedPagination = async () => {
+        if (emitting) return;
+        emitting = true;
+        socket.emit("headline", {
+            nonce: genNonce(nonceKey.value ?? ""),
+            cursor: threadList?.at(-1)?.id ?? null,
+            size: queryResultLimit,
+            desc: false,
+        });
+        await sleep(2048);
+        emitting = false;
+        ok();
+    };
+
     let laaaaaaaag = $state(false);
     $effect(() => {
         const id = setTimeout(() => {
@@ -131,7 +180,7 @@
     <div class="unj-headline-container">
         <List class="demo-list" dense nonInteractive>
             {#each threadList ?? [] as thread, i}
-                <Item disabled>
+                <Item disabled class="unj-headline-thread-item">
                     <Graphic
                         ><TwemojiPart seed={thread.id} height="16" /></Graphic
                     >
@@ -155,6 +204,15 @@
                 {/if}
             {/each}
         </List>
+        <center>
+            {#if !allGone}
+                <Button
+                    onclick={cursorBasedPagination}
+                    variant="raised"
+                    disabled={emitting}>続きを読む</Button
+                >
+            {/if}
+        </center>
     </div>
 </MainPart>
 
@@ -177,25 +235,27 @@
         font-size: 0.8rem;
         width: 3rem;
     }
+    :global(.unj-headline-thread-item) {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        max-width: 100%;
+        overflow: hidden;
+    }
     .thread-title {
         font-size: 1rem;
-        /* 縮めたくない */
-        flex-shrink: 0;
-        /* 長すぎるときに…表示 */
+        margin-right: 0.5rem;
+        flex: 1 1 auto;
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
-        /* 右余白を少し */
-        margin-right: 0.5rem;
     }
     .latest-res {
-        opacity: 0.6;
-        font-size: 0.6rem;
-        /* ここは縮めても OK */
-        flex-shrink: 1;
-        /* お好みで省略…させる場合 */
+        flex: 0 1 6rem;
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
+        opacity: 0.6;
+        font-size: 0.6rem;
     }
 </style>
