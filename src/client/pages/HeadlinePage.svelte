@@ -101,7 +101,7 @@
         } else {
             threadList = sortByDesc(data.list);
         }
-        cache.set(threadList);
+        cache.set(threadList.slice(0, queryResultLimit));
     };
 
     const handleMakeThread = (data: { ok: boolean; new: HeadlineThread }) => {
