@@ -14,6 +14,7 @@
     import Paper, { Title, Content, Subtitle } from "@smui/paper";
     import Switch from "@smui/switch";
     import {
+        addSeconds,
         differenceInDays,
         differenceInSeconds,
         intervalToDuration,
@@ -439,17 +440,19 @@
                 }
                 const last = oekakiUploaded.value;
                 if (last) {
-                    const limit = randInt(16, 256);
                     const diffSeconds = differenceInSeconds(
-                        new Date(),
                         new Date(last),
+                        new Date(),
                     );
-                    if (diffSeconds < limit) {
-                        alert(`${limit - diffSeconds}秒後に再投稿できます`);
+                    if (diffSeconds > 0) {
+                        alert(`${diffSeconds}秒後に再投稿できます`);
                         return;
                     }
                 }
-                oekakiUploaded.value = new Date().toString();
+                oekakiUploaded.value = addSeconds(
+                    new Date(),
+                    randInt(16, 256),
+                ).toString();
                 const dataURL = toDataURL();
                 if (!dataURL) return;
                 try {

@@ -13,7 +13,7 @@
     import Select, { Option } from "@smui/select";
     import Textfield from "@smui/textfield";
     import CharacterCounter from "@smui/textfield/character-counter";
-    import { differenceInSeconds } from "date-fns";
+    import { addSeconds, differenceInSeconds } from "date-fns";
     import { sha256 } from "js-sha256";
     import { navigate } from "svelte-routing";
     import * as v from "valibot";
@@ -147,17 +147,19 @@
                 }
                 const last = oekakiUploaded.value;
                 if (last) {
-                    const limit = randInt(16, 256);
                     const diffSeconds = differenceInSeconds(
-                        new Date(),
                         new Date(last),
+                        new Date(),
                     );
-                    if (diffSeconds < limit) {
-                        alert(`${limit - diffSeconds}秒後に再投稿できます`);
+                    if (diffSeconds > 0) {
+                        alert(`${diffSeconds}秒後に再投稿できます`);
                         return;
                     }
                 }
-                oekakiUploaded.value = new Date().toString();
+                oekakiUploaded.value = addSeconds(
+                    new Date(),
+                    randInt(16, 256),
+                ).toString();
                 const dataURL = toDataURL();
                 if (!dataURL) return;
                 try {
