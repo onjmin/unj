@@ -204,8 +204,9 @@
   };
   const metaCacheByUuid = factory<oekaki.LayeredCanvasMeta>("meta");
   const saveMeta = () => {
-    if (!activeLayer) return;
-    metaCacheByUuid(activeLayer.uuid).set(activeLayer.meta);
+    for (const layer of oekaki.getLayers()) {
+      metaCacheByUuid(layer.uuid).set(layer.meta);
+    }
   };
   $effect(() => {
     document.addEventListener("click", saveMeta);
@@ -271,7 +272,10 @@
           Promise.all(uuids.map((v) => metaCacheByUuid(v).get())),
           Promise.all(uuids.map((v) => dataCacheByUuid(v).get())),
         ]);
-        for (const i of uuids.keys()) {
+        const sorted = [...uuids.keys()].sort(
+          (a, b) => (metaArray[a]?.index ?? 0) - (metaArray[b]?.index ?? 0),
+        );
+        for (const i of sorted) {
           const meta = metaArray[i];
           const data = dataArray[i];
           if (!meta || !data) continue;
