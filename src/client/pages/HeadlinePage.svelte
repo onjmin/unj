@@ -179,12 +179,14 @@
             <List class="demo-list" dense nonInteractive>
                 {#each threadList as thread, i}
                     <Item disabled class="unj-headline-thread-item">
-                        <Graphic
-                            ><TwemojiPart
-                                seed={thread.id}
-                                height="16"
-                            /></Graphic
-                        >
+                        {#key thread.id}
+                            <Graphic
+                                ><TwemojiPart
+                                    seed={thread.id}
+                                    height="16"
+                                /></Graphic
+                            >
+                        {/key}
                         <div class="time-and-count-container">
                             <span class="res-time"
                                 >{formatTimeAgo(thread.latestResAt)}</span
