@@ -179,14 +179,16 @@
             <List class="demo-list" dense nonInteractive>
                 {#each threadList as thread, i}
                     <Item disabled class="unj-headline-thread-item">
-                        {#key thread.id}
-                            <Graphic
-                                ><TwemojiPart
-                                    seed={thread.id}
-                                    height="16"
-                                /></Graphic
-                            >
-                        {/key}
+                        <div class="pc-only">
+                            {#key thread.id}
+                                <Graphic
+                                    ><TwemojiPart
+                                        seed={thread.id}
+                                        height="16"
+                                    /></Graphic
+                                >
+                            {/key}
+                        </div>
                         <div class="time-and-count-container">
                             <span class="res-time"
                                 >{formatTimeAgo(thread.latestResAt)}</span
@@ -200,7 +202,7 @@
                                 )}>{thread.title}</Link
                             >
                         </div>
-                        <div class="latest-res">{thread.latestRes}</div>
+                        <div class="pc-only latest-res">{thread.latestRes}</div>
                     </Item>
                     {#if i % 4 === 3 && i !== (threadList ?? []).length - 1}
                         <Separator />
@@ -263,7 +265,7 @@
         font-size: 0.6rem;
     }
     @media screen and (max-width: 768px) {
-        .latest-res {
+        .pc-only {
             display: none;
         }
     }
