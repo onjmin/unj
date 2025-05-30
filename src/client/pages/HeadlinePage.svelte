@@ -92,7 +92,12 @@
             threadList = sortByDesc(threadList);
             if (newList.length) {
                 const sorted = sortByDesc(newList);
-                if (isAfter(threadList[0].latestResAt, sorted[0].latestResAt)) {
+                if (
+                    isAfter(
+                        threadList[threadList.length - 1].latestResAt,
+                        sorted[0].latestResAt,
+                    )
+                ) {
                     threadList = threadList.concat(sorted);
                 } else {
                     threadList = sorted.concat(threadList);
