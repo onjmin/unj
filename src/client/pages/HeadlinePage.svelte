@@ -68,10 +68,15 @@
         });
     });
 
-    const sortByDesc = (list: HeadlineThread[]) =>
-        list.sort(
-            (a, b) => +new Date(b.latestResAt) - +new Date(a.latestResAt),
+    const sortByDesc = (list: HeadlineThread[]) => {
+        const nullList = list.filter((v) => !v.latestResAt);
+        const fillList = list.filter((v) => v.latestResAt);
+        return nullList.concat(
+            fillList.sort(
+                (a, b) => +new Date(b.latestResAt) - +new Date(a.latestResAt),
+            ),
         );
+    };
 
     let allGone = $state(false);
     const handleHeadline = (data: { ok: boolean; list: HeadlineThread[] }) => {
