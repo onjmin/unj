@@ -35,29 +35,25 @@ https://unj.netlify.app
 - **その他**: Valibot / JavaScript obfuscator
 
 ## ディレクトリの歩き方
-SvelteKitを参考にしつつ、モノレポ構成にしています。
+SvelteKitを参考にしつつ、実用性重視のモノレポ構成にしています。
 迷わないように、なるべくフラットになるように配置しました。
 
-- dist/ `ビルド生成物置き場`
-  - client/ `フロントエンドサーバーに配置すべきビルド生成物`
-  - server/ `バックエンドサーバーに配置すべきビルド生成物`
-- logs/ `APIのログ`
-- src/ `アプリのソースコード`
-  - client/ `フロントエンドのソース`
-    - myliib/ `ユーティリティ関数置き場`
-    - pages/ `SPAのページ群`
-    - parts/ `コンポーネント`
-    - plugs/ `pagesに遷移する直前の検証`
-  - common/ `フロントエンド / バックエンド共通で使うもの`
-    - request/ `フロントエンド → バックエンドのValibotスキーマ`
-    - response/ `バックエンド → フロントエンドのレスポンスの型（asによる型情報の上書き想定）`
-  - server/ `バックエンドのソース`
-    - admin/ `管理APIの実装（Express）`
-    - api/ `バックエンドAPIの実装（Socket.IO）`
-    - mylib/ `ユーティリティ関数置き場`
-- static/ `静的ファイル置き場`
-- wiki/ `資料など`
-- workflow/ `デプロイ用の補助的なスクリプト`
+
+```
+src/
+├── client/     # フロントエンド（Svelte 5 + Svelte Routing）
+│   ├── pages/  # SPAページ群（.svelteファイル）
+│   ├── parts/  # UIパーツ・コンポーネント
+│   ├── plugs/  # 遷移前チェック・ロジック
+│   └── mylib/ # クライアント専用ユーティリティ
+├── common/     # フロント & バック共通
+│   ├── request/  # フロント→バック送信用スキーマ（Valibot）
+│   └── response/ # バック→フロントの型（`as`で上書き前提）
+├── server/     # バックエンド（Express + Socket.IO）
+│   ├── admin/  # 管理系API（Expressルート）
+│   ├── api/    # ソケット系API（Socket.IO）
+│   └── mylib/  # サーバー専用ユーティリティ
+```
 
 実務上の必要に迫られて作ったディレクトリしか存在しません。
 ディレクトリの迷路化を防ぐために様式美を意識しないようにしています。
