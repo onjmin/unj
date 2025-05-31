@@ -15,6 +15,10 @@ try {
 	await cp(sourcePath1, path.join(destPath, "static"), {
 		recursive: true,
 	});
+	await cp(
+		path.join(sourcePath1, "sitemap.xml"),
+		path.join(destPath, "sitemap.xml"),
+	);
 	await cp(sourcePath2, path.join(destPath, "_redirects"));
 	console.log("✅", "Folder copied successfully!");
 } catch (error) {

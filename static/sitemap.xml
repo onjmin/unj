@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- トップページ -->
+  <url>
+    <loc>https://unj.netlify.app/</loc>
+    <priority>1.0</priority>
+    <changefreq>daily</changefreq>
+  </url>
+
+  <!-- スレ一覧 -->
+  <url>
+    <loc>https://unj.netlify.app/headline</loc>
+    <priority>0.9</priority>
+    <changefreq>hourly</changefreq>
+  </url>
+
+  <!-- スレ立て -->
+  <url>
+    <loc>https://unj.netlify.app/new</loc>
+    <priority>0.8</priority>
+    <changefreq>weekly</changefreq>
+  </url>
+  <url>
+    <loc>https://unj.netlify.app/new/next</loc>
+    <priority>0.7</priority>
+    <changefreq>weekly</changefreq>
+  </url>
+
+  <!-- 履歴 -->
+  <url>
+    <loc>https://unj.netlify.app/history</loc>
+    <priority>0.6</priority>
+    <changefreq>weekly</changefreq>
+  </url>
+
+  <!-- ブックマーク -->
+  <url>
+    <loc>https://unj.netlify.app/bookmark</loc>
+    <priority>0.6</priority>
+    <changefreq>weekly</changefreq>
+  </url>
+
+  <!-- 設定 -->
+  <url>
+    <loc>https://unj.netlify.app/config</loc>
+    <priority>0.5</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+
+  <!-- 利用規約 -->
+  <url>
+    <loc>https://unj.netlify.app/terms</loc>
+    <priority>0.3</priority>
+    <changefreq>yearly</changefreq>
+  </url>
+
+  <!-- お問い合わせ -->
+  <url>
+    <loc>https://unj.netlify.app/contact</loc>
+    <priority>0.3</priority>
+    <changefreq>yearly</changefreq>
+  </url>
+
+  <!-- ブログ一覧 -->
+  <url>
+    <loc>https://unj.netlify.app/news</loc>
+    <priority>0.6</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+
+  <!-- TOP絵集 -->
+  <url>
+    <loc>https://unj.netlify.app/art</loc>
+    <priority>0.4</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+
+  <!-- リンク集 -->
+  <url>
+    <loc>https://unj.netlify.app/links</loc>
+    <priority>0.4</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+</urlset>
