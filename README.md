@@ -41,18 +41,18 @@ SvelteKitを参考にしつつ、実用性重視のモノレポ構成にして�
 
 ```
 src/
-├── client/     # フロントエンド（Svelte 5 + Svelte Routing）
-│   ├── pages/  # SPAページ群（.svelteファイル）
-│   ├── parts/  # UIパーツ・コンポーネント
-│   ├── plugs/  # 遷移前チェック・ロジック
-│   └── mylib/ # クライアント専用ユーティリティ
-├── common/     # フロント & バック共通
+├── client/       # フロントエンド（Svelte 5 + Svelte Routing）
+│   ├── pages/    # SPAページ群（.svelteファイル）
+│   ├── parts/    # UIパーツ・コンポーネント
+│   ├── plugs/    # 遷移前チェック・ロジック
+│   └── mylib/    # クライアント専用ユーティリティ
+├── common/       # フロント & バック共通
 │   ├── request/  # フロント→バック送信用スキーマ（Valibot）
 │   └── response/ # バック→フロントの型（`as`で上書き前提）
-├── server/     # バックエンド（Express + Socket.IO）
-│   ├── admin/  # 管理系API（Expressルート）
-│   ├── api/    # ソケット系API（Socket.IO）
-│   └── mylib/  # サーバー専用ユーティリティ
+├── server/       # バックエンド（Express + Socket.IO）
+│   ├── admin/    # 管理系API（Expressルート）
+│   ├── api/      # ソケット系API（Socket.IO）
+│   └── mylib/    # サーバー専用ユーティリティ
 ```
 
 実務上の必要に迫られて作ったディレクトリしか存在しません。
