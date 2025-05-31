@@ -6,7 +6,11 @@ import {
 	contentSchemaMap,
 	oekakiSchema,
 } from "../../common/request/content-schema.js";
-import { ResSchema, myConfig } from "../../common/request/schema.js";
+import {
+	ResSchema,
+	myConfig,
+	unjBeginDate,
+} from "../../common/request/schema.js";
 import type { Meta, Player, Res } from "../../common/response/schema.js";
 import { randInt } from "../../common/util.js";
 import {
@@ -46,7 +50,7 @@ import { getIP } from "../mylib/ip.js";
 import { logger } from "../mylib/log.js";
 import nonce from "../mylib/nonce.js";
 import { pool } from "../mylib/pool.js";
-import { bigDay, doppelgangers, humans } from "../mylib/rpg.js";
+import { doppelgangers, humans } from "../mylib/rpg.js";
 import { isSameSimhash } from "../mylib/simhash.js";
 import { exist, getThreadRoom, joined } from "../mylib/socket.js";
 
@@ -382,7 +386,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 					const d = m.get(userId);
 					if (!d) return;
 					const player: Player = {
-						userId: encodeUserId(userId, bigDay) ?? "",
+						userId: encodeUserId(userId, unjBeginDate) ?? "",
 						sAnimsId: d.human.sAnimsId,
 						msg: d.human.msg,
 						x: d.x,

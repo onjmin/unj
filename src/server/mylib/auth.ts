@@ -7,7 +7,12 @@ import {
 } from "date-fns";
 import type { Socket } from "socket.io";
 import * as v from "valibot";
-import { AuthSchema, isSerial } from "../../common/request/schema.js";
+import {
+	AuthSchema,
+	isSerial,
+	unjBeginDate,
+	unjEndDate,
+} from "../../common/request/schema.js";
 import { randInt } from "../../common/util.js";
 import { pool } from "../mylib/pool.js";
 import {
@@ -31,9 +36,6 @@ import { logger } from "./log.js";
  * JWT風トークン
  * (署名).(ユーザーID).(有効期限)
  */
-
-const bigDay = new Date(Date.UTC(2025, 2 - 1, 14));
-const finalDay = addDays(bigDay, 114514);
 
 const getTokenParam = (socket: Socket) => {
 	const token = socket.handshake.auth.token;
@@ -66,7 +68,7 @@ const parseClaims = (socket: Socket): Claims | null => {
 	if (signAuth(auth.output.userId, auth.output.limit) !== auth.output.sign) {
 		return null;
 	}
-	const rawUserId = decodeUserId(auth.output.userId, bigDay);
+	const rawUserId = decodeUserId(auth.output.userId, unjBeginDate);
 	const rawLimit = decodeLimit(auth.output.limit, auth.output.userId);
 	if (!rawUserId || !rawLimit) {
 		return null;
@@ -74,7 +76,7 @@ const parseClaims = (socket: Socket): Claims | null => {
 	return {
 		signature: auth.output.sign,
 		userId: rawUserId,
-		expiryDate: addDays(bigDay, rawLimit),
+		expiryDate: addDays(unjBeginDate, rawLimit),
 	};
 };
 
@@ -95,12 +97,12 @@ const lazyUpdate = (userId: number, auth: string, ip: string) => {
 
 const updateAuthToken = (socket: Socket) => {
 	const rawUserId = getUserId(socket);
-	const userId = encodeUserId(rawUserId, bigDay);
+	const userId = encodeUserId(rawUserId, unjBeginDate);
 	if (!userId) return;
-	const rawLimit = differenceInDays(new Date(), bigDay) + 4;
+	const rawLimit = differenceInDays(new Date(), unjBeginDate) + 4;
 	const limit = encodeLimit(rawLimit, userId); // JWT風認証は4日で失効
 	if (!limit) return;
-	const expiryDate = addDays(bigDay, rawLimit);
+	const expiryDate = addDays(unjBeginDate, rawLimit);
 	const sign = signAuth(userId, limit);
 	const token = [sign, userId, limit].join(".");
 	grant(socket, rawUserId, expiryDate);
@@ -203,7 +205,7 @@ const setUserId = (socket: Socket, userId: number): boolean => {
 };
 const getExpiryDate = (socket: Socket): Date => socket.data.expiryDate;
 const setExpiryDate = (socket: Socket, date: Date): boolean => {
-	if (isBefore(date, bigDay) || isAfter(date, finalDay)) {
+	if (isBefore(date, unjBeginDate) || isAfter(date, unjEndDate)) {
 		return false;
 	}
 	socket.data.expiryDate = date;

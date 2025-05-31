@@ -1,3 +1,4 @@
+import { format } from "date-fns";
 import type { Server, Socket } from "socket.io";
 import * as v from "valibot";
 import { HeadlineSchema } from "../../common/request/schema.js";
@@ -19,14 +20,6 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		const headline = v.safeParse(HeadlineSchema, data);
 		if (!headline.success) return;
 
-		// cursorの復号
-		let cursor: number | null = null;
-		if (headline.output.cursor !== null) {
-			cursor = decodeThreadId(headline.output.cursor);
-			if (cursor === null) return;
-		}
-		const { size, desc } = headline.output;
-
 		// Nonce値の完全一致チェック
 		if (!nonce.isValid(socket, headline.output.nonce)) {
 			logger.verbose(`🔒 ${headline.output.nonce}`);
@@ -39,16 +32,18 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			nonce.update(socket);
 
 			const query = [
-				"SELECT * FROM threads WHERE deleted_at IS NULL OR deleted_at > CURRENT_TIMESTAMP",
+				"SELECT * FROM threads WHERE",
+				"(deleted_at IS NULL OR deleted_at > CURRENT_TIMESTAMP)",
 			];
+			const { size, desc, cursor } = headline.output;
 			const values = [];
 			if (cursor !== null) {
 				if (desc) {
-					query.push("AND id <= $1");
+					query.push("AND latest_res_at < $1");
 				} else {
-					query.push("AND id >= $1");
+					query.push("AND latest_res_at > $1");
 				}
-				values.push(cursor);
+				values.push(format(cursor, "yyyy-MM-dd HH:mm:ss"));
 			}
 			query.push(`ORDER BY latest_res_at ${desc ? "DESC" : "ASC"}`);
 			query.push(`LIMIT $${values.length + 1}`);

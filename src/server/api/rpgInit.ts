@@ -2,17 +2,12 @@ import { addMinutes, isAfter } from "date-fns";
 import type { Socket } from "socket.io";
 import * as v from "valibot";
 import { RpgInitSchema } from "../../common/request/rpg-schema.js";
+import { unjBeginDate } from "../../common/request/schema.js";
 import type { Player } from "../../common/response/schema.js";
 import { decodeThreadId, encodeUserId } from "../mylib/anti-debug.js";
 import auth from "../mylib/auth.js";
 import { isDeleted } from "../mylib/cache.js";
-import {
-	Doppelganger,
-	Human,
-	bigDay,
-	doppelgangers,
-	humans,
-} from "../mylib/rpg.js";
+import { Doppelganger, Human, doppelgangers, humans } from "../mylib/rpg.js";
 import { getThreadRoom } from "../mylib/socket.js";
 
 const api = "rpgInit";
@@ -54,7 +49,7 @@ export default ({ socket }: { socket: Socket }) => {
 				continue;
 			}
 			players.push({
-				userId: encodeUserId(k, bigDay) ?? "",
+				userId: encodeUserId(k, unjBeginDate) ?? "",
 				sAnimsId: d.human.sAnimsId,
 				msg: d.human.msg,
 				x: d.x,
@@ -64,7 +59,7 @@ export default ({ socket }: { socket: Socket }) => {
 			});
 		}
 
-		const encoded = encodeUserId(userId, bigDay);
+		const encoded = encodeUserId(userId, unjBeginDate);
 		socket.emit(api, {
 			ok: true,
 			players,

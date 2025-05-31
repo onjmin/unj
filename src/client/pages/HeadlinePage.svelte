@@ -117,9 +117,9 @@
         pagination = true;
         socket.emit("headline", {
             nonce: genNonce(nonceKey.value ?? ""),
-            cursor: threadList?.at(-1)?.id ?? null,
+            cursor: threadList?.at(-1)?.latestResAt ?? null,
             size: queryResultLimit,
-            desc: false,
+            desc: true,
         });
         await sleep(2048);
         emitting = false;

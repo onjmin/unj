@@ -172,6 +172,7 @@ export default ({ socket }: { socket: Socket }) => {
 			const { size, desc } = readThread.output;
 			const values = [];
 			if (cursor !== null) {
+				// ランダムアクセスが想定されているため、不等号にカーソル自身も含める必要がある
 				if (desc) {
 					query.push("AND id <= $2");
 				} else {

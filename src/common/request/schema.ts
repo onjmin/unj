@@ -1,6 +1,22 @@
+import { addDays } from "date-fns";
 import * as v from "valibot";
 import { avatarMap } from "./avatar.js";
 import { SAFE_TEXT_SINGLELINE } from "./content-schema.js";
+
+/**
+ * うんJリリース日
+ *
+ * Date型のバリデーションの下限値や
+ * 日数の起算日などに使用する。
+ */
+export const unjBeginDate = new Date(Date.UTC(2025, 2 - 1, 14));
+
+/**
+ * サ終予定日
+ *
+ * Date型のバリデーションの上限値に使用する。
+ */
+export const unjEndDate = addDays(unjBeginDate, 114514);
 
 /**
  * valibotに早期リターンさせるためのオプション
@@ -162,7 +178,15 @@ export const ReadThreadSchema = v.strictObject({
  */
 export const HeadlineSchema = v.strictObject({
 	nonce: NONCE,
-	cursor: v.nullable(THREAD_ID),
+	cursor: v.nullable(
+		v.pipe(
+			v.string(),
+			v.transform((s) => new Date(s)),
+			v.date(),
+			v.toMinValue(unjBeginDate),
+			v.toMaxValue(unjEndDate),
+		),
+	),
 	size: v.pipe(
 		v.number(),
 		v.integer(),
@@ -170,45 +194,6 @@ export const HeadlineSchema = v.strictObject({
 		v.maxValue(queryResultLimit),
 	),
 	desc: v.boolean(),
-});
-
-/**
- * スレ検索のスキーマ
- */
-export const SearchThreadSchema = v.strictObject({
-	nonce: NONCE,
-	cursor: v.nullable(THREAD_ID),
-	size: v.pipe(
-		v.number(),
-		v.integer(),
-		v.minValue(1),
-		v.maxValue(queryResultLimit),
-	),
-	desc: v.boolean(),
-	from: v.date(),
-	to: v.date(),
-	title: THREAD_TITLE,
-});
-
-/**
- * レス検索のスキーマ
- */
-export const SearchResSchema = v.strictObject({
-	nonce: NONCE,
-	cursor: v.nullable(RES_ID),
-	size: v.pipe(
-		v.number(),
-		v.integer(),
-		v.minValue(1),
-		v.maxValue(queryResultLimit),
-	),
-	desc: v.boolean(),
-	from: v.date(),
-	to: v.date(),
-	userId: USER_ID,
-	userName: USER_NAME,
-	userAvatar: USER_AVATAR,
-	contentTypesBitmask: SMALLSERIAL,
 });
 
 /**

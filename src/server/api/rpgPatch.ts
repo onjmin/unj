@@ -1,17 +1,12 @@
 import type { Server, Socket } from "socket.io";
 import * as v from "valibot";
 import { RpgPatchSchema } from "../../common/request/rpg-schema.js";
+import { unjBeginDate } from "../../common/request/schema.js";
 import type { Player } from "../../common/response/schema.js";
 import { decodeThreadId, encodeUserId } from "../mylib/anti-debug.js";
 import auth from "../mylib/auth.js";
 import { isDeleted } from "../mylib/cache.js";
-import {
-	Doppelganger,
-	Human,
-	bigDay,
-	doppelgangers,
-	humans,
-} from "../mylib/rpg.js";
+import { Doppelganger, Human, doppelgangers, humans } from "../mylib/rpg.js";
 import { getThreadRoom } from "../mylib/socket.js";
 
 const api = "rpgPatch";
@@ -51,7 +46,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		d.updatedAt = new Date();
 
 		const player: Player = {
-			userId: encodeUserId(userId, bigDay) ?? "",
+			userId: encodeUserId(userId, unjBeginDate) ?? "",
 			sAnimsId: d.human.sAnimsId,
 			msg: d.human.msg,
 			x: d.x,

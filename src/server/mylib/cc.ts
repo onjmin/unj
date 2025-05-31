@@ -1,6 +1,7 @@
 import { sha256 } from "js-sha256";
 import type { Socket } from "socket.io";
 import { pokemonMap } from "../../common/pokemon.js";
+import { unjBeginDate } from "../../common/request/schema.js";
 import { encodeUserId } from "./anti-debug.js";
 import auth from "./auth.js";
 import { ninjaPokemonCache, ninjaScoreCache } from "./cache.js";
@@ -48,8 +49,6 @@ const escapeUserName = (str: string) =>
 		.replace(/【/g, "｛")
 		.replace(/】/g, "｝");
 
-const bigDay = new Date(Date.UTC(2025, 3 - 1, 21));
-
 /**
  * 名前に付加される系のコマンドもここで作成する
  */
@@ -74,7 +73,7 @@ export const makeCcUserName = ({
 				const ninjaLv = (ninjaScore ** (1 / 3)) | 0;
 				const pokemon =
 					pokemonMap.get(ninjaPokemonCache.get(userId) ?? 0) ?? "けつばん";
-				const ninjaId = (encodeUserId(userId, bigDay) ?? "XX")
+				const ninjaId = (encodeUserId(userId, unjBeginDate) ?? "XX")
 					.slice(0, 2)
 					.toUpperCase();
 				suffix = `■忍【LV${ninjaLv},${pokemon},${ninjaId}】`;
