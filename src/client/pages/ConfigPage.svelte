@@ -21,7 +21,7 @@
     import Radio from "@smui/radio";
     import SegmentedButton, { Segment } from "@smui/segmented-button";
     import Slider from "@smui/slider";
-    import Snackbar from "@smui/snackbar";
+    import Snackbar, { Label as SnackbarLabel } from "@smui/snackbar";
     import { Howler } from "howler";
     import {
         type ImgurResponse,
@@ -293,7 +293,7 @@
 </MainPart>
 
 <Snackbar bind:this={snackbar}>
-    <Label>コピーしました</Label>
+    <SnackbarLabel>コピーしました</SnackbarLabel>
 </Snackbar>
 
 <FooterPart />
