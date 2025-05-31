@@ -34,6 +34,34 @@ https://unj.netlify.app
 - **バックエンド**: Express / Socket.IO
 - **その他**: Valibot / JavaScript obfuscator
 
+## ディレクトリの歩き方
+SvelteKitを参考にしつつ、モノレポ構成にしています。
+迷わないように、なるべくフラットになるように配置しました。
+
+- dist/ `ビルド生成物置き場`
+  - client/ `フロントエンドサーバーに配置すべきビルド生成物`
+  - server/ `バックエンドサーバーに配置すべきビルド生成物`
+- logs/ `APIのログ`
+- src/ `アプリのソースコード`
+  - client/ `フロントエンドのソース`
+    - myliib/ `ユーティリティ関数置き場`
+    - pages/ `SPAのページ群`
+    - parts/ `コンポーネント`
+    - plugs/ `pagesに遷移する直前の検証`
+  - common/ `フロントエンド / バックエンド共通で使うもの`
+    - request/ `フロントエンド → バックエンドのValibotスキーマ`
+    - response/ `バックエンド → フロントエンドのレスポンスの型（asによる型情報の上書き想定）`
+  - server/ `バックエンドのソース`
+    - admin/ `管理APIの実装（Express）`
+    - api/ `バックエンドAPIの実装（Socket.IO）`
+    - mylib/ `ユーティリティ関数置き場`
+- static/ `静的ファイル置き場`
+- wiki/ `資料など`
+- workflow/ `デプロイ用の補助的なスクリプト`
+
+実務上の必要に迫られて作ったディレクトリしか存在しません。
+ディレクトリの迷路化を防ぐために様式美を意識しないようにしています。
+
 ## 環境構築手順
 1. [Voltaをインストール](https://docs.volta.sh/guide/getting-started)
 1. このリポジトリをローカルにクローン
