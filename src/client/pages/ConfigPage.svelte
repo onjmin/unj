@@ -21,6 +21,7 @@
     import Radio from "@smui/radio";
     import SegmentedButton, { Segment } from "@smui/segmented-button";
     import Slider from "@smui/slider";
+    import Snackbar from "@smui/snackbar";
     import { Howler } from "howler";
     import {
         type ImgurResponse,
@@ -102,6 +103,9 @@
             if (v) imgurList = v;
         });
     });
+
+    let snackbar: Snackbar;
+    $effect(() => () => snackbar.close());
 </script>
 
 <HeaderPart title="個人設定">
@@ -244,6 +248,15 @@
                                         <Meta
                                             class="material-icons"
                                             onclick={async () => {
+                                                await navigator.clipboard.writeText(
+                                                    imgurResponse.link,
+                                                );
+                                                snackbar.open();
+                                            }}>content_copy</Meta
+                                        >
+                                        <Meta
+                                            class="material-icons"
+                                            onclick={async () => {
                                                 if (
                                                     !confirm(
                                                         `${imgurResponse.id}を削除しますか？`,
@@ -278,6 +291,10 @@
         </Accordion>
     </div>
 </MainPart>
+
+<Snackbar bind:this={snackbar}>
+    <Label>コピーしました</Label>
+</Snackbar>
 
 <FooterPart />
 
