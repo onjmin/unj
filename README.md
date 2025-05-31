@@ -48,7 +48,7 @@ src/
 │   └── mylib/    # クライアント専用ユーティリティ
 ├── common/       # フロント & バック共通
 │   ├── request/  # フロント→バック送信用スキーマ（Valibot）
-│   └── response/ # バック→フロントの型（`as`で上書き前提）
+│   └── response/ # バック→フロントの型定義（`as`で上書き前提）
 ├── server/       # バックエンド（Express + Socket.IO）
 │   ├── admin/    # 管理系API（Expressルート）
 │   ├── api/      # ソケット系API（Socket.IO）
