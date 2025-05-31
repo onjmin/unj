@@ -3,7 +3,7 @@
 
 ![image](https://github.com/user-attachments/assets/95ca97ec-ab95-41c9-a2d4-6782463ecefe)
 
-| ヘッドライン | スレ閲覧ページ | スレ立てページ |
+| ヘッドラインページ | スレ閲覧ページ | スレ立てページ |
 | - | - | - |
 | ![image](https://github.com/user-attachments/assets/eb19e4e0-cd2e-4aa5-b1c2-06a8207c5bd5) | ![image](https://github.com/user-attachments/assets/aee5efff-3252-4b0e-b3e9-b4d72a650de9) | ![image](https://github.com/user-attachments/assets/d9000381-d350-447b-9aa6-acf6bb7066b9) |
 
