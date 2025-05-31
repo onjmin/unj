@@ -184,30 +184,34 @@
             <List class="demo-list" dense nonInteractive>
                 {#each threadList as thread, i}
                     <Item disabled class="unj-headline-thread-item">
-                        <div class="pc-only">
-                            {#key thread.id}
+                        {#key thread.id}
+                            <div class="pc-only">
                                 <Graphic
                                     ><TwemojiPart
                                         seed={thread.id}
                                         height="16"
                                     /></Graphic
                                 >
-                            {/key}
-                        </div>
-                        <div class="time-and-count-container">
-                            <span class="res-time"
-                                >{formatTimeAgo(thread.latestResAt)}</span
-                            >
-                            <span class="res-count">{thread.resCount}レス</span>
-                        </div>
-                        <div class="thread-title">
-                            <Link
-                                to={makePathname(
-                                    `/thread/${thread.id}${thread.resCount > queryResultLimit && thread.latestCursor ? `/${thread.latestCursor}/1` : ""}`,
-                                )}>{thread.title}</Link
-                            >
-                        </div>
-                        <div class="pc-only latest-res">{thread.latestRes}</div>
+                            </div>
+                            <div class="time-and-count-container">
+                                <span class="res-time"
+                                    >{formatTimeAgo(thread.latestResAt)}</span
+                                >
+                                <span class="res-count"
+                                    >{thread.resCount}レス</span
+                                >
+                            </div>
+                            <div class="thread-title">
+                                <Link
+                                    to={makePathname(
+                                        `/thread/${thread.id}${thread.resCount > queryResultLimit && thread.latestCursor ? `/${thread.latestCursor}/1` : ""}`,
+                                    )}>{thread.title}</Link
+                                >
+                            </div>
+                            <div class="pc-only latest-res">
+                                {thread.latestRes}
+                            </div>
+                        {/key}
                     </Item>
                     {#if i % 4 === 3 && i !== (threadList ?? []).length - 1}
                         <Separator />
