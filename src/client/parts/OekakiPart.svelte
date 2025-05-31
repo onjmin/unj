@@ -44,27 +44,27 @@
     switch (e.key) {
       case "1":
         e.preventDefault();
-        choiced = tool.brush;
+        choiced = tool.brush.label;
         break;
       case "2":
         e.preventDefault();
-        choiced = tool.pen;
+        choiced = tool.pen.label;
         break;
       case "3":
         e.preventDefault();
-        choiced = tool.eraser;
+        choiced = tool.eraser.label;
         break;
       case "4":
         e.preventDefault();
-        choiced = tool.dropper;
+        choiced = tool.dropper.label;
         break;
       case "5":
         e.preventDefault();
-        choiced = tool.fill;
+        choiced = tool.fill.label;
         break;
       case "6":
         e.preventDefault();
-        choiced = tool.translate;
+        choiced = tool.translate.label;
         break;
       case "e":
         e.preventDefault();
@@ -305,13 +305,13 @@
     oekaki.onDraw((x, y, buttons) => {
       if (prevX === null) prevX = x;
       if (prevY === null) prevY = y;
-      if (choiced.label === tool.dropper.label || (buttons & 2) !== 0) {
+      if (choiced === tool.dropper.label || (buttons & 2) !== 0) {
         dropper(x, y);
       } else {
         if (!activeLayer?.locked) {
-          if (choiced.label === tool.brush.label) {
+          if (choiced === tool.brush.label) {
             activeLayer?.drawLine(x, y, prevX, prevY);
-          } else if (choiced.label === tool.translate.label) {
+          } else if (choiced === tool.translate.label) {
             if (isGrid) {
               activeLayer?.translateByDot(x - prevX, y - prevY);
             } else {
@@ -319,7 +319,7 @@
             }
           } else {
             const lerps = oekaki.lerp(x, y, prevX, prevY);
-            switch (choiced.label) {
+            switch (choiced) {
               case tool.pen.label:
                 for (const [x, y] of lerps) {
                   if (isGrid) {
@@ -360,7 +360,7 @@
       prevX = null;
       prevY = null;
       if (activeLayer?.locked) return;
-      if (choiced.label === tool.fill.label) fill(x, y);
+      if (choiced === tool.fill.label) fill(x, y);
       fin();
     });
     oekaki.onClick((x, y, buttons) => {});
@@ -480,10 +480,7 @@
     tool.fill,
     tool.translate,
   ];
-  let choiced: Tool = $state(
-    Object.values(tool).find((v) => v.label === unjStorage.tool.value) ??
-      tool.pen,
-  );
+  let choiced: string = $state(unjStorage.tool.value ?? tool.pen.label);
 
   const mdi2DataUrl = (mdi: string) => {
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"><path d="${mdi}" fill="black" stroke="white" stroke-width="1"/></svg>`;
@@ -492,10 +489,12 @@
   };
 
   $effect(() => {
-    unjStorage.tool.value = choiced.label;
+    unjStorage.tool.value = choiced;
     if (upperLayer) {
-      const xy = choiced.label === tool.fill.label ? "21 19" : "3 21";
-      upperLayer.canvas.style.cursor = `url('${mdi2DataUrl(choiced.icon)}') ${xy}, auto`;
+      const xy = choiced === tool.fill.label ? "21 19" : "3 21";
+      const icon = choices.find((v) => v.label === choiced)?.icon;
+      if (!icon) return;
+      upperLayer.canvas.style.cursor = `url('${mdi2DataUrl(icon)}') ${xy}, auto`;
     }
   });
 
@@ -698,7 +697,7 @@
 {/snippet}
 
 <div class="bottom-tools-wrapper-sub">
-  {#if choiced.label === tool.brush.label}
+  {#if choiced === tool.brush.label}
     <span class="size">{brushSize}px</span>
     {@render palette()}
     <Slider min={1} max={64} discrete bind:value={brushSize} />
@@ -706,15 +705,15 @@
     <span class="size">{dotPenScale}倍</span>
     {@render palette()}
     <Slider min={1} max={8} discrete tickMarks bind:value={dotPenScale} />
-  {:else if choiced.label === tool.pen.label}
+  {:else if choiced === tool.pen.label}
     <span class="size">{penSize}px</span>
     {@render palette()}
     <Slider min={1} max={64} discrete bind:value={penSize} />
-  {:else if choiced.label === tool.eraser.label}
+  {:else if choiced === tool.eraser.label}
     <span class="size">{eraserSize}px</span>
     {@render palette()}
     <Slider min={1} max={64} discrete bind:value={eraserSize} />
-  {:else if choiced.label === tool.dropper.label || choiced.label === tool.fill.label}
+  {:else if choiced === tool.dropper.label || choiced === tool.fill.label}
     <span class="size"></span>
     {@render palette()}
   {/if}
