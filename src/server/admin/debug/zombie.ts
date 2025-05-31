@@ -2,7 +2,7 @@ import type { Request, Response, Router } from "express";
 import type { Server } from "socket.io";
 import type { Online } from "../../mylib/socket.js";
 
-const api = "/user/zombie";
+const api = "/debug/zombie";
 
 export default (router: Router, io: Server, online: Online) => {
 	// GET: ゾンビ接続の確認
