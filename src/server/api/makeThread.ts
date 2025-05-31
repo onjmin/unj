@@ -167,11 +167,12 @@ export default ({ socket }: { socket: Socket }) => {
 				goodCount: 0,
 				badCount: 0,
 			};
+			nonce.unlock(socket); // スレ立て直後のreadThreadを成功させるための特別措置
 			socket.emit(api, {
 				ok: true,
 				new: newThread,
 				yours: true,
-				nonceKey: nonce.getUnsafe(socket), // スレ立て直後のreadThreadを成功させるため
+				nonceKey: nonce.getUnsafe(socket), // スレ立て直後のreadThreadを成功させるための特別措置
 			});
 			socket
 				.to(headlineRoom)
