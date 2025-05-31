@@ -68,45 +68,16 @@
         });
     });
 
-    const sortByDesc = (list: HeadlineThread[]) =>
-        list.sort(
-            (a, b) => +new Date(b.latestResAt) - +new Date(a.latestResAt),
-        );
-
-    let allGone = $state(false);
     const handleHeadline = (data: { ok: boolean; list: HeadlineThread[] }) => {
         if (!data.ok) return;
         ok();
-        if (data.list.length <= 1) {
-            allGone = true;
-            return;
-        }
-        if (threadList?.length) {
-            const map = new Map(threadList.map((v, i) => [v.id, i]));
-            const exist = data.list.filter((v) => map.has(v.id));
-            const newList = data.list.filter((v) => !map.has(v.id));
-            for (const v of exist) {
-                const i = map.get(v.id);
-                if (i) threadList[i] = v;
-            }
-            threadList = sortByDesc(threadList);
-            if (newList.length) {
-                const sorted = sortByDesc(newList);
-                if (
-                    isAfter(
-                        threadList[threadList.length - 1].latestResAt,
-                        sorted[0].latestResAt,
-                    )
-                ) {
-                    threadList = threadList.concat(sorted);
-                } else {
-                    threadList = sorted.concat(threadList);
-                }
-            }
+        if (!data.list.length) return;
+        if (!pagination) {
+            threadList = data.list;
+            cache.set(threadList);
         } else {
-            threadList = sortByDesc(data.list);
+            if (threadList) threadList = threadList.concat(data.list);
         }
-        cache.set(threadList.slice(0, queryResultLimit));
     };
 
     const handleMakeThread = (data: { ok: boolean; new: HeadlineThread }) => {
@@ -138,10 +109,12 @@
         };
     });
 
+    let pagination = $state(false);
     let emitting = $state(false);
     const cursorBasedPagination = async () => {
         if (emitting) return;
         emitting = true;
+        pagination = true;
         socket.emit("headline", {
             nonce: genNonce(nonceKey.value ?? ""),
             cursor: threadList?.at(-1)?.id ?? null,
@@ -184,34 +157,30 @@
             <List class="demo-list" dense nonInteractive>
                 {#each threadList as thread, i}
                     <Item disabled class="unj-headline-thread-item">
-                        {#key thread.latestResAt}
-                            <div class="pc-only">
-                                <Graphic
-                                    ><TwemojiPart
-                                        seed={thread.id}
-                                        height="16"
-                                    /></Graphic
-                                >
-                            </div>
-                            <div class="time-and-count-container">
-                                <span class="res-time"
-                                    >{formatTimeAgo(thread.latestResAt)}</span
-                                >
-                                <span class="res-count"
-                                    >{thread.resCount}レス</span
-                                >
-                            </div>
-                            <div class="thread-title">
-                                <Link
-                                    to={makePathname(
-                                        `/thread/${thread.id}${thread.resCount > queryResultLimit && thread.latestCursor ? `/${thread.latestCursor}/1` : ""}`,
-                                    )}>{thread.title}</Link
-                                >
-                            </div>
-                            <div class="pc-only latest-res">
-                                {thread.latestRes}
-                            </div>
-                        {/key}
+                        <div class="pc-only">
+                            <Graphic
+                                ><TwemojiPart
+                                    seed={thread.id}
+                                    height="16"
+                                /></Graphic
+                            >
+                        </div>
+                        <div class="time-and-count-container">
+                            <span class="res-time"
+                                >{formatTimeAgo(thread.latestResAt)}</span
+                            >
+                            <span class="res-count">{thread.resCount}レス</span>
+                        </div>
+                        <div class="thread-title">
+                            <Link
+                                to={makePathname(
+                                    `/thread/${thread.id}${thread.resCount > queryResultLimit && thread.latestCursor ? `/${thread.latestCursor}/1` : ""}`,
+                                )}>{thread.title}</Link
+                            >
+                        </div>
+                        <div class="pc-only latest-res">
+                            {thread.latestRes}
+                        </div>
                     </Item>
                     {#if i % 4 === 3 && i !== (threadList ?? []).length - 1}
                         <Separator />
@@ -219,13 +188,11 @@
                 {/each}
             </List>
             <center>
-                {#if !allGone}
-                    <Button
-                        onclick={cursorBasedPagination}
-                        variant="raised"
-                        disabled={emitting}>続きを読む</Button
-                    >
-                {/if}
+                <Button
+                    onclick={cursorBasedPagination}
+                    variant="raised"
+                    disabled={emitting}>続きを読む</Button
+                >
             </center>
         </div>
     {/if}
