@@ -184,7 +184,7 @@
             <List class="demo-list" dense nonInteractive>
                 {#each threadList as thread, i}
                     <Item disabled class="unj-headline-thread-item">
-                        {#key thread.id}
+                        {#key thread.latestResAt}
                             <div class="pc-only">
                                 <Graphic
                                     ><TwemojiPart
