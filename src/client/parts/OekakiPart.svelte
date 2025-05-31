@@ -33,9 +33,6 @@
     return oekaki.render().toDataURL();
   };
 
-  let oekakiWrapper: HTMLDivElement;
-  let activeLayer: oekaki.LayeredCanvas | null = $state(null);
-
   /**
    * PC版ショートカット
    */
@@ -218,6 +215,8 @@
     dataCacheByUuid(activeLayer.uuid).set(Array.from(activeLayer.data));
   };
 
+  let oekakiWrapper: HTMLDivElement;
+  let activeLayer: oekaki.LayeredCanvas | null = $state(null);
   let upperLayer: oekaki.LayeredCanvas | null = $state(null);
   let lowerLayer: oekaki.LayeredCanvas | null = $state(null);
 
