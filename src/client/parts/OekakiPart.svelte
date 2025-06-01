@@ -595,10 +595,7 @@
       const { prev, next } = activeLayer;
       if (next) activeLayer = next;
       else if (prev) activeLayer = prev;
-      else {
-        oekaki.refresh();
-        activeLayer = new oekaki.LayeredCanvas("レイヤー #1");
-      }
+      else init();
     }}>delete</IconButton
   >
   <IconButton
