@@ -438,6 +438,7 @@
   let recent: string[] = $state([]);
   const maxRecent = 16;
   const addRecent = () => {
+    if (choiced.label === tool.translate.label) return;
     const idx = recent.indexOf($color);
     if (idx === 0) return;
     if (idx !== -1) recent.splice(idx, 1);
