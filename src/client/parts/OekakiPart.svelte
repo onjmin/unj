@@ -65,15 +65,19 @@
         break;
       case "e":
         e.preventDefault();
-        erasable = !erasable;
+        if (erasable)
+          toggle = toggle.filter((v) => v.label !== tool.erasable.label);
+        else toggle = [...toggle, tool.erasable];
         break;
       case "f":
         e.preventDefault();
-        oekaki.flipped.value = !oekaki.flipped.value;
+        if (flipped) toggle = toggle.filter((v) => v.label !== tool.flip.label);
+        else toggle = [...toggle, tool.flip];
         break;
       case "g":
         e.preventDefault();
-        isGrid = !isGrid;
+        if (isGrid) toggle = toggle.filter((v) => v.label !== tool.grid.label);
+        else toggle = [...toggle, tool.grid];
         break;
       case "z":
         doAction(tool.undo);
@@ -505,8 +509,10 @@
   $effect(() => {
     erasable = toggle.map((v) => v.label).includes(tool.erasable.label);
   });
+  let flipped = $state(false);
   $effect(() => {
-    oekaki.flipped.value = toggle.map((v) => v.label).includes(tool.flip.label);
+    flipped = toggle.map((v) => v.label).includes(tool.flip.label);
+    oekaki.flipped.value = flipped;
   });
   let isGrid = $state(false);
   $effect(() => {
