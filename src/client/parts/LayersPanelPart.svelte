@@ -13,7 +13,7 @@
 
   let { open = $bindable(false), activeLayer = $bindable(null) } = $props();
 
-  let layers: (oekaki.LayeredCanvas | null)[] = $state([]);
+  let layers: oekaki.LayeredCanvas[] = $state([]);
 
   $effect(() => {
     layers = oekaki.getLayers();
