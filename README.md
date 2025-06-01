@@ -34,7 +34,33 @@ https://unj.netlify.app
 - **バックエンド**: Express / Socket.IO
 - **その他**: Valibot / JavaScript obfuscator
 
-## 環境構築手順
+## ディレクトリの歩き方 / Directory Structure
+SvelteKitを参考にしつつ、今回はSvelteKitを使っていないので、実用性重視のモノレポ構成にしています。
+
+迷わないように、なるべくフラットになるように配置しました。
+
+
+```
+src/
+├── client/       # フロントエンド（Svelte 5 + Svelte Routing）
+│   ├── pages/    # SPAページ群（.svelteファイル）
+│   ├── parts/    # UIパーツ・コンポーネント
+│   ├── plugs/    # 遷移前チェック・ロジック
+│   └── mylib/    # クライアント専用ユーティリティ
+├── common/       # フロント & バック共通
+│   ├── request/  # フロント→バック送信用スキーマ（Valibot）
+│   └── response/ # バック→フロントの型定義（`as`で上書き前提）
+├── server/       # バックエンド（Express + Socket.IO）
+│   ├── admin/    # 管理系API（Expressルート）
+│   ├── api/      # ソケット系API（Socket.IO）
+│   └── mylib/    # サーバー専用ユーティリティ
+```
+
+必要に迫られて作ったディレクトリしか存在しません。
+
+ディレクトリの迷路化を防ぐために様式美を意識しないようにしています。
+
+## 環境構築手順 / Getting Started
 1. [Voltaをインストール](https://docs.volta.sh/guide/getting-started)
 1. このリポジトリをローカルにクローン
 1. [pnpmをインストール](https://pnpm.io/ja/installation)
@@ -50,7 +76,7 @@ https://unj.netlify.app
 
 開発ビルドと検証ビルドは http://localhost:4545 から動作確認可能です。
 
-## デプロイの方法
+## デプロイの方法 / Deployment
 うんＪのクローンを動かすには、3種類のサービスを用意する必要があります。
 
 以下のリストは実際にうんJで運用中の無料サービスです。
@@ -65,14 +91,16 @@ https://unj.netlify.app
 加えて、テーブル作成用のSQLを流す必要があります。
 詳細な手順は現在執筆中です。
 
-## 未完成の機能
+## 未完成の機能 / ToDo
 - [ ] 書き込み履歴機能
 - [ ] ブックマーク機能
+- [ ] 必死チェッカー
+- [ ] Errorページのモグラ叩きの代替
 
 ## ライセンス / License
 
 - **AGPL-3.0**  
   本プロジェクト全体には AGPL-3.0 ライセンスが適用されます。詳細は [`LICENSE`](./LICENSE) をご覧ください。
 
-## 開発者
+## 開発者 / Author
 + [おんJ民](https://github.com/onjmin)
