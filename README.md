@@ -34,7 +34,7 @@ https://unj.netlify.app
 - **バックエンド**: Express / Socket.IO
 - **その他**: Valibot / JavaScript obfuscator
 
-## ディレクトリの歩き方
+## ディレクトリの歩き方 / Directory Structure
 SvelteKitを参考にしつつ、今回はSvelteKitを使っていないので、実用性重視のモノレポ構成にしています。
 
 迷わないように、なるべくフラットになるように配置しました。
@@ -60,7 +60,7 @@ src/
 
 ディレクトリの迷路化を防ぐために様式美を意識しないようにしています。
 
-## 環境構築手順
+## 環境構築手順 / Getting Started
 1. [Voltaをインストール](https://docs.volta.sh/guide/getting-started)
 1. このリポジトリをローカルにクローン
 1. [pnpmをインストール](https://pnpm.io/ja/installation)
@@ -76,7 +76,7 @@ src/
 
 開発ビルドと検証ビルドは http://localhost:4545 から動作確認可能です。
 
-## デプロイの方法
+## デプロイの方法 / Deployment
 うんＪのクローンを動かすには、3種類のサービスを用意する必要があります。
 
 以下のリストは実際にうんJで運用中の無料サービスです。
@@ -91,7 +91,7 @@ src/
 加えて、テーブル作成用のSQLを流す必要があります。
 詳細な手順は現在執筆中です。
 
-## 未完成の機能
+## 未完成の機能 / ToDo
 - [ ] 書き込み履歴機能
 - [ ] ブックマーク機能
 - [ ] 必死チェッカー
