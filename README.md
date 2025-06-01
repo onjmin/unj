@@ -102,5 +102,5 @@ src/
 - **AGPL-3.0**  
   本プロジェクト全体には AGPL-3.0 ライセンスが適用されます。詳細は [`LICENSE`](./LICENSE) をご覧ください。
 
-## 開発者
+## 開発者 / Author
 + [おんJ民](https://github.com/onjmin)
