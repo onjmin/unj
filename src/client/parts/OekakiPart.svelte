@@ -25,7 +25,7 @@
   import { ObjectStorage } from "../mylib/object-storage.js";
   import { color } from "../mylib/store.js";
   import * as unjStorage from "../mylib/unj-storage.js";
-  import LayersPanelPart from "./LayersPanelPart.svelte";
+  import LayerPanelPart from "./LayerPanelPart.svelte";
 
   let { threadId, toDataURL = $bindable() } = $props();
   toDataURL = () => {
@@ -551,7 +551,7 @@
 </script>
 
 {#key layersPanelOpen}
-  <LayersPanelPart bind:open={layersPanelOpen} bind:activeLayer />
+  <LayerPanelPart bind:open={layersPanelOpen} bind:activeLayer />
 {/key}
 
 <div class="top-tools-wrapper">
