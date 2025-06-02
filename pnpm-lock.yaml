@@ -24,8 +24,8 @@ importers:
         specifier: ^1.0.0
         version: 1.0.0
       '@onjmin/oekaki':
-        specifier: 1.0.42
-        version: 1.0.42
+        specifier: 1.0.44
+        version: 1.0.44
       '@rpgja/rpgen-map':
         specifier: 1.0.0
         version: 1.0.0
@@ -651,8 +651,8 @@ packages:
     resolution: {integrity: sha512-XWmEeWpBXIoksZSDN74kftfTnXFEGZ3iX8jbANWBc+ag6dsiQuvuR4LgB0WdCOKMb5AQgjqgufc0TgAsZubUYw==}
     engines: {node: '>=19.0.0'}
 
-  '@onjmin/oekaki@1.0.42':
-    resolution: {integrity: sha512-VZhJv6hMEc6dUhYX5SbR8jp8hDbRzweOdoHlJmFfA+6NI+RYHcslHU0/ek74oxp8pvfPKLcKPRYfv1luycVGqQ==}
+  '@onjmin/oekaki@1.0.44':
+    resolution: {integrity: sha512-qTX9SbKh6rLmjjkPQAziW410nwAbnD6FmyS2+NBUP4qOb4uTAdKzIBa63m3yLvIqLVqRXVM0FHh5Ti44cv83Rw==}
 
   '@parcel/watcher-android-arm64@2.5.1':
     resolution: {integrity: sha512-KF8+j9nNbUN8vzOFDpRMsaKBHZ/mcjEjMToVMJOhTozkDonQFFrRcfdLWn6yWKCmJKmdVxSgHiYvTCef4/qcBA==}
@@ -3395,7 +3395,7 @@ snapshots:
       '@types/node': 22.13.8
       '@types/pg': 8.11.11
 
-  '@onjmin/oekaki@1.0.42': {}
+  '@onjmin/oekaki@1.0.44': {}
 
   '@parcel/watcher-android-arm64@2.5.1':
     optional: true
