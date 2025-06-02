@@ -16,11 +16,13 @@
     mdiUndo,
   } from "@mdi/js";
   import * as oekaki from "@onjmin/oekaki";
+  import Button, { Label } from "@smui/button";
   import { preventDefault } from "@smui/common/events";
   import IconButton from "@smui/icon-button";
   import SegmentedButton, { Segment, Icon } from "@smui/segmented-button";
   import Slider from "@smui/slider";
   import Textfield from "@smui/textfield";
+  import Tooltip, { Wrapper, Title, Content } from "@smui/tooltip";
   import ColorPicker from "svelte-awesome-color-picker";
   import { ObjectStorage } from "../mylib/object-storage.js";
   import { color } from "../mylib/store.js";
@@ -531,7 +533,7 @@
         saveData();
         break;
       case tool.layersPanel.label:
-        layersPanelOpen = true;
+        layersPanelOpen = !layersPanelOpen;
         break;
       case tool.save.label:
         {
@@ -723,6 +725,50 @@
   {/if}
 </div>
 
+<div class="manual-wrapper">
+  <Wrapper rich>
+    <Button touch>
+      <Label>説明書</Label>
+    </Button>
+    <Tooltip persistent>
+      <Title>操作方法</Title>
+      <Content class="scrollable-manual-content">
+        <p>右クリック：カラーピッカー</p>
+        <p>Ctrl + 1：ブラシ</p>
+        <p>Ctrl + 2：ペン</p>
+        <p>Ctrl + 3：消しゴム</p>
+        <p>Ctrl + 4：カラーピッカー</p>
+        <p>Ctrl + 5：塗りつぶし</p>
+        <p>Ctrl + 6：ハンドツール</p>
+        <p>Ctrl + E：常に消しゴム</p>
+        <p>Ctrl + F：左右反転</p>
+        <p>Ctrl + G：グリッド表示</p>
+        <p>Ctrl + Z：戻す</p>
+        <p>Ctrl + Shift + Z ：やり直す</p>
+        <p>Ctrl + L：レイヤーパネルを開く</p>
+        <p>Ctrl + S：保存</p>
+        <p>Ctrl + C：コピー</p>
+        <p>Ctrl + V：貼り付け</p>
+      </Content>
+    </Tooltip>
+  </Wrapper>
+  <Wrapper rich>
+    <Button touch>
+      <Label>説明書2</Label>
+    </Button>
+    <Tooltip persistent>
+      <Title>上級者向けの裏技</Title>
+      <Content class="scrollable-manual-content">
+        <p>【グリッド表示 + ペン】</p>
+        <p>ドット絵が描ける</p>
+        <br />
+        <p>【常に消しゴム + 塗りつぶし】</p>
+        <p>透明に塗りつぶせる</p>
+      </Content>
+    </Tooltip>
+  </Wrapper>
+</div>
+
 <style>
   :global(.color-picker-wrapper label) {
     border-radius: 50%;
@@ -732,7 +778,7 @@
   }
   .bottom-tools-wrapper-sub {
     text-align: left;
-    min-height: 8rem;
+    min-height: 6rem;
   }
   .size {
     display: inline-block;
@@ -748,5 +794,13 @@
     background-image: linear-gradient(to right, gray 1px, transparent 1px),
       linear-gradient(to bottom, gray 1px, transparent 1px);
     background-size: var(--grid-cell-size) var(--grid-cell-size);
+  }
+  .manual-wrapper {
+    display: flex;
+    justify-content: center;
+  }
+  :global(.scrollable-manual-content) {
+    max-height: 300px;
+    overflow-y: auto;
   }
 </style>
