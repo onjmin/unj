@@ -800,6 +800,7 @@
     justify-content: center;
   }
   :global(.scrollable-manual-content) {
+    opacity: 0.6;
     max-height: 300px;
     overflow-y: auto;
   }
