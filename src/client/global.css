@@ -66,6 +66,12 @@ body {
 	width: auto;
 	height: auto;
 }
+@media screen and (max-width: 768px) {
+	.unj-img {
+		max-width: 90svw;
+		max-height: 90svh;
+	}
+}
 /* GIMPの背景のアレ */
 .gimp-checkered-background {
 	background-color: #fff;
