@@ -39,6 +39,7 @@
    * PC版ショートカット
    */
   const handleKeyDown = async (e: KeyboardEvent) => {
+    if (notDrawing(e)) return;
     if (!e.ctrlKey) return;
     switch (e.key) {
       case "1":
@@ -97,7 +98,6 @@
         break;
       case "c": // クリップボードにコピー
         {
-          if (!getSelection()?.isCollapsed) return; // 何か選択中ならそれを優先させる
           const blob = await new Promise<Blob | null>((resolve) =>
             activeLayer?.canvas.toBlob(resolve),
           );
@@ -118,12 +118,26 @@
     return () => window.removeEventListener("keydown", handleKeyDown);
   });
 
+  /**
+   * 別の作業中
+   */
+  const notDrawing = (e: Event) => {
+    const target = e.target as HTMLElement;
+    return (
+      !getSelection()?.isCollapsed ||
+      target.tagName === "INPUT" ||
+      target.tagName === "TEXTAREA" ||
+      target.isContentEditable
+    );
+  };
+
   const MAGIC_STRING = "レイヤーコピー";
 
   /**
    * PC版ショートカット
    */
   const handlePaste = async (e: ClipboardEvent) => {
+    if (notDrawing(e)) return;
     if (!activeLayer || activeLayer?.locked) return;
     let imageItem: DataTransferItem | null = null;
     let textItem: DataTransferItem | null = null;
