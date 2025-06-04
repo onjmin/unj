@@ -40,7 +40,6 @@
    */
   const handleKeyDown = async (e: KeyboardEvent) => {
     if (notDrawing(e)) return;
-    e.preventDefault();
     if (!e.ctrlKey) return;
     switch (e.key) {
       case "1":
@@ -84,9 +83,11 @@
         else toggle = [...toggle, tool.grid];
         break;
       case "z":
+        e.preventDefault();
         doAction(tool.undo);
         break;
       case "Z":
+        e.preventDefault();
         doAction(tool.redo);
         break;
       case "l":
@@ -99,6 +100,7 @@
         break;
       case "c": // クリップボードにコピー
         {
+          e.preventDefault();
           const blob = await new Promise<Blob | null>((resolve) =>
             activeLayer?.canvas.toBlob(resolve),
           );
