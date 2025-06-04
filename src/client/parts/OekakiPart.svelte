@@ -141,6 +141,7 @@
     if (!text.includes(MAGIC_STRING)) return;
     // クリップボードから画像を取得
     const bitmap = await createImageBitmap(blob);
+    // 中央配置
     const ratio = Math.min(width / bitmap.width, height / bitmap.height);
     const w = bitmap.width * ratio;
     const h = bitmap.height * ratio;
