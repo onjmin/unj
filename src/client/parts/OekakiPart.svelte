@@ -40,6 +40,7 @@
    */
   const handleKeyDown = async (e: KeyboardEvent) => {
     if (notDrawing(e)) return;
+    e.preventDefault();
     if (!e.ctrlKey) return;
     switch (e.key) {
       case "1":
