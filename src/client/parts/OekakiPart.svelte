@@ -183,7 +183,7 @@
     const hex = `#${Array.from(data.slice(index, index + 3))
       .map((v) => v.toString(16).padStart(2, "0"))
       .join("")}`;
-    color.update(() => hex);
+    color.set(hex);
   };
 
   const fill = async (x: number, y: number) => {
@@ -714,7 +714,7 @@
       class="palette"
       style="background-color:{_color};"
       onclick={() => {
-        color.update(() => _color);
+        color.set(_color);
       }}
     ></button>
   {/each}
