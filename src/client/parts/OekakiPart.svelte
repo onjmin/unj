@@ -387,7 +387,7 @@
       prevX = null;
       prevY = null;
       if (activeLayer?.locked) return;
-      if (choiced.label === tool.fill.label) fill(x, y);
+      if (choiced.label === tool.fill.label && (buttons & 2) === 0) fill(x, y);
       fin();
     });
     oekaki.onClick((x, y, buttons) => {});
