@@ -72,9 +72,7 @@
         break;
       case "e":
         e.preventDefault();
-        if (erasable)
-          toggle = toggle.filter((v) => v.label !== tool.erasable.label);
-        else toggle = [...toggle, tool.erasable];
+        setErasable(!erasable);
         break;
       case "f":
         e.preventDefault();
@@ -184,10 +182,17 @@
     if (!ctx) return;
     const { data } = ctx.getImageData(0, 0, width, height);
     const index = (y * width + x) * 4;
-    const hex = `#${Array.from(data.slice(index, index + 3))
-      .map((v) => v.toString(16).padStart(2, "0"))
-      .join("")}`;
-    color.set(hex);
+    const [r, g, b, a] = data.subarray(index, index + 4);
+    if (a) {
+      setErasable(false);
+      erasable = false;
+      const hex = `#${[r, g, b]
+        .map((v) => v.toString(16).padStart(2, "0"))
+        .join("")}`;
+      color.set(hex);
+    } else {
+      setErasable(true);
+    }
   };
 
   const fill = async (x: number, y: number) => {
@@ -334,6 +339,7 @@
       if (prevY === null) prevY = y;
       if (choiced.label === tool.dropper.label || (buttons & 2) !== 0) {
         dropper(x, y);
+        dropping = false;
       } else {
         if (!activeLayer?.locked) {
           if (choiced.label === tool.brush.label) {
@@ -383,11 +389,13 @@
         saveData();
       }
     };
+    let dropping = false;
     oekaki.onDrawn((x, y, buttons) => {
       prevX = null;
       prevY = null;
       if (activeLayer?.locked) return;
-      if (choiced.label === tool.fill.label && (buttons & 2) === 0) fill(x, y);
+      if (choiced.label === tool.fill.label && !dropping) fill(x, y);
+      dropping = false;
       fin();
     });
     oekaki.onClick((x, y, buttons) => {});
@@ -530,6 +538,13 @@
   let toggles = [tool.erasable, tool.flip, tool.grid];
   let toggle: Tool[] = $state([]);
   let erasable = $state(false);
+  const setErasable = (value: boolean) => {
+    if (value) {
+      toggle = [...toggle, tool.erasable];
+    } else {
+      toggle = toggle.filter((v) => v.label !== tool.erasable.label);
+    }
+  };
   $effect(() => {
     erasable = toggle.map((v) => v.label).includes(tool.erasable.label);
   });
