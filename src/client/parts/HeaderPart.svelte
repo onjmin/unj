@@ -91,7 +91,13 @@
         </Section>
       {/if}
       <Section>
-        <Title style="width: 100svw; text-align: center;">{title}</Title>
+        <Title style="width: 100svw; text-align: center;"
+          ><img
+            class="loze"
+            src="static/favicons/loze.png"
+            alt=""
+          />{title}</Title
+        >
       </Section>
       {#if menu}
         <Section
@@ -172,5 +178,9 @@
     text-align: right;
     font-size: 2rem;
     z-index: 256;
+  }
+  .loze {
+    height: 48px;
+    vertical-align: middle;
   }
 </style>
