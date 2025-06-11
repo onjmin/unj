@@ -1,7 +1,9 @@
 {
+	"author": "onjmin",
+	"license": "AGPL-3.0",
 	"name": "unj",
 	"version": "1.0.0",
-	"description": "",
+	"description": "運営と運命を共にする、うんち実況（セーラージュピター）",
 	"main": "index.js",
 	"scripts": {
 		"clean": "rimraf dist",
@@ -13,8 +15,6 @@
 		"sync": "tsx workflow/sync.ts"
 	},
 	"keywords": [],
-	"author": "",
-	"license": "AGPL-3.0",
 	"volta": {
 		"node": "22.13.1",
 		"pnpm": "9.15.5"
