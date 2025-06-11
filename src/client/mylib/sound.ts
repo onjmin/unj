@@ -88,7 +88,7 @@ new Sound({
  */
 export const changeVolume = () =>
 	Howler.volume(
-		soundVolume.value === null ? 0.3777 : Number.parseFloat(soundVolume.value),
+		soundVolume.value === null ? 0.187 : Number.parseFloat(soundVolume.value),
 	);
 
 const make = (key: string) => {
