@@ -35,9 +35,25 @@
         break;
     }
   };
+
+  let pointerupTimestamp = $state(0);
+  const updatePointerupTimestamp = () => {
+    setTimeout(() => {
+      pointerupTimestamp = performance.now();
+    });
+  };
+  $effect(() => {
+    document.addEventListener("pointerup", updatePointerupTimestamp);
+    return () =>
+      document.removeEventListener("pointerup", updatePointerupTimestamp);
+  });
 </script>
 
-<Dialog class="unj-dialog-part" bind:open onSMUIDialogClosed={closeHandler}>
+<Dialog
+  class="unj-dialog-part unj-user-select"
+  bind:open
+  onSMUIDialogClosed={closeHandler}
+>
   <Title>レイヤーパネル</Title>
   <Content>
     <div>
@@ -47,7 +63,7 @@
     <div style="text-align:left;">
       <List twoLine avatarList singleSelection selectedIndex={selectionIndex}>
         {#each layers as layer, i}
-          {#if layer}
+          {#key activeLayer === layer ? pointerupTimestamp : "noop"}
             <Item
               onSMUIAction={() => (selectionIndex = i)}
               selected={selectionIndex === i}
@@ -61,10 +77,16 @@
               <Text>
                 <PrimaryText>{layer.name}</PrimaryText>
                 <SecondaryText
-                  ><Icon class="material-icons"
-                    >{layer.locked ? "lock" : "lock_open"}</Icon
-                  ><Icon class="material-icons"
-                    >{layer.visible ? "visibility" : "visibility_off"}</Icon
+                  ><Icon
+                    class="material-icons"
+                    onclick={() => {
+                      layer.locked = !layer.locked;
+                    }}>{layer.locked ? "lock" : "lock_open"}</Icon
+                  ><Icon
+                    class="material-icons"
+                    onclick={() => {
+                      layer.visible = !layer.visible;
+                    }}>{layer.visible ? "visibility" : "visibility_off"}</Icon
                   >{layer.opacity}%</SecondaryText
                 >
               </Text>
@@ -89,7 +111,7 @@
                 }}>arrow_upward</Meta
               >
             </Item>
-          {/if}
+          {/key}
         {/each}
       </List>
     </div>
@@ -123,5 +145,9 @@
     background-size: cover;
     background-position: center;
     border-radius: 0 !important;
+  }
+
+  :global(.unj-user-select) {
+    user-select: none;
   }
 </style>
