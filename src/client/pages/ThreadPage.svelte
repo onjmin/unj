@@ -87,7 +87,7 @@
     let textarea: HTMLTextAreaElement | null = $state(null);
     const focus = () => {
         textarea?.focus();
-        openRight.set(true);
+        $openRight = true;
     };
 
     let userName = $state("");

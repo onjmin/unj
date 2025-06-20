@@ -30,9 +30,9 @@
                     class="material-icons"
                     onclick={() => {
                         if ($isMobile) {
-                            openRight.set(false);
+                            $openRight = false;
                         }
-                        openLeft.update((v) => !v);
+                        $openLeft = !$openLeft;
                     }}>menu</IconButton
                 >
             </Section>
@@ -82,9 +82,9 @@
                         : 'hidden'};"
                     onclick={() => {
                         if ($isMobile) {
-                            openLeft.set(false);
+                            $openLeft = false;
                         }
-                        openRight.update((v) => !v);
+                        $openRight = !$openRight;
                     }}>menu</IconButton
                 >
             </Section>

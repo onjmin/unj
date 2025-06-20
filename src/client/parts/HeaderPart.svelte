@@ -32,14 +32,14 @@
   }
 
   const calcIsMobile = () => window.innerWidth < 768;
-  isEnabledRightMenu.set(children !== null);
+  $isEnabledRightMenu = children !== null;
 
   $effect(() => {
     // ソフトウェアキーボードが出現すると画面幅が変わるため、最初の1回だけ実行する
-    isMobile.set(calcIsMobile());
+    $isMobile = calcIsMobile();
     const isPC = !$isMobile;
-    openLeft.set(isPC);
-    openRight.set(isPC);
+    $openLeft = isPC;
+    $openRight = isPC;
   });
 
   let snackbar: Snackbar;
@@ -80,7 +80,7 @@
             class="material-icons"
             onclick={() => {
               if ($isMobile) {
-                openRight.set(false);
+                $openRight = false;
               }
               openLeft.update((v) => !v);
             }}>menu</IconButton
@@ -123,9 +123,9 @@
             style="visibility:{$isEnabledRightMenu ? 'visible' : 'hidden'};"
             onclick={() => {
               if ($isMobile) {
-                openLeft.set(false);
+                $openLeft = false;
               }
-              openRight.update((v) => !v);
+              $openRight = !$openRight;
             }}>menu</IconButton
           >
         </Section>
@@ -147,8 +147,8 @@
       ? ''
       : 'hidden'}"
     onclick={() => {
-      openLeft.set(false);
-      openRight.set(false);
+      $openLeft = false;
+      $openRight = false;
     }}>うんｊ</button
   >
   {#each guides as guide}

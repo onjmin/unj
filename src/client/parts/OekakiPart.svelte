@@ -189,7 +189,7 @@
       const hex = `#${[r, g, b]
         .map((v) => v.toString(16).padStart(2, "0"))
         .join("")}`;
-      color.set(hex);
+      $color = hex;
     } else {
       setErasable(true);
     }
@@ -733,7 +733,7 @@
       class="palette"
       style="background-color:{_color};"
       onclick={() => {
-        color.set(_color);
+        $color = _color;
       }}
     ></button>
   {/each}
