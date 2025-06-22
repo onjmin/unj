@@ -1,4 +1,4 @@
-# unjupiter
+# unj
 運営と運命を共にする、うんち実況（セーラージュピター）
 
 https://unj.netlify.app
