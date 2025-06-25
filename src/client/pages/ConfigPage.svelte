@@ -247,6 +247,14 @@
                                         </Text>
                                         <Meta
                                             class="material-icons"
+                                            onclick={() =>
+                                                window.open(
+                                                    imgurResponse.link,
+                                                    "_blank",
+                                                )}>open_in_new</Meta
+                                        >
+                                        <Meta
+                                            class="material-icons"
                                             onclick={async () => {
                                                 await navigator.clipboard.writeText(
                                                     imgurResponse.link,
