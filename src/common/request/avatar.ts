@@ -84,14 +84,14 @@ new Avatar({
 	id: 203,
 	name: "原住民",
 	description: "(´・ω・｀)",
-	src: "https://i.imgur.com/Y7KcMns.png",
+	src: "https://i.imgur.com/0I95OfI.png",
 	href: "https://w.atwiki.jp/openj3/pages/170.html",
 });
 new Avatar({
 	id: 204,
 	name: "🥺ぷゆゆ",
 	description: "または赤ガイ",
-	src: "https://i.imgur.com/bbfisaN.png",
+	src: "https://i.imgur.com/bhAEuMf.png",
 	href: "https://w.atwiki.jp/openj3/pages/464.html",
 });
 new Avatar({
