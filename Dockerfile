@@ -20,7 +20,7 @@ RUN pnpm install
 COPY . .
 
 # ポート番号（必要に応じて変更）
-EXPOSE 3000
+EXPOSE 4545
 
 # アプリケーション起動
 CMD ["pnpm", "start"]
