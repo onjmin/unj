@@ -37,10 +37,10 @@ export const genEnvKey = (): string => {
 export const VITE_BASE_URL = PROD_MODE ? process.env.VITE_BASE_URL : "/";
 
 export let ROOT_PATH = "";
-if (DEV_MODE) {
-	const __filename = fileURLToPath(import.meta.url);
-	const __dirname = path.dirname(__filename);
-	ROOT_PATH = path.resolve(__dirname, "..", "..", "..");
-} else {
-	ROOT_PATH = path.resolve(__dirname, "..");
-}
+// if (DEV_MODE) {
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+ROOT_PATH = path.resolve(__dirname, "..", "..", "..");
+// } else {
+// 	ROOT_PATH = path.resolve(__dirname, "..");
+// }
