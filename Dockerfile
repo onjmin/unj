@@ -1,22 +1,26 @@
-# ベースイメージ（Volta対応）
 FROM node:22.13.1-bullseye
 
-# Volta環境変数（Voltaはすでに node イメージに含まれている）
+# 作業ディレクトリを作成
+WORKDIR /app
+
+# Volta環境変数（なくてもよいが互換のため残しても可）
 ENV VOLTA_HOME=/root/.volta
 ENV PATH=$VOLTA_HOME/bin:$PATH
 
-# Voltaを使って Node & pnpm のバージョンを固定（package.json にも必要）
-COPY package.json pnpm-lock.yaml ./
-RUN corepack enable && corepack prepare pnpm@9.15.5 --activate
+# Corepackまわりを使わず、pnpmを直接インストール
+RUN npm install -g pnpm@9.15.5
 
-# tsx をグローバル or プロジェクト依存に追加
+# package.json と lockfile をコピー
+COPY package.json pnpm-lock.yaml ./
+
+# 依存関係のインストール
 RUN pnpm install
 
-# 残りのファイルをコピー
+# アプリケーションコードをコピー
 COPY . .
 
-# アプリケーションポート（必要に応じて変更）
-EXPOSE 4545
+# ポート番号（必要に応じて変更）
+EXPOSE 3000
 
-# アプリのエントリポイント
+# アプリケーション起動
 CMD ["pnpm", "start"]
