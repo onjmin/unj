@@ -6,7 +6,7 @@ import { DEV_MODE, STG_MODE } from "./env.js";
 
 const genTestIP = () => "0.0.0.0"; // Bogon
 
-export const detectFastlyClientIp = (
+export const detectClientIp = (
 	fastlyClientIp: string | string[] | undefined,
 ) => {
 	if (DEV_MODE || STG_MODE) {

@@ -33,7 +33,7 @@ import handleRpgInit from "./api/rpgInit.js";
 import handleRpgPatch from "./api/rpgPatch.js";
 import { flaky } from "./mylib/anti-debug.js";
 import auth from "./mylib/auth.js";
-import { detectFastlyClientIp, getIP, isBannedIP, setIP } from "./mylib/ip.js";
+import { detectClientIp, getIP, isBannedIP, setIP } from "./mylib/ip.js";
 import { logger } from "./mylib/log.js";
 import nonce from "./mylib/nonce.js";
 import type { Online } from "./mylib/socket.js";
@@ -43,11 +43,11 @@ const bannedCheckMiddleware = (
 	res: Response,
 	next: NextFunction,
 ): void => {
-	const ip =
-		detectFastlyClientIp(req.headers["fastly-client-ip"]) ?? req.ip ?? "";
+	const ip = detectClientIp(req.headers["fastly-client-ip"]) ?? req.ip ?? "";
 	logger.http(`👁️ ${ip}`);
 	if (isBannedIP(ip)) {
 		logger.http(`❌ ${ip}`);
+		res.status(403).json({ error: "Forbidden: banned IP" });
 		return;
 	}
 	next();
@@ -76,6 +76,7 @@ const adminAuthMiddleware = (
 };
 
 const app = express();
+app.set("trust proxy", true); // クライアントの実IPを req.ip に正しく反映させる
 const server = http.createServer(app);
 const io = new Server(server, {
 	cors: {
@@ -154,7 +155,8 @@ const verifyUserId = (socket: Socket, userId: number) => {
 // socket.io
 io.on("connection", async (socket) => {
 	const ip =
-		detectFastlyClientIp(socket.handshake.headers["fastly-client-ip"]) ??
+		detectClientIp(socket.handshake.headers["fastly-client-ip"]) ??
+		detectClientIp(socket.handshake.headers["x-forwarded-for"]) ??
 		socket.conn.remoteAddress;
 	logger.http(`👀 ${ip}`);
 	verifyIP(socket, ip);
