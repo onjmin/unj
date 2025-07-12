@@ -130,9 +130,9 @@ if (DEV_MODE || STG_MODE) {
 		res.sendFile(path.resolve(ROOT_PATH, "dist", "client", "404.html"));
 	});
 } else if (PROD_MODE) {
-	app.use(
-		express.static(path.resolve(ROOT_PATH, "src", "server", "index.html")),
-	);
+	app.get("/", (req, res) => {
+		res.sendFile(path.resolve(ROOT_PATH, "src", "server", "index.html"));
+	});
 }
 
 const verifyIP = (socket: Socket, ip: string) => {
