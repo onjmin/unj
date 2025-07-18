@@ -118,34 +118,36 @@ export const embedYouTube = ({
 		handleUserAction(() => youTubeController.play());
 	}
 };
+
 export const embedNicovideo = ({
 	iframeDOM,
 }: { iframeDOM: HTMLIFrameElement | null }) => {
 	if (!iframeDOM) return;
 	activeController = nicovideoController;
 	nicovideoController.target = iframeDOM;
-	const handle = (e: MessageEvent) => {
-		if (e.origin !== nicovideoController.origin) return;
-		const { data } = e.data;
-		switch (e.data.eventName) {
-			case "playerStatusChange": {
-				switch (data.playerStatus) {
-					case 4:
-						nicovideoController.play();
-						break;
-				}
-				break;
-			}
-			case "loadComplete": {
-				nicovideoController.play();
-				break;
-			}
-		}
-	};
 	window.removeEventListener("message", handle);
 	window.addEventListener("message", handle);
 	handleUserAction(() => nicovideoController.play());
 };
+const handle = (e: MessageEvent) => {
+	if (e.origin !== nicovideoController.origin) return;
+	const { data } = e.data;
+	switch (e.data.eventName) {
+		case "playerStatusChange": {
+			switch (data.playerStatus) {
+				case 4:
+					nicovideoController.play();
+					break;
+			}
+			break;
+		}
+		case "loadComplete": {
+			nicovideoController.play();
+			break;
+		}
+	}
+};
+
 declare global {
 	var SC: any;
 }
