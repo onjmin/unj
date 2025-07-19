@@ -100,7 +100,7 @@
     let imgurList: ImgurResponse[] = $state([]);
     $effect(() => {
         imgurHistory.get().then((v) => {
-            if (v) imgurList = v;
+            imgurList = v ? v : [];
         });
     });
 

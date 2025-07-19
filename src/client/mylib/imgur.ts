@@ -24,6 +24,3 @@ export const deleteImgur = (deletehash: string) =>
 
 export type ImgurResponse = { link: string; id: string; deletehash: string };
 export const imgurHistory = new ObjectStorage<ImgurResponse[]>("imgur");
-imgurHistory.get().then((v) => {
-	if (!v) imgurHistory.set([]);
-});

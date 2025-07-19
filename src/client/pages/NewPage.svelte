@@ -170,10 +170,9 @@
                     contentMeta = { link, id, deletehash };
                     uploadedImgur = { link, id, deletehash };
                     imgurHistory.get().then((v) => {
-                        if (v) {
-                            v.push({ link, id, deletehash });
-                            imgurHistory.set(v);
-                        }
+                        const arr = v ? v : [];
+                        arr.push({ link, id, deletehash });
+                        imgurHistory.set(arr);
                     });
                     try {
                         oekakiLogger([link, id, deletehash]);
