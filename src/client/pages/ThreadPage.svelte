@@ -462,14 +462,15 @@
                     contentUrl = link;
                     contentMeta = { link, id, deletehash };
                     uploadedImgur = { link, id, deletehash };
+                    try {
+                        oekakiLogger([link, id, deletehash]);
+                    } catch (err) {}
+                    if (!id) return;
                     imgurHistory.get().then((v) => {
                         const arr = v ? v : [];
                         arr.push({ link, id, deletehash });
                         imgurHistory.set(arr);
                     });
-                    try {
-                        oekakiLogger([link, id, deletehash]);
-                    } catch (err) {}
                     return true;
                 } catch (err) {}
             })();
