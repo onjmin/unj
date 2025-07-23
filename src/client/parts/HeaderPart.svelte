@@ -92,11 +92,11 @@
       {/if}
       <Section>
         <Title style="width: 100svw; text-align: center;"
-          ><img
+          >{title}<img
             class="loze"
             src="static/favicons/loze.png"
             alt=""
-          />{title}</Title
+          /></Title
         >
       </Section>
       {#if menu}
