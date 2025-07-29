@@ -12,6 +12,7 @@
     import FormField from "@smui/form-field";
     import IconButton from "@smui/icon-button";
     import Paper, { Title, Content, Subtitle } from "@smui/paper";
+    import Select, { Option } from "@smui/select";
     import Switch from "@smui/switch";
     import {
         addSeconds,
@@ -542,6 +543,40 @@
             );
         } catch (err) {}
     });
+
+    const defaultSelected = "";
+    let commandSelected = $state(defaultSelected);
+    let commandOptions: string[] = $state([]);
+    $effect(() => {
+        let arr: string[] = [defaultSelected];
+        if (thread?.yours)
+            arr = [...arr, "!reset", "!sage", "!jien", "!add", "!バルス"];
+        arr = [
+            ...arr,
+            "!aku",
+            "!kaijo",
+            "!sub",
+            "!バルサン",
+            "!ngk",
+            "!nopic",
+            "!age",
+        ];
+        arr = [...arr, "!ping", "!check"];
+        commandOptions = arr;
+    });
+    $effect(() => {
+        if (
+            commandSelected &&
+            commandSelected !== defaultSelected &&
+            !contentText.includes(commandSelected)
+        ) {
+            contentText =
+                `${contentText.replace(/\s+$/, "")}\n${commandSelected}`.replace(
+                    /^\n/,
+                    "",
+                );
+        }
+    });
 </script>
 
 {#snippet form(oekaki = false)}
@@ -598,6 +633,16 @@
             {/snippet}
         </FormField>
     {/if}
+    <Select
+        disabled={emitting}
+        key={String}
+        bind:value={commandSelected}
+        label="コマンド"
+    >
+        {#each commandOptions as v}
+            <Option value={v}>{v}</Option>
+        {/each}
+    </Select>
 {/snippet}
 
 <HeaderPart {title} bind:bookmark>
