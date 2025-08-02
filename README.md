@@ -79,10 +79,10 @@ src/
 ## デプロイの方法 / Deployment
 うんＪのクローンを動かすには、3種類のサービスを用意する必要があります。
 
-以下のリストは実際にうんJで運用中の無料サービスです。
+以下のリストはうんJを運用した実績のある無料サービスです。
 
 - フロントエンドサーバー
-  - GitHub Pages / Cloudflare Pages / Fleek.xyz
+  - GitHub Pages / Cloudflare Pages / Netlify / Fleek.xyz
 - バックエンドサーバー
   - Glitch
 - サーバーレスDB

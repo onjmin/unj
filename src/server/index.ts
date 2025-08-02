@@ -85,7 +85,6 @@ const io = new Server(server, {
 			"https://onjmin.github.io",
 			"https://unj-i1v.pages.dev",
 			"https://unj.netlify.app",
-			"https://unj.on-fleek.app",
 		],
 		methods: ["GET", "POST"],
 		credentials: true,
