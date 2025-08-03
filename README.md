@@ -88,8 +88,7 @@ src/
 - サーバーレスDB
   - Neon Serverless Postgres
 
-加えて、テーブル作成用のSQLを流す必要があります。
-詳細な手順は現在執筆中です。
+加えて、[テーブル作成用のSQLを流す必要があります。](./wiki/start-guide.md)
 
 ## 未完成の機能 / ToDo
 - [ ] 書き込み履歴機能
