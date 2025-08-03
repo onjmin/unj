@@ -37,5 +37,5 @@
 ## [Neon]
 
 1. プロジェクトを作る
-1. [SQL](./wiki/sql/init.sql)を流す
+1. [SQL](./sql/init.sql)を流す
 1. [Koyeb]のNeon Databaseの環境変数を埋める
