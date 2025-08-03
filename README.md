@@ -84,7 +84,7 @@ src/
 - フロントエンドサーバー
   - GitHub Pages / Cloudflare Pages / Netlify / Fleek.xyz
 - バックエンドサーバー
-  - Glitch
+  - Glitch / Koyeb
 - サーバーレスDB
   - Neon Serverless Postgres
 
