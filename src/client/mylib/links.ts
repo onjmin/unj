@@ -12,11 +12,6 @@ export const links = [
 		href: "https://ikura.open2ch.net/konamono/",
 	}),
 	new SiteInfo({
-		name: "なんでも実況osv",
-		description: "OSVを内部で用いています",
-		href: "https://openosv.net/",
-	}),
-	new SiteInfo({
 		name: "おんじぇいスタジアム",
 		description: "全員が執筆者や",
 		href: "https://onjstu.livedoor.blog/",
