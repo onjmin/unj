@@ -11,7 +11,7 @@ import {
 import { logger } from "../mylib/log.js";
 import nonce from "../mylib/nonce.js";
 import { pool } from "../mylib/pool.js";
-import { sizeOf } from "../mylib/socket.js";
+import { getThreadRoom, sizeOf } from "../mylib/socket.js";
 
 const api = "headline";
 
@@ -67,7 +67,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 					// 基本的な情報
 					title: record.title,
 					// 動的なデータ
-					online: sizeOf(io, record.id),
+					online: sizeOf(io, getThreadRoom(record.id)),
 					ikioi:
 						Math.floor(
 							(resCount * 3600_000_0) / (+new Date() - +record.created_at),

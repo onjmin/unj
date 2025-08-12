@@ -174,9 +174,11 @@ export default ({ socket }: { socket: Socket }) => {
 				yours: true,
 				nonceKey: nonce.getUnsafe(socket), // スレ立て直後のreadThreadを成功させるための特別措置
 			});
+
+			// ヘッドライン更新
 			socket
 				.to(headlineRoom)
-				.emit(api, { ok: true, new: newThread, yours: false });
+				.emit("newHeadline", { ok: true, new: newThread, yours: false });
 
 			await poolClient.query("COMMIT"); // 問題なければコミット
 			logger.verbose(api);

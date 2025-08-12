@@ -80,7 +80,7 @@
         }
     };
 
-    const handleMakeThread = (data: { ok: boolean; new: HeadlineThread }) => {
+    const handleNewHeadline = (data: { ok: boolean; new: HeadlineThread }) => {
         if (!data.ok || !threadList) return;
         if (threadList.length > 128) {
             threadList.pop();
@@ -100,12 +100,12 @@
         });
         socket.on("joinHeadline", handleJoinHeadline);
         socket.on("headline", handleHeadline);
-        socket.on("makeThread", handleMakeThread);
+        socket.on("newHeadline", handleNewHeadline);
         return () => {
             goodbye();
             socket.off("joinHeadline", handleJoinHeadline);
             socket.off("headline", handleHeadline);
-            socket.off("makeThread", handleMakeThread);
+            socket.off("newHeadline", handleNewHeadline);
         };
     });
 

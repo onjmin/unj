@@ -11,11 +11,17 @@ import {
 	myConfig,
 	unjBeginDate,
 } from "../../common/request/schema.js";
-import type { Meta, Player, Res } from "../../common/response/schema.js";
+import type {
+	HeadlineThread,
+	Meta,
+	Player,
+	Res,
+} from "../../common/response/schema.js";
 import { randInt } from "../../common/util.js";
 import {
 	decodeThreadId,
 	encodeResId,
+	encodeThreadId,
 	encodeUserId,
 	flaky,
 } from "../mylib/anti-debug.js";
@@ -23,15 +29,19 @@ import auth from "../mylib/auth.js";
 import {
 	ageResCache,
 	ageResNumCache,
+	badCountCache,
 	balsResNumCache,
 	bannedCache,
 	bannedIPCache,
 	ccBitmaskCache,
 	contentTypesBitmaskCache,
+	createdAtCache,
 	firstCursorCache,
+	goodCountCache,
 	isDeleted,
 	isMax,
 	latestCursorCache,
+	lolCountCache,
 	ninja,
 	ninjaPokemonCache,
 	ninjaScoreCache,
@@ -39,6 +49,8 @@ import {
 	psCache,
 	resCountCache,
 	sageCache,
+	threadCached,
+	titleCache,
 	userCached,
 	userIPCache,
 	varsanCache,
@@ -52,7 +64,13 @@ import nonce from "../mylib/nonce.js";
 import { pool } from "../mylib/pool.js";
 import { doppelgangers, humans } from "../mylib/rpg.js";
 import { isSameSimhash } from "../mylib/simhash.js";
-import { exist, getThreadRoom, joined } from "../mylib/socket.js";
+import {
+	exist,
+	getThreadRoom,
+	headlineRoom,
+	joined,
+	sizeOf,
+} from "../mylib/socket.js";
 
 const api = "res";
 const coolTimes: Map<number, Date> = new Map();
@@ -298,6 +316,34 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 				new: newRes,
 				yours: false,
 			});
+
+			// ヘッドライン更新
+			if (threadCached.has(threadId)) {
+				const createdAt = createdAtCache.get(threadId) ?? new Date(0);
+				const newHeadline: HeadlineThread = {
+					// 書き込み内容
+					ccUserId,
+					// メタ情報
+					id: encodeThreadId(threadId) ?? "",
+					latestRes,
+					latestResAt: new Date(),
+					resCount: nextResNum,
+					latestCursor: "",
+					// 基本的な情報
+					title: titleCache.get(threadId) ?? "",
+					// 動的なデータ
+					online: sizeOf(io, getThreadRoom(threadId)),
+					ikioi:
+						Math.floor((nextResNum * 3600_000_0) / (+new Date() - +createdAt)) /
+						10,
+					lolCount: lolCountCache.get(threadId) ?? 0,
+					goodCount: goodCountCache.get(threadId) ?? 0,
+					badCount: badCountCache.get(threadId) ?? 0,
+				};
+				socket
+					.to(headlineRoom)
+					.emit("newHeadline", { ok: true, new: newHeadline, yours: false });
+			}
 
 			// !age
 			let ageRes: Res | null;
