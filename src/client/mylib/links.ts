@@ -2,6 +2,11 @@ import { SiteInfo } from "../../common/request/whitelist/site-info.js";
 
 export const links = [
 	new SiteInfo({
+		name: "なんI",
+		description: "掲示板作ったんやが",
+		href: "https://ngsesjdun.github.io/my-bbs/",
+	}),
+	new SiteInfo({
 		name: "KomirkaBBS",
 		description: "マイナンバー登録制の匿名掲示板",
 		href: "https://www.komirkabbs.com/Threads/2025-06-01T16:50:51.271+09:00/2655c36a-00de-477b-ac1a-1aaa412cdfd9/1",
