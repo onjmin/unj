@@ -311,14 +311,11 @@
         max-width: 90%;
         box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); /* 軽く浮かせる */
     }
-    /* 吹き出しのしっぽ */
-    .thread-latest-res::before {
-        content: "";
-        position: absolute;
-        top: -0.35rem;
-        left: 1rem;
-        border-width: 0.35rem;
-        border-style: solid;
-        border-color: transparent transparent #f8f9fa transparent;
+    /* ダークモード用 */
+    :global(body.dark .thread-latest-res) {
+        background: #2a2a2a; /* 暗めの背景 */
+        border-left: 3px solid #555; /* 親子関係を示す縦線も暗めに */
+        color: #ddd; /* 文字を明るくして読みやすく */
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3); /* 影も強め */
     }
 </style>
