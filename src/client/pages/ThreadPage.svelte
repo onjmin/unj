@@ -425,10 +425,10 @@
     let uploadedImgur: ImgurResponse | null = null;
     const tryRes = async () => {
         // 利用規約同意
-        if (termsAgreement.value !== "yes") {
-            openConfirm = true;
-            return;
-        }
+        // if (termsAgreement.value !== "yes") {
+        //     openConfirm = true;
+        //     return;
+        // }
         if (emitting) return;
         emitting = true;
         let contentMeta = {};
