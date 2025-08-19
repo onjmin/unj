@@ -2,9 +2,19 @@ import { SiteInfo } from "../../common/request/whitelist/site-info.js";
 
 export const links = [
 	new SiteInfo({
+		name: "🥺ぷゆゆな集会場🥺",
+		description: "あらすなよ☝️🥺URL変なのわ御愛嬌🥺",
+		href: "https://hikakinmania4-cmyk.github.io/-/#",
+	}),
+	new SiteInfo({
 		name: "なんI",
 		description: "掲示板作ったんやが",
 		href: "https://ngsesjdun.github.io/my-bbs/",
+	}),
+	new SiteInfo({
+		name: "なんでも実況osv",
+		description: "OSVを内部で用いています",
+		href: "https://openosv.net/bbs/livejupiter/",
 	}),
 	new SiteInfo({
 		name: "KomirkaBBS",
