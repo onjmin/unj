@@ -156,35 +156,45 @@
         <div class="unj-headline-container">
             <List class="demo-list" dense nonInteractive>
                 {#each threadList as thread, i}
-                    <Item disabled class="unj-headline-thread-item">
-                        <div class="pc-only">
-                            <Graphic
-                                ><TwemojiPart
-                                    seed={thread.id}
-                                    height="16"
-                                /></Graphic
+                    <div class="thread-block">
+                        <Item disabled class="unj-headline-thread-item">
+                            <div class="pc-only">
+                                <Graphic
+                                    ><TwemojiPart
+                                        seed={thread.id}
+                                        height="16"
+                                    /></Graphic
+                                >
+                            </div>
+                            <div class="time-and-count-container">
+                                <span class="res-time"
+                                    >{formatTimeAgo(thread.latestResAt)}</span
+                                >
+                                <span class="res-count"
+                                    >{thread.resCount}レス</span
+                                >
+                            </div>
+                            <div class="thread-title">
+                                <Link
+                                    to={makePathname(
+                                        `/thread/${thread.id}${thread.resCount > queryResultLimit && thread.latestCursor ? `/${thread.latestCursor}/1` : ""}`,
+                                    )}>{thread.title}</Link
+                                >
+                            </div>
+                            <div
+                                class={`pc-only thread-info online-${Math.min(3, thread.online)}`}
                             >
-                        </div>
-                        <div class="time-and-count-container">
-                            <span class="res-time"
-                                >{formatTimeAgo(thread.latestResAt)}</span
-                            >
-                            <span class="res-count">{thread.resCount}レス</span>
-                        </div>
-                        <div class="thread-title">
-                            <Link
-                                to={makePathname(
-                                    `/thread/${thread.id}${thread.resCount > queryResultLimit && thread.latestCursor ? `/${thread.latestCursor}/1` : ""}`,
-                                )}>{thread.title}</Link
-                            >
-                        </div>
-                        <div class="pc-only latest-res">
+                                {thread.online}人閲覧中
+                            </div>
+                        </Item>
+                        <!-- ここで子要素として1行下に latestRes を表示 -->
+                        <div class="thread-latest-res">
                             {thread.latestRes}
                         </div>
-                    </Item>
-                    {#if i % 4 === 3 && i !== (threadList ?? []).length - 1}
-                        <Separator />
-                    {/if}
+                        {#if i % 4 === 3 && i !== (threadList ?? []).length - 1}
+                            <Separator />
+                        {/if}
+                    </div>
                 {/each}
             </List>
             <center>
@@ -232,17 +242,83 @@
         white-space: nowrap;
         text-overflow: ellipsis;
     }
-    .latest-res {
+
+    .thread-info {
         flex: 0 1 16rem;
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
-        opacity: 0.6;
         font-size: 0.6rem;
+        transition: all 0.2s ease;
     }
+
+    /* 0人：最も控えめ */
+    .thread-info.online-0 {
+        opacity: 0.4;
+        color: #999; /* グレーで控えめ */
+        font-weight: normal;
+        font-style: normal;
+        text-decoration: none;
+    }
+
+    /* 1人：少し強調 */
+    .thread-info.online-1 {
+        opacity: 0.7;
+        color: #2a7fff; /* 青系でやや目立たせる */
+        font-weight: 500;
+        font-style: normal;
+        text-decoration: none;
+    }
+
+    /* 2人：さらに強調 */
+    .thread-info.online-2 {
+        opacity: 0.85;
+        color: #ff7f2a; /* オレンジ系で暖かく目立たせる */
+        font-weight: 600;
+        font-style: italic; /* 軽く斜体でアクセント */
+        text-decoration: none;
+    }
+
+    /* 3人以上：最大強調 */
+    .thread-info.online-3 {
+        opacity: 1;
+        color: #d32f2f; /* 赤系で最も強調 */
+        font-weight: 700;
+        font-style: italic;
+        text-decoration: underline; /* さらに注目させる */
+    }
+
     @media screen and (max-width: 768px) {
         .pc-only {
             display: none;
         }
+    }
+    .thread-block {
+        margin-bottom: 0.5rem; /* 適度に間隔 */
+    }
+    .thread-latest-res {
+        position: relative;
+        margin: 0.2rem 0 0.4rem 2rem; /* スレタイ直下に余白＋字下げ */
+        padding: 0.4rem 0.7rem;
+        background: #f8f9fa; /* 薄グレー背景でカード感 */
+        border-left: 3px solid #ccc; /* 親子関係を示す縦線 */
+        border-radius: 0.4rem;
+        color: #444;
+        font-size: 0.9em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 90%;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); /* 軽く浮かせる */
+    }
+    /* 吹き出しのしっぽ */
+    .thread-latest-res::before {
+        content: "";
+        position: absolute;
+        top: -0.35rem;
+        left: 1rem;
+        border-width: 0.35rem;
+        border-style: solid;
+        border-color: transparent transparent #f8f9fa transparent;
     }
 </style>
