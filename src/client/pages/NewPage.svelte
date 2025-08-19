@@ -131,10 +131,10 @@
     let uploadedImgur: ImgurResponse | null = null;
     const tryMakeThread = async () => {
         // 利用規約同意
-        // if (termsAgreement.value !== "yes") {
-        //     openConfirm = true;
-        //     return;
-        // }
+        if (termsAgreement.value !== "yes") {
+            openConfirm = true;
+            return;
+        }
         if (emitting || !check1) return;
         emitting = true;
         let contentMeta = {};
