@@ -93,7 +93,7 @@
                             </Chip>
                         {/snippet}
                     </ChipSet>
-                    <div>
+                    <div class="news-link">
                         <Link to={makePathname(`/news/${item.id}`)}
                             >{item.title}</Link
                         >
@@ -111,7 +111,15 @@
 
 <style>
     .date {
-        font-size: 0.875rem;
-        color: gray;
+        flex: 0 0 auto; /* 幅固定（縮まない） */
+        font-size: 0.85rem;
+        color: #666;
+    }
+
+    .news-link {
+        flex: 1 1 auto;
+        overflow: hidden;
+        text-overflow: ellipsis; /* タイトルが長いとき「…」に */
+        white-space: nowrap;
     }
 </style>
