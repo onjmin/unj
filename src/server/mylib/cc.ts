@@ -12,7 +12,7 @@ const base62 = baseX(
 	"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
 );
 
-const sha256ToBase62 = (input: string): string => {
+const sha256Base62 = (input: string): string => {
 	const bytes = sha256.array(input.toString());
 	return base62.encode(new Uint8Array(bytes));
 };
@@ -36,7 +36,7 @@ export const makeCcUserId = ({
 			const ninjaLv = (ninjaScore ** (1 / 3)) | 0;
 			// 「IDの最初の2文字」「プロパイダを基にした文字」「忍法帖レベル」
 			return [
-				sha256ToBase62(result).slice(0, 2),
+				sha256Base62(result).slice(0, 2),
 				sha256(ipRange).slice(0, 2),
 				`L${ninjaLv}`,
 			].join(".");
@@ -45,7 +45,7 @@ export const makeCcUserId = ({
 		// 1: ID表示 # （ID:byNL）
 		const result = encodeUserId(userId, new Date());
 		if (result !== null) {
-			return sha256ToBase62(result).slice(0, 4);
+			return sha256Base62(result).slice(0, 4);
 		}
 	}
 	// 0: ID非表示
