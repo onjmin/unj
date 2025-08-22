@@ -26,7 +26,6 @@ export const makeCcUserId = ({
 	userId: number;
 	socket: Socket;
 }): string => {
-	// Hashidsは出力の形式が似てしまうので、sha256を挟む
 	if ((ccBitmask & 2) !== 0) {
 		// 2: 自演防止ID表示 # （ID:8z.8u.L60）
 		const result = encodeUserId(userId, new Date());
