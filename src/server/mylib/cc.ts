@@ -1,3 +1,4 @@
+import baseX from "base-x";
 import { sha256 } from "js-sha256";
 import type { Socket } from "socket.io";
 import { pokemonMap } from "../../common/pokemon.js";
@@ -6,6 +7,15 @@ import { encodeUserId } from "./anti-debug.js";
 import auth from "./auth.js";
 import { ninjaPokemonCache, ninjaScoreCache } from "./cache.js";
 import { getIP, sliceIPRange } from "./ip.js";
+
+const base62 = baseX(
+	"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
+);
+
+const sha256ToBase62 = (input: string): string => {
+	const bytes = sha256.array(input.toString());
+	return base62.encode(new Uint8Array(bytes));
+};
 
 export const makeCcUserId = ({
 	ccBitmask,
@@ -16,6 +26,7 @@ export const makeCcUserId = ({
 	userId: number;
 	socket: Socket;
 }): string => {
+	// Hashidsは出力の形式が似てしまうので、sha256を挟む
 	if ((ccBitmask & 2) !== 0) {
 		// 2: 自演防止ID表示 # （ID:8z.8u.L60）
 		const result = encodeUserId(userId, new Date());
@@ -26,7 +37,7 @@ export const makeCcUserId = ({
 			const ninjaLv = (ninjaScore ** (1 / 3)) | 0;
 			// 「IDの最初の2文字」「プロパイダを基にした文字」「忍法帖レベル」
 			return [
-				result.slice(0, 2),
+				sha256ToBase62(result).slice(0, 2),
 				sha256(ipRange).slice(0, 2),
 				`L${ninjaLv}`,
 			].join(".");
@@ -35,7 +46,7 @@ export const makeCcUserId = ({
 		// 1: ID表示 # （ID:byNL）
 		const result = encodeUserId(userId, new Date());
 		if (result !== null) {
-			return result.slice(0, 4);
+			return sha256ToBase62(result).slice(0, 4);
 		}
 	}
 	// 0: ID非表示

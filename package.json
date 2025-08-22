@@ -74,6 +74,7 @@
 		"@types/howler": "^2.2.12",
 		"@types/pg": "^8.11.11",
 		"@types/ws": "^8.18.1",
+		"base-x": "5.0.1",
 		"chalk": "^5.4.1",
 		"cross-env": "^7.0.3",
 		"date-fns": "^4.1.0",
