@@ -613,7 +613,7 @@
             <Checkbox disabled checked={true} />
         </FormField>
     {/if}
-    <FormField align="end">
+    <!-- <FormField align="end">
         {#snippet label()}RPGMODE{/snippet}
         <Checkbox bind:checked={isRpgMode} />
     </FormField>
@@ -624,7 +624,7 @@
                 openDressUp = true;
             }}>checkroom</IconButton
         >
-    {/if}
+    {/if} -->
     {#if oekaki}
         <FormField align="end">
             <Switch bind:checked={checkedOekaki} />
@@ -633,7 +633,7 @@
             {/snippet}
         </FormField>
     {/if}
-    <Select
+    <!-- <Select
         disabled={emitting}
         key={String}
         bind:value={commandSelected}
@@ -642,7 +642,7 @@
         {#each commandOptions as v}
             <Option value={v}>{v}</Option>
         {/each}
-    </Select>
+    </Select> -->
 {/snippet}
 
 <HeaderPart {title} bind:bookmark>
