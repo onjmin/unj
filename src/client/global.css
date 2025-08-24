@@ -1,6 +1,17 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@import "@skeletonlabs/skeleton";
+@import "@skeletonlabs/skeleton/optional/presets";
+@import "@skeletonlabs/skeleton/themes/cerberus";
+
+@source "../node_modules/@skeletonlabs/skeleton-svelte/dist";
+@plugin "@tailwindcss/forms";
+@plugin "@tailwindcss/typography";
+
+/* SkeletonのPopover用 */
+[data-scope="popover"][data-part="positioner"] {
+	--z-index: 114514 !important;
+}
 
 /* 
  * 使い分けのポイント

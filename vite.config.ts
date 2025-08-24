@@ -8,6 +8,7 @@ import {
 
 import { resolve } from "node:path";
 import { svelte } from "@sveltejs/vite-plugin-svelte";
+import tailwindcss from "@tailwindcss/vite";
 import chalk from "chalk";
 import { defineConfig } from "vite";
 import { encode } from "./src/common/anti-debug.js";
@@ -60,7 +61,7 @@ for (const i of Array(randInt(32, 64)).keys()) {
 }
 
 export default defineConfig({
-	plugins: [svelte()],
+	plugins: [svelte(), tailwindcss()],
 	base: VITE_BASE_URL,
 	root: "src/client",
 	define: Object.fromEntries(
