@@ -84,7 +84,7 @@
 {#if menu}
     {#if showAd && !isDeleteAds}
         <div
-            class="group relative w-full cursor-pointer overflow-hidden rounded shadow-md mb-2 z-256"
+            class="group relative w-full cursor-pointer overflow-hidden rounded shadow-md mb-2 z-32"
             onclick={openAd}
             tabindex="0"
             role="button"
