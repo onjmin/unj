@@ -41,7 +41,7 @@
   <!-- <link rel="icon" href="static/favicons/favicon.ico" /> -->
 </svelte:head>
 
-<header class="unj-header-part w-full bg-primary-400 text-white shadow-md">
+<header class="unj-header-part w-full bg-primary-600 text-white shadow-md">
   <div
     class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-center gap-2"
   >
