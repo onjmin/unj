@@ -21,7 +21,7 @@
   import UrlTemplatePart from "./UrlTemplatePart.svelte";
 
   const regexUrl =
-    /^(https?:\/\/)?([\w\-]+\.)+[\w\-]+(\/[\w\-._~:/?#[\]@!$&'()*+,;=]*)?$/i;
+    /(https?:\/\/)?([\w\-]+\.)+[\w\-]+(\/[\w\-._~:/?#[\]@!$&'()*+,;=]*)?/i;
 
   let {
     disabled = false,
@@ -129,7 +129,7 @@
       contentType = _contentType;
       contentUrl = url.href;
     }
-    setTimeout(() => (contentText = contentText.replace(m[0], "")));
+    setTimeout(() => (contentText = contentText.replace(m[0], "").trim()));
   }}
 >
   {#snippet helper()}
