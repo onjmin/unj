@@ -109,3 +109,4 @@ export const authTokenUpdatedAt = new UnjStorage("authTokenUpdatedAt");
 export const nonceKey = new UnjStorage("nonceKey");
 export const ninjaPokemon = new UnjStorage("ninjaPokemon");
 export const ninjaScore = new UnjStorage("ninjaScore");
+export const adsDeletedAt = new UnjStorage("adsDeletedAt");

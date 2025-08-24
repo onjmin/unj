@@ -2,6 +2,7 @@
     import BottomAppBar, { Section } from "@smui-extra/bottom-app-bar";
     import Card, { Content } from "@smui/card";
     import IconButton from "@smui/icon-button";
+    import { addHours, isBefore } from "date-fns";
     import { navigate } from "svelte-routing";
     import { randArray } from "../../common/util.js";
     import { makePathname } from "../mylib/env.js";
@@ -11,6 +12,7 @@
         openLeft,
         openRight,
     } from "../mylib/store.js";
+    import { adsDeletedAt } from "../mylib/unj-storage.js";
 
     let { children, menu = true } = $props();
 
@@ -18,8 +20,17 @@
 
     const closeAd = (event: MouseEvent) => {
         event.stopPropagation(); // ✖ ボタンでクリックを伝播させない
+        if (!confirm("3時間、広告を非表示のん？")) return;
+        alert(
+            "サーバ運営には広告収入は不要なの。。でも気が向いたらご協力お願いね。。",
+        );
         showAd = false;
+        adsDeletedAt.value = `${+new Date()}`;
     };
+
+    const isDeleteAds =
+        adsDeletedAt.value &&
+        isBefore(new Date(), addHours(new Date(Number(adsDeletedAt.value)), 3));
 
     const openAd = () => {
         window.open(ad.href, "_blank");
@@ -71,7 +82,7 @@
 </main>
 
 {#if menu}
-    {#if showAd}
+    {#if showAd && !isDeleteAds}
         <div
             class="w-full relative cursor-pointer overflow-hidden rounded shadow-md mb-2 z-256"
             onclick={openAd}
