@@ -73,7 +73,7 @@
 {#if menu}
     {#if showAd}
         <div
-            class="w-full relative cursor-pointer overflow-hidden rounded shadow-md mb-2"
+            class="w-full relative cursor-pointer overflow-hidden rounded shadow-md mb-2 z-256"
             onclick={openAd}
             tabindex="0"
             role="button"
