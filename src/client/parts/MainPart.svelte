@@ -84,18 +84,26 @@
 {#if menu}
     {#if showAd && !isDeleteAds}
         <div
-            class="w-full relative cursor-pointer overflow-hidden rounded shadow-md mb-2 z-256"
+            class="group relative w-full cursor-pointer overflow-hidden rounded shadow-md mb-2 z-256"
             onclick={openAd}
             tabindex="0"
             role="button"
             onkeydown={() => {}}
         >
-            <!-- 背景画像 -->
+            <!-- 不透明の白背景 -->
+            <div class="absolute inset-0 bg-white"></div>
+
+            <!-- 背景画像（半透明） -->
             <img
                 src={ad.image}
                 alt={ad.title}
-                class="absolute inset-0 w-full h-full object-cover opacity-20 pointer-events-none"
+                class="absolute inset-0 w-full h-full object-cover opacity-40 pointer-events-none"
             />
+
+            <!-- hover時のオーバーレイ -->
+            <div
+                class="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors duration-200"
+            ></div>
 
             <!-- 内容 -->
             <div
@@ -110,15 +118,17 @@
                     ✖
                 </button>
 
-                <!-- favicon アイコン: 高さ制限だけする -->
+                <!-- favicon アイコン（hover時に暗くする） -->
                 <img
                     src={ad.image}
                     alt="Logo"
-                    class="max-h-full w-auto z-10 object-contain"
+                    class="max-h-full w-auto z-10 object-contain transition group-hover:brightness-75"
                 />
 
                 <!-- タイトル + PR文 -->
-                <div class="flex flex-col justify-center z-10">
+                <div
+                    class="flex flex-col justify-center z-10 transition group-hover:brightness-90"
+                >
                     <span class="font-bold text-sm">{ad.title}</span>
                     <span class="text-xs opacity-80">{ad.description}</span>
                 </div>
