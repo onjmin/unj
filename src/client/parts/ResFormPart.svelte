@@ -110,7 +110,7 @@
   }}
   onpaste={(e: ClipboardEvent) => {
     const pasteText = e.clipboardData?.getData("text");
-    const m = pasteText?.match(regexUrl);
+    const m = pasteText?.trim().match(regexUrl);
     if (!m) return;
     let url;
     try {
