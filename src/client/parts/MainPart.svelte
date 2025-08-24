@@ -64,7 +64,7 @@
         },
         {
             title: "おんｊ技術部",
-            description: "おんJ民専用Discord",
+            description: "おんｊ民専用の技術系Discordサーバー",
             image: "https://unj.netlify.app/static/favicons/loze.png",
             href: "https://disboard.org/ja/server/1340540775401787494",
         },
