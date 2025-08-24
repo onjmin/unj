@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /* 
  * 使い分けのポイント
  * + 複数のSvelteファイルで参照する必要があるCSS変数の定義
