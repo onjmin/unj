@@ -1,11 +1,5 @@
 <script lang="ts">
   import { DEV_MODE, STG_MODE } from "../mylib/env.js";
-  import {
-    isEnabledRightMenu,
-    isMobile,
-    openLeft,
-    openRight,
-  } from "../mylib/store.js";
 
   let {
     children = null,
@@ -13,6 +7,14 @@
     menu = true,
     bookmark = $bindable(null),
   } = $props();
+  import {
+    isEnabledRightMenu,
+    isMobile,
+    openLeft,
+    openRight,
+  } from "../mylib/store.js";
+  import LeftMenuPart from "./LeftMenuPart.svelte";
+  import RightMenuPart from "./RightMenuPart.svelte";
 
   if (DEV_MODE) {
     title = `DEV - ${title}`;
@@ -39,7 +41,7 @@
   <!-- <link rel="icon" href="static/favicons/favicon.ico" /> -->
 </svelte:head>
 
-<header class="w-full bg-primary-400 text-white shadow-md">
+<header class="unj-header-part w-full bg-primary-400 text-white shadow-md">
   <div
     class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-center gap-2"
   >
@@ -51,3 +53,22 @@
     />
   </div>
 </header>
+
+{#if menu}
+  <LeftMenuPart open={$openLeft} />
+  {#if children !== null}
+    <RightMenuPart open={$openRight && $isEnabledRightMenu}>
+      {@render children?.()}
+    </RightMenuPart>
+  {/if}
+  <button
+    type="button"
+    class="unj-main-part-overlay {$isMobile && ($openLeft || $openRight)
+      ? ''
+      : 'hidden'}"
+    onclick={() => {
+      $openLeft = false;
+      $openRight = false;
+    }}>うんｊ</button
+  >
+{/if}
