@@ -30,7 +30,7 @@ https://unj.netlify.app
 
 - **開発言語**: TypeScript  
 - **実行環境**: Volta / pnpm / Biome  
-- **フロントエンド**: Svelte 5 / SMUI
+- **フロントエンド**: Svelte 5 / SMUI → Tailwind CSS（移行中）
 - **バックエンド**: Express / Socket.IO
 - **その他**: Valibot / JavaScript obfuscator
 

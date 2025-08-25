@@ -44,7 +44,7 @@
         </Paper>
     {/if}
     <div class="iframe-container">
-        <iframe title="error" src="https://image.open2ch.net/page/error/mogura/"
+        <iframe title="error" src="https://dma-cmyk.github.io/BabyWhacker/"
         ></iframe>
     </div>
 </MainPart>
