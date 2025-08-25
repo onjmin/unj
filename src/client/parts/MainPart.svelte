@@ -130,12 +130,12 @@
                     class="flex flex-col justify-center z-10 transition group-hover:brightness-90"
                 >
                     <span
-                        class="font-bold text-sm [text-shadow:1px_1px_2px_black]"
+                        class="font-bold text-sm text-white [text-shadow:1px_1px_2px_black]"
                     >
                         {ad.title}
                     </span>
                     <span
-                        class="text-xs opacity-80 [text-shadow:1px_1px_2px_black]"
+                        class="text-xs text-white opacity-90 [text-shadow:1px_1px_2px_black]"
                     >
                         {ad.description}
                     </span>
