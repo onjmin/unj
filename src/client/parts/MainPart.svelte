@@ -129,8 +129,16 @@
                 <div
                     class="flex flex-col justify-center z-10 transition group-hover:brightness-90"
                 >
-                    <span class="font-bold text-sm">{ad.title}</span>
-                    <span class="text-xs opacity-80">{ad.description}</span>
+                    <span
+                        class="font-bold text-sm [text-shadow:1px_1px_2px_black]"
+                    >
+                        {ad.title}
+                    </span>
+                    <span
+                        class="text-xs opacity-80 [text-shadow:1px_1px_2px_black]"
+                    >
+                        {ad.description}
+                    </span>
                 </div>
             </div>
         </div>
