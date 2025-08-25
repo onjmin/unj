@@ -90,8 +90,8 @@
             role="button"
             onkeydown={() => {}}
         >
-            <!-- 不透明の白背景 -->
-            <div class="absolute inset-0 bg-white"></div>
+            <!-- 不透明の背景 -->
+            <div class="absolute inset-0 bg-gray-500"></div>
 
             <!-- 背景画像（半透明） -->
             <img
