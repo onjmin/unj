@@ -54,7 +54,7 @@
 <style>
     .iframe-container {
         width: 96vw;
-        height: 76vh;
+        height: 96vh;
         overflow: hidden;
         margin: 0;
         padding-top: 16px;
