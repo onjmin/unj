@@ -49,7 +49,7 @@ new Avatar({
 	id: 102,
 	name: "解音ゼロ",
 	description: "解音ゼロのスレのイッチやけど",
-	src: "https://i.imgur.com/YDYykrH.png",
+	src: "https://musicfm.pages.dev/zero.png",
 	href: "https://zero-tokine-test.my.canva.site",
 });
 new Avatar({
