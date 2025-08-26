@@ -81,22 +81,20 @@
             {#each items as item, i}
                 <Item disabled>
                     <div class="date">{formatDate(item.published)}</div>
-                    <ChipSet
-                        chips={item.labels}
-                        nonInteractive
-                        class="hidden md:flex"
-                    >
-                        {#snippet chip(chip: string)}
-                            <Chip {chip}>
-                                {#if label2icon.has(chip)}
-                                    <LeadingIcon class="material-icons"
-                                        >{label2icon.get(chip)}</LeadingIcon
-                                    >
-                                {/if}
-                                <Text tabindex={0}>{chip}</Text>
-                            </Chip>
-                        {/snippet}
-                    </ChipSet>
+                    <div class="hidden md:flex">
+                        <ChipSet chips={item.labels} nonInteractive>
+                            {#snippet chip(chip: string)}
+                                <Chip {chip}>
+                                    {#if label2icon.has(chip)}
+                                        <LeadingIcon class="material-icons"
+                                            >{label2icon.get(chip)}</LeadingIcon
+                                        >
+                                    {/if}
+                                    <Text tabindex={0}>{chip}</Text>
+                                </Chip>
+                            {/snippet}
+                        </ChipSet>
+                    </div>
                     <div class="news-link">
                         <Link to={makePathname(`/news/${item.id}`)}
                             >{item.title}</Link
