@@ -13,6 +13,16 @@
 	--z-index: 114514 !important;
 }
 
+/* MDCとTailwind共存用 */
+@layer base {
+	.mdc-notched-outline__notch {
+		border: initial;
+	}
+	.mdc-text-field__input:focus {
+		box-shadow: initial !important;
+	}
+}
+
 /* 
  * 使い分けのポイント
  * + 複数のSvelteファイルで参照する必要があるCSS変数の定義
