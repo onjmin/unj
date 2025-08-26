@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { XIcon } from "@lucide/svelte";
     import BottomAppBar, { Section } from "@smui-extra/bottom-app-bar";
     import Card, { Content } from "@smui/card";
     import IconButton from "@smui/icon-button";
@@ -111,11 +112,12 @@
             >
                 <!-- ✖ ボタン -->
                 <button
-                    class="absolute top-1 right-1 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 z-10"
+                    class="absolute top-1 right-1 w-7 h-7 flex items-center justify-center
+         rounded-full bg-gray-800/80 hover:bg-red-600 text-white z-10 shadow-md"
                     onclick={closeAd}
                     aria-label="閉じる"
                 >
-                    ✖
+                    <XIcon size={16} strokeWidth={3} />
                 </button>
 
                 <!-- favicon アイコン（hover時に暗くする） -->
