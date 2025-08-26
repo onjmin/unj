@@ -81,7 +81,11 @@
             {#each items as item, i}
                 <Item disabled>
                     <div class="date">{formatDate(item.published)}</div>
-                    <ChipSet chips={item.labels} nonInteractive>
+                    <ChipSet
+                        chips={item.labels}
+                        nonInteractive
+                        class="hidden md:flex"
+                    >
                         {#snippet chip(chip: string)}
                             <Chip {chip}>
                                 {#if label2icon.has(chip)}
