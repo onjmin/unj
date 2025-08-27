@@ -174,6 +174,8 @@
         const { contentTypesBitmask } = thread;
         if (checkedOekaki && (contentTypesBitmask & Enum.Oekaki) !== 0)
             contentType = Enum.Oekaki;
+        else if (!checkedOekaki && (contentTypesBitmask & Enum.Text) !== 0)
+            contentType = Enum.Text;
     });
 
     let thread: Thread | null = $state(null);
