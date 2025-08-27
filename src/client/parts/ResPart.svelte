@@ -139,15 +139,17 @@
     {#if isOwner}
       <span class="thread-owner system-color">主</span>
     {/if}
-    <IconButton class="material-icons" onclick={() => (open = true)}
-      >share</IconButton
-    >
-    <IconButton
-      class="material-icons"
-      onclick={() => {
-        snackbar2.open();
-      }}>block</IconButton
-    >
+    <div style="display: none;">
+      <IconButton class="material-icons" onclick={() => (open = true)}
+        >share</IconButton
+      >
+      <IconButton
+        class="material-icons"
+        onclick={() => {
+          snackbar2.open();
+        }}>block</IconButton
+      >
+    </div>
     {#if backgroundEmbedControls}
       <IconButton
         class="material-icons"
