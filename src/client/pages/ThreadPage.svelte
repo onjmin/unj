@@ -768,10 +768,9 @@
     {/if}
     {#if thread}
         <div class="thread-header">
-            <p class="thread-title">
-                <TwemojiPart seed={thread.id} height="16" /><span
-                    style="padding-left: 5px;">{thread.title}</span
-                >
+            <p class="thread-title whitespace-nowrap flex items-center">
+                <TwemojiPart seed={thread.id} height="16" />
+                <span class="pl-1.5">{thread.title}</span>
             </p>
             <ChipSet {chips} nonInteractive>
                 {#snippet chip(chip: string)}

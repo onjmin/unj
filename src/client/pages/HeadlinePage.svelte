@@ -5,6 +5,7 @@
     import MainPart from "../parts/MainPart.svelte";
     ///////////////
 
+    import { SearchIcon } from "@lucide/svelte";
     import Button from "@smui/button";
     import List, { Item, Graphic, Separator } from "@smui/list";
     import Paper, { Title, Content, Subtitle } from "@smui/paper";
@@ -133,6 +134,8 @@
         }, 4096);
         return () => clearTimeout(id);
     });
+
+    let searchQuery = $state("");
 </script>
 
 <HeaderPart title="ヘッドライン {online}人閲覧中">
@@ -153,25 +156,47 @@
             <Content>ページ更新してみてね。</Content>
         </Paper>
     {:else}
+        <div class="mb-3 flex items-center gap-2">
+            <!-- 入力欄 + アイコン -->
+            <div class="relative w-full">
+                <input
+                    type="text"
+                    placeholder="スレタイ検索"
+                    bind:value={searchQuery}
+                    class="w-full rounded-md border border-gray-300 pl-8 pr-3 py-1 text-sm focus:border-blue-400 focus:ring focus:ring-blue-200 focus:outline-none"
+                />
+                <SearchIcon
+                    class="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 pointer-events-none"
+                />
+            </div>
+
+            <!-- 検索ボタン -->
+            <button
+                class="min-w-[64px] rounded-md bg-blue-500 px-3 py-1 text-sm font-medium text-white hover:bg-blue-600"
+                onclick={() => alert("めんてちゅ")}
+            >
+                検索
+            </button>
+        </div>
         <div class="unj-headline-container">
             <List class="demo-list" dense nonInteractive>
                 {#each threadList as thread, i}
                     <div class="thread-block">
                         <Item disabled class="unj-headline-thread-item">
-                            <div class="pc-only">
-                                <Graphic
-                                    ><TwemojiPart
-                                        seed={thread.id}
-                                        height="16"
-                                    /></Graphic
-                                >
-                            </div>
                             <div class="time-and-count-container">
                                 <span class="res-time"
                                     >{formatTimeAgo(thread.latestResAt)}</span
                                 >
                                 <span class="res-count"
                                     >{thread.resCount}レス</span
+                                >
+                            </div>
+                            <div class="pc-only">
+                                <Graphic
+                                    ><TwemojiPart
+                                        seed={thread.id}
+                                        height="16"
+                                    /></Graphic
                                 >
                             </div>
                             <div class="thread-title">
