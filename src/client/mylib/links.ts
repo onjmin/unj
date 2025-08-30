@@ -14,7 +14,7 @@ export const links = [
 	new SiteInfo({
 		name: "なんI",
 		description: "掲示板作ったんやが",
-		src: "https://ngsesjdun.github.io/my-bbs/",
+		src: "https://openlive2ch.pages.dev/",
 	}),
 	new SiteInfo({
 		name: "なんでも実況osv",

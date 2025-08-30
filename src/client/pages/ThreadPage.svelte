@@ -805,7 +805,9 @@
                 <span>{"ｗ".repeat(lolCount)}</span>
             </div>
         </div>
-        <div>{@render paginationControls()}</div>
+        <div class="bg-gray-800 dark:bg-gray-200">
+            {@render paginationControls()}
+        </div>
         <div class="res-list">
             <ResPart
                 {focus}
@@ -870,7 +872,9 @@
                 isAlreadyScrollEnd = visible;
             }}
         ></div>
-        <div>{@render paginationControls()}</div>
+        <div class="bg-gray-800 dark:bg-gray-200">
+            {@render paginationControls()}
+        </div>
         <Paper>
             <Title>レス書き込み欄</Title>
             <Subtitle>適当に書き込んでってクレメンス</Subtitle>

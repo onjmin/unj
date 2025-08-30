@@ -163,13 +163,13 @@
                 {/snippet}
             </ChipSet>
         </h1>
-        <div class="pagination">
+        <div class="bg-gray-800 dark:bg-gray-200">
             {@render paginationControls()}
         </div>
         <div class="left content">
             {@html item.content}
         </div>
-        <div class="pagination">
+        <div class="bg-gray-800 dark:bg-gray-200">
             {@render paginationControls()}
         </div>
     {/if}
@@ -195,9 +195,5 @@
         font-size: 0.875rem;
         color: gray;
         margin-bottom: 1rem;
-    }
-    .pagination {
-        text-align: center;
-        margin: 1rem 0;
     }
 </style>

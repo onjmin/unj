@@ -41,7 +41,9 @@
   <!-- <link rel="icon" href="static/favicons/favicon.ico" /> -->
 </svelte:head>
 
-<header class="unj-header-part w-full bg-primary-400 text-white shadow-md">
+<header
+  class="unj-header-part w-full bg-gray-800 dark:bg-gray-200 text-gray-200 dark:text-gray-800 shadow-md"
+>
   <div class="max-w-6xl mx-auto px-4 flex items-center justify-center gap-2">
     <h1 class="text-xl font-bold">{title}</h1>
     <img
