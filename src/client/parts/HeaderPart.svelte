@@ -43,31 +43,31 @@
   <!-- <link rel="icon" href="static/favicons/favicon.ico" /> -->
 </svelte:head>
 
-<header
-  class="relative unj-header-part w-full bg-gray-800 text-gray-200 shadow-md"
->
-  <div class="max-w-6xl mx-auto px-4 flex items-center justify-center">
-    <!-- 中央 -->
-    <div class="flex items-center space-x-2">
-      <h1 class="text-xl font-bold">{title}</h1>
-      <img
-        src={`${import.meta.env.BASE_URL}static/favicons/loze.png`}
-        alt="Logo"
-        class="h-8"
-      />
+<header class="unj-header-part w-full bg-gray-800 text-gray-200 shadow-md">
+  <div class="max-w-6xl mx-auto px-4 flex items-center">
+    <!-- 左端：戻るボタン -->
+    {#if pathname() !== "/" && pathname().split("/")[1] !== "headline"}
+      <button
+        class="flex items-center space-x-1 px-3 py-2 rounded bg-gray-600 text-gray-200 hover:opacity-80"
+        onclick={() => navigate(makePathname("/headline"))}
+      >
+        <ArrowLeftIcon class="w-5 h-5" />
+        <span class="text-sm font-medium">板TOPに戻る</span>
+      </button>
+    {/if}
+
+    <!-- 中央＋右をぜいたくに使う -->
+    <div class="flex-1 text-center">
+      <h1 class="text-xl font-bold inline-flex items-center space-x-2">
+        <span>{title}</span>
+        <img
+          src={`${import.meta.env.BASE_URL}static/favicons/loze.png`}
+          alt="Logo"
+          class="h-8"
+        />
+      </h1>
     </div>
   </div>
-
-  <!-- 左端ボタン -->
-  {#if pathname() !== "/" && pathname().split("/")[1] !== "headline"}
-    <button
-      class="absolute left-4 top-1/2 -translate-y-1/2 flex items-center space-x-1 px-3 py-2 rounded bg-gray-600 text-gray-200 hover:opacity-80"
-      onclick={() => navigate(makePathname("/headline"))}
-    >
-      <ArrowLeftIcon class="w-5 h-5" />
-      <span class="text-sm font-medium">板TOPに戻る</span>
-    </button>
-  {/if}
 </header>
 
 {#if menu}
