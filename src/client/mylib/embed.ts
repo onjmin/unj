@@ -5,6 +5,27 @@ export const parseImageEmbedImgur = (url: URL): string | null => {
 	}
 	return null;
 };
+export const parseImageEmbedFunakamome = (url: URL): string | null => {
+	const id = url.pathname.slice(1).match(/i\/(.+)\.(.+)/)?.[1];
+	if (id) {
+		return `https://funakamome.com/i/${id}.png`;
+	}
+	return null;
+};
+export const parseImageEmbedImgx = (url: URL): string | null => {
+	const id = url.pathname.slice(1).match(/i\/(.+)\.(.+)/)?.[1];
+	if (id) {
+		return `https://imgx.site/i/${id}.png`;
+	}
+	return null;
+};
+export const parseImageEmbedImgBB = (url: URL): string | null => {
+	const match = url.pathname.slice(1).match(/(.+)\/([0-9-]+)\.(.+)/);
+	if (match) {
+		return `https://i.ibb.co/${match[0]}/${match[1]}.png`;
+	}
+	return null;
+};
 export const parseImageEmbedNicoseiga = (url: URL): string | null => {
 	const id = url.pathname.match(/im([0-9]+)/)?.[1];
 	if (id) {

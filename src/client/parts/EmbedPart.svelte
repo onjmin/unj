@@ -19,7 +19,10 @@
     parseAudioEmbedSoundCloud,
     parseAudioEmbedSpotify,
     parseGifEmbedImgur,
+    parseImageEmbedFunakamome,
+    parseImageEmbedImgBB,
     parseImageEmbedImgur,
+    parseImageEmbedImgx,
     parseImageEmbedNicoseiga,
     parseImageEmbedPixiv,
     parseVideoEmbedNicovideo,
@@ -58,6 +61,18 @@
         case 403:
           imageEmbed = true;
           embedUrl = parseImageEmbedPixiv(url) ?? "";
+          break;
+        case 404:
+          imageEmbed = true;
+          embedUrl = parseImageEmbedFunakamome(url) ?? "";
+          break;
+        case 405:
+          imageEmbed = true;
+          embedUrl = parseImageEmbedImgx(url) ?? "";
+          break;
+        case 406:
+          imageEmbed = true;
+          embedUrl = parseImageEmbedImgBB(url) ?? "";
           break;
         case 801:
           imageEmbed = true;

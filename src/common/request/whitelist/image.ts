@@ -9,6 +9,27 @@ export default [
 		hostnames: ["i.imgur.com"],
 	}),
 	new SiteInfo({
+		id: 404,
+		name: "よねっと",
+		description: "ふなかもめ本体",
+		href: "https://funakamome.com/imgurup",
+		hostnames: ["funakamome.com"],
+	}),
+	new SiteInfo({
+		id: 405,
+		name: "imgx",
+		description: "ふなかもめ経由でうｐ可能その1",
+		href: "https://imgx.site/i/3q9sMTX.png",
+		hostnames: ["imgx.site"],
+	}),
+	new SiteInfo({
+		id: 406,
+		name: "ImgBB",
+		description: "ふなかもめ経由でうｐ可能その2",
+		href: "https://i.ibb.co/Xxk61hsb/2025-06-25-212016.png",
+		hostnames: ["i.ibb.co"],
+	}),
+	new SiteInfo({
 		id: 402,
 		name: "ニコニコ静画",
 		description: "『静止画』サービスの総合サイト",
