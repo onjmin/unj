@@ -31,6 +31,9 @@ importers:
       '@neondatabase/serverless':
         specifier: ^1.0.0
         version: 1.0.0
+      '@onjmin/cors-killer':
+        specifier: 1.0.6
+        version: 1.0.6
       '@onjmin/oekaki':
         specifier: 1.0.47
         version: 1.0.47
@@ -709,6 +712,9 @@ packages:
   '@neondatabase/serverless@1.0.0':
     resolution: {integrity: sha512-XWmEeWpBXIoksZSDN74kftfTnXFEGZ3iX8jbANWBc+ag6dsiQuvuR4LgB0WdCOKMb5AQgjqgufc0TgAsZubUYw==}
     engines: {node: '>=19.0.0'}
+
+  '@onjmin/cors-killer@1.0.6':
+    resolution: {integrity: sha512-m7LurTNk/wO1GtH+XeP85kAZ/u/+0y2wiaydzmq0A9wLNBPL4jnNNE2M7JTq+vbGUlXG4I+2Q9KJO3w+1sTKzQ==}
 
   '@onjmin/oekaki@1.0.47':
     resolution: {integrity: sha512-0HvsviAAzBb/uInTJ6udLEl2B/8Y/bYTdx6OpAV14UjUCycb676KywYkJqqd+Ts3je7T6EqjpXvljSqCq3SPSQ==}
@@ -3871,6 +3877,8 @@ snapshots:
     dependencies:
       '@types/node': 22.13.8
       '@types/pg': 8.11.11
+
+  '@onjmin/cors-killer@1.0.6': {}
 
   '@onjmin/oekaki@1.0.47': {}
 

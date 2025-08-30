@@ -1,3 +1,5 @@
+import { corsKiller } from "@onjmin/cors-killer";
+
 export const parseImageEmbedImgur = (url: URL): string | null => {
 	const id = url.pathname.slice(1).split(".")[0];
 	if (id) {
@@ -15,14 +17,14 @@ export const parseImageEmbedYonet = (url: URL): string | null => {
 export const parseImageEmbedImgx = (url: URL): string | null => {
 	const id = url.pathname.slice(1).match(/i\/(.+)\.(.+)/)?.[1];
 	if (id) {
-		return `https://imgx.site/i/${id}.png`;
+		return corsKiller(`https://imgx.site/i/${id}.png`);
 	}
 	return null;
 };
 export const parseImageEmbedImgBB = (url: URL): string | null => {
 	const match = url.pathname.slice(1).match(/(.+)\/([0-9-]+)\.(.+)/);
 	if (match) {
-		return `https://i.ibb.co/${match[0]}/${match[1]}.png`;
+		return corsKiller(`https://i.ibb.co/${match[0]}/${match[1]}.png`);
 	}
 	return null;
 };
