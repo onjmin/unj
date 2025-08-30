@@ -2,30 +2,34 @@ export class SiteInfo {
 	id;
 	name;
 	description;
-	href;
+	src;
 	hostnames;
 	favicon;
+	href;
 	constructor({
 		id, // フロントで使う
 		name, // 表示用のラベル
 		description, // 一言説明
-		href, // URLテンプレ機能の対象
-		hostnames, // href以外の許容ホスト名
+		src, // 実際に使われるURL
+		hostnames, // src以外の許容ホスト名
+		href, // 選択UIから飛べるリンク先
 	}: {
 		id?: number;
 		name: string;
 		description: string;
-		href: string;
+		src: string;
 		hostnames?: string[];
+		href?: string;
 	}) {
 		this.id = id ?? 0;
 		this.name = name;
 		this.description = description;
-		this.href = href;
-		const hostname = new URL(this.href).hostname;
+		this.src = src;
+		const hostname = new URL(src).hostname;
 		this.favicon = `https://www.google.com/s2/favicons?domain=${hostname}`;
 		this.hostnames = new Set(hostnames ?? []);
 		this.hostnames.add(hostname);
+		this.href = href ?? src;
 	}
 }
 
