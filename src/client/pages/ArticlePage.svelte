@@ -123,11 +123,8 @@
             <ChevronLeftIcon class="w-5 h-5" />
         </button>
 
-        <!-- Home -->
-        <button
-            class="p-2 rounded bg-gray-600 text-gray-200"
-            onclick={() => navigate(makePathname("/news"))}
-        >
+        <!-- Checkbox Outline (Disabled) -->
+        <button class="bg-gray-600 text-gray-200 p-2 rounded" disabled>
             <ChevronsLeftRightEllipsisIcon class="w-5 h-5" />
         </button>
 
