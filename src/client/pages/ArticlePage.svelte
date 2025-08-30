@@ -5,8 +5,14 @@
     import MainPart from "../parts/MainPart.svelte";
     ///////////////
 
+    import {
+        ChevronFirstIcon,
+        ChevronLastIcon,
+        ChevronLeftIcon,
+        ChevronRightIcon,
+        ChevronsLeftRightEllipsisIcon,
+    } from "@lucide/svelte";
     import Chip, { Set as ChipSet, LeadingIcon, Text } from "@smui/chips";
-    import IconButton from "@smui/icon-button";
     import Paper, { Title, Content, Subtitle } from "@smui/paper";
     import { navigate } from "svelte-routing";
     import {
@@ -98,34 +104,51 @@
 <HeaderPart {title} />
 
 {#snippet paginationControls()}
-    <IconButton
-        class="material-icons"
-        disabled={first === null}
-        onclick={() => navigate(makePathname(`/news/${first}`))}
-        >first_page</IconButton
-    >
-    <IconButton
-        class="material-icons"
-        disabled={prev === null}
-        onclick={() => navigate(makePathname(`/news/${prev}`))}
-        >chevron_left</IconButton
-    >
-    <IconButton
-        class="material-icons"
-        onclick={() => navigate(makePathname("/news"))}>home</IconButton
-    >
-    <IconButton
-        class="material-icons"
-        disabled={next === null}
-        onclick={() => navigate(makePathname(`/news/${next}`))}
-        >chevron_right</IconButton
-    >
-    <IconButton
-        class="material-icons"
-        disabled={last === null}
-        onclick={() => navigate(makePathname(`/news/${last}`))}
-        >last_page</IconButton
-    >
+    <div class="flex justify-center items-center space-x-2">
+        <!-- First Page -->
+        <button
+            class="p-2 rounded bg-gray-600 dark:bg-gray-400 text-gray-200 dark:text-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={first === null}
+            onclick={() => navigate(makePathname(`/news/${first}`))}
+        >
+            <ChevronFirstIcon class="w-5 h-5" />
+        </button>
+
+        <!-- Prev -->
+        <button
+            class="p-2 rounded bg-gray-600 dark:bg-gray-400 text-gray-200 dark:text-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={prev === null}
+            onclick={() => navigate(makePathname(`/news/${prev}`))}
+        >
+            <ChevronLeftIcon class="w-5 h-5" />
+        </button>
+
+        <!-- Home -->
+        <button
+            class="p-2 rounded bg-gray-600 dark:bg-gray-400 text-gray-200 dark:text-gray-800"
+            onclick={() => navigate(makePathname("/news"))}
+        >
+            <ChevronsLeftRightEllipsisIcon class="w-5 h-5" />
+        </button>
+
+        <!-- Next -->
+        <button
+            class="p-2 rounded bg-gray-600 dark:bg-gray-400 text-gray-200 dark:text-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={next === null}
+            onclick={() => navigate(makePathname(`/news/${next}`))}
+        >
+            <ChevronRightIcon class="w-5 h-5" />
+        </button>
+
+        <!-- Last Page -->
+        <button
+            class="p-2 rounded bg-gray-600 dark:bg-gray-400 text-gray-200 dark:text-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={last === null}
+            onclick={() => navigate(makePathname(`/news/${last}`))}
+        >
+            <ChevronLastIcon class="w-5 h-5" />
+        </button>
+    </div>
 {/snippet}
 
 <MainPart>
@@ -163,13 +186,13 @@
                 {/snippet}
             </ChipSet>
         </h1>
-        <div class="bg-gray-800 dark:bg-gray-200">
+        <div class="bg-gray-800">
             {@render paginationControls()}
         </div>
         <div class="left content">
             {@html item.content}
         </div>
-        <div class="bg-gray-800 dark:bg-gray-200">
+        <div class="bg-gray-800">
             {@render paginationControls()}
         </div>
     {/if}

@@ -108,7 +108,7 @@
 
             <!-- 内容 -->
             <div
-                class="relative flex items-center gap-3 px-4 py-2 text-gray-900 dark:text-gray-100 h-16"
+                class="relative flex items-center gap-3 px-4 py-2 text-gray-900 h-16"
             >
                 <!-- ✖ ボタン -->
                 <button

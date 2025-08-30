@@ -36,16 +36,12 @@
         {#each threads as thread}
             <a
                 href={thread.url}
-                class="flex justify-between items-center p-2 bg-white dark:bg-gray-800 rounded hover:bg-gray-50 dark:hover:bg-gray-700 transition text-sm"
+                class="flex justify-between items-center p-2 bg-white rounded hover:bg-gray-50 transition text-sm"
             >
-                <span
-                    class="font-medium text-gray-900 dark:text-gray-100 truncate"
-                >
+                <span class="font-medium text-gray-900 truncate">
                     {thread.title}
                 </span>
-                <span
-                    class="ml-2 text-xs text-gray-400 dark:text-gray-300 flex-shrink-0"
-                >
+                <span class="ml-2 text-xs text-gray-400 flex-shrink-0">
                     {thread.date}
                 </span>
             </a>

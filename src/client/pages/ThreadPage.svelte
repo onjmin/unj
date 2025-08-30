@@ -5,14 +5,19 @@
     import MainPart from "../parts/MainPart.svelte";
     ///////////////
 
+    import {
+        ChevronFirstIcon,
+        ChevronLastIcon,
+        ChevronLeftIcon,
+        ChevronRightIcon,
+        ChevronsLeftRightEllipsisIcon,
+    } from "@lucide/svelte";
     import Banner, { Icon, Label } from "@smui/banner";
     import Button from "@smui/button";
     import Checkbox from "@smui/checkbox";
     import Chip, { Set as ChipSet, LeadingIcon, Text } from "@smui/chips";
     import FormField from "@smui/form-field";
-    import IconButton from "@smui/icon-button";
     import Paper, { Title, Content, Subtitle } from "@smui/paper";
-    import Select, { Option } from "@smui/select";
     import Switch from "@smui/switch";
     import {
         addSeconds,
@@ -705,50 +710,69 @@
 {/if}
 
 {#snippet paginationControls()}
-    <IconButton
-        class="material-icons"
-        disabled={emitting || thread?.firstCursor === topCursor}
-        onclick={() => {
-            cursorBasedPagination({
-                cursor: thread?.firstCursor,
-                desc: false,
-            });
-        }}>first_page</IconButton
-    >
-    <IconButton
-        class="material-icons"
-        disabled={emitting || thread?.firstCursor === topCursor}
-        onclick={() =>
-            cursorBasedPagination({
-                cursor: topCursor,
-                desc: true,
-            })}>chevron_left</IconButton
-    >
-    <IconButton class="material-icons" disabled
-        >check_box_outline_blank</IconButton
-    >
-    <IconButton
-        class="material-icons"
-        disabled={emitting || thread?.latestCursor === bottomCursor}
-        onclick={() => {
-            shouldScrollTo2 = true;
-            cursorBasedPagination({
-                cursor: bottomCursor,
-                desc: false,
-            });
-        }}>chevron_right</IconButton
-    >
-    <IconButton
-        class="material-icons"
-        disabled={emitting || thread?.latestCursor === bottomCursor}
-        onclick={() => {
-            shouldScrollTo2 = true;
-            cursorBasedPagination({
-                cursor: thread?.latestCursor,
-                desc: true,
-            });
-        }}>last_page</IconButton
-    >
+    <div class="flex justify-center items-center space-x-2">
+        <!-- First Page Button -->
+        <button
+            class="bg-gray-600 text-gray-200 p-2 rounded"
+            disabled={emitting || thread?.firstCursor === topCursor}
+            onclick={() => {
+                cursorBasedPagination({
+                    cursor: thread?.firstCursor,
+                    desc: false,
+                });
+            }}
+        >
+            <ChevronFirstIcon class="w-5 h-5" />
+        </button>
+
+        <!-- Chevron Left Button -->
+        <button
+            class="bg-gray-600 text-gray-200 p-2 rounded"
+            disabled={emitting || thread?.firstCursor === topCursor}
+            onclick={() =>
+                cursorBasedPagination({
+                    cursor: topCursor,
+                    desc: true,
+                })}
+        >
+            <ChevronLeftIcon class="w-5 h-5" />
+        </button>
+
+        <!-- Checkbox Outline (Disabled) -->
+        <button class="bg-gray-600 text-gray-200 p-2 rounded" disabled>
+            <ChevronsLeftRightEllipsisIcon class="w-5 h-5" />
+        </button>
+
+        <!-- Chevron Right Button -->
+        <button
+            class="bg-gray-600 text-gray-200 p-2 rounded"
+            disabled={emitting || thread?.latestCursor === bottomCursor}
+            onclick={() => {
+                shouldScrollTo2 = true;
+                cursorBasedPagination({
+                    cursor: bottomCursor,
+                    desc: false,
+                });
+            }}
+        >
+            <ChevronRightIcon class="w-5 h-5" />
+        </button>
+
+        <!-- Last Page Button -->
+        <button
+            class="bg-gray-600 text-gray-200 p-2 rounded"
+            disabled={emitting || thread?.latestCursor === bottomCursor}
+            onclick={() => {
+                shouldScrollTo2 = true;
+                cursorBasedPagination({
+                    cursor: thread?.latestCursor,
+                    desc: true,
+                });
+            }}
+        >
+            <ChevronLastIcon class="w-5 h-5" />
+        </button>
+    </div>
 {/snippet}
 
 <MainPart>
@@ -805,7 +829,7 @@
                 <span>{"ｗ".repeat(lolCount)}</span>
             </div>
         </div>
-        <div class="bg-gray-800 dark:bg-gray-200">
+        <div class="bg-gray-800">
             {@render paginationControls()}
         </div>
         <div class="res-list">
@@ -872,7 +896,7 @@
                 isAlreadyScrollEnd = visible;
             }}
         ></div>
-        <div class="bg-gray-800 dark:bg-gray-200">
+        <div class="bg-gray-800">
             {@render paginationControls()}
         </div>
         <Paper>
