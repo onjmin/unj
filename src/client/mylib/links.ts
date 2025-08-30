@@ -2,6 +2,11 @@ import { SiteInfo } from "../../common/request/whitelist/site-info.js";
 
 export const links = [
 	new SiteInfo({
+		name: "にんG",
+		description: "にんにく実況(garlic)",
+		href: "https://www.z-z.jp/?livegarlic",
+	}),
+	new SiteInfo({
 		name: "🥺ぷゆゆな集会場🥺",
 		description: "あらすなよ☝️🥺URL変なのわ御愛嬌🥺",
 		href: "https://hikakinmania4-cmyk.github.io/-/#",
