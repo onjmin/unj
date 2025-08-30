@@ -107,7 +107,7 @@
 
 <div class="res">
   <!-- 上段: 名前欄 -->
-  <div class="name-row">
+  <div class="name-row text-gray-400">
     <button
       class="reply {sage ? 'sage' : ''}"
       onclick={() => {

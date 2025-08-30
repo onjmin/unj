@@ -43,7 +43,7 @@
         onclick={() => navigate(makePathname("/headline"))}
       >
         <ArrowLeftIcon class="w-5 h-5" />
-        <span class="text-sm font-medium">板TOPに戻る</span>
+        <span class="text-sm font-medium">板TOP</span>
       </button>
     {/if}
 
