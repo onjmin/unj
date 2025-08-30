@@ -5,8 +5,8 @@ export default [
 		id: 401,
 		name: "Imgur",
 		description: "2ch民定番の画像アップローダー",
-		href: "https://imgur.com/WKkpmbf",
-		hostnames: ["i.imgur.com"],
+		href: "https://imguruploader.com",
+		hostnames: ["imgur.com", "i.imgur.com"],
 	}),
 	new SiteInfo({
 		id: 404,
@@ -18,14 +18,14 @@ export default [
 	new SiteInfo({
 		id: 405,
 		name: "imgx",
-		description: "ふなかもめ経由でうｐ可能その1",
+		description: "よねっと経由でうｐ可能その1",
 		href: "https://imgx.site/i/3q9sMTX.png",
 		hostnames: ["imgx.site"],
 	}),
 	new SiteInfo({
 		id: 406,
 		name: "ImgBB",
-		description: "ふなかもめ経由でうｐ可能その2",
+		description: "よねっと経由でうｐ可能その2",
 		href: "https://i.ibb.co/Xxk61hsb/2025-06-25-212016.png",
 		hostnames: ["i.ibb.co"],
 	}),

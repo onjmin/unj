@@ -19,12 +19,12 @@
     parseAudioEmbedSoundCloud,
     parseAudioEmbedSpotify,
     parseGifEmbedImgur,
-    parseImageEmbedFunakamome,
     parseImageEmbedImgBB,
     parseImageEmbedImgur,
     parseImageEmbedImgx,
     parseImageEmbedNicoseiga,
     parseImageEmbedPixiv,
+    parseImageEmbedYonet,
     parseVideoEmbedNicovideo,
     parseVideoEmbedYouTube,
   } from "../mylib/embed.js";
@@ -64,7 +64,7 @@
           break;
         case 404:
           imageEmbed = true;
-          embedUrl = parseImageEmbedFunakamome(url) ?? "";
+          embedUrl = parseImageEmbedYonet(url) ?? "";
           break;
         case 405:
           imageEmbed = true;

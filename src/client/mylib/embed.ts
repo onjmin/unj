@@ -5,7 +5,7 @@ export const parseImageEmbedImgur = (url: URL): string | null => {
 	}
 	return null;
 };
-export const parseImageEmbedFunakamome = (url: URL): string | null => {
+export const parseImageEmbedYonet = (url: URL): string | null => {
 	const id = url.pathname.slice(1).match(/i\/(.+)\.(.+)/)?.[1];
 	if (id) {
 		return `https://funakamome.com/i/${id}.png`;
