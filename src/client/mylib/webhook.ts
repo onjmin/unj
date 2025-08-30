@@ -11,9 +11,6 @@ const VITE_DISCORD_WEBHOOK_URL_OF_CONTACT_AGPL3 = decodeEnv(
 const VITE_DISCORD_WEBHOOK_URL_OF_CONTACT_POLICE = decodeEnv(
 	import.meta.env.VITE_DISCORD_WEBHOOK_URL_OF_CONTACT_POLICE,
 );
-const VITE_DISCORD_WEBHOOK_URL_OF_REPORT_TRAVERSAL = decodeEnv(
-	import.meta.env.VITE_DISCORD_WEBHOOK_URL_OF_REPORT_TRAVERSAL,
-);
 const VITE_DISCORD_WEBHOOK_URL_OF_REPORT_BANNED = decodeEnv(
 	import.meta.env.VITE_DISCORD_WEBHOOK_URL_OF_REPORT_BANNED,
 );
@@ -60,12 +57,6 @@ export const contactAGPL3 = (array: string[]) =>
  */
 export const contactPolice = (array: string[]) =>
 	sendDiscordWebhook(VITE_DISCORD_WEBHOOK_URL_OF_CONTACT_POLICE, array);
-
-/**
- * トラバーサル検出時に送信する
- */
-export const reportTraversal = (array: string[]) =>
-	sendDiscordWebhook(VITE_DISCORD_WEBHOOK_URL_OF_REPORT_TRAVERSAL, array);
 
 /**
  * Socket.IOでIPが不明だった時に送信する

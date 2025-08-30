@@ -28,7 +28,6 @@
         banStatus,
         banVerifyCode,
         ipInfoJson,
-        traversalTarget,
     } from "../mylib/unj-storage.js";
 
     const handleSubmit = async () => {
@@ -40,7 +39,6 @@
         ) {
             banStatus.value = null;
             banReason.value = null;
-            traversalTarget.value = null;
             ipInfoJson.value = null;
             banVerifyCode.value = null;
             banReport.value = null;

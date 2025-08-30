@@ -12,9 +12,8 @@
         banReport,
         banVerifyCode,
         ipInfoJson,
-        traversalTarget,
     } from "../mylib/unj-storage.js";
-    import { reportBanned, reportTraversal } from "../mylib/webhook.js";
+    import { reportBanned } from "../mylib/webhook.js";
 
     let ip = $state("");
 
@@ -43,14 +42,6 @@
                 if ("done" !== banReport.value) {
                     const unknown = "(unknown)";
                     switch (banReason.value) {
-                        case "traversal":
-                            banReport.value = "done";
-                            reportTraversal([
-                                banVerifyCode.value ?? unknown,
-                                ipInfoJson.value ?? unknown,
-                                traversalTarget.value ?? unknown,
-                            ]);
-                            break;
                         case "banned":
                             banReport.value = "done";
                             reportBanned([

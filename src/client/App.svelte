@@ -21,7 +21,6 @@
   import TestPage from "./pages/TestPage.svelte";
   import ThreadPage from "./pages/ThreadPage.svelte";
   import BannedCheck from "./plugs/BannedCheck.svelte";
-  import TraversalCheck from "./plugs/TraversalCheck.svelte";
   import UnbannedCheck from "./plugs/UnbannedCheck.svelte";
 </script>
 
@@ -29,9 +28,7 @@
   <!-- 404ページ -->
   <Route path={makePathname("/*")}>
     <BannedCheck>
-      <TraversalCheck>
-        <NotFoundPage />
-      </TraversalCheck>
+      <NotFoundPage />
     </BannedCheck>
   </Route>
 
