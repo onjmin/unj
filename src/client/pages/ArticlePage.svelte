@@ -107,7 +107,7 @@
     <div class="flex justify-center items-center space-x-2">
         <!-- First Page -->
         <button
-            class="p-2 rounded bg-gray-600 dark:bg-gray-400 text-gray-200 dark:text-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+            class="p-2 rounded bg-gray-600 text-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={first === null}
             onclick={() => navigate(makePathname(`/news/${first}`))}
         >
@@ -116,7 +116,7 @@
 
         <!-- Prev -->
         <button
-            class="p-2 rounded bg-gray-600 dark:bg-gray-400 text-gray-200 dark:text-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+            class="p-2 rounded bg-gray-600 text-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={prev === null}
             onclick={() => navigate(makePathname(`/news/${prev}`))}
         >
@@ -125,7 +125,7 @@
 
         <!-- Home -->
         <button
-            class="p-2 rounded bg-gray-600 dark:bg-gray-400 text-gray-200 dark:text-gray-800"
+            class="p-2 rounded bg-gray-600 text-gray-200"
             onclick={() => navigate(makePathname("/news"))}
         >
             <ChevronsLeftRightEllipsisIcon class="w-5 h-5" />
@@ -133,7 +133,7 @@
 
         <!-- Next -->
         <button
-            class="p-2 rounded bg-gray-600 dark:bg-gray-400 text-gray-200 dark:text-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+            class="p-2 rounded bg-gray-600 text-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={next === null}
             onclick={() => navigate(makePathname(`/news/${next}`))}
         >
@@ -142,7 +142,7 @@
 
         <!-- Last Page -->
         <button
-            class="p-2 rounded bg-gray-600 dark:bg-gray-400 text-gray-200 dark:text-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+            class="p-2 rounded bg-gray-600 text-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={last === null}
             onclick={() => navigate(makePathname(`/news/${last}`))}
         >
