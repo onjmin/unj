@@ -167,16 +167,16 @@
                         onclick={() => navigate(makePathname("/new"))}
                         >edit_note</IconButton
                     >
-                    <div class="label-overlay">新規</div>
+                    <div class="label-overlay">スレ作成</div>
                 </div>
                 <div class="icon-container">
                     <IconButton
                         class="material-icons"
                         aria-label="article"
-                        onclick={() => navigate(makePathname("/headline"))}
-                        >article</IconButton
+                        onclick={() => navigate(makePathname("/history"))}
+                        >history</IconButton
                     >
-                    <div class="label-overlay">一覧</div>
+                    <div class="label-overlay">履歴</div>
                 </div>
                 <div class="icon-container">
                     <IconButton
