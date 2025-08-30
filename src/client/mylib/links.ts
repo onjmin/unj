@@ -9,7 +9,7 @@ export const links = [
 	new SiteInfo({
 		name: "🥺ぷゆゆな集会場🥺",
 		description: "あらすなよ☝️🥺URL変なのわ御愛嬌🥺",
-		href: "https://hikakinmania4-cmyk.github.io/-/#",
+		href: "https://hikakinmania4-cmyk.github.io/puyuyu-na-shukaijo/",
 	}),
 	new SiteInfo({
 		name: "なんI",

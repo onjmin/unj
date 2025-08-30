@@ -137,15 +137,13 @@
   {/snippet}
 </Textfield>
 
-<div style="display: none;">
-  <Select {disabled} key={String} bind:value={contentType} label="本文の形式">
-    {#each contentTypeOptions as v}
-      {#if (v.bit & contentTypesBitmask) !== 0}
-        <Option value={v.bit}>{v.label}</Option>
-      {/if}
-    {/each}
-  </Select>
-</div>
+<Select {disabled} key={String} bind:value={contentType} label="本文の形式">
+  {#each contentTypeOptions as v}
+    {#if (v.bit & contentTypesBitmask) !== 0}
+      <Option value={v.bit}>{v.label}</Option>
+    {/if}
+  {/each}
+</Select>
 
 <Textfield
   {disabled}

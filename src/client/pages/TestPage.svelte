@@ -14,3 +14,5 @@
     <p>実験用</p>
     <OekakiPart threadId="test" />
 </MainPart>
+
+<FooterPart />
