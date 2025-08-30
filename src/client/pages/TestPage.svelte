@@ -15,4 +15,4 @@
     <OekakiPart threadId="test" />
 </MainPart>
 
-<FooterPart />
+<FooterPart menu={false} />

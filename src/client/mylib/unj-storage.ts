@@ -67,10 +67,9 @@ export const soundVolume = new UnjStorage("soundVolume");
 export const newResSound = new UnjStorage("newResSound");
 export const replyResSound = new UnjStorage("replyResSound");
 
-// Guide
-export const showThreadGuide = new UnjStorage("showThreadGuide");
-export const showTermsGuide = new UnjStorage("showTermsGuide");
-export const showContactGuide = new UnjStorage("showContactGuide");
+// Menu
+export const openLeft = new UnjStorage("openLeft");
+export const openRight = new UnjStorage("openRight");
 
 // theme-color
 export const theme = new UnjStorage("theme", () => {

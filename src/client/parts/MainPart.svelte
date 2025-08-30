@@ -152,7 +152,7 @@
                 <IconButton
                     class="material-icons"
                     onclick={() => {
-                        if ($isMobile) {
+                        if (isMobile) {
                             $openRight = false;
                         }
                         $openLeft = !$openLeft;
@@ -204,7 +204,7 @@
                         ? 'visible'
                         : 'hidden'};"
                     onclick={() => {
-                        if ($isMobile) {
+                        if (isMobile) {
                             $openLeft = false;
                         }
                         $openRight = !$openRight;

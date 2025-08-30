@@ -25,16 +25,7 @@
     title = `STG - ${title}`;
   }
 
-  const calcIsMobile = () => window.innerWidth < 768;
   $isEnabledRightMenu = children !== null;
-
-  $effect(() => {
-    // ソフトウェアキーボードが出現すると画面幅が変わるため、最初の1回だけ実行する
-    $isMobile = calcIsMobile();
-    const isPC = !$isMobile;
-    $openLeft = isPC;
-    $openRight = isPC;
-  });
 </script>
 
 <svelte:head>
@@ -79,7 +70,7 @@
   {/if}
   <button
     type="button"
-    class="unj-main-part-overlay {$isMobile && ($openLeft || $openRight)
+    class="unj-main-part-overlay {isMobile && ($openLeft || $openRight)
       ? ''
       : 'hidden'}"
     onclick={() => {
