@@ -724,10 +724,8 @@
                 desc: true,
             })}>chevron_left</IconButton
     >
-    <IconButton
-        class="material-icons"
-        disabled={emitting}
-        onclick={() => navigate(makePathname("/headline"))}>home</IconButton
+    <IconButton class="material-icons" disabled
+        >check_box_outline_blank</IconButton
     >
     <IconButton
         class="material-icons"

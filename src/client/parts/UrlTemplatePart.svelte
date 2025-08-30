@@ -31,7 +31,7 @@
   });
 
   $effect(() => {
-    href = temp[selectionIndex] ? temp[selectionIndex].href : "";
+    href = temp[selectionIndex] ? temp[selectionIndex].src : "";
     if (open && temp.length <= selectionIndex) {
       selectionIndex = 0;
     }
