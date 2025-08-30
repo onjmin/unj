@@ -140,11 +140,11 @@
     </BannedCheck>
   </Route>
   <!-- 後で消す -->
-  <Route path={makePathname("/test")}>
-    <TestPage />
-  </Route>
   <Route path={makePathname("/oekaki/demo")}>
-    <TestPage />
+    <TestPage npm={1} />
+  </Route>
+  <Route path={makePathname("/cors-killer/demo")}>
+    <TestPage npm={2} />
   </Route>
 
   <!-- 直リンでは辿り着けない -->
