@@ -291,7 +291,7 @@ const list = [
 
 export const loadRpgMapText = async (threadId: string): Promise<string> => {
 	const mapId = seededRandArray(list, threadId);
-	if (mapId === null) return "";
+	if (!mapId) return "";
 	if (mapId.startsWith("/")) {
 		const str = await fetch(makePathname(mapId))
 			.then((v) => v.text())
@@ -304,7 +304,7 @@ export const loadRpgMapText = async (threadId: string): Promise<string> => {
 					[32, 12],
 				],
 				threadId,
-			);
+			) ?? [3, 7];
 			str.replace(/#HERO\n.+#END/, `#HERO\n${x},${y}#END`);
 		}
 		return str;

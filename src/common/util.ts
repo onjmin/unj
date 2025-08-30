@@ -15,7 +15,7 @@ export const randInt = (min: number, max: number) =>
 /**
  * ランダム抽出
  */
-export const randArray = <T>(array: readonly T[]): T =>
+export const randArray = <T>(array: readonly T[]): T | undefined =>
 	array[Math.floor(Math.random() * array.length)];
 
 /**
@@ -27,5 +27,7 @@ const seededRandom = (seed: string) =>
 /**
  * ランダム抽出（再現性あり）
  */
-export const seededRandArray = <T>(array: readonly T[], seed: string): T =>
-	array[Math.floor(seededRandom(seed) * array.length)];
+export const seededRandArray = <T>(
+	array: readonly T[],
+	seed: string,
+): T | undefined => array[Math.floor(seededRandom(seed) * array.length)];

@@ -4,7 +4,7 @@
 
   let { seed = "", height = "" } = $props();
 
-  const emoji = seededRandArray(list, seed);
+  const emoji = seededRandArray(list, seed) ?? "🪬";
   const codePoints = Array.from(emoji).map((char) =>
     char.codePointAt(0)?.toString(16),
   );

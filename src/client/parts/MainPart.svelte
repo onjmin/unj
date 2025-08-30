@@ -34,7 +34,7 @@
         isBefore(new Date(), addHours(new Date(Number(adsDeletedAt.value)), 3));
 
     const openAd = () => {
-        window.open(ad.href, "_blank");
+        if (ad) window.open(ad.href, "_blank");
     };
 
     const ads = [
@@ -83,7 +83,7 @@
 </main>
 
 {#if menu}
-    {#if showAd && !isDeleteAds}
+    {#if showAd && !isDeleteAds && ad}
         <div
             class="group relative w-full cursor-pointer overflow-hidden rounded shadow-md mb-2 z-32"
             onclick={openAd}
