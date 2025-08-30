@@ -694,7 +694,6 @@
             sage={thread?.ageRes.sage}
             createdAt={thread?.ageRes.createdAt}
             threadId={thread.id}
-            threadTitle={thread.title}
         />
     </div>
     {#key thread?.ageRes.num}
@@ -847,7 +846,6 @@
                 isOwner={true}
                 createdAt={thread.createdAt}
                 threadId={thread.id}
-                threadTitle={thread.title}
             >
                 <div class="unj-like-vote-container">
                     <div class="vote-buttons">
@@ -883,7 +881,6 @@
                     sage={res.sage}
                     createdAt={res.createdAt}
                     threadId={thread.id}
-                    threadTitle={thread.title}
                 >
                     {#if res.num === thread.balsResNum}
                         <BalsPart />
@@ -899,9 +896,10 @@
         <div class="bg-gray-800">
             {@render paginationControls()}
         </div>
-        <p>レス書き込み欄</p>
-        <p class="text-gray-600">適当に書き込んでってクレメンス</p>
-        {@render form(true)}
+        <Paper>
+            <Subtitle>レス書き込み欄</Subtitle>
+            <Content>{@render form(true)}</Content>
+        </Paper>
     {/if}
 </MainPart>
 
