@@ -21,7 +21,7 @@
 
     const closeAd = (event: MouseEvent) => {
         event.stopPropagation(); // ✖ ボタンでクリックを伝播させない
-        if (!confirm("3時間、広告を非表示のん？")) return;
+        if (!confirm("6時間、広告を非表示のん？")) return;
         alert(
             "サーバ運営には広告収入は不要なの。。でも気が向いたらご協力お願いね。。",
         );
@@ -31,7 +31,7 @@
 
     const isDeleteAds =
         adsDeletedAt.value &&
-        isBefore(new Date(), addHours(new Date(Number(adsDeletedAt.value)), 3));
+        isBefore(new Date(), addHours(new Date(Number(adsDeletedAt.value)), 6));
 
     const openAd = () => {
         if (ad) window.open(ad.href, "_blank");
