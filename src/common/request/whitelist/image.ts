@@ -14,7 +14,6 @@ export default [
 		name: "よねっと",
 		description: "ふなかもめ本体",
 		src: "https://funakamome.com/i/eyIK6PE.png",
-		hostnames: ["funakamome.com"],
 		href: "https://funakamome.com/imgurup",
 	}),
 	new SiteInfo({
@@ -22,7 +21,6 @@ export default [
 		name: "imgx",
 		description: "よねっと経由でうｐ可能その1",
 		src: "https://imgx.site/i/3q9sMTX.png",
-		hostnames: ["imgx.site"],
 		href: "https://funakamome.com/imgurup",
 	}),
 	new SiteInfo({
@@ -30,7 +28,6 @@ export default [
 		name: "ImgBB",
 		description: "よねっと経由でうｐ可能その2",
 		src: "https://i.ibb.co/Xxk61hsb/2025-06-25-212016.png",
-		hostnames: ["i.ibb.co"],
 		href: "https://funakamome.com/imgurup",
 	}),
 	new SiteInfo({
