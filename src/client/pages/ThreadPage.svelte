@@ -899,11 +899,9 @@
         <div class="bg-gray-800">
             {@render paginationControls()}
         </div>
-        <Paper>
-            <Title>レス書き込み欄</Title>
-            <Subtitle>適当に書き込んでってクレメンス</Subtitle>
-            <Content>{@render form(true)}</Content>
-        </Paper>
+        <p>レス書き込み欄</p>
+        <p class="text-gray-600">適当に書き込んでってクレメンス</p>
+        {@render form(true)}
     {/if}
 </MainPart>
 
