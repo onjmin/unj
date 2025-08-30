@@ -926,6 +926,7 @@
     .thread-title {
         color: #409090;
         font-weight: bold;
+        max-width: 90svw;
     }
     .res-list {
         display: flex;
