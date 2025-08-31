@@ -2,6 +2,12 @@ import { SiteInfo } from "../../common/request/whitelist/site-info.js";
 
 export const links = [
 	new SiteInfo({
+		name: "29(肉)ちゃんねる",
+		description:
+			"「制限された自由」から「ある程度ある自由」までを手広くカバーする小規模匿名掲示板",
+		src: "https://29-channel.iceiy.com/",
+	}),
+	new SiteInfo({
 		name: "にんG",
 		description: "にんにく実況(garlic)",
 		src: "https://www.z-z.jp/?livegarlic",
