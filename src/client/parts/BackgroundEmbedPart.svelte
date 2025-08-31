@@ -18,11 +18,14 @@
 
   let { contentUrl = "", contentType = 0 } = $props();
 
-  let siteInfo: SiteInfo | null = $state(null);
+  const url = (() => {
+    try {
+      return new URL(contentUrl);
+    } catch (err) {}
+  })();
+
   const temp = contentTemplateMap.get(contentType) ?? [];
-  try {
-    siteInfo = findIn(temp, new URL(contentUrl).hostname);
-  } catch (err) {}
+  const siteInfo = url ? findIn(temp, url.hostname) : null;
 
   let embedding = $state(false);
   let embedError = $state(false);

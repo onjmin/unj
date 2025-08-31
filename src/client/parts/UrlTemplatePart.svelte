@@ -51,7 +51,7 @@
           <p>動画を貼れます。</p>
         {:else if contentType === Enum.Audio}
           <p>音楽を貼れます。</p>
-        {:else if contentType === Enum.Games}
+        {:else if contentType === Enum.Game}
           <p>みんなで遊べるブラウザゲームを集めました。</p>
         {/if}
       </div>

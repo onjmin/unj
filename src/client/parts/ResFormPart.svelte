@@ -9,10 +9,10 @@
     contentTypeOptions,
   } from "../../common/request/content-schema.js";
   import audio from "../../common/request/whitelist/audio.js";
+  import game from "../../common/request/whitelist/game.js";
   import gif from "../../common/request/whitelist/gif.js";
   import image from "../../common/request/whitelist/image.js";
   import { findIn } from "../../common/request/whitelist/site-info.js";
-  import unjGames from "../../common/request/whitelist/unj-games.js";
   import video from "../../common/request/whitelist/video.js";
   import { UnjStorage } from "../mylib/unj-storage.js";
   import AvatarPart from "./AvatarPart.svelte";
@@ -70,7 +70,7 @@
     contentType === Enum.Gif ||
     contentType === Enum.Video ||
     contentType === Enum.Audio ||
-    contentType === Enum.Games;
+    contentType === Enum.Game;
 </script>
 
 <AvatarPart bind:open={openAvatar} bind:userAvatar />
@@ -123,7 +123,7 @@
     } else if (!!findIn(image, url.hostname)) _contentType = Enum.Image;
     else if (!!findIn(video, url.hostname)) _contentType = Enum.Video;
     else if (!!findIn(audio, url.hostname)) _contentType = Enum.Audio;
-    else if (!!findIn(unjGames, url.hostname)) _contentType = Enum.Games;
+    else if (!!findIn(game, url.hostname)) _contentType = Enum.Game;
     else _contentType = Enum.Url;
     if ((_contentType & contentTypesBitmask) !== 0) {
       contentType = _contentType;

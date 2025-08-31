@@ -70,7 +70,7 @@ export const parseGifEmbedImgBB = (url: URL): string | null => {
 	}
 	return null;
 };
-export const parseGifEmbedGiphy = (url: URL): string | null => {
+export const parseGifEmbedGIPHY = (url: URL): string | null => {
 	let id = "";
 	if (url.hostname === "gif.open2ch.net") {
 		const last = url.pathname.split("/").at(-1);
@@ -135,6 +135,13 @@ export const parseAudioEmbedSpotify = (url: URL): string | null => {
 		const type = match[1];
 		const id = match[2];
 		return `https://open.spotify.com/embed/${type}/${id}?utm_source=generator`;
+	}
+	return null;
+};
+export const parseGameEmbedRPGEN = (url: URL): string | null => {
+	const id = url?.searchParams.get("map");
+	if (id) {
+		return `https://rpgen.org/dq/?map=${id}`;
 	}
 	return null;
 };

@@ -83,7 +83,7 @@
         Enum.Gif,
         Enum.Video,
         Enum.Audio,
-        Enum.Games,
+        Enum.Game,
     ]);
     let max = $state(1000);
 

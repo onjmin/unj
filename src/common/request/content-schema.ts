@@ -5,11 +5,11 @@ import blacklistShortenedUrl3 from "./blacklist/shortened-url/domain3.js";
 import blacklistUploader2 from "./blacklist/uploader/domain2.js";
 import blacklistUploader3 from "./blacklist/uploader/domain3.js";
 import whitelistAudio from "./whitelist/audio.js";
+import whitelistGame from "./whitelist/game.js";
 import whitelistGif from "./whitelist/gif.js";
 import whitelistImage from "./whitelist/image.js";
 import whitelistOekaki from "./whitelist/oekaki.js";
 import { findIn } from "./whitelist/site-info.js";
-import whitelistUnjGames from "./whitelist/unj-games.js";
 import whitelistVideo from "./whitelist/video.js";
 
 const SAFE_TEXT = v.pipe(
@@ -59,7 +59,7 @@ export const Enum = {
 	Gif: 8,
 	Video: 16,
 	Audio: 32,
-	Games: 64,
+	Game: 64,
 	Oekaki: 1024,
 } as const;
 export type EnumType = (typeof Enum)[keyof typeof Enum];
@@ -86,7 +86,7 @@ const UrlSchema = v.object({
 		v.check((input) => !blacklistShortenedUrl3.has(sliceDomain(input, 3))),
 		v.check((input) => !blacklistUploader2.has(sliceDomain(input, 2))),
 		v.check((input) => !blacklistUploader3.has(sliceDomain(input, 3))),
-		v.check((input) => !findIn(whitelistUnjGames, new URL(input).hostname)),
+		v.check((input) => !findIn(whitelistGame, new URL(input).hostname)),
 		v.check((input) => !findIn(whitelistImage, new URL(input).hostname)),
 		v.check((input) => !findIn(whitelistGif, new URL(input).hostname)),
 		v.check((input) => !findIn(whitelistVideo, new URL(input).hostname)),
@@ -130,12 +130,12 @@ const UrlOfAudioSchema = v.object({
 	),
 });
 
-const UrlOfUnjGamesSchema = v.object({
-	contentType: v.pipe(v.number(), v.value(Enum.Games)),
+const UrlOfGameSchema = v.object({
+	contentType: v.pipe(v.number(), v.value(Enum.Game)),
 	contentText: SAFE_TEXT_MULTILINE,
 	contentUrl: v.pipe(
 		SAFE_URL,
-		v.check((input) => !!findIn(whitelistUnjGames, new URL(input).hostname)),
+		v.check((input) => !!findIn(whitelistGame, new URL(input).hostname)),
 	),
 });
 
@@ -165,7 +165,7 @@ export const contentSchemaMap = new Map(
 		[Enum.Gif]: UrlOfGifSchema,
 		[Enum.Video]: UrlOfVideoSchema,
 		[Enum.Audio]: UrlOfAudioSchema,
-		[Enum.Games]: UrlOfUnjGamesSchema,
+		[Enum.Game]: UrlOfGameSchema,
 		[Enum.Oekaki]: oekakiSchema,
 	}).map(([k, v]) => [Number(k), v]),
 );
@@ -182,7 +182,7 @@ export const contentTemplateMap = new Map(
 		[Enum.Gif]: whitelistGif,
 		[Enum.Video]: whitelistVideo,
 		[Enum.Audio]: whitelistAudio,
-		[Enum.Games]: whitelistUnjGames,
+		[Enum.Game]: whitelistGame,
 		[Enum.Oekaki]: whitelistOekaki,
 	}).map(([k, v]) => [Number(k), v]),
 );
@@ -199,7 +199,7 @@ export const contentTypeOptions = [
 	{ bit: Enum.Gif, label: "+GIF" },
 	{ bit: Enum.Video, label: "+動画" },
 	{ bit: Enum.Audio, label: "+音楽" },
-	{ bit: Enum.Games, label: "+ゲーム" },
+	{ bit: Enum.Game, label: "+ゲーム" },
 ];
 
 /**

@@ -2,6 +2,14 @@ import { SiteInfo } from "./site-info.js";
 
 export default [
 	new SiteInfo({
+		id: 6401,
+		name: "RPGEN",
+		description:
+			"小学生の頃作った秘密基地を世界中に作る感じのオンラインゲームです",
+		src: "https://rpgen.org/dq/?map=5085",
+		href: "https://rpgen.org/dq/maps/tagCloud.php",
+	}),
+	new SiteInfo({
 		name: "magma",
 		description: "ログイン制の絵チャ",
 		src: "https://magma.com/d/p6my7d2057",

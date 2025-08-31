@@ -9,16 +9,17 @@
   } from "@smui/list";
   import Paper, { Title, Content, Subtitle } from "@smui/paper";
   import { contentTemplateMap } from "../../common/request/content-schema.js";
+  import game from "../../common/request/whitelist/game.js";
   import oekaki from "../../common/request/whitelist/oekaki.js";
   import {
     SiteInfo,
     findIn,
   } from "../../common/request/whitelist/site-info.js";
-  import unjGames from "../../common/request/whitelist/unj-games.js";
   import {
     parseAudioEmbedSoundCloud,
     parseAudioEmbedSpotify,
-    parseGifEmbedGiphy,
+    parseGameEmbedRPGEN,
+    parseGifEmbedGIPHY,
     parseGifEmbedImgBB,
     parseGifEmbedImgur,
     parseGifEmbedImgx,
@@ -35,11 +36,16 @@
 
   let { ccUserAvatar = 0, contentUrl = "", contentType = 0 } = $props();
 
-  let siteInfo: SiteInfo | null = $state(null);
+  const url = (() => {
+    try {
+      return new URL(contentUrl);
+    } catch (err) {}
+  })();
+
   const temp = contentTemplateMap.get(contentType) ?? [];
-  try {
-    siteInfo = findIn(temp, new URL(contentUrl).hostname);
-  } catch (err) {}
+  const siteInfo = url ? findIn(temp, url.hostname) : null;
+  const embeddable =
+    temp !== game || (siteInfo?.id === 6401 && url?.searchParams.has("map"));
 
   let embedding = $state(false);
   let embedError = $state(false);
@@ -49,10 +55,11 @@
   let videoEmbedNicovideo = $state(false);
   let audioEmbedSoundCloud = $state(false);
   let audioEmbedSpotify = $state(false);
+  let gameEmbedRPGEN = $state(false);
   const tryEmbed = (siteInfo: SiteInfo) => {
+    if (!url) return;
     try {
       embedding = true;
-      const url = new URL(contentUrl);
       switch (siteInfo.id) {
         case 401:
           imageEmbed = true;
@@ -84,7 +91,7 @@
           break;
         case 802:
           imageEmbed = true;
-          embedUrl = parseGifEmbedGiphy(url) ?? "";
+          embedUrl = parseGifEmbedGIPHY(url) ?? "";
           break;
         case 811:
           imageEmbed = true;
@@ -113,6 +120,10 @@
         case 3202:
           audioEmbedSpotify = true;
           embedUrl = parseAudioEmbedSpotify(url) ?? "";
+          break;
+        case 6401:
+          gameEmbedRPGEN = true;
+          embedUrl = parseGameEmbedRPGEN(url) ?? "";
           break;
         case 102401:
           imageEmbed = true;
@@ -159,10 +170,10 @@
     <List twoLine
       ><Item
         onclick={() => {
-          if (temp === unjGames) {
-            window.open(contentUrl, "_blank");
-          } else {
+          if (embeddable) {
             tryEmbed(siteInfo);
+          } else {
+            window.open(contentUrl, "_blank");
           }
         }}
       >
@@ -175,13 +186,11 @@
         <Text>
           <PrimaryText>{siteInfo.name}</PrimaryText>
           <SecondaryText
-            >{temp === unjGames
-              ? "タップしてゲーム起動"
-              : "タップして表示"}</SecondaryText
+            >{embeddable ? "タップして展開" : "タップして移動"}</SecondaryText
           >
         </Text>
         <IconButton class="material-icons"
-          >{temp === unjGames ? "open_in_new" : "touch_app"}</IconButton
+          >{embeddable ? "touch_app" : "open_in_new"}</IconButton
         >
       </Item>
     </List>
@@ -244,6 +253,8 @@
         allowfullscreen={null}
         loading="lazy"
       ></iframe>
+    {:else if gameEmbedRPGEN}
+      <iframe title="embed" src={embedUrl} {width} {height}></iframe>
     {/if}
   {/if}
 {/if}
