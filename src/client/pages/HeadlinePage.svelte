@@ -7,7 +7,6 @@
 
     import { SearchIcon } from "@lucide/svelte";
     import Button from "@smui/button";
-    import List, { Item, Graphic, Separator } from "@smui/list";
     import Paper, { Title, Content, Subtitle } from "@smui/paper";
     import {
         differenceInDays,
@@ -17,7 +16,6 @@
         differenceInSeconds,
         differenceInWeeks,
         differenceInYears,
-        isAfter,
     } from "date-fns";
     import { Link } from "svelte-routing";
     import { queryResultLimit } from "../../common/request/schema.js";
@@ -178,55 +176,93 @@
                 検索
             </button>
         </div>
-        <div class="unj-headline-container">
-            <List class="demo-list" dense nonInteractive>
+        <div class="text-left">
+            <ul class="list-none p-0 m-0">
                 {#each threadList as thread, i}
-                    <div class="thread-block">
-                        <Item disabled class="unj-headline-thread-item">
-                            <div class="time-and-count-container">
-                                <span class="res-time"
-                                    >{formatTimeAgo(thread.latestResAt)}</span
+                    <li class="mb-4">
+                        <div
+                            class="rounded-lg border border-gray-300 shadow-md hover:shadow-lg transition-shadow duration-200 ease-in-out overflow-hidden"
+                        >
+                            {#if thread.title}
+                                <div
+                                    class="grid grid-cols-[theme(spacing.16)_theme(spacing.20)_1fr_theme(spacing.20)] gap-2 items-center p-3 text-gray-600"
                                 >
-                                <span class="res-count"
-                                    >{thread.resCount}レス</span
+                                    <div
+                                        class="text-xs opacity-90 text-center w-16"
+                                    >
+                                        {formatTimeAgo(thread.latestResAt)}
+                                    </div>
+
+                                    <div
+                                        class="text-sm font-medium text-center w-20"
+                                    >
+                                        {thread.resCount}レス
+                                    </div>
+
+                                    <div
+                                        class="flex items-start overflow-hidden break-words pr-2"
+                                    >
+                                        <div class="mr-2 flex-shrink-0">
+                                            <TwemojiPart
+                                                seed={thread.id}
+                                                height="16"
+                                            />
+                                        </div>
+                                        <div
+                                            class="text-base font-semibold text-gray-800"
+                                        >
+                                            <Link
+                                                to={makePathname(
+                                                    `/thread/${thread.id}${thread.resCount > queryResultLimit && thread.latestCursor ? `/${thread.latestCursor}/1` : ""}`,
+                                                )}
+                                                class="hover:underline"
+                                                >{thread.title}</Link
+                                            >
+                                        </div>
+                                    </div>
+
+                                    <div
+                                        class="text-xs transition-all duration-200 ease-in text-center w-20
+                                         {thread.online === 0
+                                            ? 'opacity-60 font-normal'
+                                            : ''}
+                 {thread.online === 1
+                                            ? 'opacity-90 text-blue-600 font-medium'
+                                            : ''}
+                 {thread.online === 2
+                                            ? 'text-orange-600 font-semibold italic'
+                                            : ''}
+                 {thread.online >= 3
+                                            ? 'text-red-600 font-bold italic underline'
+                                            : ''}"
+                                    >
+                                        {thread.online}人閲覧中
+                                    </div>
+                                </div>
+                            {/if}
+
+                            {#if thread.latestRes}
+                                <div
+                                    class="relative px-4 py-2 bg-gray-400 border-t border-gray-400 text-gray-600 text-sm break-words overflow-hidden"
                                 >
-                            </div>
-                            <div class="pc-only">
-                                <Graphic
-                                    ><TwemojiPart
-                                        seed={thread.id}
-                                        height="16"
-                                    /></Graphic
-                                >
-                            </div>
-                            <div class="thread-title">
-                                <Link
-                                    to={makePathname(
-                                        `/thread/${thread.id}${thread.resCount > queryResultLimit && thread.latestCursor ? `/${thread.latestCursor}/1` : ""}`,
-                                    )}>{thread.title}</Link
-                                >
-                            </div>
-                            <div
-                                class={`pc-only thread-info online-${Math.min(3, thread.online)}`}
-                            >
-                                {thread.online}人閲覧中
-                            </div>
-                        </Item>
-                        <!-- ここで子要素として1行下に latestRes を表示 -->
-                        <div class="thread-latest-res">
-                            {thread.latestRes}
+                                    {thread.latestRes}
+                                </div>
+                            {/if}
                         </div>
+
                         {#if i % 4 === 3 && i !== (threadList ?? []).length - 1}
-                            <Separator />
+                            <div class="border-t border-gray-300 mt-6"></div>
                         {/if}
-                    </div>
+                    </li>
                 {/each}
-            </List>
-            <center>
+            </ul>
+            <center class="mt-8">
                 <Button
                     onclick={cursorBasedPagination}
                     variant="raised"
-                    disabled={emitting}>続きを読む</Button
+                    disabled={emitting}
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 ease-in-out transform hover:-translate-y-0.5"
+                    >続きを読む</Button
                 >
             </center>
         </div>
@@ -234,113 +270,3 @@
 </MainPart>
 
 <FooterPart />
-
-<style>
-    .unj-headline-container {
-        text-align: left;
-    }
-    .time-and-count-container {
-        display: flex;
-        justify-content: space-between;
-    }
-    .res-time {
-        opacity: 0.6;
-        font-size: 0.7rem;
-        width: 3rem;
-    }
-    .res-count {
-        font-size: 0.8rem;
-        width: 3rem;
-    }
-    :global(.unj-headline-thread-item) {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        max-width: 100%;
-        overflow: hidden;
-    }
-    .thread-title {
-        font-size: 1rem;
-        margin-right: 0.5rem;
-        flex: 1 1 auto;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-    }
-
-    .thread-info {
-        flex: 0 1 16rem;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        font-size: 0.6rem;
-        transition: all 0.2s ease;
-    }
-
-    /* 0人：最も控えめ */
-    .thread-info.online-0 {
-        opacity: 0.4;
-        color: #999; /* グレーで控えめ */
-        font-weight: normal;
-        font-style: normal;
-        text-decoration: none;
-    }
-
-    /* 1人：少し強調 */
-    .thread-info.online-1 {
-        opacity: 0.7;
-        color: #2a7fff; /* 青系でやや目立たせる */
-        font-weight: 500;
-        font-style: normal;
-        text-decoration: none;
-    }
-
-    /* 2人：さらに強調 */
-    .thread-info.online-2 {
-        opacity: 0.85;
-        color: #ff7f2a; /* オレンジ系で暖かく目立たせる */
-        font-weight: 600;
-        font-style: italic; /* 軽く斜体でアクセント */
-        text-decoration: none;
-    }
-
-    /* 3人以上：最大強調 */
-    .thread-info.online-3 {
-        opacity: 1;
-        color: #d32f2f; /* 赤系で最も強調 */
-        font-weight: 700;
-        font-style: italic;
-        text-decoration: underline; /* さらに注目させる */
-    }
-
-    @media screen and (max-width: 768px) {
-        .pc-only {
-            display: none;
-        }
-    }
-    .thread-block {
-        margin-bottom: 0.5rem; /* 適度に間隔 */
-    }
-    .thread-latest-res {
-        position: relative;
-        margin: 0.2rem 0 0.4rem 2rem; /* スレタイ直下に余白＋字下げ */
-        padding: 0.4rem 0.7rem;
-        background: #f8f9fa; /* 薄グレー背景でカード感 */
-        border-left: 3px solid #ccc; /* 親子関係を示す縦線 */
-        border-radius: 0.4rem;
-        color: #444;
-        font-size: 0.9em;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 90%;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); /* 軽く浮かせる */
-    }
-    /* ダークモード用 */
-    :global(body.dark .thread-latest-res) {
-        background: #2a2a2a; /* 暗めの背景 */
-        border-left: 3px solid #555; /* 親子関係を示す縦線も暗めに */
-        color: #ddd; /* 文字を明るくして読みやすく */
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3); /* 影も強め */
-    }
-</style>
