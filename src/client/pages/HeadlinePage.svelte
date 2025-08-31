@@ -185,16 +185,16 @@
                         >
                             {#if thread.title}
                                 <div
-                                    class="grid grid-cols-[theme(spacing.16)_theme(spacing.20)_1fr_theme(spacing.20)] gap-2 items-center p-3 text-gray-600"
+                                    class="grid grid-cols-[theme(spacing.12)_theme(spacing.12)_1fr] sm:grid-cols-[theme(spacing.12)_theme(spacing.12)_1fr_theme(spacing.20)] gap-2 items-center p-3 text-gray-600"
                                 >
                                     <div
-                                        class="text-xs opacity-90 text-center w-16"
+                                        class="text-xs opacity-90 text-center w-12"
                                     >
                                         {formatTimeAgo(thread.latestResAt)}
                                     </div>
 
                                     <div
-                                        class="text-sm font-medium text-center w-20"
+                                        class="text-sm font-medium text-center w-12"
                                     >
                                         {thread.resCount}レス
                                     </div>
@@ -222,8 +222,8 @@
                                     </div>
 
                                     <div
-                                        class="text-xs transition-all duration-200 ease-in text-center w-20
-                                         {thread.online === 0
+                                        class="text-xs transition-all duration-200 ease-in text-center w-20 hidden sm:block
+                                        {thread.online === 0
                                             ? 'opacity-60 font-normal'
                                             : ''}
                  {thread.online === 1
@@ -243,7 +243,7 @@
 
                             {#if thread.latestRes}
                                 <div
-                                    class="relative px-4 py-2 bg-gray-400 border-t border-gray-400 text-gray-600 text-sm break-words overflow-hidden"
+                                    class="relative px-4 py-2 bg-gray-400 border-t border-gray-400 text-gray-500 text-sm break-words overflow-hidden"
                                 >
                                     {thread.latestRes}
                                 </div>
