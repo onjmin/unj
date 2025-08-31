@@ -254,7 +254,13 @@
         loading="lazy"
       ></iframe>
     {:else if gameEmbedRPGEN}
-      <iframe title="embed" src={embedUrl} {width} {height}></iframe>
+      <iframe
+        title="embed"
+        src={embedUrl}
+        {width}
+        {height}
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+      ></iframe>
     {/if}
   {/if}
 {/if}
