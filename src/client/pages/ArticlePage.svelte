@@ -183,13 +183,13 @@
                 {/snippet}
             </ChipSet>
         </h1>
-        <div class="bg-gray-800">
+        <div class="bg-gray-800 rounded-lg">
             {@render paginationControls()}
         </div>
         <div class="left content">
             {@html item.content}
         </div>
-        <div class="bg-gray-800">
+        <div class="bg-gray-800 rounded-lg">
             {@render paginationControls()}
         </div>
     {/if}

@@ -829,7 +829,7 @@
                 <span>{"ｗ".repeat(lolCount)}</span>
             </div>
         </div>
-        <div class="bg-gray-800">
+        <div class="bg-gray-800 rounded-lg">
             {@render paginationControls()}
         </div>
         <div class="res-list">
@@ -894,14 +894,16 @@
                 isAlreadyScrollEnd = visible;
             }}
         ></div>
-        <div class="bg-gray-800">
+        <div class="bg-gray-800 rounded-lg">
             {@render paginationControls()}
         </div>
         <Paper>
             <Subtitle>レス書き込み欄</Subtitle>
             <Content>{@render form(true)}</Content>
         </Paper>
-        <div class="flex flex-col space-y-2 p-4 bg-gray-800 text-gray-200">
+        <div
+            class="flex flex-col space-y-2 p-4 bg-gray-800 text-gray-200 rounded-lg"
+        >
             <button
                 class="flex items-center space-x-2 px-4 py-2 rounded-lg bg-gray-600 hover:bg-gray-700 transition-colors duration-200"
                 onclick={() => navigate(makePathname("/headline"))}
