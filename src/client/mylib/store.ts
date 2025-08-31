@@ -10,14 +10,12 @@ export const openLeft = writable(
 export const openRight = writable(
 	isMobile ? false : unjStorage.openRight.value !== "false",
 );
-if (isMobile) {
-	openLeft.subscribe((value) => {
-		unjStorage.openLeft.value = String(value);
-	});
-	openRight.subscribe((value) => {
-		unjStorage.openRight.value = String(value);
-	});
-}
+openLeft.subscribe((value) => {
+	unjStorage.openLeft.value = String(value);
+});
+openRight.subscribe((value) => {
+	unjStorage.openRight.value = String(value);
+});
 
 export const isEnabledRightMenu = writable(false);
 export const color = writable(unjStorage.color.value ?? oekaki.color.value);
