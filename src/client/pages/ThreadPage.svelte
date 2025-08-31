@@ -211,7 +211,7 @@
             topCursor = thread.resList[0].cursor;
             bottomCursor = thread.resList[thread.resList.length - 1].cursor;
         }
-        title = `${thread.title}(${thread.resCount})`;
+        title = thread.title;
         lolCount = thread.lolCount;
         goodVotes = thread.goodCount;
         badVotes = thread.badCount;
@@ -791,7 +791,7 @@
         <div class="thread-header">
             <p class="thread-title flex items-center">
                 <TwemojiPart seed={thread.id} height="16" />
-                <span class="pl-1.5">{thread.title}({thread.resCount})</span>
+                <span class="pl-1.5">{thread.title}</span>
             </p>
             <ChipSet {chips} nonInteractive>
                 {#snippet chip(chip: string)}
