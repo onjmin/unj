@@ -185,18 +185,12 @@
                         >
                             {#if thread.title}
                                 <div
-                                    class="grid grid-cols-[theme(spacing.12)_theme(spacing.12)_1fr] sm:grid-cols-[theme(spacing.12)_theme(spacing.12)_1fr_theme(spacing.20)] gap-2 items-center p-3 text-gray-600"
+                                    class="grid grid-cols-[theme(spacing.12)_1fr] sm:grid-cols-[theme(spacing.12)_1fr_theme(spacing.20)] gap-2 items-center p-3 text-gray-600"
                                 >
                                     <div
                                         class="text-xs opacity-90 text-center w-12"
                                     >
                                         {formatTimeAgo(thread.latestResAt)}
-                                    </div>
-
-                                    <div
-                                        class="text-sm font-medium text-center w-12"
-                                    >
-                                        {thread.resCount}レス
                                     </div>
 
                                     <div
@@ -216,7 +210,7 @@
                                                     `/thread/${thread.id}${thread.resCount > queryResultLimit && thread.latestCursor ? `/${thread.latestCursor}/1` : ""}`,
                                                 )}
                                                 class="hover:underline"
-                                                >{thread.title}</Link
+                                                >{thread.title}({thread.resCount})</Link
                                             >
                                         </div>
                                     </div>
