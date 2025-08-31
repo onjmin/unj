@@ -18,7 +18,11 @@
   import {
     parseAudioEmbedSoundCloud,
     parseAudioEmbedSpotify,
+    parseGifEmbedGiphy,
+    parseGifEmbedImgBB,
     parseGifEmbedImgur,
+    parseGifEmbedImgx,
+    parseGifEmbedYonet,
     parseImageEmbedImgBB,
     parseImageEmbedImgur,
     parseImageEmbedImgx,
@@ -62,21 +66,37 @@
           imageEmbed = true;
           embedUrl = parseImageEmbedPixiv(url) ?? "";
           break;
-        case 404:
+        case 411:
           imageEmbed = true;
           embedUrl = parseImageEmbedYonet(url) ?? "";
           break;
-        case 405:
+        case 412:
           imageEmbed = true;
           embedUrl = parseImageEmbedImgx(url) ?? "";
           break;
-        case 406:
+        case 413:
           imageEmbed = true;
           embedUrl = parseImageEmbedImgBB(url) ?? "";
           break;
         case 801:
           imageEmbed = true;
           embedUrl = parseGifEmbedImgur(url) ?? "";
+          break;
+        case 802:
+          imageEmbed = true;
+          embedUrl = parseGifEmbedGiphy(url) ?? "";
+          break;
+        case 811:
+          imageEmbed = true;
+          embedUrl = parseGifEmbedYonet(url) ?? "";
+          break;
+        case 812:
+          imageEmbed = true;
+          embedUrl = parseGifEmbedImgx(url) ?? "";
+          break;
+        case 813:
+          imageEmbed = true;
+          embedUrl = parseGifEmbedImgBB(url) ?? "";
           break;
         case 1601:
           videoEmbedYouTube = true;

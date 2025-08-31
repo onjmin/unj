@@ -22,7 +22,7 @@ export const parseImageEmbedImgx = (url: URL): string | null => {
 	return null;
 };
 export const parseImageEmbedImgBB = (url: URL): string | null => {
-	const match = url.pathname.slice(1).match(/(.+)\/([0-9-]+)\.(.+)/);
+	const match = url.pathname.slice(1).match(/(.+)\/(.+)\.(.+)/);
 	if (match) {
 		return corsKiller(`https://i.ibb.co/${match[0]}/${match[1]}.png`);
 	}
@@ -46,6 +46,44 @@ export const parseGifEmbedImgur = (url: URL): string | null => {
 	const id = url.pathname.slice(1).split(".")[0];
 	if (id) {
 		return `https://i.imgur.com/${id}.gif`;
+	}
+	return null;
+};
+export const parseGifEmbedYonet = (url: URL): string | null => {
+	const id = url.pathname.slice(1).match(/i\/(.+)\.(.+)/)?.[1];
+	if (id) {
+		return `https://funakamome.com/i/${id}.gif`;
+	}
+	return null;
+};
+export const parseGifEmbedImgx = (url: URL): string | null => {
+	const id = url.pathname.slice(1).match(/i\/(.+)\.(.+)/)?.[1];
+	if (id) {
+		return corsKiller(`https://imgx.site/i/${id}.gif`);
+	}
+	return null;
+};
+export const parseGifEmbedImgBB = (url: URL): string | null => {
+	const match = url.pathname.slice(1).match(/(.+)\/(.+)\.(.+)/);
+	if (match) {
+		return corsKiller(`https://i.ibb.co/${match[0]}/${match[1]}.gif`);
+	}
+	return null;
+};
+export const parseGifEmbedGiphy = (url: URL): string | null => {
+	let id = "";
+	if (url.hostname === "gif.open2ch.net") {
+		const last = url.pathname.split("/").at(-1);
+		if (last) id = last;
+	} else if (url.hostname === "giphy.com") {
+		const last = url.pathname.split("/").at(-1);
+		if (last) id = last;
+	} else if (url.hostname === "media3.giphy.com") {
+		const last = url.pathname.split("/").at(-2);
+		if (last) id = last;
+	}
+	if (id) {
+		return `https://media3.giphy.com/media/${id}/giphy.gif`;
 	}
 	return null;
 };
