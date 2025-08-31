@@ -260,6 +260,7 @@
         {width}
         {height}
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        scrolling="no"
       ></iframe>
     {/if}
   {/if}
