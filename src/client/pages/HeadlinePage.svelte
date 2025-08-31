@@ -93,7 +93,7 @@
             socket.emit("headline", {
                 nonce: genNonce(nonceKey.value ?? ""),
                 cursor: null,
-                size: queryResultLimit,
+                limit: queryResultLimit,
                 desc: true,
             });
         });
@@ -117,7 +117,7 @@
         socket.emit("headline", {
             nonce: genNonce(nonceKey.value ?? ""),
             cursor: threadList?.at(-1)?.latestResAt ?? null,
-            size: queryResultLimit,
+            limit: queryResultLimit,
             desc: true,
         });
         await sleep(2048);

@@ -168,7 +168,7 @@ export const ResSchema = v.strictObject({
 export const ReadThreadSchema = v.strictObject({
 	nonce: NONCE,
 	cursor: v.nullable(RES_ID),
-	size: v.pipe(RES_NUM, v.maxValue(queryResultLimit)),
+	limit: v.pipe(RES_NUM, v.maxValue(queryResultLimit)),
 	desc: v.boolean(),
 	threadId: THREAD_ID,
 });
@@ -187,7 +187,7 @@ export const HeadlineSchema = v.strictObject({
 			v.toMaxValue(unjEndDate),
 		),
 	),
-	size: v.pipe(
+	limit: v.pipe(
 		v.number(),
 		v.integer(),
 		v.minValue(1),

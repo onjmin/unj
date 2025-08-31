@@ -375,7 +375,7 @@
             socket.emit("readThread", {
                 nonce: genNonce(nonceKey.value ?? ""),
                 cursor: cursor || null,
-                size: queryResultLimit,
+                limit: queryResultLimit,
                 desc: latestReadThreadId.value === threadId ? false : desc,
                 threadId,
             });
@@ -411,7 +411,7 @@
         socket.emit("readThread", {
             nonce: genNonce(nonceKey.value ?? ""),
             cursor: cursor || null,
-            size: queryResultLimit,
+            limit: queryResultLimit,
             desc,
             threadId,
         });

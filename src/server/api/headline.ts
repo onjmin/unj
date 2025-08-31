@@ -35,7 +35,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 				"SELECT * FROM threads WHERE",
 				"(deleted_at IS NULL OR deleted_at > CURRENT_TIMESTAMP)",
 			];
-			const { size, desc, cursor } = headline.output;
+			const { limit, desc, cursor } = headline.output;
 			const values = [];
 			if (cursor !== null) {
 				if (desc) {
@@ -47,7 +47,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			}
 			query.push(`ORDER BY latest_res_at ${desc ? "DESC" : "ASC"}`);
 			query.push(`LIMIT $${values.length + 1}`);
-			values.push(size);
+			values.push(limit);
 
 			const { rows } = await pool.query(query.join(" "), values);
 

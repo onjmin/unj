@@ -169,7 +169,7 @@ export default ({ socket }: { socket: Socket }) => {
 
 			// レスの取得
 			const query = ["SELECT * FROM res WHERE thread_id = $1"];
-			const { size, desc } = readThread.output;
+			const { limit, desc } = readThread.output;
 			const values = [];
 			if (cursor !== null) {
 				// ランダムアクセスが想定されているため、不等号にカーソル自身も含める必要がある
@@ -182,7 +182,7 @@ export default ({ socket }: { socket: Socket }) => {
 			}
 			query.push(`ORDER BY num ${desc ? "DESC" : "ASC"}`);
 			query.push(`LIMIT $${values.length + 2}`);
-			values.push(size);
+			values.push(limit);
 
 			const userId = auth.getUserId(socket);
 			const list: Res[] = [];
