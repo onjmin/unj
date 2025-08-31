@@ -926,7 +926,7 @@
     .res-list {
         display: flex;
         flex-direction: column;
-        gap: 1rem;
+        gap: 2px;
         text-align: left;
     }
     .bals-warning {
