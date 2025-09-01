@@ -110,7 +110,7 @@
                             {new Date(note.createdAt).toLocaleString()}
                         </span>
                         <span class="ml-auto text-gray-500">
-                            ID:{note.id}
+                            ID:{note.user.username}
                         </span>
                     </div>
 
