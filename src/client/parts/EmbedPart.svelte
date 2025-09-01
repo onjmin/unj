@@ -219,10 +219,10 @@
       {#if siteInfo.id === 404}
         <iframe
           src={embedUrl}
+          {width}
           {height}
           title="embed"
           class="bg-[#E6E4E1] bg-[url('/image/alu.svg')] bg-no-repeat bg-center"
-          style="max-width:{width}px;"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           allowfullscreen
           scrolling="no"
