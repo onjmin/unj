@@ -36,6 +36,7 @@
     oekaki,
     toDataURL = $bindable(),
     tryRes,
+    isExpand = true,
   } = $props();
 
   let openUrlTemplate = $state(false);
@@ -76,25 +77,27 @@
 <AvatarPart bind:open={openAvatar} bind:userAvatar />
 <UrlTemplatePart bind:open={openUrlTemplate} bind:contentUrl {contentType} />
 
-<Textfield
-  {disabled}
-  label="名前"
-  bind:value={userName}
-  input$maxlength={32}
-  class="unj-username-textfield"
-  style={avatarSrc ? `background-image:url(${avatarSrc});` : ""}
->
-  {#snippet trailingIcon()}
-    <IconButton
-      {disabled}
-      class="material-icons"
-      onclick={() => (openAvatar = true)}>image</IconButton
-    >
-  {/snippet}
-  {#snippet helper()}
-    <CharacterCounter />
-  {/snippet}
-</Textfield>
+{#if isExpand}
+  <Textfield
+    {disabled}
+    label="名前"
+    bind:value={userName}
+    input$maxlength={32}
+    class="unj-username-textfield"
+    style={avatarSrc ? `background-image:url(${avatarSrc});` : ""}
+  >
+    {#snippet trailingIcon()}
+      <IconButton
+        {disabled}
+        class="material-icons"
+        onclick={() => (openAvatar = true)}>image</IconButton
+      >
+    {/snippet}
+    {#snippet helper()}
+      <CharacterCounter />
+    {/snippet}
+  </Textfield>
+{/if}
 
 <Textfield
   {disabled}
@@ -139,13 +142,15 @@
   {/snippet}
 </Textfield>
 
-<Select {disabled} key={String} bind:value={contentType} label="本文の形式">
-  {#each contentTypeOptions as v}
-    {#if (v.bit & contentTypesBitmask) !== 0}
-      <Option value={v.bit}>{v.label}</Option>
-    {/if}
-  {/each}
-</Select>
+{#if isExpand}
+  <Select {disabled} key={String} bind:value={contentType} label="本文の形式">
+    {#each contentTypeOptions as v}
+      {#if (v.bit & contentTypesBitmask) !== 0}
+        <Option value={v.bit}>{v.label}</Option>
+      {/if}
+    {/each}
+  </Select>
+{/if}
 
 <Textfield
   {disabled}

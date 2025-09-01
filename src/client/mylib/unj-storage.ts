@@ -108,3 +108,4 @@ export const nonceKey = new UnjStorage("nonceKey");
 export const ninjaPokemon = new UnjStorage("ninjaPokemon");
 export const ninjaScore = new UnjStorage("ninjaScore");
 export const adsDeletedAt = new UnjStorage("adsDeletedAt");
+export const resFormExpand = new UnjStorage("resFormExpand");

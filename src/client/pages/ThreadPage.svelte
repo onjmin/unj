@@ -5,7 +5,7 @@
     import MainPart from "../parts/MainPart.svelte";
     ///////////////
 
-    import { ArrowDownIcon, BrushIcon } from "@lucide/svelte";
+    import { ArrowDownIcon, BrushIcon, ExpandIcon } from "@lucide/svelte";
     import {
         ChevronFirstIcon,
         ChevronLastIcon,
@@ -66,6 +66,7 @@
     import {
         UnjStorage,
         oekakiUploaded,
+        resFormExpand,
         rpgMode,
     } from "../mylib/unj-storage.js";
     import {
@@ -103,8 +104,9 @@
     let contentText = $state("");
     let contentUrl = $state("");
     let contentType = $state(0);
-    let sage = $state(false);
-    let ninja = $state(false);
+    let isSage = $state(false);
+    let isNinja = $state(false);
+    let isExpand = $state(resFormExpand.value === "1");
     let isRpgMode = $state(rpgMode.value === "1");
     let openDressUp = $state(false);
     let nowSAnimsId = $state(Number(sAnimsId.value ?? 2086));
@@ -117,6 +119,9 @@
     $effect(() => {
         rpgMode.value = isRpgMode ? "1" : "0";
     });
+    $effect(() => {
+        resFormExpand.value = isExpand ? "1" : "0";
+    });
 
     // UnjStorage
     const contentTextUnjStorage = new UnjStorage(`contentText###${threadId}`);
@@ -127,16 +132,16 @@
 
     // UnjStorage
     const sageUnjStorage = new UnjStorage(`sage###${threadId}`);
-    sage = sageUnjStorage.value === "sage";
+    isSage = sageUnjStorage.value === "sage";
     $effect(() => {
-        sageUnjStorage.value = sage ? "sage" : null;
+        sageUnjStorage.value = isSage ? "sage" : null;
     });
 
     // UnjStorage
     const ninjaUnjStorage = new UnjStorage(`ninja###${threadId}`);
-    ninja = ninjaUnjStorage.value === "ninja";
+    isNinja = ninjaUnjStorage.value === "ninja";
     $effect(() => {
-        ninjaUnjStorage.value = ninja ? "ninja" : null;
+        ninjaUnjStorage.value = isNinja ? "ninja" : null;
     });
 
     let online = $state(0);
@@ -498,8 +503,8 @@
             contentUrl,
             contentMeta,
             contentType,
-            sage,
-            ninja,
+            sage: isSage,
+            ninja: isNinja,
         };
         const result = (() => {
             // 共通のバリデーション
@@ -600,15 +605,16 @@
         {oekaki}
         bind:toDataURL
         {tryRes}
+        {isExpand}
     />
     <Button disabled={emitting} onclick={tryRes} variant="raised"
         >投稿する</Button
     >
     <Switch
         controlActive="bg-secondary-500"
-        checked={sage}
+        checked={isSage}
         onCheckedChange={(e) => {
-            sage = e.checked;
+            isSage = e.checked;
         }}
     >
         {#snippet inactiveChild()}
@@ -620,9 +626,9 @@
     </Switch>
     <Switch
         controlActive="bg-secondary-500"
-        checked={ninja}
+        checked={isNinja}
         onCheckedChange={(e) => {
-            ninja = e.checked;
+            isNinja = e.checked;
         }}
     >
         {#snippet inactiveChild()}
@@ -670,6 +676,20 @@
             {/snippet}
         </Switch>
     {/if}
+    <Switch
+        controlActive="bg-secondary-500"
+        checked={isExpand}
+        onCheckedChange={(e) => {
+            isExpand = e.checked;
+        }}
+    >
+        {#snippet inactiveChild()}
+            <ExpandIcon size="14" />
+        {/snippet}
+        {#snippet activeChild()}
+            <ExpandIcon size="14" />
+        {/snippet}
+    </Switch>
     <!-- <Select
         disabled={emitting}
         key={String}
