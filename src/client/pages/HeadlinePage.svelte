@@ -81,6 +81,7 @@
         if (!data.list.length) return;
         if (!pagination) {
             threadList = data.list;
+            for (const f of misskeyArray) f();
             cache.set(threadList);
         } else {
             if (threadList) threadList = threadList.concat(data.list);
@@ -94,6 +95,8 @@
         }
         threadList.unshift(data.new);
     };
+
+    const misskeyArray: (() => void)[] = [];
 
     const fetchMisskey = (misskey: Misskey) => {
         const { controller, promise } = fetchMisskeyTimeline(misskey.api);
@@ -118,16 +121,21 @@
                 goodCount: 0,
                 badCount: 0,
             };
-            if (!threadList) return;
-            const idx = threadList.findIndex((v) =>
-                isBefore(v.latestResAt, new1.latestResAt),
-            );
-            if (idx === -1) {
-                threadList.push(new1);
-            } else {
-                threadList.splice(idx, 0, new1);
-            }
-            threadList = [...threadList];
+            const f = () => {
+                if (!threadList) return;
+                if (threadList.find((v) => v.id === misskey.misskeyId)) return;
+                const idx = threadList.findIndex((v) =>
+                    isBefore(v.latestResAt, new1.latestResAt),
+                );
+                if (idx === -1) {
+                    threadList.push(new1);
+                } else {
+                    threadList.splice(idx, 0, new1);
+                }
+                threadList = [...threadList];
+            };
+            f();
+            misskeyArray.push(f);
         });
         return () => controller.abort();
     };
