@@ -150,15 +150,17 @@
 
 <MainPart>
     {#if error}
-        <Paper color="primary" variant="outlined">
-            <Title>エラー発生</Title>
-            <Subtitle>ニュース取得失敗。。</Subtitle>
-            <Content>管理人に言ったら直してくれるかも。</Content>
-        </Paper>
+        <div
+            class="bg-red-50 border border-red-200 text-red-800 p-6 rounded-lg shadow-md"
+        >
+            <h2 class="text-xl font-semibold">エラー発生</h2>
+            <h3 class="text-base mt-2">ニュース取得失敗。。</h3>
+            <p class="mt-4">管理人に言ったら直してくれるかも。</p>
+        </div>
     {:else if item === null}
         <p>ニュース取得中…</p>
         <div
-            class="bg-blue-50 border border-blue-200 text-blue-800 p-6 rounded-lg shadow-md"
+            class="bg-yellow-50 border border-yellow-200 text-yellow-800 p-6 rounded-lg shadow-md"
             class:invisible={!laaaaaaaag}
         >
             <h2 class="text-xl font-semibold">まだ終わらない？</h2>

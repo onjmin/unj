@@ -776,7 +776,7 @@
     {#if thread === null}
         <p>スレ取得中…</p>
         <div
-            class="bg-blue-50 border border-blue-200 text-blue-800 p-6 rounded-lg shadow-md"
+            class="bg-yellow-50 border border-yellow-200 text-yellow-800 p-6 rounded-lg shadow-md"
             class:invisible={!laaaaaaaag}
         >
             <h2 class="text-xl font-semibold">まだ終わらない？</h2>

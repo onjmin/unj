@@ -195,11 +195,15 @@
       </Item>
     </List>
     {#if embedError}
-      <Paper color="primary" variant="outlined">
-        <Title>埋め込みコンテンツの展開に失敗しました。</Title>
-        <Subtitle>不正なURL、またはバグです。。</Subtitle>
-        <Content>ごめんよぉ…</Content>
-      </Paper>
+      <div
+        class="bg-blue-50 border border-blue-200 text-blue-800 p-6 rounded-lg shadow-md"
+      >
+        <h2 class="text-xl font-semibold">
+          埋め込みコンテンツの展開に失敗しました。
+        </h2>
+        <h3 class="text-base mt-2">不正なURL、またはバグです。。</h3>
+        <p class="mt-4">ごめんよぉ…</p>
+      </div>
     {/if}
   {:else}
     <IconButton class="material-icons" onclick={() => (embedding = false)}

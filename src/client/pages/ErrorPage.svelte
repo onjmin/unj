@@ -16,32 +16,43 @@
 <MainPart menu={false}>
     <p>ここで何か起こっているようだ</p>
     {#if errorReason === "multipleConnectionsLimit"}
-        <Paper color="primary" variant="outlined">
-            <Title>複数タブの個数上限です。</Title>
-            <Subtitle>うんｊは同じIPからの複数タブを制限しています。。</Subtitle
-            >
-            <Content>まずはこのタブを閉じようね。</Content>
-        </Paper>
+        <div
+            class="bg-blue-50 border border-blue-200 text-blue-800 p-6 rounded-lg shadow-md"
+        >
+            <h2 class="text-xl font-semibold">複数タブの個数上限です。</h2>
+            <h3 class="text-base mt-2">
+                うんｊは同じIPからの複数タブを制限しています。。
+            </h3>
+            <p class="mt-4">まずはこのタブを閉じようね。</p>
+        </div>
     {:else if errorReason === "newUsersRateLimit"}
-        <Paper color="primary" variant="outlined">
-            <Title>不自然な操作を感知しました。</Title>
-            <Subtitle>新人さん接続規制中。。</Subtitle>
-            <Content>しばらくしてからリロードしてみてね。</Content>
-            <Button
-                onclick={() => {
+        <div
+            class="bg-blue-50 border border-blue-200 text-blue-800 p-6 rounded-lg shadow-md"
+        >
+            <h2 class="text-xl font-semibold">不自然な操作を感知しました。</h2>
+            <h3 class="text-base mt-2">新人さん接続規制中。。</h3>
+            <p class="mt-4">しばらくしてからリロードしてみてね。</p>
+            <button
+                class="mt-4 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+                on:click={() => {
                     location.href = makePathname("/");
                 }}
-                variant="raised">リロード</Button
             >
-        </Paper>
+                リロード
+            </button>
+        </div>
     {:else if errorReason === "grantFailed"}
-        <Paper color="primary" variant="outlined">
-            <Title>致命的なエラーが発生しました。</Title>
-            <Subtitle>認証情報に不整合が起きています。</Subtitle>
-            <Content
-                >リロードしても直らないので管理人に復旧依頼をお願いします。</Content
-            >
-        </Paper>
+        <div
+            class="bg-blue-50 border border-blue-200 text-blue-800 p-6 rounded-lg shadow-md"
+        >
+            <h2 class="text-xl font-semibold">
+                致命的なエラーが発生しました。
+            </h2>
+            <h3 class="text-base mt-2">認証情報に不整合が起きています。</h3>
+            <p class="mt-4">
+                リロードしても直らないので管理人に復旧依頼をお願いします。
+            </p>
+        </div>
     {/if}
     <div class="iframe-container">
         <iframe title="error" src="https://dma-cmyk.github.io/BabyWhacker/"

@@ -146,12 +146,14 @@
         なお、誠に勝手ながら、お問い合わせの送信は1日1回までに制限させていただいております。
     </p>
     {#if isSuspend}
-        <Paper color="primary" variant="outlined">
-            <Title>受付停止中です。</Title>
+        <div
+            class="bg-blue-50 border border-blue-200 text-blue-800 p-6 rounded-lg shadow-md"
+        >
+            <h2 class="text-xl font-semibold">受付停止中です。</h2>
             {#if resumeDate}
-                <Content>{resumeDate}に受付を再開いたします。</Content>
+                <p class="mt-4">{resumeDate}に受付を再開いたします。</p>
             {/if}
-        </Paper>
+        </div>
     {/if}
     <LayoutGrid>
         <Cell span={12}>
