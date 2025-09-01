@@ -15,8 +15,6 @@
         findMisskey,
     } from "../mylib/misskey.js";
     import { ObjectStorage } from "../mylib/object-storage.js";
-    import { goodbye, hello, socket } from "../mylib/socket.js";
-    import AccessCounterPart from "../parts/AccessCounterPart.svelte";
     import FaviconPart from "../parts/FaviconPart.svelte";
 
     const INITIAL_LIMIT = 16;
@@ -107,19 +105,6 @@
         return text.replace(/\n/g, "<br />");
     }
 
-    $effect(() => {
-        hello(() => {
-            socket.emit("joinThread", {
-                threadId: misskeyId,
-            });
-        });
-        socket.on("joinThread", handleJoinThread);
-        return () => {
-            goodbye();
-            socket.off("joinThread", handleJoinThread);
-        };
-    });
-
     let laaaaaaaag = $state(false);
     $effect(() => {
         const id = setTimeout(() => {
@@ -130,7 +115,6 @@
 </script>
 
 <HeaderPart {title}>
-    <AccessCounterPart {online} {pv} />
     <div class="flex flex-col items-end space-y-2 text-right">
         <p class="text-xs text-gray-500">
             このページからの投稿は許可されていません
@@ -148,6 +132,7 @@
         </a>
     </div>
 </HeaderPart>
+
 <MainPart>
     {#if timeline.length === 0}
         <p>スレ取得中…</p>
