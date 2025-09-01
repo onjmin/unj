@@ -5,7 +5,7 @@
     import IconButton from "@smui/icon-button";
     import { addHours, isBefore } from "date-fns";
     import { navigate } from "svelte-routing";
-    import { randArray } from "../../common/util.js";
+    import { randArray, randInt } from "../../common/util.js";
     import { makePathname } from "../mylib/env.js";
     import {
         isEnabledRightMenu,
@@ -21,17 +21,18 @@
 
     const closeAd = (event: MouseEvent) => {
         event.stopPropagation(); // ✖ ボタンでクリックを伝播させない
-        if (!confirm("6時間、広告を非表示のん？")) return;
+        const adblockTime = randInt(1, 1024);
+        if (!confirm(`${adblockTime}時間、広告を非表示のん？`)) return;
         alert(
             "サーバ運営には広告収入は不要なの。。でも気が向いたらご協力お願いね。。",
         );
         showAd = false;
-        adsDeletedAt.value = `${+new Date()}`;
+        adsDeletedAt.value = `${+addHours(new Date(), adblockTime)}`;
     };
 
     const isDeleteAds =
         adsDeletedAt.value &&
-        isBefore(new Date(), addHours(new Date(Number(adsDeletedAt.value)), 6));
+        isBefore(new Date(), new Date(Number(adsDeletedAt.value)));
 
     const openAd = () => {
         if (ad) window.open(ad.href, "_blank");
