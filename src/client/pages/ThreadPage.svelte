@@ -5,6 +5,7 @@
     import MainPart from "../parts/MainPart.svelte";
     ///////////////
 
+    import { ArrowDownIcon, BrushIcon } from "@lucide/svelte";
     import {
         ChevronFirstIcon,
         ChevronLastIcon,
@@ -13,13 +14,13 @@
         ChevronsLeftRightEllipsisIcon,
         CircleArrowLeftIcon,
     } from "@lucide/svelte";
+    import { Switch } from "@skeletonlabs/skeleton-svelte";
     import Banner, { Icon, Label } from "@smui/banner";
     import Button from "@smui/button";
     import Checkbox from "@smui/checkbox";
     import Chip, { Set as ChipSet, LeadingIcon, Text } from "@smui/chips";
     import FormField from "@smui/form-field";
     import Paper, { Title, Content, Subtitle } from "@smui/paper";
-    import Switch from "@smui/switch";
     import {
         addSeconds,
         differenceInDays,
@@ -603,21 +604,43 @@
     <Button disabled={emitting} onclick={tryRes} variant="raised"
         >投稿する</Button
     >
-    <FormField align="end">
-        {#snippet label()}
-            <Icon class="material-icons">arrow_downward</Icon>
+    <Switch
+        controlActive="bg-secondary-500"
+        checked={sage}
+        onCheckedChange={(e) => {
+            sage = e.checked;
+        }}
+    >
+        {#snippet inactiveChild()}
+            <ArrowDownIcon size="14" />
         {/snippet}
-        <Checkbox bind:checked={sage} />
-    </FormField>
-    <FormField align="end">
-        {#snippet label()}忍{/snippet}
-        <Checkbox bind:checked={ninja} />
-    </FormField>
+        {#snippet activeChild()}
+            <ArrowDownIcon size="14" />
+        {/snippet}
+    </Switch>
+    <Switch
+        controlActive="bg-secondary-500"
+        checked={ninja}
+        onCheckedChange={(e) => {
+            ninja = e.checked;
+        }}
+    >
+        {#snippet inactiveChild()}
+            忍
+        {/snippet}
+        {#snippet activeChild()}
+            忍
+        {/snippet}
+    </Switch>
     {#if thread?.yours}
-        <FormField align="end">
-            {#snippet label()}主{/snippet}
-            <Checkbox disabled checked={true} />
-        </FormField>
+        <Switch controlActive="bg-secondary-500" disabled checked={true}>
+            {#snippet inactiveChild()}
+                主
+            {/snippet}
+            {#snippet activeChild()}
+                主
+            {/snippet}
+        </Switch>
     {/if}
     <!-- <FormField align="end">
         {#snippet label()}RPGMODE{/snippet}
@@ -632,12 +655,20 @@
         >
     {/if} -->
     {#if oekaki}
-        <FormField align="end">
-            <Switch bind:checked={checkedOekaki} />
-            {#snippet label()}
-                お絵描き機能
+        <Switch
+            controlActive="bg-secondary-500"
+            checked={checkedOekaki}
+            onCheckedChange={(e) => {
+                checkedOekaki = e.checked;
+            }}
+        >
+            {#snippet inactiveChild()}
+                <BrushIcon size="14" />
             {/snippet}
-        </FormField>
+            {#snippet activeChild()}
+                <BrushIcon size="14" />
+            {/snippet}
+        </Switch>
     {/if}
     <!-- <Select
         disabled={emitting}

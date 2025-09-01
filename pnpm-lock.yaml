@@ -135,8 +135,8 @@ importers:
         specifier: 3.2.0
         version: 3.2.0(tailwindcss@4.1.12)
       '@skeletonlabs/skeleton-svelte':
-        specifier: 1.5.1
-        version: 1.5.1(svelte@5.20.5)
+        specifier: 1.2.3
+        version: 1.2.3(svelte@5.20.5)
       '@smui-extra/accordion':
         specifier: 8.0.0-beta.3
         version: 8.0.0-beta.3
@@ -899,8 +899,8 @@ packages:
   '@rpgja/rpgen-map@1.0.0':
     resolution: {integrity: sha512-pHc4zldpcnNYnTXvo9Owr97SIvFqFzdT2yIJVd64G0zo1PkkxzljIHBRSmqkEOuWB37xtXLFHrInLTgj5rqsWA==}
 
-  '@skeletonlabs/skeleton-svelte@1.5.1':
-    resolution: {integrity: sha512-XYvIy0CPYYIGUV6TjGpUrjSkTJcuWxGqT7aKK+zXuMjVUGqNLAWrHabITRgWHvAlQwlo5V10pKxwphrQeunqWA==}
+  '@skeletonlabs/skeleton-svelte@1.2.3':
+    resolution: {integrity: sha512-0AwsLNoHyo71IE28KztjgXR8uxQKPkAkCT9LEhIRyeZJV+FC+PLS2+TAlnUEPfRLHhGJbkVu/5FJaFVCA/KoTw==}
     peerDependencies:
       svelte: ^5.20.0
 
@@ -4002,7 +4002,7 @@ snapshots:
 
   '@rpgja/rpgen-map@1.0.0': {}
 
-  '@skeletonlabs/skeleton-svelte@1.5.1(svelte@5.20.5)':
+  '@skeletonlabs/skeleton-svelte@1.2.3(svelte@5.20.5)':
     dependencies:
       '@zag-js/accordion': 1.21.8
       '@zag-js/avatar': 1.21.8

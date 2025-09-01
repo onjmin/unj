@@ -5,6 +5,7 @@
     import MainPart from "../parts/MainPart.svelte";
     ///////////////
 
+    import { Slider } from "@skeletonlabs/skeleton-svelte";
     import Accordion, { Panel, Header, Content } from "@smui-extra/accordion";
     import FormField from "@smui/form-field";
     import IconButton from "@smui/icon-button";
@@ -20,7 +21,6 @@
     } from "@smui/list";
     import Radio from "@smui/radio";
     import SegmentedButton, { Segment } from "@smui/segmented-button";
-    import Slider from "@smui/slider";
     import Snackbar, { Label as SnackbarLabel } from "@smui/snackbar";
     import { Howler } from "howler";
     import {
@@ -49,7 +49,7 @@
     changeNewResSound();
     changeReplyResSound();
 
-    let soundVolumeSlider = $state(Howler.volume());
+    let soundVolumeSlider = $state([Howler.volume() * 100]);
     let selectedNewResSound: string = $state(
         newResSound.value ?? yajuKokoSound.key,
     );
@@ -58,7 +58,7 @@
     );
 
     $effect(() => {
-        soundVolume.value = String(soundVolumeSlider);
+        soundVolume.value = String(soundVolumeSlider[0] / 100);
         changeVolume();
     });
     $effect(() => {
@@ -157,16 +157,19 @@
             <Panel>
                 <Header>SE音量</Header>
                 <Content>
-                    <FormField align="end" style="display: flex;">
-                        <Slider
-                            style="flex-grow: 1;"
-                            bind:value={soundVolumeSlider}
-                            min={0}
-                            max={1}
-                            step={0.000001}
-                        />
-                        <div>音量：{(soundVolumeSlider * 100) | 0}%</div>
-                    </FormField>
+                    <div class="flex items-center space-x-4">
+                        <div class="flex-1">
+                            <Slider
+                                value={soundVolumeSlider}
+                                onValueChange={(e) =>
+                                    (soundVolumeSlider = e.value)}
+                                markers={[25, 50, 75]}
+                            />
+                        </div>
+                        <div class="flex-shrink-0">
+                            音量：{soundVolumeSlider[0] | 0}%
+                        </div>
+                    </div>
                 </Content>
             </Panel>
             <Panel>
