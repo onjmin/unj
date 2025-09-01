@@ -20,11 +20,11 @@ new Sound({
 	src: null,
 });
 
-export const coin = new Sound({
+export const coinSound = new Sound({
 	label: "コインの音（マリオ）",
 	src: "https://rpgen.org/dq/sound/res/79.mp3",
 });
-export const waf = new Sound({
+export const wafSound = new Sound({
 	label: "和風扉",
 	src: "https://rpgen.org/dq/sound/res/741.mp3",
 });
@@ -44,7 +44,7 @@ new Sound({
 });
 
 // 淫夢系
-new Sound({
+export const yajuKokoSound = new Sound({
 	label: "こ↑こ↓",
 	src: "https://rpgen.org/dq/sound/res/29.mp3",
 });
@@ -52,7 +52,7 @@ new Sound({
 	label: "野獣先輩/ヌッ！",
 	src: "https://rpgen.org/dq/sound/res/1335.mp3",
 });
-new Sound({
+export const yajuShoutSound = new Sound({
 	label: "野獣の咆哮",
 	src: "https://rpgen.org/dq/sound/res/68.mp3",
 });
@@ -108,7 +108,7 @@ export let newResSoundHowl: Howl | null;
 export const changeNewResSound = () => {
 	newResSoundHowl = newResSound.value
 		? make(newResSound.value)
-		: make(coin.key);
+		: make(yajuKokoSound.key);
 };
 
 /**
@@ -118,5 +118,5 @@ export let replyResSoundHowl: Howl | null;
 export const changeReplyResSound = () => {
 	replyResSoundHowl = replyResSound.value
 		? make(replyResSound.value)
-		: make(waf.key);
+		: make(yajuShoutSound.key);
 };
