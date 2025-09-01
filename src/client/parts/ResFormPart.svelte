@@ -152,28 +152,28 @@
   </Select>
 {/if}
 
-<Textfield
-  {disabled}
-  label="URL欄"
-  bind:value={contentUrl}
-  input$maxlength={256}
-  style="visibility:{visibleUrlField(contentType) ? 'visible' : 'hidden'};"
->
-  {#snippet trailingIcon()}
-    <IconButton
-      {disabled}
-      class="material-icons"
-      onclick={() => (openUrlTemplate = true)}
-      style="visibility:{visibleTemplate(contentType) ? 'visible' : 'hidden'};"
-      >add_link</IconButton
-    >
-  {/snippet}
-  {#snippet helper()}
-    <CharacterCounter
-      style="visibility:{visibleUrlField(contentType) ? 'visible' : 'hidden'};"
-    />
-  {/snippet}
-</Textfield>
+{#if visibleUrlField(contentType)}
+  <Textfield
+    {disabled}
+    label="URL欄"
+    bind:value={contentUrl}
+    input$maxlength={256}
+  >
+    {#snippet trailingIcon()}
+      <IconButton
+        {disabled}
+        class="material-icons"
+        onclick={() => (openUrlTemplate = true)}
+        style="visibility:{visibleTemplate(contentType)
+          ? 'visible'
+          : 'hidden'};">add_link</IconButton
+      >
+    {/snippet}
+    {#snippet helper()}
+      <CharacterCounter />
+    {/snippet}
+  </Textfield>
+{/if}
 
 {#key contentType}
   {#if contentType === Enum.Oekaki}
@@ -184,6 +184,8 @@
     {/if}
   {/if}
 {/key}
+
+<br />
 
 <style>
   :global(.unj-username-textfield) {
