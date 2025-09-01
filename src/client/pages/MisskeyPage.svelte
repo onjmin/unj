@@ -14,8 +14,10 @@
         fetchMisskeyTimeline,
         findMisskey,
     } from "../mylib/misskey.js";
+    import { ObjectStorage } from "../mylib/object-storage.js";
     import { goodbye, hello, socket } from "../mylib/socket.js";
     import AccessCounterPart from "../parts/AccessCounterPart.svelte";
+    import FaviconPart from "../parts/FaviconPart.svelte";
 
     const INITIAL_LIMIT = 16;
     const LOAD_MORE_LIMIT = 16;
@@ -46,6 +48,12 @@
     async function loadTimeline(limit: number, untilId?: string) {
         if (isLoading || !api) return;
 
+        // キャッシュを最初にチェック
+        const cachedTimeline = await misskeyTimelineCache.get();
+        if (cachedTimeline && !untilId) {
+            timeline = cachedTimeline;
+        }
+
         isLoading = true;
         const { promise, controller } = fetchMisskeyTimeline(
             api,
@@ -55,15 +63,34 @@
 
         try {
             const newTimeline = await promise;
-            timeline = untilId ? [...timeline, ...newTimeline] : newTimeline;
+            // 新しいデータを既存のデータに結合
+            const updatedTimeline = untilId
+                ? [...timeline, ...newTimeline]
+                : newTimeline;
+
+            // 投稿の重複を排除
+            const uniqueTimeline = updatedTimeline.filter(
+                (note, index, self) =>
+                    index === self.findIndex((t) => t.id === note.id),
+            );
+            timeline = uniqueTimeline;
+
             if (newTimeline.length > 0) {
                 lastNoteId = newTimeline[newTimeline.length - 1].id;
             }
+
+            // キャッシュを更新
+            misskeyTimelineCache.set(uniqueTimeline);
         } finally {
             isLoading = false;
             controller.abort();
         }
     }
+
+    // ObjectStorageを初期化
+    const misskeyTimelineCache = new ObjectStorage<Timeline>(
+        `misskeyTimelineCache###${misskeyId}`,
+    );
 
     $effect.root(() => {
         loadTimeline(INITIAL_LIMIT);
@@ -92,6 +119,14 @@
             socket.off("joinThread", handleJoinThread);
         };
     });
+
+    let laaaaaaaag = $state(false);
+    $effect(() => {
+        const id = setTimeout(() => {
+            laaaaaaaag = true;
+        }, 4096);
+        return () => clearTimeout(id);
+    });
 </script>
 
 <HeaderPart {title}>
@@ -99,62 +134,81 @@
 </HeaderPart>
 
 <MainPart>
-    <div class="mx-auto my-0 w-full max-w-[768px] px-4">
-        <div class="space-y-4">
-            {#each timeline as note (note.id)}
-                <div
-                    class="bg-transparent border-2 border-solid border-gray-400 p-4 rounded-lg shadow-inner"
-                >
-                    <div class="flex items-center mb-2 text-sm text-gray-800">
-                        <span class="font-bold text-[#409090]">
-                            {note.user.name ?? note.user.username}
-                        </span>
-                        <span class="ml-2 text-gray-500">
-                            {new Date(note.createdAt).toLocaleString()}
-                        </span>
-                        <span class="ml-auto text-gray-500">
-                            ID:{note.user.username}
-                        </span>
-                    </div>
-
-                    <div class="flex items-start">
-                        <div class="mr-2 flex-shrink-0">
-                            <img
-                                src={note.user.avatarUrl}
-                                alt={`${note.user.username}'s avatar`}
-                                class="w-16 h-16 rounded-full"
-                            />
+    {#if timeline.length === 0}
+        <p>スレ取得中…</p>
+        <div
+            class="bg-blue-50 border border-blue-200 text-blue-800 p-6 rounded-lg shadow-md"
+            class:invisible={!laaaaaaaag}
+        >
+            <h2 class="text-xl font-semibold">まだ終わらない？</h2>
+            <h3 class="text-base mt-2">サーバーが落ちてるかも。。</h3>
+            <p class="mt-4">ページ更新してみてね。</p>
+        </div>
+    {/if}
+    {#if timeline.length > 0}
+        <div class="text-left w-full max-w-[768px] mx-auto px-4 pb-4">
+            <p class="flex items-center font-bold text-[#409090]">
+                <FaviconPart {hostname} />
+                <span class="pl-1.5">{title}</span>
+            </p>
+        </div>
+        <div class="mx-auto my-0 w-full max-w-[768px] px-4">
+            <div class="space-y-4">
+                {#each timeline as note (note.id)}
+                    <div
+                        class="bg-transparent border-2 border-solid border-gray-400 p-4 rounded-lg shadow-inner"
+                    >
+                        <div
+                            class="flex items-center mb-2 text-sm text-gray-800"
+                        >
+                            <span class="font-bold text-[#409090]">
+                                {note.user.name ?? note.user.username}
+                            </span>
+                            <span class="ml-2 text-gray-500">
+                                {new Date(note.createdAt).toLocaleString()}
+                            </span>
+                            <span class="ml-auto text-gray-500">
+                                ID:{note.user.username}
+                            </span>
                         </div>
 
-                        <div class="flex-1 min-w-0">
-                            <div
-                                class="text-gray-800 text-left overflow-wrap break-word whitespace-pre-wrap mb-2"
-                            >
-                                {@html formatText(note.text)}
+                        <div class="flex items-start">
+                            <div class="mr-2 flex-shrink-0">
+                                <img
+                                    src={note.user.avatarUrl}
+                                    alt={`${note.user.username}'s avatar`}
+                                    class="w-16 h-16 rounded-full"
+                                />
                             </div>
 
-                            {#if note.files && note.files.length > 0}
+                            <div class="flex-1 min-w-0">
                                 <div
-                                    class="mt-2 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
+                                    class="text-gray-800 text-left overflow-wrap break-word whitespace-pre-wrap mb-2"
                                 >
-                                    {#each note.files as file (file.id)}
-                                        <img
-                                            src={file.thumbnailUrl}
-                                            alt={file.name}
-                                            class="w-full h-auto rounded-lg object-cover"
-                                            loading="lazy"
-                                        />
-                                    {/each}
+                                    {@html formatText(note.text)}
                                 </div>
-                            {/if}
+
+                                {#if note.files && note.files.length > 0}
+                                    <div
+                                        class="mt-2 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
+                                    >
+                                        {#each note.files as file (file.id)}
+                                            <img
+                                                src={file.thumbnailUrl}
+                                                alt={file.name}
+                                                class="w-full h-auto rounded-lg object-cover"
+                                                loading="lazy"
+                                            />
+                                        {/each}
+                                    </div>
+                                {/if}
+                            </div>
                         </div>
                     </div>
-                </div>
-            {/each}
+                {/each}
+            </div>
         </div>
-    </div>
 
-    {#if timeline.length > 0}
         <div class="flex justify-center my-4">
             <button
                 onclick={handleLoadMore}
@@ -164,27 +218,27 @@
                 {isLoading ? "読み込み中..." : "続きを読む"}
             </button>
         </div>
+
+        <div
+            class="flex flex-col space-y-2 p-4 bg-gray-800 text-gray-200 rounded-lg"
+        >
+            <button
+                class="flex items-center space-x-2 px-4 py-2 rounded-lg bg-gray-600 hover:bg-gray-700 transition-colors duration-200"
+                onclick={() => navigate(makePathname("/headline"))}
+            >
+                <CircleArrowLeftIcon size={16} />
+                <span class="text-sm font-medium">板トップに戻る</span>
+            </button>
+
+            <button
+                class="flex items-center space-x-2 px-4 py-2 rounded-lg bg-gray-600 hover:bg-gray-700 transition-colors duration-200"
+                onclick={() => navigate(makePathname("/history"))}
+            >
+                <CircleArrowLeftIcon size={16} />
+                <span class="text-sm font-medium">履歴に戻る</span>
+            </button>
+        </div>
     {/if}
-
-    <div
-        class="flex flex-col space-y-2 p-4 bg-gray-800 text-gray-200 rounded-lg"
-    >
-        <button
-            class="flex items-center space-x-2 px-4 py-2 rounded-lg bg-gray-600 hover:bg-gray-700 transition-colors duration-200"
-            onclick={() => navigate(makePathname("/headline"))}
-        >
-            <CircleArrowLeftIcon size={16} />
-            <span class="text-sm font-medium">板トップに戻る</span>
-        </button>
-
-        <button
-            class="flex items-center space-x-2 px-4 py-2 rounded-lg bg-gray-600 hover:bg-gray-700 transition-colors duration-200"
-            onclick={() => navigate(makePathname("/history"))}
-        >
-            <CircleArrowLeftIcon size={16} />
-            <span class="text-sm font-medium">履歴に戻る</span>
-        </button>
-    </div>
 </MainPart>
 
 <FooterPart />

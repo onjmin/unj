@@ -199,15 +199,14 @@
 <MainPart>
     {#if threadList === null}
         <p>ヘッドライン取得中…</p>
-        <Paper
-            color="primary"
-            variant="outlined"
-            style="visibility:{laaaaaaaag ? 'visible' : 'hidden'};"
+        <div
+            class="bg-blue-50 border border-blue-200 text-blue-800 p-6 rounded-lg shadow-md"
+            class:invisible={!laaaaaaaag}
         >
-            <Title>まだ終わらない？</Title>
-            <Subtitle>サーバーが落ちてるかも。。</Subtitle>
-            <Content>ページ更新してみてね。</Content>
-        </Paper>
+            <h2 class="text-xl font-semibold">まだ終わらない？</h2>
+            <h3 class="text-base mt-2">サーバーが落ちてるかも。。</h3>
+            <p class="mt-4">ページ更新してみてね。</p>
+        </div>
     {:else}
         <div class="mb-3 flex items-center gap-2">
             <!-- 入力欄 + アイコン -->
