@@ -138,8 +138,6 @@
         ninjaUnjStorage.value = ninja ? "ninja" : null;
     });
 
-    let bookmark = $state(false); // idbから取得する
-
     let online = $state(0);
     let pv = $state(0);
     const handleJoinThread = (data: {
@@ -653,7 +651,7 @@
     </Select> -->
 {/snippet}
 
-<HeaderPart {title} bind:bookmark>
+<HeaderPart {title}>
     <AccessCounterPart {online} {pv} />
     <div>{@render form()}</div>
 </HeaderPart>

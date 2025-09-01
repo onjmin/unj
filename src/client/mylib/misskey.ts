@@ -1,3 +1,26 @@
+export type Misskey = {
+	misskeyId: string;
+	hostname: string;
+	title: string;
+	api: string;
+};
+
+/**
+ * Misskeyの情報を取得する関数
+ */
+export const findMisskey = (misskeyId: string) => {
+	return misskeyList.find((item) => item.misskeyId === misskeyId);
+};
+
+export const misskeyList: Misskey[] = [
+	{
+		misskeyId: "inmusky",
+		hostname: "inmusky.net",
+		title: "いんむすきー",
+		api: "https://inmusky.net/api/notes/local-timeline",
+	},
+];
+
 /**
  * Misskeyのタイムラインを取得する関数
  */

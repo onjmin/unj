@@ -24,7 +24,12 @@
     import { sleep } from "../../common/util.js";
     import { genNonce } from "../mylib/anti-debug.js";
     import { makePathname } from "../mylib/env.js";
-    import { fetchMisskeyTimeline } from "../mylib/misskey.js";
+    import {
+        type Misskey,
+        fetchMisskeyTimeline,
+        findMisskey,
+        misskeyList,
+    } from "../mylib/misskey.js";
     import { ObjectStorage } from "../mylib/object-storage.js";
     import { goodbye, hello, ok, socket } from "../mylib/socket.js";
     import { nonceKey } from "../mylib/unj-storage.js";
@@ -90,8 +95,8 @@
         threadList.unshift(data.new);
     };
 
-    const fetchMisskey = (url: string) => {
-        const { controller, promise } = fetchMisskeyTimeline(url);
+    const fetchMisskey = (misskey: Misskey) => {
+        const { controller, promise } = fetchMisskeyTimeline(misskey.api);
         promise.then((timeline) => {
             if (!timeline.length) return;
             const note = timeline[0];
@@ -99,13 +104,13 @@
                 // 書き込み内容
                 ccUserId: "",
                 // メタ情報
-                id: "inmusky",
+                id: misskey.misskeyId,
                 latestRes: note.text ?? "",
                 latestResAt: new Date(note.createdAt),
                 resCount: 0,
                 latestCursor: note.id,
                 // 基本的な情報
-                title: "いんむすきー",
+                title: misskey.title,
                 // 動的なデータ
                 online: 0,
                 ikioi: 0,
@@ -140,15 +145,13 @@
         socket.on("joinHeadline", handleJoinHeadline);
         socket.on("headline", handleHeadline);
         socket.on("newHeadline", handleNewHeadline);
-        const abort = fetchMisskey(
-            "https://inmusky.net/api/notes/local-timeline",
-        );
+        const aborts = misskeyList.map(fetchMisskey);
         return () => {
             goodbye();
             socket.off("joinHeadline", handleJoinHeadline);
             socket.off("headline", handleHeadline);
             socket.off("newHeadline", handleNewHeadline);
-            abort();
+            aborts.map((func) => func());
         };
     });
 
@@ -241,9 +244,11 @@
                                         class="flex items-center overflow-hidden break-words pr-2"
                                     >
                                         <div class="mr-2 flex-shrink-0">
-                                            {#if thread.id === "inmusky"}
+                                            {#if findMisskey(thread.id)}
                                                 <FaviconPart
-                                                    hostname="inmusky.net"
+                                                    hostname={findMisskey(
+                                                        thread.id,
+                                                    )?.hostname}
                                                 />
                                             {:else}
                                                 <TwemojiPart seed={thread.id} />
@@ -254,7 +259,9 @@
                                         >
                                             <Link
                                                 to={makePathname(
-                                                    `/thread/${thread.id}${thread.resCount > queryResultLimit && thread.latestCursor ? `/${thread.latestCursor}/1` : ""}`,
+                                                    findMisskey(thread.id)
+                                                        ? `/misskey/${findMisskey(thread.id)?.misskeyId}`
+                                                        : `/thread/${thread.id}${thread.resCount > queryResultLimit && thread.latestCursor ? `/${thread.latestCursor}/1` : ""}`,
                                                 )}
                                                 class="hover:underline"
                                                 >{thread.title}({thread.resCount})</Link

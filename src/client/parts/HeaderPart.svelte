@@ -2,12 +2,7 @@
   import { navigate } from "svelte-routing";
   import { DEV_MODE, STG_MODE, makePathname, pathname } from "../mylib/env.js";
 
-  let {
-    children = null,
-    title = "",
-    menu = true,
-    bookmark = $bindable(null),
-  } = $props();
+  let { children = null, title = "", menu = true } = $props();
   import { ArrowLeftIcon } from "@lucide/svelte";
   import {
     isEnabledRightMenu,

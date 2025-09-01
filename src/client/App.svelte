@@ -14,6 +14,7 @@
   import HistoryPage from "./pages/HistoryPage.svelte";
   import HomePage from "./pages/HomePage.svelte";
   import LinksPage from "./pages/LinksPage.svelte";
+  import MisskeyPage from "./pages/MisskeyPage.svelte";
   import NewPage from "./pages/NewPage.svelte";
   import NewsPage from "./pages/NewsPage.svelte";
   import NotFoundPage from "./pages/NotFoundPage.svelte";
@@ -70,6 +71,12 @@
         cursor={params.cursor}
         desc={!!params.desc}
       />
+    </BannedCheck>
+  </Route>
+  <!-- Misskey -->
+  <Route path={makePathname("/misskey/inmusky")} let:params>
+    <BannedCheck>
+      <MisskeyPage misskeyId="inmusky" />
     </BannedCheck>
   </Route>
 
