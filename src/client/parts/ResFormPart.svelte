@@ -103,6 +103,7 @@
   bind:this={textarea}
   bind:value={contentText}
   input$rows={Math.max(contentText.split("\n").length, 2)}
+  input$cols={32}
   input$maxlength={256}
   onkeyup={(e: KeyboardEvent) => {
     if (e.ctrlKey && e.key === "Enter") {
