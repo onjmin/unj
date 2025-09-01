@@ -90,22 +90,8 @@
         threadList.unshift(data.new);
     };
 
-    $effect(() => {
-        hello(() => {
-            socket.emit("joinHeadline", {});
-            socket.emit("headline", {
-                nonce: genNonce(nonceKey.value ?? ""),
-                cursor: null,
-                limit: queryResultLimit,
-                desc: true,
-            });
-        });
-        socket.on("joinHeadline", handleJoinHeadline);
-        socket.on("headline", handleHeadline);
-        socket.on("newHeadline", handleNewHeadline);
-        const { controller, promise } = fetchMisskeyTimeline(
-            "https://inmusky.net/api/notes/local-timeline",
-        );
+    const fetchMisskey = (url: string) => {
+        const { controller, promise } = fetchMisskeyTimeline(url);
         promise.then((timeline) => {
             if (!timeline.length) return;
             const note = timeline[0];
@@ -138,12 +124,31 @@
             }
             threadList = [...threadList];
         });
+        return () => controller.abort();
+    };
+
+    $effect(() => {
+        hello(() => {
+            socket.emit("joinHeadline", {});
+            socket.emit("headline", {
+                nonce: genNonce(nonceKey.value ?? ""),
+                cursor: null,
+                limit: queryResultLimit,
+                desc: true,
+            });
+        });
+        socket.on("joinHeadline", handleJoinHeadline);
+        socket.on("headline", handleHeadline);
+        socket.on("newHeadline", handleNewHeadline);
+        const abort = fetchMisskey(
+            "https://inmusky.net/api/notes/local-timeline",
+        );
         return () => {
             goodbye();
             socket.off("joinHeadline", handleJoinHeadline);
             socket.off("headline", handleHeadline);
             socket.off("newHeadline", handleNewHeadline);
-            controller.abort();
+            abort();
         };
     });
 
