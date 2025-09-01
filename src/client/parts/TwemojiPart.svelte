@@ -2,7 +2,9 @@
   import { seededRandArray } from "../../common/util.js";
   import list from "../mylib/emoji.js";
 
-  let { seed = "", height = "" } = $props();
+  let { seed = "" } = $props();
+
+  const height = "16";
 
   const emoji = seededRandArray(list, seed) ?? "🪬";
   const codePoints = Array.from(emoji).map((char) =>

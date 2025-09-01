@@ -655,7 +655,6 @@
 
 <HeaderPart {title} bind:bookmark>
     <AccessCounterPart {online} {pv} />
-    <p>レス書き込み欄</p>
     <div>{@render form()}</div>
 </HeaderPart>
 
@@ -791,7 +790,7 @@
     {#if thread}
         <div class="thread-header">
             <p class="thread-title flex items-center">
-                <TwemojiPart seed={thread.id} height="16" />
+                <TwemojiPart seed={thread.id} />
                 <span class="pl-1.5">{thread.title}</span>
             </p>
             <ChipSet {chips} nonInteractive>
@@ -898,7 +897,6 @@
             {@render paginationControls()}
         </div>
         <Paper>
-            <Subtitle>レス書き込み欄</Subtitle>
             <Content>{@render form(true)}</Content>
         </Paper>
         <div

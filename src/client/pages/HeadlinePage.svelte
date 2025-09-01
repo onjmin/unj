@@ -16,6 +16,7 @@
         differenceInSeconds,
         differenceInWeeks,
         differenceInYears,
+        isBefore,
     } from "date-fns";
     import { Link } from "svelte-routing";
     import { queryResultLimit } from "../../common/request/schema.js";
@@ -23,10 +24,12 @@
     import { sleep } from "../../common/util.js";
     import { genNonce } from "../mylib/anti-debug.js";
     import { makePathname } from "../mylib/env.js";
+    import { fetchMisskeyTimeline } from "../mylib/misskey.js";
     import { ObjectStorage } from "../mylib/object-storage.js";
     import { goodbye, hello, ok, socket } from "../mylib/socket.js";
     import { nonceKey } from "../mylib/unj-storage.js";
     import AccessCounterPart from "../parts/AccessCounterPart.svelte";
+    import FaviconPart from "../parts/FaviconPart.svelte";
     import TwemojiPart from "../parts/TwemojiPart.svelte";
 
     const formatTimeAgo = (date: Date): string => {
@@ -100,11 +103,47 @@
         socket.on("joinHeadline", handleJoinHeadline);
         socket.on("headline", handleHeadline);
         socket.on("newHeadline", handleNewHeadline);
+        const { controller, promise } = fetchMisskeyTimeline(
+            "https://inmusky.net/api/notes/local-timeline",
+        );
+        promise.then((timeline) => {
+            if (!timeline.length) return;
+            const note = timeline[0];
+            const new1: HeadlineThread = {
+                // 書き込み内容
+                ccUserId: "",
+                // メタ情報
+                id: "inmusky",
+                latestRes: note.text ?? "",
+                latestResAt: new Date(note.createdAt),
+                resCount: 0,
+                latestCursor: note.id,
+                // 基本的な情報
+                title: "いんむすきー",
+                // 動的なデータ
+                online: 0,
+                ikioi: 0,
+                lolCount: 0,
+                goodCount: 0,
+                badCount: 0,
+            };
+            if (!threadList) return;
+            const idx = threadList.findIndex((v) =>
+                isBefore(v.latestResAt, new1.latestResAt),
+            );
+            if (idx === -1) {
+                threadList.push(new1);
+            } else {
+                threadList.splice(idx, 0, new1);
+            }
+            threadList = [...threadList];
+        });
         return () => {
             goodbye();
             socket.off("joinHeadline", handleJoinHeadline);
             socket.off("headline", handleHeadline);
             socket.off("newHeadline", handleNewHeadline);
+            controller.abort();
         };
     });
 
@@ -194,13 +233,16 @@
                                     </div>
 
                                     <div
-                                        class="flex items-start overflow-hidden break-words pr-2"
+                                        class="flex items-center overflow-hidden break-words pr-2"
                                     >
                                         <div class="mr-2 flex-shrink-0">
-                                            <TwemojiPart
-                                                seed={thread.id}
-                                                height="16"
-                                            />
+                                            {#if thread.id === "inmusky"}
+                                                <FaviconPart
+                                                    hostname="inmusky.net"
+                                                />
+                                            {:else}
+                                                <TwemojiPart seed={thread.id} />
+                                            {/if}
                                         </div>
                                         <div
                                             class="text-base font-semibold text-gray-800"
