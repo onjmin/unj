@@ -24,7 +24,7 @@
         const adblockTime = randInt(1, 1024);
         if (!confirm(`${adblockTime}時間、広告を非表示のん？`)) return;
         alert(
-            "サーバ運営には広告収入は不要なの。。でも気が向いたらご協力お願いね。。",
+            "サーバ運営には広告収入が必要なの。。気が向いたらご協力お願いね。。",
         );
         showAd = false;
         adsDeletedAt.value = `${+addHours(new Date(), adblockTime)}`;
