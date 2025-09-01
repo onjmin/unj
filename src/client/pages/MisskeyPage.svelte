@@ -131,8 +131,23 @@
 
 <HeaderPart {title}>
     <AccessCounterPart {online} {pv} />
+    <div class="flex flex-col items-end space-y-2 text-right">
+        <p class="text-xs text-gray-500">
+            このページからの投稿は許可されていません
+        </p>
+        <p class="text-xs text-gray-500">
+            投稿をしたい場合はMisskeyを開いてください。
+        </p>
+        <a
+            href={`https://${hostname}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="flex items-center space-x-2 px-4 py-2 rounded-lg bg-gray-600 hover:bg-gray-700 transition-colors duration-200"
+        >
+            <span class="text-sm font-medium">Misskeyを開く</span>
+        </a>
+    </div>
 </HeaderPart>
-
 <MainPart>
     {#if timeline.length === 0}
         <p>スレ取得中…</p>
