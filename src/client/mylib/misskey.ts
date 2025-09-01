@@ -24,19 +24,28 @@ export const misskeyList: Misskey[] = [
 /**
  * Misskeyのタイムラインを取得する関数
  */
-export const fetchMisskeyTimeline = (url: string, limit = 1) => {
+export const fetchMisskeyTimeline = (
+	url: string,
+	limit = 1,
+	untilId?: string,
+) => {
 	const controller = new AbortController();
 	const signal = controller.signal;
+
+	const body = {
+		limit: limit,
+		untilId: untilId,
+	};
 
 	const promise = fetch(url, {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
 		},
-		body: JSON.stringify({ limit }),
+		body: JSON.stringify(body),
 		signal: signal,
 	})
-		.then((res) => res.json())
+		.then((res) => (res.ok ? res.json() : []))
 		.then((json) => (Array.isArray(json) ? (json as Timeline) : []))
 		.catch(() => []);
 
@@ -53,17 +62,43 @@ export interface User {
 	host: string | null;
 	avatarUrl: string;
 	avatarBlurhash: string | null;
-	avatarDecorations: unknown[]; // 中身の構造が不明なため unknown[]
+	avatarDecorations: unknown[]; // 構造が不明なため unknown[]
 	isBot: boolean;
 	isCat: boolean;
-	emojis: Record<string, unknown>; // キーが変動するため Record を使用
+	emojis: Record<string, unknown>;
 	onlineStatus: string;
-	badgeRoles: unknown[]; // 中身の構造が不明なため unknown[]
+	badgeRoles: unknown[];
+}
+
+// 画像などのファイルプロパティの型
+export interface FileProperties {
+	width: number;
+	height: number;
+}
+
+// ファイル自体の型
+export interface File {
+	id: string;
+	createdAt: string;
+	name: string;
+	type: string;
+	md5: string;
+	size: number;
+	isSensitive: boolean;
+	blurhash: string | null;
+	properties: FileProperties;
+	url: string;
+	thumbnailUrl: string;
+	comment: string | null;
+	folderId: string | null;
+	folder: unknown | null; // 構造が不明なため unknown
+	userId: string;
+	user: User | null; // userはnullになる可能性がある
 }
 
 export interface Note {
 	id: string;
-	createdAt: string; // ISO 8601形式の文字列
+	createdAt: string;
 	userId: string;
 	user: User;
 	text: string | null;
@@ -74,10 +109,10 @@ export interface Note {
 	renoteCount: number;
 	repliesCount: number;
 	reactionCount: number;
-	reactions: Record<string, number>; // キーが変動するため Record を使用
-	reactionEmojis: Record<string, unknown>; // キーが変動するため Record を使用
-	fileIds: unknown[]; // 中身の構造が不明なため unknown[]
-	files: unknown[]; // 中身の構造が不明なため unknown[]
+	reactions: Record<string, number>;
+	reactionEmojis: Record<string, unknown>;
+	fileIds: string[]; // ファイルIDの配列なので string[] に変更
+	files: File[]; // 画像データを含むため、新しく定義した File[] に変更
 	replyId: string | null;
 	renoteId: string | null;
 	clippedCount: number;
