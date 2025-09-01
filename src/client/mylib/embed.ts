@@ -7,6 +7,18 @@ export const parseImageEmbedImgur = (url: URL): string | null => {
 	}
 	return null;
 };
+export const parseImageEmbedAlu = (
+	url: URL,
+	width: number,
+	height: number,
+): string | null => {
+	const parts = url.pathname.split("/").filter(Boolean);
+	// 期待フォーマット: ["series", "{title}", "crop", "{id}"]
+	if (parts.length < 4 || parts[2] !== "crop") return null;
+	const series = parts[1];
+	const id = parts[3];
+	return `https://alu.jp/series/${series}/crop/embed/${id}?${width}x${height}/0?referer=oembed`;
+};
 export const parseImageEmbedYonet = (url: URL): string | null => {
 	const id = url.pathname.slice(1).match(/i\/(.+)\.(.+)/)?.[1];
 	if (id) {

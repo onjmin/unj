@@ -20,8 +20,7 @@
   import OekakiPart from "./OekakiPart.svelte";
   import UrlTemplatePart from "./UrlTemplatePart.svelte";
 
-  const regexUrl =
-    /(https?:\/\/)?([\w\-]+\.)+[\w\-]+(\/[\w\-._~:/?#[\]@!$&'()*+,;=]*)?/i;
+  const regexUrl = /(https?:\/\/[A-Za-z0-9\-\._~:/?#[\]@!$&'()*+,;=%]+)/gi;
 
   let {
     disabled = false,

@@ -10,6 +10,13 @@ export default [
 		href: "https://imguruploader.com",
 	}),
 	new SiteInfo({
+		id: 404,
+		name: "アル",
+		description: "マンガのコマを著作権を気にせず貼り付けられるサービス",
+		src: "https://alu.jp/series/SPY%C3%97FAMILY/crop/TRTV4HvxzlBMUpNYcwp9",
+		href: "https://alu.jp/cropSearch?q=%E3%83%AC%E3%82%B9%E3%81%AB%E4%BD%BF%E3%81%88%E3%82%8B%E3%82%B3%E3%83%9E",
+	}),
+	new SiteInfo({
 		id: 411,
 		name: "よねっと",
 		description: "ふなかもめ本体",

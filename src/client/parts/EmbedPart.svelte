@@ -24,6 +24,7 @@
     parseGifEmbedImgur,
     parseGifEmbedImgx,
     parseGifEmbedYonet,
+    parseImageEmbedAlu,
     parseImageEmbedImgBB,
     parseImageEmbedImgur,
     parseImageEmbedImgx,
@@ -72,6 +73,10 @@
         case 403:
           imageEmbed = true;
           embedUrl = parseImageEmbedPixiv(url) ?? "";
+          break;
+        case 404:
+          imageEmbed = true;
+          embedUrl = parseImageEmbedAlu(url, width, height) ?? "";
           break;
         case 411:
           imageEmbed = true;
@@ -211,11 +216,26 @@
     >
     <br />
     {#if imageEmbed}
-      <img
-        class="embed-image gimp-checkered-background"
-        src={embedUrl}
-        alt="embed"
-      />
+      {#if siteInfo.id === 404}
+        <iframe
+          src={embedUrl}
+          {height}
+          title="embed"
+          class="bg-[#E6E4E1] bg-[url('/image/alu.svg')] bg-no-repeat bg-center"
+          style="max-width:{width}px;"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen
+          scrolling="no"
+          frameborder="0"
+          referrerpolicy="strict-origin-when-cross-origin"
+        ></iframe>
+      {:else}
+        <img
+          class="embed-image gimp-checkered-background"
+          src={embedUrl}
+          alt="embed"
+        />
+      {/if}
     {:else if videoEmbedYouTube}
       <iframe
         title="embed"
