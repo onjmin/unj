@@ -175,6 +175,17 @@
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   });
+
+  $effect(() => {
+    if (
+      embeddable &&
+      siteInfo &&
+      siteInfo.id !== 3202 &&
+      siteInfo.id !== 6401
+    ) {
+      tryEmbed(siteInfo);
+    }
+  });
 </script>
 
 {#if siteInfo}

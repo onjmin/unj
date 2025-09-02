@@ -723,11 +723,12 @@
 
 {#if thread?.ageRes}
     <div class="ageRes">
+        <!-- backgroundEmbedControls={siteInfo?.id === 1601 ||
+                siteInfo?.id === 1602 ||
+                siteInfo?.id === 3201} -->
         <ResPart
             bind:input={contentText}
-            backgroundEmbedControls={siteInfo?.id === 1601 ||
-                siteInfo?.id === 1602 ||
-                siteInfo?.id === 3201}
+            backgroundEmbedControls={false}
             {focus}
             ccUserId={thread?.ageRes.ccUserId}
             ccUserName={thread?.ageRes.ccUserName}
@@ -744,10 +745,10 @@
         />
     </div>
     {#key thread?.ageRes.num}
-        <BackgroundEmbedPart
+        <!-- <BackgroundEmbedPart
             contentUrl={thread.ageRes.contentUrl}
             contentType={thread.ageRes.contentType}
-        />
+        /> -->
     {/key}
 {/if}
 
