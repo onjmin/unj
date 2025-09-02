@@ -84,67 +84,69 @@
 </main>
 
 {#if menu}
-    {#if showAd && !isDeleteAds && ad}
-        <div
-            class="group relative w-full cursor-pointer overflow-hidden rounded shadow-md mb-2 z-32"
-            onclick={openAd}
-            tabindex="0"
-            role="button"
-            onkeydown={() => {}}
-        >
-            <!-- 不透明の背景 -->
-            <div class="absolute inset-0 bg-gray-500"></div>
-
-            <!-- 背景画像（半透明） -->
-            <img
-                src={ad.image}
-                alt={ad.title}
-                class="absolute inset-0 w-full h-full object-cover opacity-40 pointer-events-none"
-            />
-
-            <!-- hover時のオーバーレイ -->
+    {#if false}
+        {#if showAd && !isDeleteAds && ad}
             <div
-                class="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors duration-200"
-            ></div>
-
-            <!-- 内容 -->
-            <div
-                class="relative flex items-center gap-3 px-4 py-2 text-gray-900 h-16"
+                class="group relative w-full cursor-pointer overflow-hidden rounded shadow-md mb-2 z-32"
+                onclick={openAd}
+                tabindex="0"
+                role="button"
+                onkeydown={() => {}}
             >
-                <!-- ✖ ボタン -->
-                <button
-                    class="absolute top-1 right-1 w-7 h-7 flex items-center justify-center
-         rounded-full bg-gray-800/80 hover:bg-red-600 text-white z-10 shadow-md"
-                    onclick={closeAd}
-                    aria-label="閉じる"
-                >
-                    <XIcon size={16} strokeWidth={3} />
-                </button>
+                <!-- 不透明の背景 -->
+                <div class="absolute inset-0 bg-gray-500"></div>
 
-                <!-- favicon アイコン（hover時に暗くする） -->
+                <!-- 背景画像（半透明） -->
                 <img
-                    src={ad.image}
-                    alt="Logo"
-                    class="max-h-full w-auto z-10 object-contain transition group-hover:brightness-75"
+                    src={ad?.image}
+                    alt={ad?.title}
+                    class="absolute inset-0 w-full h-full object-cover opacity-40 pointer-events-none"
                 />
 
-                <!-- タイトル + PR文 -->
+                <!-- hover時のオーバーレイ -->
                 <div
-                    class="flex flex-col justify-center z-10 transition group-hover:brightness-90"
+                    class="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors duration-200"
+                ></div>
+
+                <!-- 内容 -->
+                <div
+                    class="relative flex items-center gap-3 px-4 py-2 text-gray-900 h-16"
                 >
-                    <span
-                        class="font-bold text-sm text-white [text-shadow:1px_1px_2px_black]"
+                    <!-- ✖ ボタン -->
+                    <button
+                        class="absolute top-1 right-1 w-7 h-7 flex items-center justify-center
+         rounded-full bg-gray-800/80 hover:bg-red-600 text-white z-10 shadow-md"
+                        onclick={closeAd}
+                        aria-label="閉じる"
                     >
-                        {ad.title}
-                    </span>
-                    <span
-                        class="text-xs text-white opacity-90 [text-shadow:1px_1px_2px_black]"
+                        <XIcon size={16} strokeWidth={3} />
+                    </button>
+
+                    <!-- favicon アイコン（hover時に暗くする） -->
+                    <img
+                        src={ad?.image}
+                        alt="Logo"
+                        class="max-h-full w-auto z-10 object-contain transition group-hover:brightness-75"
+                    />
+
+                    <!-- タイトル + PR文 -->
+                    <div
+                        class="flex flex-col justify-center z-10 transition group-hover:brightness-90"
                     >
-                        {ad.description}
-                    </span>
+                        <span
+                            class="font-bold text-sm text-white [text-shadow:1px_1px_2px_black]"
+                        >
+                            {ad?.title}
+                        </span>
+                        <span
+                            class="text-xs text-white opacity-90 [text-shadow:1px_1px_2px_black]"
+                        >
+                            {ad?.description}
+                        </span>
+                    </div>
                 </div>
             </div>
-        </div>
+        {/if}
     {/if}
 
     <footer class="unj-footer-part">
