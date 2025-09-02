@@ -159,7 +159,7 @@
                         class="bg-transparent border-2 border-solid border-gray-400 p-4 rounded-lg shadow-inner"
                     >
                         <div
-                            class="flex items-center mb-2 text-sm text-gray-800"
+                            class="flex flex-wrap items-center mb-2 text-sm text-gray-800"
                         >
                             <span class="font-bold text-[#409090]">
                                 {note.user.name ?? note.user.username}
@@ -167,11 +167,10 @@
                             <span class="ml-2 text-gray-500">
                                 {new Date(note.createdAt).toLocaleString()}
                             </span>
-                            <span class="ml-auto text-gray-500">
+                            <span class="ml-2 text-gray-500">
                                 ID:{note.user.username}
                             </span>
                         </div>
-
                         <div class="flex items-start">
                             <div class="mr-2 flex-shrink-0">
                                 <img
