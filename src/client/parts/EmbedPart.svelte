@@ -9,13 +9,12 @@
   } from "@smui/list";
   import { contentTemplateMap } from "../../common/request/content-schema.js";
   import game from "../../common/request/whitelist/game.js";
-  import gif from "../../common/request/whitelist/gif.js";
+  import image from "../../common/request/whitelist/image.js";
   import oekaki from "../../common/request/whitelist/oekaki.js";
   import {
     SiteInfo,
     findIn,
   } from "../../common/request/whitelist/site-info.js";
-  import video from "../../common/request/whitelist/video.js";
   import {
     parseAudioEmbedSoundCloud,
     parseAudioEmbedSpotify,
@@ -179,17 +178,7 @@
   });
 
   $effect(() => {
-    if (
-      embeddable &&
-      siteInfo &&
-      siteInfo.id !== 404 &&
-      siteInfo.id !== 412 &&
-      siteInfo.id !== 413 &&
-      temp !== gif &&
-      temp !== video &&
-      siteInfo.id !== 3202 &&
-      temp !== game
-    ) {
+    if (embeddable && siteInfo && temp === image) {
       tryEmbed(siteInfo);
     }
   });
