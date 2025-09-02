@@ -180,6 +180,7 @@
     if (
       embeddable &&
       siteInfo &&
+      siteInfo.id !== 404 &&
       siteInfo.id !== 3202 &&
       siteInfo.id !== 6401
     ) {
