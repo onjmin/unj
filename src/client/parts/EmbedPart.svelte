@@ -9,6 +9,7 @@
   } from "@smui/list";
   import { contentTemplateMap } from "../../common/request/content-schema.js";
   import game from "../../common/request/whitelist/game.js";
+  import gif from "../../common/request/whitelist/gif.js";
   import oekaki from "../../common/request/whitelist/oekaki.js";
   import {
     SiteInfo,
@@ -177,17 +178,7 @@
   });
 
   $effect(() => {
-    if (
-      embeddable &&
-      siteInfo &&
-      siteInfo.id !== 404 &&
-      siteInfo.id !== 412 &&
-      siteInfo.id !== 413 &&
-      siteInfo.id !== 812 &&
-      siteInfo.id !== 813 &&
-      siteInfo.id !== 3202 &&
-      siteInfo.id !== 6401
-    ) {
+    if (embeddable && siteInfo && temp !== gif && temp !== game) {
       tryEmbed(siteInfo);
     }
   });
