@@ -108,7 +108,7 @@ export let newResSoundHowl: Howl | null;
 export const changeNewResSound = () => {
 	newResSoundHowl = newResSound.value
 		? make(newResSound.value)
-		: make(yajuKokoSound.key);
+		: make(coinSound.key);
 };
 
 /**
@@ -118,5 +118,5 @@ export let replyResSoundHowl: Howl | null;
 export const changeReplyResSound = () => {
 	replyResSoundHowl = replyResSound.value
 		? make(replyResSound.value)
-		: make(yajuShoutSound.key);
+		: make(wafSound.key);
 };
