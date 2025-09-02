@@ -227,14 +227,18 @@
     <br />
     {#if imageEmbed}
       {#if siteInfo.id === 404}
-        {#if embedHtml}
-          {@html embedHtml}
-        {:else}
-          <div class="animate-pulse">
-            <div class="h-4 bg-gray-300 rounded w-3/4 mb-2"></div>
-            <div class="h-4 bg-gray-300 rounded w-1/2"></div>
-          </div>
-        {/if}
+        <div class="flex justify-start">
+          {#if embedHtml}
+            <div style="max-width: {width}px;">
+              {@html embedHtml}
+            </div>
+          {:else}
+            <div class="animate-pulse">
+              <div class="h-4 bg-gray-300 rounded w-3/4 mb-2"></div>
+              <div class="h-4 bg-gray-300 rounded w-1/2"></div>
+            </div>
+          {/if}
+        </div>
       {:else}
         <img
           class="embed-image gimp-checkered-background"
