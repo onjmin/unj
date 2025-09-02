@@ -178,7 +178,7 @@
   });
 
   $effect(() => {
-    if (embeddable && siteInfo && temp === image) {
+    if (embeddable && siteInfo && [401, 402, 403, 411].includes(siteInfo.id)) {
       tryEmbed(siteInfo);
     }
   });
