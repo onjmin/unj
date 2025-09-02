@@ -15,6 +15,7 @@
     SiteInfo,
     findIn,
   } from "../../common/request/whitelist/site-info.js";
+  import video from "../../common/request/whitelist/video.js";
   import {
     parseAudioEmbedSoundCloud,
     parseAudioEmbedSpotify,
@@ -185,6 +186,7 @@
       siteInfo.id !== 412 &&
       siteInfo.id !== 413 &&
       temp !== gif &&
+      temp !== video &&
       siteInfo.id !== 3202 &&
       temp !== game
     ) {
