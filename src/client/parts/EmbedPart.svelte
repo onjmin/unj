@@ -178,7 +178,16 @@
   });
 
   $effect(() => {
-    if (embeddable && siteInfo && temp !== gif && temp !== game) {
+    if (
+      embeddable &&
+      siteInfo &&
+      siteInfo.id !== 404 &&
+      siteInfo.id !== 412 &&
+      siteInfo.id !== 413 &&
+      temp !== gif &&
+      siteInfo.id !== 3202 &&
+      temp !== game
+    ) {
       tryEmbed(siteInfo);
     }
   });
