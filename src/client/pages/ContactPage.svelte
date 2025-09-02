@@ -7,7 +7,6 @@
 
     import Button from "@smui/button";
     import LayoutGrid, { Cell } from "@smui/layout-grid";
-    import Paper, { Title, Content } from "@smui/paper";
     import Select, { Option } from "@smui/select";
     import Snackbar from "@smui/snackbar";
     import Tab, { Icon, Label } from "@smui/tab";

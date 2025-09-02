@@ -5,8 +5,6 @@
     import MainPart from "../parts/MainPart.svelte";
     ///////////////
 
-    import Button from "@smui/button";
-    import Paper, { Title, Content, Subtitle } from "@smui/paper";
     import { makePathname } from "../mylib/env.js";
     import { errorReason } from "../mylib/socket.js";
 </script>

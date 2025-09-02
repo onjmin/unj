@@ -13,7 +13,6 @@
         ChevronsLeftRightEllipsisIcon,
     } from "@lucide/svelte";
     import Chip, { Set as ChipSet, LeadingIcon, Text } from "@smui/chips";
-    import Paper, { Title, Content, Subtitle } from "@smui/paper";
     import { navigate } from "svelte-routing";
     import {
         type BloggerItem,

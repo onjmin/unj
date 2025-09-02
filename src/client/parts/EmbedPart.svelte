@@ -7,7 +7,6 @@
     PrimaryText,
     SecondaryText,
   } from "@smui/list";
-  import Paper, { Title, Content, Subtitle } from "@smui/paper";
   import { contentTemplateMap } from "../../common/request/content-schema.js";
   import game from "../../common/request/whitelist/game.js";
   import oekaki from "../../common/request/whitelist/oekaki.js";

@@ -7,7 +7,6 @@
 
     import Chip, { Set as ChipSet, LeadingIcon, Text } from "@smui/chips";
     import List, { Item, Separator } from "@smui/list";
-    import Paper, { Title, Content, Subtitle } from "@smui/paper";
     import { Link } from "svelte-routing";
     import {
         type BloggerItem,

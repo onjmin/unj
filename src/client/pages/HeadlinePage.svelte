@@ -7,7 +7,6 @@
 
     import { SearchIcon } from "@lucide/svelte";
     import Button from "@smui/button";
-    import Paper, { Title, Content, Subtitle } from "@smui/paper";
     import {
         differenceInDays,
         differenceInHours,

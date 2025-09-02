@@ -17,10 +17,8 @@
     import { Switch } from "@skeletonlabs/skeleton-svelte";
     import Banner, { Icon, Label } from "@smui/banner";
     import Button from "@smui/button";
-    import Checkbox from "@smui/checkbox";
     import Chip, { Set as ChipSet, LeadingIcon, Text } from "@smui/chips";
-    import FormField from "@smui/form-field";
-    import Paper, { Title, Content, Subtitle } from "@smui/paper";
+    import Paper, { Content } from "@smui/paper";
     import {
         addSeconds,
         differenceInDays,
