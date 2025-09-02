@@ -50,6 +50,7 @@
   let embedding = $state(false);
   let embedError = $state(false);
   let embedUrl = $state("");
+  let embedHtml = $state("");
   let imageEmbed = $state(false);
   let videoEmbedYouTube = $state(false);
   let videoEmbedNicovideo = $state(false);
@@ -75,7 +76,17 @@
           break;
         case 404:
           imageEmbed = true;
-          embedUrl = parseImageEmbedAlu(url, width, height) ?? "";
+          embedUrl = parseImageEmbedAlu(url) ?? "";
+          embedHtml = "";
+          fetch(embedUrl)
+            .then((v) => v.json())
+            .then((v) => {
+              embedHtml = v.html;
+            })
+            .catch((v) => {
+              embedError = true;
+              embedding = false;
+            });
           break;
         case 411:
           imageEmbed = true;
@@ -216,18 +227,14 @@
     <br />
     {#if imageEmbed}
       {#if siteInfo.id === 404}
-        <iframe
-          src={embedUrl}
-          {width}
-          {height}
-          title="embed"
-          class="bg-[#E6E4E1] bg-no-repeat bg-center"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          allowfullscreen
-          scrolling="no"
-          frameborder="0"
-          referrerpolicy="strict-origin-when-cross-origin"
-        ></iframe>
+        {#if embedHtml}
+          {@html embedHtml}
+        {:else}
+          <div class="animate-pulse">
+            <div class="h-4 bg-gray-300 rounded w-3/4 mb-2"></div>
+            <div class="h-4 bg-gray-300 rounded w-1/2"></div>
+          </div>
+        {/if}
       {:else}
         <img
           class="embed-image gimp-checkered-background"

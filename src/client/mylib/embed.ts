@@ -1,88 +1,62 @@
 import { corsKiller } from "@onjmin/cors-killer";
 
-export const parseImageEmbedImgur = (url: URL): string | null => {
+export const parseImageEmbedImgur = (url: URL): string | undefined => {
 	const id = url.pathname.slice(1).split(".")[0];
-	if (id) {
-		return `https://i.imgur.com/${id}.png`;
-	}
-	return null;
+	if (!id) return;
+	return `https://i.imgur.com/${id}.png`;
 };
-export const parseImageEmbedAlu = (
-	url: URL,
-	width: number,
-	height: number,
-): string | null => {
+export const parseImageEmbedAlu = (url: URL): string | undefined => {
 	const parts = url.pathname.split("/").filter(Boolean);
-	// 期待フォーマット: ["series", "{title}", "crop", "{id}"]
-	if (parts.length < 4 || parts[2] !== "crop") return null;
-	const series = parts[1];
-	const id = parts[3];
-	return `https://alu.jp/series/${series}/crop/embed/${id}?${width}x${height}/0?referer=oembed`;
+	if (parts.length !== 4 || parts[0] !== "series" || parts[2] !== "crop")
+		return;
+	return `https://alu.jp/oembed?url=${url.href}`;
 };
-export const parseImageEmbedYonet = (url: URL): string | null => {
+export const parseImageEmbedYonet = (url: URL): string | undefined => {
 	const id = url.pathname.slice(1).match(/i\/(.+)\.(.+)/)?.[1];
-	if (id) {
-		return `https://funakamome.com/i/${id}.png`;
-	}
-	return null;
+	if (!id) return;
+	return `https://funakamome.com/i/${id}.png`;
 };
-export const parseImageEmbedImgx = (url: URL): string | null => {
+export const parseImageEmbedImgx = (url: URL): string | undefined => {
 	const id = url.pathname.slice(1).match(/i\/(.+)\.(.+)/)?.[1];
-	if (id) {
-		return corsKiller(`https://imgx.site/i/${id}.png`);
-	}
-	return null;
+	if (!id) return;
+	return corsKiller(`https://imgx.site/i/${id}.png`);
 };
-export const parseImageEmbedImgBB = (url: URL): string | null => {
+export const parseImageEmbedImgBB = (url: URL): string | undefined => {
 	const match = url.pathname.slice(1).match(/(.+)\/(.+)\.(.+)/);
-	if (match) {
-		return corsKiller(`https://i.ibb.co/${match[0]}/${match[1]}.png`);
-	}
-	return null;
+	if (!match) return;
+	return corsKiller(`https://i.ibb.co/${match[0]}/${match[1]}.png`);
 };
-export const parseImageEmbedNicoseiga = (url: URL): string | null => {
+export const parseImageEmbedNicoseiga = (url: URL): string | undefined => {
 	const id = url.pathname.match(/im([0-9]+)/)?.[1];
-	if (id) {
-		return `https://lohas.nicoseiga.jp//thumb/${id}i`;
-	}
-	return null;
+	if (!id) return;
+	return `https://lohas.nicoseiga.jp//thumb/${id}i`;
 };
-export const parseImageEmbedPixiv = (url: URL): string | null => {
+export const parseImageEmbedPixiv = (url: URL): string | undefined => {
 	const id = url.pathname.match(/[0-9]+/)?.[0];
-	if (id) {
-		return `https://embed.pixiv.net/decorate.php?illust_id=${id}`;
-	}
-	return null;
+	if (!id) return;
+	return `https://embed.pixiv.net/decorate.php?illust_id=${id}`;
 };
-export const parseGifEmbedImgur = (url: URL): string | null => {
+export const parseGifEmbedImgur = (url: URL): string | undefined => {
 	const id = url.pathname.slice(1).split(".")[0];
-	if (id) {
-		return `https://i.imgur.com/${id}.gif`;
-	}
-	return null;
+	if (!id) return;
+	return `https://i.imgur.com/${id}.gif`;
 };
-export const parseGifEmbedYonet = (url: URL): string | null => {
+export const parseGifEmbedYonet = (url: URL): string | undefined => {
 	const id = url.pathname.slice(1).match(/i\/(.+)\.(.+)/)?.[1];
-	if (id) {
-		return `https://funakamome.com/i/${id}.gif`;
-	}
-	return null;
+	if (!id) return;
+	return `https://funakamome.com/i/${id}.gif`;
 };
-export const parseGifEmbedImgx = (url: URL): string | null => {
+export const parseGifEmbedImgx = (url: URL): string | undefined => {
 	const id = url.pathname.slice(1).match(/i\/(.+)\.(.+)/)?.[1];
-	if (id) {
-		return corsKiller(`https://imgx.site/i/${id}.gif`);
-	}
-	return null;
+	if (!id) return;
+	return corsKiller(`https://imgx.site/i/${id}.gif`);
 };
-export const parseGifEmbedImgBB = (url: URL): string | null => {
+export const parseGifEmbedImgBB = (url: URL): string | undefined => {
 	const match = url.pathname.slice(1).match(/(.+)\/(.+)\.(.+)/);
-	if (match) {
-		return corsKiller(`https://i.ibb.co/${match[0]}/${match[1]}.gif`);
-	}
-	return null;
+	if (!match) return;
+	return corsKiller(`https://i.ibb.co/${match[0]}/${match[1]}.gif`);
 };
-export const parseGifEmbedGIPHY = (url: URL): string | null => {
+export const parseGifEmbedGIPHY = (url: URL): string | undefined => {
 	let id = "";
 	if (url.hostname === "gif.open2ch.net") {
 		const last = url.pathname.split("/").at(-1);
@@ -94,12 +68,10 @@ export const parseGifEmbedGIPHY = (url: URL): string | null => {
 		const last = url.pathname.split("/").at(-2);
 		if (last) id = last;
 	}
-	if (id) {
-		return `https://media3.giphy.com/media/${id}/giphy.gif`;
-	}
-	return null;
+	if (!id) return;
+	return `https://media3.giphy.com/media/${id}/giphy.gif`;
 };
-export const parseVideoEmbedYouTube = (url: URL): string | null => {
+export const parseVideoEmbedYouTube = (url: URL): string | undefined => {
 	const path = url.pathname;
 	let id = "";
 	// youtu.be 短縮URLの場合: https://youtu.be/VIDEO_ID
@@ -124,36 +96,28 @@ export const parseVideoEmbedYouTube = (url: URL): string | null => {
 		id = url.searchParams.get("v") || "";
 	}
 	// 動画 ID が抽出できた場合、埋め込み URL を返す
-	if (id) {
-		return `https://www.youtube.com/embed/${id}`;
-	}
-	return null;
+	if (!id) return;
+	return `https://www.youtube.com/embed/${id}`;
 };
-export const parseVideoEmbedNicovideo = (url: URL): string | null => {
+export const parseVideoEmbedNicovideo = (url: URL): string | undefined => {
 	const id = url.pathname.match(/sm([0-9]+)/)?.[1];
-	if (id) {
-		return `https://embed.nicovideo.jp/watch/sm${id}?jsapi=1&amp;from=0`;
-	}
-	return null;
+	if (!id) return;
+	return `https://embed.nicovideo.jp/watch/sm${id}?jsapi=1&amp;from=0`;
 };
-export const parseAudioEmbedSoundCloud = (url: URL): string | null => {
+export const parseAudioEmbedSoundCloud = (url: URL): string | undefined => {
 	return `https://w.soundcloud.com/player/?url=${encodeURIComponent(url.href)}&visual=true`;
 };
-export const parseAudioEmbedSpotify = (url: URL): string | null => {
+export const parseAudioEmbedSpotify = (url: URL): string | undefined => {
 	const match = url.pathname.match(
 		/\/(track|album|playlist)\/([a-zA-Z0-9]{22})/,
 	);
-	if (match) {
-		const type = match[1];
-		const id = match[2];
-		return `https://open.spotify.com/embed/${type}/${id}?utm_source=generator`;
-	}
-	return null;
+	if (!match) return;
+	const type = match[1];
+	const id = match[2];
+	return `https://open.spotify.com/embed/${type}/${id}?utm_source=generator`;
 };
-export const parseGameEmbedRPGEN = (url: URL): string | null => {
+export const parseGameEmbedRPGEN = (url: URL): string | undefined => {
 	const id = url?.searchParams.get("map");
-	if (id) {
-		return `https://rpgen.org/dq/?map=${id}`;
-	}
-	return null;
+	if (!id) return;
+	return `https://rpgen.org/dq/?map=${id}`;
 };
