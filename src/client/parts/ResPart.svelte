@@ -46,7 +46,7 @@
 
 <div class="res">
   <!-- 上段: 名前欄 -->
-  <div class="name-row text-gray-500">
+  <div class="w-full text-gray-500 text-sm">
     <button
       class="reply {sage ? 'sage' : ''}"
       onclick={() => {
@@ -58,7 +58,7 @@
         }
         focus();
       }}
-      >{num}：<span class="user-name"
+      >{num}：<span class="text-[#409090] font-bold"
         >{ccUserName !== ""
           ? ccUserName
           : seededRandArray(
@@ -76,7 +76,7 @@
     })}
     ID:{ccUserId !== "" ? ccUserId : "???"}
     {#if isOwner}
-      <span class="thread-owner system-color">主</span>
+      <span class="text-xs system-color">主</span>
     {/if}
     {#if backgroundEmbedControls}
       <IconButton
@@ -163,17 +163,6 @@
   }
   .res {
     border: 2mm ridge rgba(255, 255, 255, 0.1);
-  }
-  /* 名前欄は全幅で上段に表示 */
-  .name-row {
-    width: 100%;
-  }
-  .user-name {
-    color: #409090;
-    font-weight: bold;
-  }
-  .thread-owner {
-    font-size: small;
   }
   /* content-row はアイコンと内容を横並びに */
   .content-row {

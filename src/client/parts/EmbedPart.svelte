@@ -222,7 +222,7 @@
           {width}
           {height}
           title="embed"
-          class="bg-[#E6E4E1] bg-[url('/image/alu.svg')] bg-no-repeat bg-center"
+          class="bg-[#E6E4E1] bg-no-repeat bg-center"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           allowfullscreen
           scrolling="no"
