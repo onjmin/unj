@@ -9,7 +9,6 @@
   } from "@smui/list";
   import { contentTemplateMap } from "../../common/request/content-schema.js";
   import game from "../../common/request/whitelist/game.js";
-  import image from "../../common/request/whitelist/image.js";
   import oekaki from "../../common/request/whitelist/oekaki.js";
   import {
     SiteInfo,
@@ -178,7 +177,11 @@
   });
 
   $effect(() => {
-    if (embeddable && siteInfo && [401, 402, 403, 411].includes(siteInfo.id)) {
+    if (
+      embeddable &&
+      siteInfo &&
+      ([401, 402, 403, 411].includes(siteInfo.id) || temp === oekaki)
+    ) {
       tryEmbed(siteInfo);
     }
   });
