@@ -112,6 +112,19 @@
         }, 4096);
         return () => clearTimeout(id);
     });
+
+    let isModalOpen = $state(false);
+    let selectedImageUrl = $state("");
+
+    function openModal(url: string) {
+        selectedImageUrl = url;
+        isModalOpen = true;
+    }
+
+    function closeModal() {
+        isModalOpen = false;
+        selectedImageUrl = "";
+    }
 </script>
 
 <HeaderPart {title}>
@@ -193,12 +206,18 @@
                                             class="mt-2 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
                                         >
                                             {#each note.files as file (file.id)}
-                                                <img
-                                                    src={file.thumbnailUrl}
-                                                    alt={file.name}
-                                                    class="w-full h-auto rounded-lg object-cover"
-                                                    loading="lazy"
-                                                />
+                                                <button
+                                                    class="w-full h-auto rounded-lg object-cover cursor-pointer"
+                                                    onclick={() =>
+                                                        openModal(file.url)}
+                                                    aria-label={`View enlarged version of ${file.name}`}
+                                                >
+                                                    <img
+                                                        src={file.thumbnailUrl}
+                                                        alt={file.name}
+                                                        loading="lazy"
+                                                    />
+                                                </button>
                                             {/each}
                                         </div>
                                     {/if}
@@ -243,3 +262,28 @@
 </MainPart>
 
 <FooterPart />
+
+{#if isModalOpen}
+    <div
+        class="fixed inset-0 z-50 flex items-center justify-center p-4"
+        onclick={closeModal}
+        onkeydown={(event) => {
+            if (event.key === "Escape") {
+                closeModal();
+            }
+        }}
+        tabindex="0"
+        role="button"
+        aria-label="Close enlarged image"
+    >
+        <div class="absolute inset-0 bg-black opacity-50"></div>
+
+        <div class="relative max-w-full max-h-full z-10">
+            <img
+                src={selectedImageUrl}
+                alt="拡大画像"
+                class="max-w-full max-h-full select-none"
+            />
+        </div>
+    </div>
+{/if}
