@@ -23,7 +23,6 @@
     import { sleep } from "../../common/util.js";
     import { genNonce } from "../mylib/anti-debug.js";
     import { makePathname } from "../mylib/env.js";
-    import { fetchGitHubDeployments } from "../mylib/github.js";
     import {
         type Misskey,
         fetchMisskeyTimeline,
@@ -111,23 +110,6 @@
         return () => controller.abort();
     };
 
-    const fetchGitHub = () => {
-        const { controller, promise } = fetchGitHubDeployments(
-            "https://api.github.com/repos/onjmin/unj/deployments",
-        );
-        promise.then((deployments) => {
-            if (!deployments.length) return;
-            const [deployment] = deployments;
-            registerReactiveHeadline({
-                id: "deploy",
-                title: "うんｊ更新日時",
-                latestRes: deployment.description,
-                latestResAt: new Date(deployment.created_at),
-            });
-        });
-        return () => controller.abort();
-    };
-
     const reactiveTasks: (() => void)[] = [];
 
     /**
@@ -190,14 +172,12 @@
         socket.on("headline", handleHeadline);
         socket.on("newHeadline", handleNewHeadline);
         const aborts = misskeyList.map(fetchMisskey);
-        const abort = fetchGitHub();
         return () => {
             goodbye();
             socket.off("joinHeadline", handleJoinHeadline);
             socket.off("headline", handleHeadline);
             socket.off("newHeadline", handleNewHeadline);
             aborts.map((func) => func());
-            abort();
         };
     });
 
