@@ -869,10 +869,25 @@
                     </Chip>
                 </div>
             {/if}
-            <div class="lol-button-container">
-                <Button class="lol" onclick={tryLoL}>草</Button>
-                <span>×{lolCount}草</span>
-                <span>{"ｗ".repeat(lolCount)}</span>
+            <div class="flex items-center space-x-2">
+                <button
+                    class="inline-flex items-center space-x-1 rounded-full bg-green-50 hover:bg-green-100 px-3 py-1 text-green-800"
+                    onclick={tryLoL}
+                >
+                    <span class="font-bold">草</span>
+                    <span class="text-sm"
+                        >×{lolCount}<span class="font-normal">草</span></span
+                    >
+                </button>
+                <div
+                    class="relative overflow-hidden whitespace-nowrap text-red-500"
+                >
+                    <span
+                        class="inline-block animate-wave text-base font-normal leading-none tracking-tight"
+                    >
+                        {"ｗ".repeat(lolCount)}
+                    </span>
+                </div>
             </div>
         </div>
         <div class="bg-gray-800 rounded-lg">
