@@ -17,7 +17,7 @@
         differenceInYears,
         isBefore,
     } from "date-fns";
-    import { Link } from "svelte-routing";
+    import { navigate } from "svelte-routing";
     import { queryResultLimit } from "../../common/request/schema.js";
     import type { HeadlineThread } from "../../common/response/schema.js";
     import { sleep } from "../../common/util.js";
@@ -227,7 +227,6 @@
         </div>
     {:else}
         <div class="mb-3 flex items-center gap-2">
-            <!-- 入力欄 + アイコン -->
             <div class="relative w-full">
                 <input
                     type="text"
@@ -240,7 +239,6 @@
                 />
             </div>
 
-            <!-- 検索ボタン -->
             <button
                 class="min-w-[64px] rounded-md bg-blue-500 px-3 py-1 text-sm font-medium text-white hover:bg-blue-600"
                 onclick={() => alert("めんてちゅ")}
@@ -251,84 +249,87 @@
         <div class="text-left">
             <ul class="list-none p-0 m-0">
                 {#each threadList as thread, i}
-                    <li class="mb-4">
+                    <li class="mb-2 last:mb-0">
                         <div
-                            class="rounded-lg border border-gray-300 shadow-md hover:shadow-lg transition-shadow duration-200 ease-in-out overflow-hidden"
+                            tabindex="0"
+                            role="button"
+                            onkeydown={() => {}}
+                            class="block w-full text-left p-3 bg-gray-100 hover:bg-gray-200 transition-colors duration-150 ease-in-out cursor-pointer"
+                            onclick={() =>
+                                navigate(
+                                    makePathname(
+                                        findMisskey(thread.id)
+                                            ? `/misskey/${findMisskey(thread.id)?.misskeyId}`
+                                            : `/thread/${thread.id}${thread.resCount > queryResultLimit && thread.latestCursor ? `/${thread.latestCursor}/1` : ""}`,
+                                    ),
+                                )}
                         >
-                            {#if thread.title}
-                                <div
-                                    class="grid grid-cols-[theme(spacing.12)_1fr] sm:grid-cols-[theme(spacing.12)_1fr_theme(spacing.20)] gap-2 items-center p-3 text-gray-600"
-                                >
+                            <div class="flex items-start">
+                                <div class="mr-2 flex-shrink-0">
+                                    {#if findMisskey(thread.id)}
+                                        <FaviconPart
+                                            hostname={findMisskey(thread.id)
+                                                ?.hostname}
+                                        />
+                                    {:else}
+                                        <TwemojiPart seed={thread.id} />
+                                    {/if}
+                                </div>
+                                <div class="flex-grow min-w-0">
                                     <div
-                                        class="text-xs opacity-90 text-center w-12"
+                                        class="flex flex-col sm:flex-row sm:items-baseline sm:justify-between"
                                     >
-                                        {formatTimeAgo(thread.latestResAt)}
-                                    </div>
-
-                                    <div
-                                        class="flex items-center overflow-hidden break-words pr-2"
-                                    >
-                                        <div class="mr-2 flex-shrink-0">
-                                            {#if thread.id === "deploy"}
-                                                <FaviconPart
-                                                    hostname="koyeb.com"
-                                                />
-                                            {:else if findMisskey(thread.id)}
-                                                <FaviconPart
-                                                    hostname={findMisskey(
-                                                        thread.id,
-                                                    )?.hostname}
-                                                />
-                                            {:else}
-                                                <TwemojiPart seed={thread.id} />
-                                            {/if}
+                                        <div
+                                            class="flex-grow overflow-hidden whitespace-nowrap text-base font-medium text-gray-800 leading-tight pr-2"
+                                        >
+                                            <div
+                                                class="flex-grow overflow-hidden whitespace-nowrap text-base font-medium text-gray-800 leading-tight pr-2"
+                                            >
+                                                <div
+                                                    class="inline-flex items-baseline max-w-full"
+                                                >
+                                                    <span class="truncate"
+                                                        >{thread.title}</span
+                                                    >
+                                                    <span
+                                                        class="inline-block flex-shrink-0"
+                                                        >({thread.resCount})</span
+                                                    >
+                                                </div>
+                                            </div>
                                         </div>
                                         <div
-                                            class="text-base font-semibold text-gray-800"
+                                            class="text-xs text-gray-500 flex-shrink-0 mt-1 sm:mt-0 sm:ml-2"
                                         >
-                                            {#if thread.id === "deploy"}
-                                                {thread.title}
-                                            {:else}
-                                                <Link
-                                                    to={makePathname(
-                                                        findMisskey(thread.id)
-                                                            ? `/misskey/${findMisskey(thread.id)?.misskeyId}`
-                                                            : `/thread/${thread.id}${thread.resCount > queryResultLimit && thread.latestCursor ? `/${thread.latestCursor}/1` : ""}`,
-                                                    )}
-                                                    class="hover:underline"
-                                                    >{thread.title}({thread.resCount})</Link
-                                                >
-                                            {/if}
+                                            {formatTimeAgo(thread.latestResAt)}
                                         </div>
                                     </div>
-
-                                    <div
-                                        class="text-xs transition-all duration-200 ease-in text-center w-20 hidden sm:block
-                                        {thread.online === 0
-                                            ? 'opacity-60 font-normal'
-                                            : ''}
-                 {thread.online === 1
-                                            ? 'opacity-90 text-blue-600 font-medium'
-                                            : ''}
-                 {thread.online === 2
-                                            ? 'text-orange-600 font-semibold italic'
-                                            : ''}
-                 {thread.online >= 3
-                                            ? 'text-red-600 font-bold italic underline'
-                                            : ''}"
-                                    >
-                                        {thread.online}人閲覧中
+                                    <div class="flex items-center text-xs mt-1">
+                                        <div
+                                            class="transition-all duration-200 ease-in font-medium"
+                                            class:text-gray-500={thread.online ===
+                                                0}
+                                            class:text-blue-600={thread.online ===
+                                                1}
+                                            class:text-orange-600={thread.online ===
+                                                2}
+                                            class:text-red-600={thread.online >=
+                                                3}
+                                        >
+                                            {thread.online}人閲覧中
+                                        </div>
                                     </div>
+                                    {#if thread.latestRes}
+                                        <div
+                                            class="text-gray-600 text-sm mt-1 whitespace-pre-line break-words"
+                                        >
+                                            <div class="truncate">
+                                                {thread.latestRes}
+                                            </div>
+                                        </div>
+                                    {/if}
                                 </div>
-                            {/if}
-
-                            {#if thread.latestRes}
-                                <div
-                                    class="relative px-4 py-2 bg-gray-400 border-t border-gray-400 text-gray-500 text-sm break-words overflow-hidden text-left whitespace-pre-line"
-                                >
-                                    {thread.latestRes}
-                                </div>
-                            {/if}
+                            </div>
                         </div>
 
                         {#if i % 4 === 3 && i !== (threadList ?? []).length - 1}
@@ -342,7 +343,7 @@
                     onclick={cursorBasedPagination}
                     variant="raised"
                     disabled={emitting}
-                    class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 ease-in-out transform hover:-translate-y-0.5"
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-md shadow-sm"
                     >続きを読む</Button
                 >
             </center>
