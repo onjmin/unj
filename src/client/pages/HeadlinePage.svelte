@@ -23,6 +23,7 @@
     import { sleep } from "../../common/util.js";
     import { genNonce } from "../mylib/anti-debug.js";
     import { makePathname } from "../mylib/env.js";
+    import { fetchGitHubDeployments } from "../mylib/github.js";
     import {
         type Misskey,
         fetchMisskeyTimeline,
@@ -80,7 +81,7 @@
         if (!data.list.length) return;
         if (!pagination) {
             threadList = data.list;
-            for (const f of misskeyArray) f();
+            for (const f of reactiveTasks) f();
             cache.set(threadList);
         } else {
             if (threadList) threadList = threadList.concat(data.list);
@@ -95,48 +96,84 @@
         threadList.unshift(data.new);
     };
 
-    const misskeyArray: (() => void)[] = [];
-
     const fetchMisskey = (misskey: Misskey) => {
         const { controller, promise } = fetchMisskeyTimeline(misskey.api);
         promise.then((timeline) => {
             if (!timeline.length) return;
-            const note = timeline[0];
-            const new1: HeadlineThread = {
-                // 書き込み内容
-                ccUserId: "",
-                // メタ情報
+            const [note] = timeline;
+            registerReactiveHeadline({
                 id: misskey.misskeyId,
+                title: misskey.title,
                 latestRes: note.text ?? "",
                 latestResAt: new Date(note.createdAt),
-                resCount: 0,
-                latestCursor: note.id,
-                // 基本的な情報
-                title: misskey.title,
-                // 動的なデータ
-                online: 0,
-                ikioi: 0,
-                lolCount: 0,
-                goodCount: 0,
-                badCount: 0,
-            };
-            const f = () => {
-                if (!threadList) return;
-                if (threadList.find((v) => v.id === misskey.misskeyId)) return;
-                const idx = threadList.findIndex((v) =>
-                    isBefore(v.latestResAt, new1.latestResAt),
-                );
-                if (idx === -1) {
-                    threadList.push(new1);
-                } else {
-                    threadList.splice(idx, 0, new1);
-                }
-                threadList = [...threadList];
-            };
-            f();
-            misskeyArray.push(f);
+            });
         });
         return () => controller.abort();
+    };
+
+    const fetchGitHub = () => {
+        const { controller, promise } = fetchGitHubDeployments(
+            "https://api.github.com/repos/onjmin/unj/deployments",
+        );
+        promise.then((deployments) => {
+            if (!deployments.length) return;
+            const [deployment] = deployments;
+            registerReactiveHeadline({
+                id: "deploy",
+                title: "うんｊ更新日時",
+                latestRes: deployment.description,
+                latestResAt: new Date(deployment.created_at),
+            });
+        });
+        return () => controller.abort();
+    };
+
+    const reactiveTasks: (() => void)[] = [];
+
+    /**
+     * 任意のデータソースからヘッドライン形式のオブジェクトを生成し、
+     * リストに即時挿入するとともに、リアクティブタスクとして登録します。
+     */
+    const registerReactiveHeadline = ({
+        id,
+        title,
+        latestRes,
+        latestResAt,
+    }: {
+        id: string;
+        title: string;
+        latestRes: string;
+        latestResAt: Date;
+    }) => {
+        const new1: HeadlineThread = {
+            ccUserId: "",
+            id,
+            latestRes,
+            latestResAt,
+            resCount: 0,
+            latestCursor: "",
+            title,
+            online: 0,
+            ikioi: 0,
+            lolCount: 0,
+            goodCount: 0,
+            badCount: 0,
+        };
+        const f = () => {
+            if (!threadList) return;
+            if (threadList.find((v) => v.id === id)) return;
+            const idx = threadList.findIndex((v) =>
+                isBefore(v.latestResAt, new1.latestResAt),
+            );
+            if (idx === -1) {
+                threadList.push(new1);
+            } else {
+                threadList.splice(idx, 0, new1);
+            }
+            threadList = [...threadList];
+        };
+        f();
+        reactiveTasks.push(f);
     };
 
     $effect(() => {
@@ -153,12 +190,14 @@
         socket.on("headline", handleHeadline);
         socket.on("newHeadline", handleNewHeadline);
         const aborts = misskeyList.map(fetchMisskey);
+        const abort = fetchGitHub();
         return () => {
             goodbye();
             socket.off("joinHeadline", handleJoinHeadline);
             socket.off("headline", handleHeadline);
             socket.off("newHeadline", handleNewHeadline);
             aborts.map((func) => func());
+            abort();
         };
     });
 
@@ -250,7 +289,11 @@
                                         class="flex items-center overflow-hidden break-words pr-2"
                                     >
                                         <div class="mr-2 flex-shrink-0">
-                                            {#if findMisskey(thread.id)}
+                                            {#if thread.id === "deploy"}
+                                                <FaviconPart
+                                                    hostname="koyeb.com"
+                                                />
+                                            {:else if findMisskey(thread.id)}
                                                 <FaviconPart
                                                     hostname={findMisskey(
                                                         thread.id,
@@ -263,15 +306,19 @@
                                         <div
                                             class="text-base font-semibold text-gray-800"
                                         >
-                                            <Link
-                                                to={makePathname(
-                                                    findMisskey(thread.id)
-                                                        ? `/misskey/${findMisskey(thread.id)?.misskeyId}`
-                                                        : `/thread/${thread.id}${thread.resCount > queryResultLimit && thread.latestCursor ? `/${thread.latestCursor}/1` : ""}`,
-                                                )}
-                                                class="hover:underline"
-                                                >{thread.title}({thread.resCount})</Link
-                                            >
+                                            {#if thread.id === "deploy"}
+                                                {thread.title}
+                                            {:else}
+                                                <Link
+                                                    to={makePathname(
+                                                        findMisskey(thread.id)
+                                                            ? `/misskey/${findMisskey(thread.id)?.misskeyId}`
+                                                            : `/thread/${thread.id}${thread.resCount > queryResultLimit && thread.latestCursor ? `/${thread.latestCursor}/1` : ""}`,
+                                                    )}
+                                                    class="hover:underline"
+                                                    >{thread.title}({thread.resCount})</Link
+                                                >
+                                            {/if}
                                         </div>
                                     </div>
 
@@ -297,7 +344,7 @@
 
                             {#if thread.latestRes}
                                 <div
-                                    class="relative px-4 py-2 bg-gray-400 border-t border-gray-400 text-gray-500 text-sm break-words overflow-hidden"
+                                    class="relative px-4 py-2 bg-gray-400 border-t border-gray-400 text-gray-500 text-sm break-words overflow-hidden text-left whitespace-pre-line"
                                 >
                                     {thread.latestRes}
                                 </div>

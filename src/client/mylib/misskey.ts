@@ -32,21 +32,19 @@ export const fetchMisskeyTimeline = (
 	const controller = new AbortController();
 	const signal = controller.signal;
 
-	const body = {
-		limit: limit,
-		untilId: untilId,
-	};
-
 	const promise = fetch(url, {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
 		},
-		body: JSON.stringify(body),
-		signal: signal,
+		body: JSON.stringify({
+			limit,
+			untilId,
+		}),
+		signal,
 	})
 		.then((res) => (res.ok ? res.json() : []))
-		.then((json) => (Array.isArray(json) ? (json as Timeline) : []))
+		.then((json) => (Array.isArray(json) ? (json as Note[]) : []))
 		.catch(() => []);
 
 	return {
@@ -117,5 +115,3 @@ export interface Note {
 	renoteId: string | null;
 	clippedCount: number;
 }
-
-export type Timeline = Note[];
