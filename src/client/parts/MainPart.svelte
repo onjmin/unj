@@ -1,7 +1,6 @@
 <script lang="ts">
     import { XIcon } from "@lucide/svelte";
     import BottomAppBar, { Section } from "@smui-extra/bottom-app-bar";
-    import Card, { Content } from "@smui/card";
     import IconButton from "@smui/icon-button";
     import { addHours, isBefore } from "date-fns";
     import { navigate } from "svelte-routing";
@@ -76,11 +75,7 @@
 </script>
 
 <main class="unj-main-part {menu ? 'menu' : ''}">
-    <Card>
-        <Content>
-            {@render children?.()}
-        </Content>
-    </Card>
+    {@render children?.()}
 </main>
 
 {#if menu}

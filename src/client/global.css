@@ -45,6 +45,7 @@ body {
 .unj-header-part {
 	z-index: 64;
 }
+
 .unj-main-part {
 	position: relative;
 	flex: 1;
@@ -52,7 +53,20 @@ body {
 	scrollbar-gutter: stable both-edges;
 	margin: 0 auto;
 	max-width: 100svw;
-	min-width: 60svw;
+}
+
+.unj-main-part.menu {
+	justify-content: center;
+}
+
+@media (min-width: 1024px) {
+	/* Tailwindのpcブレークポイント */
+	.unj-main-part.menu {
+		max-width: 60svw;
+		/* PCでコンテンツを中央寄せにするためにmx-autoを適用 */
+		margin-left: auto;
+		margin-right: auto;
+	}
 }
 .unj-main-part-overlay {
 	position: absolute;
@@ -74,9 +88,6 @@ body {
 	text-align: center;
 	background-color: transparent;
 	box-shadow: none;
-}
-.unj-main-part.menu {
-	justify-content: center;
 }
 .mdc-snackbar.mdc-snackbar--open {
 	z-index: 1024;

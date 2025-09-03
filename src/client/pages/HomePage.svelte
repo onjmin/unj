@@ -53,12 +53,14 @@
     「{randomOnjKeyWord1}」から「{randomOnjKeyWord2}」までを手広くカバーする匿名掲示板
   </p>
   <p>『うんｊ』へようこそ！</p>
-  <Button
-    onclick={() => {
-      navigate(makePathname("/headline"));
-    }}
-    variant="raised">入る</Button
-  >
+  <div class="flex justify-center">
+    <Button
+      onclick={() => {
+        navigate(makePathname("/headline"));
+      }}
+      variant="raised">入る</Button
+    >
+  </div>
 
   <LayoutGrid>
     <Cell span={12}>
