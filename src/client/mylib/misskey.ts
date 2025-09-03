@@ -19,6 +19,12 @@ export const misskeyList: Misskey[] = [
 		title: "いんむすきー",
 		api: "https://inmusky.net/api/notes/local-timeline",
 	},
+	{
+		misskeyId: "nukumori",
+		hostname: "misskey.nukumori-sky.net",
+		title: "ぬくもりすきー（Nukumori-Sky）",
+		api: "https://misskey.nukumori-sky.net/api/notes/local-timeline",
+	},
 ];
 
 /**
@@ -114,4 +120,5 @@ export interface Note {
 	replyId: string | null;
 	renoteId: string | null;
 	clippedCount: number;
+	isHidden?: boolean;
 }

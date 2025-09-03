@@ -10,7 +10,7 @@
     import { makePathname } from "../mylib/env.js";
     import {
         type Misskey,
-        type Timeline,
+        type Note,
         fetchMisskeyTimeline,
         findMisskey,
     } from "../mylib/misskey.js";
@@ -39,7 +39,7 @@
         pv = data.pv ?? pv;
     };
 
-    let timeline = $state<Timeline>([]);
+    let timeline = $state<Note[]>([]);
     let isLoading = $state(false);
     let lastNoteId: string | undefined;
 
@@ -86,7 +86,7 @@
     }
 
     // ObjectStorageを初期化
-    const misskeyTimelineCache = new ObjectStorage<Timeline>(
+    const misskeyTimelineCache = new ObjectStorage<Note[]>(
         `misskeyTimelineCache###${misskeyId}`,
     );
 
@@ -155,55 +155,57 @@
         <div class="mx-auto my-0 w-full max-w-[768px] px-4">
             <div class="space-y-4">
                 {#each timeline as note (note.id)}
-                    <div
-                        class="bg-transparent border-2 border-solid border-gray-400 p-4 rounded-lg shadow-inner"
-                    >
+                    {#if !note.isHidden && note.text !== null && note.userId !== "9tjlknm0fl"}
                         <div
-                            class="flex flex-wrap items-center mb-2 text-sm text-gray-800"
+                            class="bg-transparent border-2 border-solid border-gray-400 p-4 rounded-lg shadow-inner"
                         >
-                            <span class="font-bold text-[#409090]">
-                                {note.user.name ?? note.user.username}
-                            </span>
-                            <span class="ml-2 text-gray-500">
-                                {new Date(note.createdAt).toLocaleString()}
-                            </span>
-                            <span class="ml-2 text-gray-500">
-                                ID:{note.user.username}
-                            </span>
-                        </div>
-                        <div class="flex items-start">
-                            <div class="mr-2 flex-shrink-0">
-                                <img
-                                    src={note.user.avatarUrl}
-                                    alt={`${note.user.username}'s avatar`}
-                                    class="w-16 h-16 rounded-full"
-                                />
+                            <div
+                                class="flex flex-wrap items-center mb-2 text-sm text-gray-800"
+                            >
+                                <span class="font-bold text-[#409090]">
+                                    {note.user.name ?? note.user.username}
+                                </span>
+                                <span class="ml-2 text-gray-500">
+                                    {new Date(note.createdAt).toLocaleString()}
+                                </span>
+                                <span class="ml-2 text-gray-500">
+                                    ID:{note.user.username}
+                                </span>
                             </div>
-
-                            <div class="flex-1 min-w-0">
-                                <div
-                                    class="text-gray-800 text-left overflow-wrap break-word whitespace-pre-wrap mb-2"
-                                >
-                                    {@html formatText(note.text)}
+                            <div class="flex items-start">
+                                <div class="mr-2 flex-shrink-0">
+                                    <img
+                                        src={note.user.avatarUrl}
+                                        alt={`${note.user.username}'s avatar`}
+                                        class="w-16 h-16 rounded-full"
+                                    />
                                 </div>
 
-                                {#if note.files && note.files.length > 0}
+                                <div class="flex-1 min-w-0">
                                     <div
-                                        class="mt-2 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
+                                        class="text-gray-800 text-left overflow-wrap break-word whitespace-pre-wrap mb-2"
                                     >
-                                        {#each note.files as file (file.id)}
-                                            <img
-                                                src={file.thumbnailUrl}
-                                                alt={file.name}
-                                                class="w-full h-auto rounded-lg object-cover"
-                                                loading="lazy"
-                                            />
-                                        {/each}
+                                        {@html formatText(note.text)}
                                     </div>
-                                {/if}
+
+                                    {#if note.files && note.files.length > 0}
+                                        <div
+                                            class="mt-2 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
+                                        >
+                                            {#each note.files as file (file.id)}
+                                                <img
+                                                    src={file.thumbnailUrl}
+                                                    alt={file.name}
+                                                    class="w-full h-auto rounded-lg object-cover"
+                                                    loading="lazy"
+                                                />
+                                            {/each}
+                                        </div>
+                                    {/if}
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    {/if}
                 {/each}
             </div>
         </div>

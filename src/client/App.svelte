@@ -79,6 +79,11 @@
       <MisskeyPage misskeyId="inmusky" />
     </BannedCheck>
   </Route>
+  <Route path={makePathname("/misskey/nukumori")} let:params>
+    <BannedCheck>
+      <MisskeyPage misskeyId="nukumori" />
+    </BannedCheck>
+  </Route>
 
   <!-- スレ立て -->
   <Route path={makePathname("/new")}>
