@@ -6,6 +6,8 @@
     ///////////////
 
     import { CircleArrowLeftIcon } from "@lucide/svelte";
+    import { format } from "date-fns";
+    import { ja } from "date-fns/locale";
     import { navigate } from "svelte-routing";
     import { makePathname } from "../mylib/env.js";
     import {
@@ -177,18 +179,25 @@
                 {#each timeline as note (note.id)}
                     {#if !note.isHidden && note.text !== null && note.userId !== "9tjlknm0fl"}
                         <div
-                            class="bg-transparent border-2 border-solid border-gray-400 p-4 rounded-lg shadow-inner"
+                            class="bg-transparent border-[2mm] border-solid border-white border-opacity-10 p-4 rounded-lg shadow-inner"
                         >
                             <div
-                                class="flex flex-wrap items-center mb-2 text-sm text-gray-800"
+                                class="flex flex-wrap items-center mb-2 text-gray-500 text-sm"
                             >
+                                <span> 0： </span>
                                 <span class="font-bold text-[#409090]">
                                     {note.user.name ?? note.user.username}
                                 </span>
-                                <span class="ml-2 text-gray-500">
-                                    {new Date(note.createdAt).toLocaleString()}
+                                <span>
+                                    ：{format(
+                                        note.createdAt,
+                                        "yy/MM/dd(EEE) HH:mm:ss",
+                                        {
+                                            locale: ja,
+                                        },
+                                    )}
                                 </span>
-                                <span class="ml-2 text-gray-500">
+                                <span class="ml-1">
                                     ID:{note.user.username}
                                 </span>
                             </div>

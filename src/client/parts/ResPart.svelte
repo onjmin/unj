@@ -44,7 +44,9 @@
   });
 </script>
 
-<div class="res">
+<div
+  class="bg-transparent border-[2mm] border-solid border-white border-opacity-10 p-4 rounded-lg shadow-inner"
+>
   <!-- 上段: 名前欄 -->
   <div class="w-full text-gray-500 text-sm">
     <button
@@ -160,9 +162,6 @@
   }
   .reply:hover {
     opacity: 0.8; /* ホバー時の透明度を変更（任意） */
-  }
-  .res {
-    border: 2mm ridge rgba(255, 255, 255, 0.1);
   }
   /* content-row はアイコンと内容を横並びに */
   .content-row {
