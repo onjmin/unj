@@ -100,9 +100,16 @@
         }
     };
 
+    const regexUrl = /(https?:\/\/[A-Za-z0-9\-\._~:/?#[\]@!$&'()*+,;=%]+)/gi;
+
     function formatText(text: string | null) {
         if (!text) return "";
-        return text.replace(/\n/g, "<br />");
+        let formattedText = text.replace(/\n/g, "<br />");
+        formattedText = formattedText.replace(
+            regexUrl,
+            '<a href="$1" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:underline break-all">$1</a>',
+        );
+        return formattedText;
     }
 
     let laaaaaaaag = $state(false);
