@@ -328,7 +328,7 @@
 <TermsConfirmPart {openConfirm} />
 
 <MainPart>
-    <div class="form-container">
+    <div class="flex flex-col gap-2">
         <Textfield
             disabled={emitting || isRef}
             label="スレタイ"
@@ -367,11 +367,3 @@
 </MainPart>
 
 <FooterPart />
-
-<style>
-    .form-container {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-    }
-</style>
