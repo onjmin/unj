@@ -11,6 +11,7 @@
         ChevronLeftIcon,
         ChevronRightIcon,
         ChevronsLeftRightEllipsisIcon,
+        CircleArrowLeftIcon,
     } from "@lucide/svelte";
     import Chip, { Set as ChipSet, LeadingIcon, Text } from "@smui/chips";
     import { navigate } from "svelte-routing";
@@ -193,6 +194,17 @@
         </div>
         <div class="bg-gray-800 rounded-lg">
             {@render paginationControls()}
+        </div>
+        <div
+            class="flex flex-col space-y-2 p-4 bg-gray-800 text-gray-200 rounded-lg"
+        >
+            <button
+                class="flex items-center space-x-2 px-4 py-2 rounded-lg bg-gray-600 hover:bg-gray-700 transition-colors duration-200"
+                onclick={() => navigate(makePathname("/news"))}
+            >
+                <CircleArrowLeftIcon size={16} />
+                <span class="text-sm font-medium">ニュース一覧に戻る</span>
+            </button>
         </div>
     {/if}
 </MainPart>
