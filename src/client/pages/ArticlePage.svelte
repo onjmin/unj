@@ -186,8 +186,10 @@
         <div class="bg-gray-800 rounded-lg">
             {@render paginationControls()}
         </div>
-        <div class="left content">
-            {@html item.content}
+        <div class="flex justify-center">
+            <div class="left content">
+                {@html item.content}
+            </div>
         </div>
         <div class="bg-gray-800 rounded-lg">
             {@render paginationControls()}
