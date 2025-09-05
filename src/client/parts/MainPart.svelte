@@ -74,7 +74,7 @@
     // const ad = randArray(ads);
 </script>
 
-<main class="unj-main-part {menu ? 'menu' : ''}">
+<main class="text-center unj-main-part {menu ? 'menu' : ''}">
     {@render children?.()}
 </main>
 

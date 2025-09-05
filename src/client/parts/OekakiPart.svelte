@@ -16,11 +16,11 @@
     mdiUndo,
   } from "@mdi/js";
   import * as oekaki from "@onjmin/oekaki";
+  import { Slider } from "@skeletonlabs/skeleton-svelte";
   import Button, { Label } from "@smui/button";
   import { preventDefault } from "@smui/common/events";
   import IconButton from "@smui/icon-button";
   import SegmentedButton, { Segment, Icon } from "@smui/segmented-button";
-  import Slider from "@smui/slider";
   import Textfield from "@smui/textfield";
   import Tooltip, { Wrapper, Title, Content } from "@smui/tooltip";
   import ColorPicker from "svelte-awesome-color-picker";
@@ -406,7 +406,7 @@
   // activeLayerが変わったときにstateを同期する
   $effect(() => {
     if (!activeLayer) return;
-    opacity = activeLayer.opacity;
+    // opacity[0] = activeLayer.opacity; TODO直す
     layerVisible = activeLayer.visible;
     layerName = activeLayer.name;
     layerNameDisabled = true;
@@ -415,13 +415,13 @@
     uuidsCache.set(oekaki.getLayers().map((v) => v.uuid));
   });
 
-  let opacity = $state(100);
+  let opacity = $state([100]);
   let layerVisible = $state(true);
   let layerName = $state("");
   let layerNameDisabled = $state(true);
   let layerLocked = $state(false);
   $effect(() => {
-    if (activeLayer) activeLayer.opacity = opacity;
+    if (activeLayer) activeLayer.opacity = opacity[0];
   });
   $effect(() => {
     if (activeLayer) activeLayer.visible = layerVisible;
@@ -432,18 +432,18 @@
   $effect(() => {
     if (activeLayer) activeLayer.locked = layerLocked;
   });
-  let brushSize = $state(
+  let brushSize = $state([
     Number(unjStorage.brushSize.value ?? oekaki.brushSize.value),
-  );
-  let penSize = $state(
+  ]);
+  let penSize = $state([
     Number(unjStorage.penSize.value ?? oekaki.penSize.value),
-  );
-  let eraserSize = $state(
+  ]);
+  let eraserSize = $state([
     Number(unjStorage.eraserSize.value ?? oekaki.eraserSize.value),
-  );
-  let dotPenScale = $state(Number(unjStorage.dotPenScale.value ?? 8));
+  ]);
+  let dotPenScale = $state([Number(unjStorage.dotPenScale.value ?? 8)]);
   $effect(() => {
-    if (activeLayer) activeLayer.opacity = opacity;
+    if (activeLayer) activeLayer.opacity = opacity[0];
   });
   $effect(() => {
     unjStorage.color.value = $color;
@@ -451,19 +451,19 @@
   });
   $effect(() => {
     unjStorage.brushSize.value = String(brushSize);
-    oekaki.brushSize.value = brushSize;
+    oekaki.brushSize.value = brushSize[0];
   });
   $effect(() => {
     unjStorage.penSize.value = String(penSize);
-    oekaki.penSize.value = penSize;
+    oekaki.penSize.value = penSize[0];
   });
   $effect(() => {
     unjStorage.eraserSize.value = String(eraserSize);
-    oekaki.eraserSize.value = eraserSize;
+    oekaki.eraserSize.value = eraserSize[0];
   });
   const setDotSize = () => {
     unjStorage.dotPenScale.value = String(dotPenScale);
-    oekaki.setDotSize(dotPenScale);
+    oekaki.setDotSize(dotPenScale[0]);
     document.documentElement.style.setProperty(
       "--grid-cell-size",
       `${oekaki.getDotSize()}px`,
@@ -660,7 +660,14 @@
     }}>delete_forever</IconButton
   >
 
-  <Slider min={0} max={100} discrete bind:value={opacity} />
+  <Slider
+    min={0}
+    max={100}
+    value={opacity}
+    onValueChange={(e) => (opacity = e.value)}
+    markers={[25, 50, 75]}
+  />
+  <br />
 </div>
 
 <div class={isGrid ? "grid" : ""} bind:this={oekakiWrapper}></div>
@@ -739,23 +746,47 @@
   {/each}
 {/snippet}
 
-<div class="bottom-tools-wrapper-sub">
+<div class="bottom-tools-wrapper-sub w-full">
   {#if choiced.label === tool.brush.label}
     <span class="size">{brushSize}px</span>
     {@render palette()}
-    <Slider min={1} max={64} discrete bind:value={brushSize} />
+    <Slider
+      min={1}
+      max={64}
+      value={brushSize}
+      onValueChange={(e) => (brushSize = e.value)}
+      markers={[16, 32, 48]}
+    />
   {:else if isGrid}
     <span class="size">{dotPenScale}倍</span>
     {@render palette()}
-    <Slider min={1} max={8} discrete tickMarks bind:value={dotPenScale} />
+    <Slider
+      min={1}
+      max={8}
+      value={dotPenScale}
+      onValueChange={(e) => (dotPenScale = e.value)}
+      markers={[2, 4, 6]}
+    />
   {:else if choiced.label === tool.pen.label}
     <span class="size">{penSize}px</span>
     {@render palette()}
-    <Slider min={1} max={64} discrete bind:value={penSize} />
+    <Slider
+      min={1}
+      max={64}
+      value={penSize}
+      onValueChange={(e) => (penSize = e.value)}
+      markers={[16, 32, 48]}
+    />
   {:else if choiced.label === tool.eraser.label}
     <span class="size">{eraserSize}px</span>
     {@render palette()}
-    <Slider min={1} max={64} discrete bind:value={eraserSize} />
+    <Slider
+      min={1}
+      max={64}
+      value={eraserSize}
+      onValueChange={(e) => (eraserSize = e.value)}
+      markers={[16, 32, 48]}
+    />
   {:else if choiced.label === tool.dropper.label || choiced.label === tool.fill.label}
     <span class="size"></span>
     {@render palette()}

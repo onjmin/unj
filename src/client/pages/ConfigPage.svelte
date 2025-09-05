@@ -7,7 +7,6 @@
 
     import { Slider } from "@skeletonlabs/skeleton-svelte";
     import Accordion, { Panel, Header, Content } from "@smui-extra/accordion";
-    import FormField from "@smui/form-field";
     import IconButton from "@smui/icon-button";
     import LayoutGrid, { Cell } from "@smui/layout-grid";
     import List, {

@@ -127,7 +127,12 @@
       {/if}
       {#if contentUrl !== ""}
         <div class="content-url">
-          <a href={contentUrl} target="_blank" rel="noopener noreferrer">
+          <a
+            href={contentUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="cursor-pointer"
+          >
             {contentUrl}
           </a>
         </div>

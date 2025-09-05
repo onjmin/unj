@@ -605,48 +605,49 @@
         {tryRes}
         {isExpand}
     />
-    <Button disabled={emitting} onclick={tryRes} variant="raised"
-        >投稿する</Button
-    >
-    <Switch
-        controlActive="bg-secondary-500"
-        checked={isSage}
-        onCheckedChange={(e) => {
-            isSage = e.checked;
-        }}
-    >
-        {#snippet inactiveChild()}
-            <ArrowDownIcon size="14" />
-        {/snippet}
-        {#snippet activeChild()}
-            <ArrowDownIcon size="14" />
-        {/snippet}
-    </Switch>
-    <Switch
-        controlActive="bg-secondary-500"
-        checked={isNinja}
-        onCheckedChange={(e) => {
-            isNinja = e.checked;
-        }}
-    >
-        {#snippet inactiveChild()}
-            忍
-        {/snippet}
-        {#snippet activeChild()}
-            忍
-        {/snippet}
-    </Switch>
-    {#if thread?.yours}
-        <Switch controlActive="bg-secondary-500" disabled checked={true}>
+    <div class="w-full max-w-xs">
+        <Button disabled={emitting} onclick={tryRes} variant="raised"
+            >投稿する</Button
+        >
+        <Switch
+            controlActive="bg-secondary-500"
+            checked={isSage}
+            onCheckedChange={(e) => {
+                isSage = e.checked;
+            }}
+        >
             {#snippet inactiveChild()}
-                主
+                <ArrowDownIcon size="14" />
             {/snippet}
             {#snippet activeChild()}
-                主
+                <ArrowDownIcon size="14" />
             {/snippet}
         </Switch>
-    {/if}
-    <!-- <FormField align="end">
+        <Switch
+            controlActive="bg-secondary-500"
+            checked={isNinja}
+            onCheckedChange={(e) => {
+                isNinja = e.checked;
+            }}
+        >
+            {#snippet inactiveChild()}
+                忍
+            {/snippet}
+            {#snippet activeChild()}
+                忍
+            {/snippet}
+        </Switch>
+        {#if thread?.yours}
+            <Switch controlActive="bg-secondary-500" disabled checked={true}>
+                {#snippet inactiveChild()}
+                    主
+                {/snippet}
+                {#snippet activeChild()}
+                    主
+                {/snippet}
+            </Switch>
+        {/if}
+        <!-- <FormField align="end">
         {#snippet label()}RPGMODE{/snippet}
         <Checkbox bind:checked={isRpgMode} />
     </FormField>
@@ -658,46 +659,37 @@
             }}>checkroom</IconButton
         >
     {/if} -->
-    {#if oekaki}
+        {#if oekaki}
+            <Switch
+                controlActive="bg-secondary-500"
+                checked={checkedOekaki}
+                onCheckedChange={(e) => {
+                    checkedOekaki = e.checked;
+                }}
+            >
+                {#snippet inactiveChild()}
+                    <BrushIcon size="14" />
+                {/snippet}
+                {#snippet activeChild()}
+                    <BrushIcon size="14" />
+                {/snippet}
+            </Switch>
+        {/if}
         <Switch
             controlActive="bg-secondary-500"
-            checked={checkedOekaki}
+            checked={isExpand}
             onCheckedChange={(e) => {
-                checkedOekaki = e.checked;
+                isExpand = e.checked;
             }}
         >
             {#snippet inactiveChild()}
-                <BrushIcon size="14" />
+                <ExpandIcon size="14" />
             {/snippet}
             {#snippet activeChild()}
-                <BrushIcon size="14" />
+                <ExpandIcon size="14" />
             {/snippet}
         </Switch>
-    {/if}
-    <Switch
-        controlActive="bg-secondary-500"
-        checked={isExpand}
-        onCheckedChange={(e) => {
-            isExpand = e.checked;
-        }}
-    >
-        {#snippet inactiveChild()}
-            <ExpandIcon size="14" />
-        {/snippet}
-        {#snippet activeChild()}
-            <ExpandIcon size="14" />
-        {/snippet}
-    </Switch>
-    <!-- <Select
-        disabled={emitting}
-        key={String}
-        bind:value={commandSelected}
-        label="コマンド"
-    >
-        {#each commandOptions as v}
-            <Option value={v}>{v}</Option>
-        {/each}
-    </Select> -->
+    </div>
 {/snippet}
 
 <HeaderPart {title}>
@@ -959,7 +951,11 @@
             {@render paginationControls()}
         </div>
         <Paper>
-            <Content>{@render form(true)}</Content>
+            <Content>
+                <div class="flex flex-col items-center">
+                    {@render form(true)}
+                </div>
+            </Content>
         </Paper>
         <div
             class="flex flex-col space-y-2 p-4 bg-gray-800 text-gray-200 rounded-lg"

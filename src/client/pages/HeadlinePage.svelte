@@ -246,7 +246,7 @@
                 検索
             </button>
         </div>
-        <div class="text-left">
+        <div class="text-left w-full mx-auto">
             <ul class="list-none p-0 m-0">
                 {#each threadList as thread, i}
                     <li class="mb-2 last:mb-0">
