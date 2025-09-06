@@ -11,14 +11,14 @@ export const isSameSimhash = (text: string, userId: number): boolean => {
 	if (simhashCache.has(userId)) {
 		const simhash2 = simhashCache.get(userId);
 		if (!simhash2) return false;
-		if (hammingDistance32(simhash1, simhash2) > 16) {
+		if (hammingDistance32(simhash1, simhash2) > 12) {
 			simhashCache.set(userId, simhash1);
-			return true;
+			return false;
 		}
-		return false;
+		return true;
 	}
 	simhashCache.set(userId, simhash1);
-	return true;
+	return false;
 };
 
 const calcSimhash = (text: string, ngram = 3, hashbits = 32) => {

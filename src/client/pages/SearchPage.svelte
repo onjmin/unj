@@ -6,7 +6,7 @@
     ///////////////
 </script>
 
-<HeaderPart title="#後で見る" />
+<HeaderPart title="検索" />
 
 <MainPart>
     <p>めんてちゅ</p>

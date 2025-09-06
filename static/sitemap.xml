@@ -26,16 +26,16 @@
     <changefreq>weekly</changefreq>
   </url>
 
-  <!-- 履歴 -->
+  <!-- 検索 -->
   <url>
-    <loc>https://unj.netlify.app/history</loc>
+    <loc>https://unj.netlify.app/search</loc>
     <priority>0.6</priority>
     <changefreq>weekly</changefreq>
   </url>
 
-  <!-- ブックマーク -->
+  <!-- 履歴 -->
   <url>
-    <loc>https://unj.netlify.app/bookmark</loc>
+    <loc>https://unj.netlify.app/history</loc>
     <priority>0.6</priority>
     <changefreq>weekly</changefreq>
   </url>

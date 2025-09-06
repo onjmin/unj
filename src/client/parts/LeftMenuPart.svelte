@@ -50,6 +50,15 @@
                 <Text>ヘッドライン</Text>
             </Item>
             <Item
+                onclick={() => navigate(makePathname("/search"))}
+                activated={pathname().split("/")[1] === "search"}
+            >
+                <Graphic class="material-icons" aria-hidden="true"
+                    >search</Graphic
+                >
+                <Text>検索</Text>
+            </Item>
+            <Item
                 onclick={() => navigate(makePathname("/history"))}
                 activated={pathname().split("/")[1] === "history"}
             >
@@ -57,14 +66,6 @@
                     >history</Graphic
                 >
                 <Text>履歴</Text>
-            </Item>
-            <Item
-                onclick={() => navigate(makePathname("/bookmark"))}
-                activated={pathname().split("/")[1] === "bookmark"}
-            >
-                <Graphic class="material-icons" aria-hidden="true">star</Graphic
-                >
-                <Text>#後で見る</Text>
             </Item>
             <Item
                 onclick={() => navigate(makePathname("/config"))}

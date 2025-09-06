@@ -5,7 +5,6 @@
   import ArtPage from "./pages/ArtPage.svelte";
   import ArticlePage from "./pages/ArticlePage.svelte";
   import BannedPage from "./pages/BannedPage.svelte";
-  import BookmarkPage from "./pages/BookmarkPage.svelte";
   import ConfigPage from "./pages/ConfigPage.svelte";
   import ContactPage from "./pages/ContactPage.svelte";
   import ErrorPage from "./pages/ErrorPage.svelte";
@@ -17,6 +16,7 @@
   import NewPage from "./pages/NewPage.svelte";
   import NewsPage from "./pages/NewsPage.svelte";
   import NotFoundPage from "./pages/NotFoundPage.svelte";
+  import SearchPage from "./pages/SearchPage.svelte";
   import TermsPage from "./pages/TermsPage.svelte";
   import ThreadPage from "./pages/ThreadPage.svelte";
   import UnbannedCheck from "./plugs/UnbannedCheck.svelte";
@@ -71,13 +71,13 @@
   <Route path={makePathname("/new/next")}>
     <NewPage isRef />
   </Route>
+  <!-- 検索 -->
+  <Route path={makePathname("/search")}>
+    <SearchPage />
+  </Route>
   <!-- 履歴 -->
   <Route path={makePathname("/history")}>
     <HistoryPage />
-  </Route>
-  <!-- #後で見る -->
-  <Route path={makePathname("/bookmark")}>
-    <BookmarkPage />
   </Route>
   <!-- 個人設定 -->
   <Route path={makePathname("/config")}>

@@ -274,8 +274,9 @@
                 <p>該当はありませんでした。</p>
                 <p>キーワードを変えてみてね。</p>
                 <p>
-                    <a href="about:blank" class="text-blue-500 hover:underline"
-                        >全文検索</a
+                    <a
+                        href={makePathname("/search")}
+                        class="text-blue-500 hover:underline">全文検索</a
                     >でも試してちょ
                 </p>
             </div>
