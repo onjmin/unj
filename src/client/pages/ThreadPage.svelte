@@ -722,7 +722,10 @@
                 if (!thread) return;
                 navigate(
                     makePathname(
-                        `/thread/${thread.id}/${Math.max(resNum - queryResultLimit, 2)}`,
+                        `/thread/${thread.id}/${Math.max(resNum - queryResultLimit, 2)}`.replace(
+                            /\/2$/,
+                            "/",
+                        ),
                     ),
                 );
             }}

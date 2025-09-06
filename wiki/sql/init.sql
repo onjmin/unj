@@ -20,8 +20,8 @@ CREATE TABLE threads (
     res_count SMALLINT NOT NULL DEFAULT 1, -- count()よりも軽量。レス投稿後に発行されるIDが真の値。
     latest_res TEXT NOT NULL DEFAULT '', -- 最終レス
     latest_res_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 最終レスの日時
-    first_cursor INT NOT NULL DEFAULT 0,
-    latest_cursor INT NOT NULL DEFAULT 0,
+    first_cursor INT NOT NULL DEFAULT 0, -- 削除予定カラム
+    latest_cursor INT NOT NULL DEFAULT 0, -- 削除予定カラム
     -- 基本的な情報
     title TEXT NOT NULL DEFAULT '',
     thread_type SMALLINT DEFAULT 0, -- スレッドの種類（実況スレ、地震スレ、安価スレ、スレタイで振り分けられる。または、SSスレ、運営スレ、語尾が変わる特殊なスレなど）
