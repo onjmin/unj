@@ -13,7 +13,7 @@
     let searchResults: any[] = $state([]);
 
     // 検索処理を行う関数
-    async function handleSearch() {
+    const handleSearch = async () => {
         loading = true;
         searchResults = [];
 
@@ -64,7 +64,7 @@
             },
         ];
         loading = false;
-    }
+    };
 </script>
 
 <HeaderPart title="全文検索" />
