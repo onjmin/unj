@@ -6,7 +6,6 @@ export type HeadlineThread = {
 	latestRes: string;
 	latestResAt: Date;
 	resCount: number;
-	latestCursor: string;
 	// 基本的な情報
 	title: string;
 	// 動的なデータ
@@ -28,7 +27,6 @@ export type Res = {
 	contentType: number;
 	commandResult: string;
 	// メタ情報
-	cursor: string;
 	num: number;
 	createdAt: Date;
 	isOwner: boolean;
@@ -46,9 +44,6 @@ export type Thread = {
 	contentType: number;
 	// メタ情報
 	id: string;
-	firstCursor: string;
-	latestCursor: string;
-	desc: boolean;
 	createdAt: Date;
 	resList: Res[];
 	// 基本的な情報

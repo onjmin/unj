@@ -88,7 +88,7 @@
     changeNewResSound();
     changeReplyResSound();
 
-    let { threadId = "", cursor = "", desc = false } = $props();
+    let { threadId = "", resNum = 2 } = $props();
 
     let openConfirm = $state(false);
     let textarea: HTMLTextAreaElement | null = $state(null);
@@ -194,8 +194,6 @@
         });
     });
 
-    let topCursor = $state("");
-    let bottomCursor = $state("");
     let title = $state("スレ取得中");
     let lolCount = $state(0);
     let goodVotes = $state(0);
@@ -204,27 +202,16 @@
     let denominator = $state(0);
     let goodRatio = $state(0);
     let badRatio = $state(0);
-    let shouldScrollTo2 = $state(cursor !== "" && !desc);
 
     const loadThread = async (_thread: Thread) => {
         thread = _thread;
         if (!thread) return;
-        if (thread.resList.length) {
-            if (thread.desc) thread.resList.reverse();
-            topCursor = thread.resList[0].cursor;
-            bottomCursor = thread.resList[thread.resList.length - 1].cursor;
-        }
         title = thread.title;
         lolCount = thread.lolCount;
         goodVotes = thread.goodCount;
         badVotes = thread.badCount;
         updateChips();
         updateContentType();
-        if (shouldScrollTo2) {
-            shouldScrollTo2 = false;
-            await sleep(512);
-            scrollTo2();
-        }
     };
 
     const handleReadThread = async (data: { ok: boolean; thread: Thread }) => {
@@ -254,7 +241,6 @@
             thread.resList.shift();
         }
         thread.resList.push(data.new);
-        thread.latestCursor = data.new.cursor;
         if (thread.ageResNum === data.new.num) thread.ageRes = data.new;
         newResSoundHowl?.play();
         if (data.yours) {
@@ -294,18 +280,6 @@
         thread.balsResNum = data.new.balsResNum;
         updateChips();
         updateContentType();
-    };
-
-    const scrollTo2 = () => {
-        const main = document.querySelector(".unj-main-part") ?? document.body;
-        const res = document.querySelectorAll(".res");
-        const cursor = res[1];
-        if (cursor) {
-            main.scrollTo({
-                top: (cursor as HTMLElement).offsetTop,
-                behavior: "smooth",
-            });
-        }
     };
 
     const scrollToEnd = () => {
@@ -376,9 +350,9 @@
             });
             socket.emit("readThread", {
                 nonce: genNonce(nonceKey.value ?? ""),
-                cursor: cursor || null,
                 limit: queryResultLimit,
-                desc: latestReadThreadId.value === threadId ? false : desc,
+                sinceResNum: resNum,
+                untilResNum: null,
                 threadId,
             });
             latestReadThreadId.value = threadId;
@@ -400,27 +374,6 @@
             socket.off("like", handleLike);
         };
     });
-
-    const cursorBasedPagination = async ({
-        cursor,
-        desc,
-    }: {
-        cursor?: string;
-        desc: boolean;
-    }) => {
-        if (emitting) return;
-        emitting = true;
-        socket.emit("readThread", {
-            nonce: genNonce(nonceKey.value ?? ""),
-            cursor: cursor || null,
-            limit: queryResultLimit,
-            desc,
-            threadId,
-        });
-        await sleep(2048);
-        emitting = false;
-        ok();
-    };
 
     let laaaaaaaag = $state(false);
     $effect(() => {
@@ -728,7 +681,6 @@
             contentText={thread?.ageRes.contentText}
             contentUrl={thread?.ageRes.contentUrl}
             contentType={Enum.Text}
-            cursor={thread?.ageRes.cursor}
             num={thread?.ageRes.num}
             isOwner={thread?.ageRes.isOwner}
             sage={thread?.ageRes.sage}
@@ -753,12 +705,10 @@
         <!-- First Page Button -->
         <button
             class="bg-gray-600 text-gray-200 p-2 rounded"
-            disabled={emitting || thread?.firstCursor === topCursor}
+            disabled={emitting || resNum < 3}
             onclick={() => {
-                cursorBasedPagination({
-                    cursor: thread?.firstCursor,
-                    desc: false,
-                });
+                if (!thread) return;
+                navigate(makePathname(`/thread/${thread.id}/`));
             }}
         >
             <ChevronFirstIcon class="w-5 h-5" />
@@ -767,12 +717,15 @@
         <!-- Chevron Left Button -->
         <button
             class="bg-gray-600 text-gray-200 p-2 rounded"
-            disabled={emitting || thread?.firstCursor === topCursor}
-            onclick={() =>
-                cursorBasedPagination({
-                    cursor: topCursor,
-                    desc: true,
-                })}
+            disabled={emitting || resNum < 3}
+            onclick={() => {
+                if (!thread) return;
+                navigate(
+                    makePathname(
+                        `/thread/${thread.id}/${Math.max(resNum - queryResultLimit, 2)}`,
+                    ),
+                );
+            }}
         >
             <ChevronLeftIcon class="w-5 h-5" />
         </button>
@@ -785,13 +738,17 @@
         <!-- Chevron Right Button -->
         <button
             class="bg-gray-600 text-gray-200 p-2 rounded"
-            disabled={emitting || thread?.latestCursor === bottomCursor}
+            disabled={emitting ||
+                (thread &&
+                    (thread.resCount < queryResultLimit ||
+                        resNum > thread.resCount - queryResultLimit))}
             onclick={() => {
-                shouldScrollTo2 = true;
-                cursorBasedPagination({
-                    cursor: bottomCursor,
-                    desc: false,
-                });
+                if (!thread) return;
+                navigate(
+                    makePathname(
+                        `/thread/${thread.id}/${Math.min(resNum + queryResultLimit, thread.resCount - queryResultLimit + 1)}`,
+                    ),
+                );
             }}
         >
             <ChevronRightIcon class="w-5 h-5" />
@@ -800,13 +757,17 @@
         <!-- Last Page Button -->
         <button
             class="bg-gray-600 text-gray-200 p-2 rounded"
-            disabled={emitting || thread?.latestCursor === bottomCursor}
+            disabled={emitting ||
+                (thread &&
+                    (thread.resCount < queryResultLimit ||
+                        resNum > thread.resCount - queryResultLimit))}
             onclick={() => {
-                shouldScrollTo2 = true;
-                cursorBasedPagination({
-                    cursor: thread?.latestCursor,
-                    desc: true,
-                });
+                if (!thread) return;
+                navigate(
+                    makePathname(
+                        `/thread/${thread.id}/${thread.resCount - queryResultLimit + 1}`,
+                    ),
+                );
             }}
         >
             <ChevronLastIcon class="w-5 h-5" />
@@ -929,7 +890,6 @@
                     contentUrl={res.contentUrl}
                     contentType={res.contentType}
                     commandResult={res.commandResult}
-                    cursor={res.cursor}
                     num={res.num}
                     isOwner={res.isOwner}
                     sage={res.sage}

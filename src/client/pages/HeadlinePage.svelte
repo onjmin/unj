@@ -141,7 +141,6 @@
             latestRes,
             latestResAt,
             resCount: 0,
-            latestCursor: "",
             title,
             online: 0,
             ikioi: 0,
@@ -171,9 +170,9 @@
             socket.emit("joinHeadline", {});
             socket.emit("headline", {
                 nonce: genNonce(nonceKey.value ?? ""),
-                cursor: null,
                 limit: queryResultLimit,
-                desc: true,
+                sinceDate: null,
+                untilDate: null,
             });
         });
         socket.on("joinHeadline", handleJoinHeadline);
@@ -197,9 +196,9 @@
         pagination = true;
         socket.emit("headline", {
             nonce: genNonce(nonceKey.value ?? ""),
-            cursor: threadList?.at(-1)?.latestResAt ?? null,
             limit: queryResultLimit,
-            desc: true,
+            sinceDate: null,
+            untilDate: threadList?.at(-1)?.latestResAt ?? null,
         });
         await sleep(2048);
         emitting = false;
@@ -294,7 +293,7 @@
                                         makePathname(
                                             findMisskey(thread.id)
                                                 ? `/misskey/${findMisskey(thread.id)?.misskeyId}`
-                                                : `/thread/${thread.id}${thread.resCount > queryResultLimit && thread.latestCursor ? `/${thread.latestCursor}/1` : ""}`,
+                                                : `/thread/${thread.id}/${thread.resCount > queryResultLimit ? thread.resCount - 8 : ""}`,
                                         ),
                                     )}
                             >

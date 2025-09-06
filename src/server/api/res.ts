@@ -36,11 +36,9 @@ import {
 	ccBitmaskCache,
 	contentTypesBitmaskCache,
 	createdAtCache,
-	firstCursorCache,
 	goodCountCache,
 	isDeleted,
 	isMax,
-	latestCursorCache,
 	lolCountCache,
 	ninja,
 	ninjaPokemonCache,
@@ -252,12 +250,6 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			if (resId === null) return;
 
 			const query = new Map();
-			if (nextResNum === 2) {
-				query.set("first_cursor", id);
-				firstCursorCache.set(threadId, id);
-			}
-			query.set("latest_cursor", id);
-			latestCursorCache.set(threadId, id);
 
 			query.set("res_count", nextResNum);
 
@@ -298,7 +290,6 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 				contentType: content.output.contentType,
 				commandResult: parsedResult.msg,
 				// メタ情報
-				cursor: resId,
 				num: nextResNum,
 				createdAt: created_at,
 				isOwner,
@@ -328,7 +319,6 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 					latestRes,
 					latestResAt: new Date(),
 					resCount: nextResNum,
-					latestCursor: "",
 					// 基本的な情報
 					title: titleCache.get(threadId) ?? "",
 					// 動的なデータ
@@ -360,7 +350,6 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 					contentType: content.output.contentType,
 					commandResult: parsedResult.msg,
 					// メタ情報
-					cursor: resId,
 					num: nextResNum,
 					createdAt: created_at,
 					isOwner,
@@ -389,7 +378,6 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 							contentType: record.content_type,
 							commandResult: record.command_result,
 							// メタ情報
-							cursor: encodeResId(record.id) ?? "",
 							num: record.num,
 							createdAt: record.created_at,
 							isOwner: record.is_owner,

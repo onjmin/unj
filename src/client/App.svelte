@@ -46,15 +46,8 @@
   <Route path="{makePathname('/thread')}/:threadId" let:params>
     <ThreadPage threadId={params.threadId} />
   </Route>
-  <Route path="{makePathname('/thread')}/:threadId/:cursor" let:params>
-    <ThreadPage threadId={params.threadId} cursor={params.cursor} />
-  </Route>
-  <Route path="{makePathname('/thread')}/:threadId/:cursor/:desc" let:params>
-    <ThreadPage
-      threadId={params.threadId}
-      cursor={params.cursor}
-      desc={!!params.desc}
-    />
+  <Route path="{makePathname('/thread')}/:threadId/:resNum" let:params>
+    <ThreadPage threadId={params.threadId} resNum={Number(params.resNum)} />
   </Route>
   <!-- Misskey -->
   <Route path={makePathname("/misskey/inmusky")} let:params>

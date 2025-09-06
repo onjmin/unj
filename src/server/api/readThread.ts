@@ -2,11 +2,7 @@ import type { Socket } from "socket.io";
 import * as v from "valibot";
 import { ReadThreadSchema } from "../../common/request/schema.js";
 import type { Res, Thread } from "../../common/response/schema.js";
-import {
-	decodeResId,
-	decodeThreadId,
-	encodeResId,
-} from "../mylib/anti-debug.js";
+import { decodeThreadId, encodeResId } from "../mylib/anti-debug.js";
 import auth from "../mylib/auth.js";
 import {
 	ageResCache,
@@ -25,10 +21,8 @@ import {
 	contentUrlCache,
 	createdAtCache,
 	deletedAtCache,
-	firstCursorCache,
 	goodCountCache,
 	isDeleted,
-	latestCursorCache,
 	lolCountCache,
 	ownerIdCache,
 	psCache,
@@ -58,13 +52,6 @@ export default ({ socket }: { socket: Socket }) => {
 		if (threadId === null) return;
 
 		if (isDeleted(threadId)) return;
-
-		// cursorの復号
-		let cursor: number | null = null;
-		if (readThread.output.cursor !== null) {
-			cursor = decodeResId(readThread.output.cursor);
-			if (cursor === null) return;
-		}
 
 		// Nonce値の完全一致チェック
 		if (!nonce.isValid(socket, readThread.output.nonce)) {
@@ -98,8 +85,6 @@ export default ({ socket }: { socket: Socket }) => {
 				// メタ情報
 				createdAtCache.set(threadId, new Date(threadRecord.created_at));
 				userIdCache.set(threadId, threadRecord.user_id);
-				firstCursorCache.set(threadId, threadRecord.first_cursor);
-				latestCursorCache.set(threadId, threadRecord.latest_cursor);
 				// 基本的な情報
 				titleCache.set(threadId, threadRecord.title);
 				threadTypeCache.set(threadId, threadRecord.thread_type);
@@ -151,7 +136,6 @@ export default ({ socket }: { socket: Socket }) => {
 							contentType: record.content_type,
 							commandResult: record.command_result,
 							// メタ情報
-							cursor: encodeResId(record.id) ?? "",
 							num: record.num,
 							createdAt: record.created_at,
 							isOwner: record.is_owner,
@@ -168,25 +152,24 @@ export default ({ socket }: { socket: Socket }) => {
 			}
 
 			// レスの取得
+			const values = [threadId];
 			const query = ["SELECT * FROM res WHERE thread_id = $1"];
-			const { limit, desc } = readThread.output;
-			const values = [];
-			if (cursor !== null) {
-				// ランダムアクセスが想定されているため、不等号にカーソル自身も含める必要がある
-				if (desc) {
-					query.push("AND id <= $2");
-				} else {
-					query.push("AND id >= $2");
-				}
-				values.push(cursor);
+			const { limit, sinceResNum, untilResNum } = readThread.output;
+			if (sinceResNum !== null) {
+				values.push(sinceResNum);
+				query.push(`AND num >= $${values.length}`);
 			}
-			query.push(`ORDER BY num ${desc ? "DESC" : "ASC"}`);
-			query.push(`LIMIT $${values.length + 2}`);
+			if (untilResNum !== null) {
+				values.push(untilResNum);
+				query.push(`AND num <= $${values.length}`);
+			}
+			query.push("ORDER BY num");
 			values.push(limit);
+			query.push(`LIMIT $${values.length}`);
 
 			const userId = auth.getUserId(socket);
 			const list: Res[] = [];
-			const { rows } = await pool.query(query.join(" "), [threadId, ...values]);
+			const { rows } = await pool.query(query.join(" "), values);
 			for (const record of rows) {
 				const resId = encodeResId(record.id);
 				if (resId === null) return;
@@ -201,7 +184,6 @@ export default ({ socket }: { socket: Socket }) => {
 					contentType: record.content_type,
 					commandResult: record.command_result,
 					// メタ情報
-					cursor: resId,
 					num: record.num,
 					createdAt: record.created_at,
 					isOwner: record.is_owner,
@@ -211,9 +193,6 @@ export default ({ socket }: { socket: Socket }) => {
 
 			const thread: Thread = {
 				yours: (userIdCache.get(threadId) ?? 0) === userId,
-				firstCursor: encodeResId(firstCursorCache.get(threadId) ?? 0) ?? "",
-				latestCursor: encodeResId(latestCursorCache.get(threadId) ?? 0) ?? "",
-				desc,
 				// 書き込み内容
 				ccUserId: ccUserIdCache.get(threadId) ?? "",
 				ccUserName: ccUserNameCache.get(threadId) ?? "",

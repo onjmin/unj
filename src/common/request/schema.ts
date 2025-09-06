@@ -91,6 +91,19 @@ const RES_NUM = v.pipe(
 	v.minValue(1),
 	v.maxValue(1005),
 );
+const LIMIT = v.pipe(
+	v.number(),
+	v.integer(),
+	v.minValue(1),
+	v.maxValue(queryResultLimit),
+);
+const UNJ_LIFETIME = v.pipe(
+	v.string(),
+	v.transform((s) => new Date(s)),
+	v.date(),
+	v.toMinValue(unjBeginDate),
+	v.toMaxValue(unjEndDate),
+);
 
 /**
  * コストが低い処理のためNonce値の検証は不要
@@ -167,9 +180,9 @@ export const ResSchema = v.strictObject({
  */
 export const ReadThreadSchema = v.strictObject({
 	nonce: NONCE,
-	cursor: v.nullable(RES_ID),
-	limit: v.pipe(RES_NUM, v.maxValue(queryResultLimit)),
-	desc: v.boolean(),
+	limit: LIMIT,
+	sinceResNum: v.nullable(RES_NUM), // >= sinceId
+	untilResNum: v.nullable(RES_NUM), // <= untilId
 	threadId: THREAD_ID,
 });
 
@@ -178,22 +191,9 @@ export const ReadThreadSchema = v.strictObject({
  */
 export const HeadlineSchema = v.strictObject({
 	nonce: NONCE,
-	cursor: v.nullable(
-		v.pipe(
-			v.string(),
-			v.transform((s) => new Date(s)),
-			v.date(),
-			v.toMinValue(unjBeginDate),
-			v.toMaxValue(unjEndDate),
-		),
-	),
-	limit: v.pipe(
-		v.number(),
-		v.integer(),
-		v.minValue(1),
-		v.maxValue(queryResultLimit),
-	),
-	desc: v.boolean(),
+	limit: LIMIT,
+	sinceDate: v.nullable(UNJ_LIFETIME), // >= sinceId
+	untilDate: v.nullable(UNJ_LIFETIME), // <= untilId
 });
 
 /**

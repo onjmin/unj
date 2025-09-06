@@ -31,23 +31,23 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			nonce.lock(socket);
 			nonce.update(socket);
 
+			const values = [];
 			const query = [
 				"SELECT * FROM threads WHERE",
 				"(deleted_at IS NULL OR deleted_at > CURRENT_TIMESTAMP)",
 			];
-			const { limit, desc, cursor } = headline.output;
-			const values = [];
-			if (cursor !== null) {
-				if (desc) {
-					query.push("AND latest_res_at < $1");
-				} else {
-					query.push("AND latest_res_at > $1");
-				}
-				values.push(format(cursor, "yyyy-MM-dd HH:mm:ss"));
+			const { limit, sinceDate, untilDate } = headline.output;
+			if (sinceDate !== null) {
+				values.push(format(sinceDate, "yyyy-MM-dd HH:mm:ss"));
+				query.push(`AND latest_res_at >= $${values.length}`);
 			}
-			query.push(`ORDER BY latest_res_at ${desc ? "DESC" : "ASC"}`);
-			query.push(`LIMIT $${values.length + 1}`);
+			if (untilDate !== null) {
+				values.push(format(untilDate, "yyyy-MM-dd HH:mm:ss"));
+				query.push(`AND latest_res_at <= $${values.length}`);
+			}
+			query.push("ORDER BY latest_res_at DESC");
 			values.push(limit);
+			query.push(`LIMIT $${values.length}`);
 
 			const { rows } = await pool.query(query.join(" "), values);
 
@@ -63,7 +63,6 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 					latestRes: record.latest_res,
 					latestResAt,
 					resCount,
-					latestCursor: encodeResId(record.latest_cursor) ?? "",
 					// 基本的な情報
 					title: record.title,
 					// 動的なデータ

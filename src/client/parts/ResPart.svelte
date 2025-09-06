@@ -23,7 +23,6 @@
     commandResult = "",
     ps = "",
     // メタ情報
-    cursor = "",
     num = 0,
     isOwner = false,
     sage = false,
@@ -34,7 +33,7 @@
 
   let open = $state(false);
 
-  const makeSharedLink = () => makeHref(`/thread/${threadId}/${cursor}`);
+  const makeSharedLink = () => makeHref(`/thread/${threadId}/${num}`);
   let sharedLink = $state("");
 
   $effect(() => {
