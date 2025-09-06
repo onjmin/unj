@@ -70,9 +70,6 @@ importers:
       date-fns-tz:
         specifier: 3.0.1-beta.0
         version: 3.0.1-beta.0(date-fns@4.1.0)
-      date-picker-svelte:
-        specifier: ^2.15.1
-        version: 2.15.1(svelte@5.20.5)
       esbuild:
         specifier: ^0.25.0
         version: 0.25.0
@@ -161,9 +158,6 @@ importers:
       '@smui/chips':
         specifier: 8.0.0-beta.3
         version: 8.0.0-beta.3
-      '@smui/circular-progress':
-        specifier: 8.0.0-beta.3
-        version: 8.0.0-beta.3
       '@smui/common':
         specifier: 8.0.0-beta.3
         version: 8.0.0-beta.3
@@ -204,9 +198,6 @@ importers:
         specifier: 8.0.0-beta.3
         version: 8.0.0-beta.3
       '@smui/snackbar':
-        specifier: 8.0.0-beta.3
-        version: 8.0.0-beta.3
-      '@smui/switch':
         specifier: 8.0.0-beta.3
         version: 8.0.0-beta.3
       '@smui/tab':
@@ -1642,11 +1633,6 @@ packages:
 
   date-fns@4.1.0:
     resolution: {integrity: sha512-Ukq0owbQXxa/U3EGtsdVBkR1w7KOQ5gIBqdH2hkvknzZPYvBxb/aa6E8L7tmjFtkwZBu3UXBbjIgPo/Ez4xaNg==}
-
-  date-picker-svelte@2.15.1:
-    resolution: {integrity: sha512-o0sjLgXDRIxpvaVeps97htbWoplYUXpLSeyfTts88ZOb0NYDO0KJLKIya/Ee3DuKLPjYNY+brp0cOCs0VLsbkw==}
-    peerDependencies:
-      svelte: ^3.24.0 || ^4.0.0 || ^5.0.0
 
   debug@2.6.9:
     resolution: {integrity: sha512-bC7ElrdJaJnPbAP+1EotYvqZsb3ecl5wi6Bfi6BJTUcNowp6cvspg0jXznRTKDjm/E7AdgFBVeAPVMNcKGsHMA==}
@@ -5060,10 +5046,6 @@ snapshots:
       lodash.clonedeep: 4.5.0
 
   date-fns@4.1.0: {}
-
-  date-picker-svelte@2.15.1(svelte@5.20.5):
-    dependencies:
-      svelte: 5.20.5
 
   debug@2.6.9:
     dependencies:

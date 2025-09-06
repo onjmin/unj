@@ -19,7 +19,6 @@
   import NewsPage from "./pages/NewsPage.svelte";
   import NotFoundPage from "./pages/NotFoundPage.svelte";
   import TermsPage from "./pages/TermsPage.svelte";
-  import TestPage from "./pages/TestPage.svelte";
   import ThreadPage from "./pages/ThreadPage.svelte";
   import BannedCheck from "./plugs/BannedCheck.svelte";
   import UnbannedCheck from "./plugs/UnbannedCheck.svelte";
@@ -150,13 +149,6 @@
     <BannedCheck>
       <LinksPage />
     </BannedCheck>
-  </Route>
-  <!-- 後で消す -->
-  <Route path={makePathname("/oekaki/demo")}>
-    <TestPage npm={1} />
-  </Route>
-  <Route path={makePathname("/cors-killer/demo")}>
-    <TestPage npm={2} />
   </Route>
 
   <!-- 直リンでは辿り着けない -->

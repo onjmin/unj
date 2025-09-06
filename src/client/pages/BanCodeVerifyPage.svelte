@@ -6,18 +6,7 @@
     ///////////////
 
     import Button, { Label } from "@smui/button";
-    import Checkbox from "@smui/checkbox";
-    import CircularProgress from "@smui/circular-progress";
     import Dialog, { Title, Actions, Content } from "@smui/dialog";
-    import FormField from "@smui/form-field";
-    import LayoutGrid, { Cell } from "@smui/layout-grid";
-    import List, { Item, Graphic, Meta } from "@smui/list";
-    import Radio from "@smui/radio";
-    import SegmentedButton, { Segment } from "@smui/segmented-button";
-    import Select, { Option } from "@smui/select";
-    import Switch from "@smui/switch";
-    import Textfield from "@smui/textfield";
-    import { DateInput } from "date-picker-svelte";
     import { navigate } from "svelte-routing";
     import { sleep } from "../../common/util.js";
     import { genBanVerifyCode } from "../mylib/anti-debug.js";
@@ -53,127 +42,71 @@
     let open = $state(false);
     let banVerifyCodeInput = $state("");
     let bannedDate = $state(new Date());
-    const segmentedList = ["CBC", "CFB", "OFB", "CTR", "GCM"];
-    let segmentedSelected = $state("CFB");
-    const selectOptions = ["128bit", "192bit", "256bit"];
-    let selectValue = $state("192bit");
-    const radioList = ["PKCS#7", "ANSI X.923", "ISO 10126", "No Padding"];
-    let radioSelected = $state("No Padding");
-    const checkList = ["初期化ベクトル (IV) を設定する", "ソルトを使用する"];
-    let checkSelectedArray = $state([]);
     let checkboxChecked = $state(false);
-    let switchChecked = $state(false);
-    let valueTypeFiles: FileList | null = $state(null);
 </script>
 
 <HeaderPart menu={false} title="BAN解除コード入力画面" />
 
 <MainPart menu={false}>
-    <p>この画面から解除コードが入力できます😃</p>
-    <p>総当たりしても無駄ですよ🤭</p>
-    <LayoutGrid>
-        <Cell span={12}>
-            <Label>暗号利用モード</Label>
-            <SegmentedButton
-                singleSelect
-                segments={segmentedList}
-                bind:selected={segmentedSelected}
+    <p class="mb-2 text-center text-gray-700">
+        この画面から解除コードが入力できます😃
+    </p>
+    <p class="mb-6 text-center text-gray-500 text-sm">
+        総当たりしても無駄ですよ🤭
+    </p>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="flex flex-col">
+            <label for="banned-date" class="mb-1 font-semibold text-gray-700"
+                >BAN日時の入力</label
             >
-                {#snippet segment(segment: string)}
-                    <Segment {segment}>
-                        <Label>{segment}</Label>
-                    </Segment>
-                {/snippet}
-            </SegmentedButton>
-        </Cell>
-    </LayoutGrid>
-    <LayoutGrid>
-        <Cell>
-            <Label>BAN日時の入力</Label>
-            <DateInput
-                closeOnSelection
-                browseWithoutSelecting
-                format="yyyy-MM-dd"
+            <input
+                id="banned-date"
+                type="date"
                 placeholder="BANされた日付"
                 bind:value={bannedDate}
-            ></DateInput>
-        </Cell>
-        <Cell>
-            <Label>password_hash()関数の引数</Label>
-            <List checkList>
-                {#each checkList as str}
-                    <Item>
-                        <Label>{str}</Label>
-                        <Meta>
-                            <Checkbox
-                                bind:group={checkSelectedArray}
-                                value={str}
-                            />
-                        </Meta>
-                    </Item>
-                {/each}
-            </List>
-        </Cell>
-        <Cell>
-            <Select bind:value={selectValue} label="ASEの鍵長">
-                {#each selectOptions as str}
-                    <Option value={str}>{str}</Option>
-                {/each}
-            </Select>
-        </Cell>
-        <Cell>
-            <Textfield label="BAN解除コード" bind:value={banVerifyCodeInput} />
-        </Cell>
-        <Cell>
-            <Label>パディング方式</Label>
-            <List radioList>
-                {#each radioList as str}
-                    <Item>
-                        <Graphic>
-                            <Radio bind:group={radioSelected} value={str} />
-                        </Graphic>
-                        <Label>{str}</Label>
-                    </Item>
-                {/each}
-            </List>
-        </Cell>
-        <Cell>
-            <FormField>
-                <Checkbox bind:checked={checkboxChecked} />
-                {#snippet label()}
-                    宣誓、もう荒らしません
-                {/snippet}
-            </FormField>
-        </Cell>
-    </LayoutGrid>
-    <LayoutGrid>
-        <Cell span={12}>
-            <Button onclick={handleSubmit} variant="raised" disabled={loading}
-                >送信</Button
+                class="rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+        </div>
+
+        <div class="flex flex-col md:col-span-2">
+            <label for="ban-code" class="mb-1 font-semibold text-gray-700"
+                >BAN解除コード</label
             >
-        </Cell>
-    </LayoutGrid>
-    <LayoutGrid>
-        <Cell span={12}>
-            <FormField>
-                <Switch bind:checked={switchChecked} />
-                {#snippet label()}
-                    デバッグモード
-                {/snippet}
-            </FormField>
-        </Cell>
-        {#if switchChecked}
-            <Cell span={12}>
-                <div>
-                    <Textfield
-                        bind:files={valueTypeFiles}
-                        label="【管理者用】BAN解除ファイル"
-                        type="file"
-                    />
-                </div>
-            </Cell>
-        {/if}
-    </LayoutGrid>
+            <input
+                id="ban-code"
+                type="text"
+                placeholder="BAN解除コード"
+                bind:value={banVerifyCodeInput}
+                class="rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+        </div>
+
+        <div class="flex items-center md:col-span-2">
+            <input
+                id="oath-checkbox"
+                type="checkbox"
+                bind:checked={checkboxChecked}
+                class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+            />
+            <label for="oath-checkbox" class="ml-2 text-gray-700"
+                >宣誓、もう荒らしません</label
+            >
+        </div>
+    </div>
+
+    <div class="mt-6 text-center">
+        <button
+            onclick={handleSubmit}
+            disabled={loading}
+            class={`
+        px-6 py-2 rounded-md font-bold text-white transition-colors
+        ${loading ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"}
+      `}
+        >
+            送信
+        </button>
+    </div>
 </MainPart>
 
 <FooterPart menu={false} />
@@ -195,22 +128,28 @@
 </Dialog>
 
 {#if loading}
-    <div class="loading-overlay" style="display: flex; justify-content: center">
-        <CircularProgress style="height: 32px; width: 32px;" indeterminate />
+    <div
+        class="fixed inset-0 flex items-center justify-center bg-white bg-opacity-80 z-[128]"
+    >
+        <svg
+            class="h-8 w-8 animate-spin text-blue-500"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+        >
+            <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+            ></circle>
+            <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+            ></path>
+        </svg>
     </div>
 {/if}
-
-<style>
-    .loading-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        bottom: 0;
-        right: 0;
-        background: rgba(255, 255, 255, 0.8);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 128;
-    }
-</style>

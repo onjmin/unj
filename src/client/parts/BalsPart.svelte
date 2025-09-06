@@ -1,7 +1,9 @@
 <script lang="ts">
-  import { randArray } from "../../common/util.js";
+  import { randArray, seededRandArray } from "../../common/util.js";
   import { visible } from "../mylib/dom.js";
   import { balsImgs } from "../mylib/img/bals.js";
+
+  let { threadId } = $props();
 
   const s = document.createElement("script");
   s.src = "https://code.jquery.com/jquery-1.12.4.min.js";
@@ -14,15 +16,15 @@
   class="valus_res"
   use:visible={(visible) => {
     if (visible) {
-      const $ = (window as any).$;
-      $("<link>")
+      const jQuery = (window as any).jQuery;
+      jQuery("<link>")
         .attr({
           type: "text/css",
           rel: "stylesheet",
           href: "https://furage.github.io/valus/csshake.min.v2.css",
         })
         .appendTo("head");
-      $(".valus_res").addClass(
+      jQuery(".valus_res").addClass(
         randArray([
           "shake-chunk",
           "shake-opacity",
@@ -31,10 +33,10 @@
         ]),
       );
       setTimeout(function () {
-        $("html").addClass(
+        jQuery("html").addClass(
           randArray(["shake", "shake-slow", "shake-little", "shake-vertical"]),
         );
-        $("#app").css("background", "#8b5e5e");
+        jQuery("#app").css("background", "#8b5e5e");
         const s = document.createElement("script");
         s.src = "https://furage.github.io/valus/bomb.v3.js";
         s.crossOrigin = "anonymous";
@@ -43,7 +45,11 @@
     }
   }}
 >
-  <img class="bals-image" src={randArray(balsImgs)} alt="test" />
+  <img
+    class="bals-image"
+    src={seededRandArray(balsImgs, threadId)}
+    alt="test"
+  />
 </div>
 
 <style>

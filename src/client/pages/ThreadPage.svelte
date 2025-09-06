@@ -937,7 +937,7 @@
                     threadId={thread.id}
                 >
                     {#if res.num === thread.balsResNum}
-                        <BalsPart />
+                        <BalsPart {threadId} />
                     {/if}
                 </ResPart>
             {/each}
