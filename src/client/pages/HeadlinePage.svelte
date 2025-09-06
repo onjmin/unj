@@ -18,6 +18,7 @@
         isBefore,
     } from "date-fns";
     import { navigate } from "svelte-routing";
+    import { Link } from "svelte-routing";
     import { queryResultLimit } from "../../common/request/schema.js";
     import type { HeadlineThread } from "../../common/response/schema.js";
     import { sleep } from "../../common/util.js";
@@ -274,9 +275,7 @@
                 <p>該当はありませんでした。</p>
                 <p>キーワードを変えてみてね。</p>
                 <p>
-                    <a
-                        href={makePathname("/search")}
-                        class="text-blue-500 hover:underline">全文検索</a
+                    <Link to={makePathname("/search")}>全文検索</Link
                     >でも試してちょ
                 </p>
             </div>

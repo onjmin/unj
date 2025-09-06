@@ -72,7 +72,7 @@
 <MainPart>
     <div class="container mx-auto p-4 max-w-2xl">
         <div class="bg-white p-6 rounded-lg shadow-md">
-            <form onsubmit={handleSearch} class="flex items-center gap-2">
+            <div class="flex items-center gap-2">
                 <label for="contentText" class="sr-only">全文検索</label>
                 <div class="relative flex-grow">
                     <div
@@ -86,12 +86,14 @@
                         bind:value={contentText}
                         class="w-full p-2 pl-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="全文検索"
+                        onkeydown={(e) => e.key === "Enter" && handleSearch()}
                     />
                 </div>
                 <button
                     type="submit"
                     class="min-w-[70px] py-2 px-4 bg-blue-600 text-white rounded-md font-semibold hover:bg-blue-700 transition-colors duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed"
                     disabled={loading}
+                    onclick={handleSearch}
                 >
                     {#if loading}
                         <div class="flex items-center justify-center">
@@ -121,7 +123,7 @@
                         <span>検索</span>
                     {/if}
                 </button>
-            </form>
+            </div>
         </div>
 
         <div class="mt-8">
