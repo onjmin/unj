@@ -44,7 +44,7 @@ export const SAFE_TEXT_SINGLELINE = v.pipe(
 const SAFE_TEXT_MULTILINE = v.pipe(
 	SAFE_TEXT,
 	v.check((input) => !regexUrl.test(input)),
-	v.check((input) => input.split("\n").length < 8),
+	v.check((input) => input.split("\n").length < 16),
 );
 const SAFE_URL = v.pipe(
 	SAFE_TEXT,
