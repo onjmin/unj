@@ -9,6 +9,13 @@
     import { format } from "date-fns";
     import { ja } from "date-fns/locale";
     import { navigate } from "svelte-routing";
+    import { Enum } from "../../common/request/content-schema.js";
+    import audio from "../../common/request/whitelist/audio.js";
+    import game from "../../common/request/whitelist/game.js";
+    import gif from "../../common/request/whitelist/gif.js";
+    import image from "../../common/request/whitelist/image.js";
+    import { findIn } from "../../common/request/whitelist/site-info.js";
+    import video from "../../common/request/whitelist/video.js";
     import { makePathname } from "../mylib/env.js";
     import {
         type Misskey,
@@ -17,6 +24,7 @@
         findMisskey,
     } from "../mylib/misskey.js";
     import { ObjectStorage } from "../mylib/object-storage.js";
+    import EmbedPart from "../parts/EmbedPart.svelte";
     import FaviconPart from "../parts/FaviconPart.svelte";
 
     const INITIAL_LIMIT = 16;
@@ -104,15 +112,32 @@
 
     const regexUrl = /(https?:\/\/[A-Za-z0-9\-\._~:/?#[\]@!$&'()*+,;=%]+)/gi;
 
-    function formatText(text: string | null) {
-        if (!text) return "";
+    const formatText = (text: string) => {
         let formattedText = text.replace(/\n/g, "<br />");
         formattedText = formattedText.replace(
             regexUrl,
             '<a href="$1" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:underline break-all">$1</a>',
         );
         return formattedText;
-    }
+    };
+
+    const findEmbeddable = (text: string): [string, number] | undefined => {
+        for (const str of text.match(regexUrl) ?? []) {
+            let url: URL | undefined;
+            try {
+                url = new URL(str);
+            } catch (err) {}
+            if (!url) continue;
+            let _contentType = 0;
+            if (findIn(gif, url.hostname) && url.href.slice(-4) === ".gif") {
+                _contentType = Enum.Gif;
+            } else if (findIn(image, url.hostname)) _contentType = Enum.Image;
+            else if (findIn(video, url.hostname)) _contentType = Enum.Video;
+            else if (findIn(audio, url.hostname)) _contentType = Enum.Audio;
+            else if (findIn(game, url.hostname)) _contentType = Enum.Game;
+            if (_contentType !== 0) return [url.href, _contentType];
+        }
+    };
 
     let laaaaaaaag = $state(false);
     $effect(() => {
@@ -178,6 +203,7 @@
             <div class="space-y-4">
                 {#each timeline as note (note.id)}
                     {#if !note.isHidden && note.text !== null && note.userId !== "9tjlknm0fl"}
+                        {@const embeddable = findEmbeddable(note.text ?? "")}
                         <div
                             class="bg-transparent border-[2mm] border-solid border-white border-opacity-10 p-4 rounded-lg shadow-inner"
                         >
@@ -235,6 +261,16 @@
                                                     />
                                                 </button>
                                             {/each}
+                                        </div>
+                                    {/if}
+
+                                    {#if embeddable}
+                                        <div class="text-left">
+                                            <EmbedPart
+                                                ccUserAvatar={1}
+                                                contentUrl={embeddable[0]}
+                                                contentType={embeddable[1]}
+                                            />
                                         </div>
                                     {/if}
                                 </div>

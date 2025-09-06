@@ -122,12 +122,12 @@
     } catch (err) {}
     if (!url) return;
     let _contentType = 0;
-    if (!!findIn(gif, url.hostname) && url.href.slice(-4) === ".gif") {
+    if (findIn(gif, url.hostname) && url.href.slice(-4) === ".gif") {
       _contentType = Enum.Gif;
-    } else if (!!findIn(image, url.hostname)) _contentType = Enum.Image;
-    else if (!!findIn(video, url.hostname)) _contentType = Enum.Video;
-    else if (!!findIn(audio, url.hostname)) _contentType = Enum.Audio;
-    else if (!!findIn(game, url.hostname)) _contentType = Enum.Game;
+    } else if (findIn(image, url.hostname)) _contentType = Enum.Image;
+    else if (findIn(video, url.hostname)) _contentType = Enum.Video;
+    else if (findIn(audio, url.hostname)) _contentType = Enum.Audio;
+    else if (findIn(game, url.hostname)) _contentType = Enum.Game;
     else _contentType = Enum.Url;
     if ((_contentType & contentTypesBitmask) !== 0) {
       contentType = _contentType;
