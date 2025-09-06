@@ -5,14 +5,8 @@
     import MainPart from "../parts/MainPart.svelte";
     ///////////////
 
-    import { genBanVerifyCode } from "../mylib/anti-debug.js";
     import { VITE_ADMIN_EMAIL, VITE_ADMIN_TWITTER } from "../mylib/env.js";
-    import {
-        banReason,
-        banReport,
-        banVerifyCode,
-        ipInfoJson,
-    } from "../mylib/unj-storage.js";
+    import { banReport, ipInfoJson } from "../mylib/unj-storage.js";
     import { reportBanned } from "../mylib/webhook.js";
 
     let ip = $state("");
@@ -35,22 +29,14 @@
                         return; // 確実に改ざんされているので、以降の処理は無意味。
                     }
                 }
-                // BAN解除コードの生成
-                const code = genBanVerifyCode("");
-                banVerifyCode.value = code;
                 // BANの通知
                 if ("done" !== banReport.value) {
                     const unknown = "(unknown)";
-                    switch (banReason.value) {
-                        case "banned":
-                            banReport.value = "done";
-                            reportBanned([
-                                banVerifyCode.value ?? unknown,
-                                ipInfoJson.value ?? unknown,
-                                window.navigator.userAgent,
-                            ]);
-                            break;
-                    }
+                    banReport.value = "done";
+                    reportBanned([
+                        ipInfoJson.value ?? unknown,
+                        window.navigator.userAgent,
+                    ]);
                 }
             } catch (err) {}
         })();

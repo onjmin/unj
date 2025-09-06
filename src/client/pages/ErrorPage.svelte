@@ -32,7 +32,7 @@
             <p class="mt-4">しばらくしてからリロードしてみてね。</p>
             <button
                 class="mt-4 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
-                on:click={() => {
+                onclick={() => {
                     location.href = makePathname("/");
                 }}
             >

@@ -57,9 +57,7 @@ export class UnjStorage {
 
 // BAN
 export const banStatus = new UnjStorage("banStatus");
-export const banReason = new UnjStorage("banReason");
 export const ipInfoJson = new UnjStorage("ipInfoJson");
-export const banVerifyCode = new UnjStorage("banVerifyCode");
 export const banReport = new UnjStorage("banReport");
 
 // Sound

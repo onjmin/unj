@@ -65,7 +65,6 @@ export const hello = (callback: (() => void) | null = null) => {
 			switch (data.reason) {
 				case "banned":
 					banStatus.value = "ban";
-					banReason.value = "banned";
 					navigate(makePathname("/akukin"), { replace: true });
 					break;
 				case "multipleConnectionsLimit":

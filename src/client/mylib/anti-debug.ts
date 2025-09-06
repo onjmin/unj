@@ -36,17 +36,6 @@ const VITE_UNJ_BAN_VERIFY_CODE_PEPPER = decodeEnv(
 	import.meta.env.VITE_UNJ_BAN_VERIFY_CODE_PEPPER,
 );
 
-/**
- * BAN解除コードの生成
- */
-export const genBanVerifyCode = (key: string): string => {
-	const basedKey = key || sha256(Math.random().toString());
-	const str = sha256(
-		[VITE_UNJ_BAN_VERIFY_CODE_PEPPER, basedKey].join(delimiter),
-	);
-	return str.slice(0, 8); // UXに関わるので8文字に削減
-};
-
 // アンチデバッグ機構
 if (
 	antiTreeShaking() || // Tree shaking対策
