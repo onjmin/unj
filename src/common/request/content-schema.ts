@@ -53,7 +53,7 @@ const SAFE_URL = v.pipe(
 );
 export const SAFE_SEARCH_KEYWORD = v.pipe(
 	SAFE_TEXT,
-	v.minLength(2),
+	v.minLength(1),
 	v.check((input) => !regexLf.test(input)),
 );
 

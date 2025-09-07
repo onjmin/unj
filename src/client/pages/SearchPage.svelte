@@ -39,7 +39,7 @@
     };
 
     const getFormattedText = (text: string, query: string) => {
-        if (!query || query.length < 2) return text;
+        if (!query || query.length < 1) return text;
 
         const regex = new RegExp(`(${query})`, "gi");
         return text.replace(
@@ -111,7 +111,7 @@
                 <button
                     type="submit"
                     class="min-w-[70px] py-2 px-4 bg-blue-600 text-white rounded-md font-semibold hover:bg-blue-700 transition-colors duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed"
-                    disabled={emitting || contentText.trim().length < 2}
+                    disabled={emitting || contentText.trim().length < 1}
                     onclick={trySearch}
                 >
                     {#if emitting}
