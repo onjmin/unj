@@ -95,7 +95,7 @@
                             {/snippet}
                         </ChipSet>
                     </div>
-                    <div class="news-link">
+                    <div class="news-link text-left">
                         <Link to={makePathname(`/news/${item.id}`)}
                             >{item.title}</Link
                         >
