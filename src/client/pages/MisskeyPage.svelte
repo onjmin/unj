@@ -245,21 +245,89 @@
 
                                     {#if note.files && note.files.length > 0}
                                         <div
-                                            class="mt-2 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
+                                            class="mt-2 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3"
                                         >
                                             {#each note.files as file (file.id)}
-                                                <button
-                                                    class="w-full h-auto rounded-lg object-cover cursor-pointer"
-                                                    onclick={() =>
-                                                        openModal(file.url)}
-                                                    aria-label={`View enlarged version of ${file.name}`}
-                                                >
-                                                    <img
-                                                        src={file.thumbnailUrl}
-                                                        alt={file.name}
-                                                        loading="lazy"
-                                                    />
-                                                </button>
+                                                {#if file.type.startsWith("image/")}
+                                                    <button
+                                                        class="w-full h-auto rounded-lg object-cover cursor-pointer"
+                                                        onclick={() =>
+                                                            openModal(file.url)}
+                                                        aria-label={`View enlarged version of ${file.name}`}
+                                                    >
+                                                        <img
+                                                            src={file.thumbnailUrl}
+                                                            alt={file.name}
+                                                            loading="lazy"
+                                                        />
+                                                    </button>
+                                                {:else if file.type.startsWith("audio/")}
+                                                    <div
+                                                        class="w-full"
+                                                        class:sm:col-span-2={note
+                                                            .files.length === 1}
+                                                    >
+                                                        <p
+                                                            class="text-sm text-gray-500 truncate"
+                                                        >
+                                                            {file.name}
+                                                        </p>
+                                                        <audio
+                                                            controls
+                                                            class="w-full mt-1"
+                                                        >
+                                                            <source
+                                                                src={file.url}
+                                                                type={file.type}
+                                                            />
+                                                            ブラウザが音声再生に対応していません。
+                                                        </audio>
+                                                    </div>
+                                                {:else if file.type.startsWith("video/")}
+                                                    <div
+                                                        class="w-full"
+                                                        class:sm:col-span-2={note
+                                                            .files.length === 1}
+                                                    >
+                                                        <p
+                                                            class="text-sm text-gray-500 truncate"
+                                                        >
+                                                            {file.name}
+                                                        </p>
+                                                        <video
+                                                            controls
+                                                            class="w-full mt-1 rounded-lg"
+                                                            preload="metadata"
+                                                        >
+                                                            <source
+                                                                src={file.url}
+                                                                type={file.type}
+                                                            />
+                                                            <track
+                                                                kind="captions"
+                                                                src=""
+                                                                srclang="ja"
+                                                                label="キャプション"
+                                                            />
+                                                            ブラウザが動画再生に対応していません。
+                                                        </video>
+                                                    </div>
+                                                {:else}
+                                                    <div class="w-full">
+                                                        <p
+                                                            class="text-sm text-gray-500 truncate"
+                                                        >
+                                                            {file.name}
+                                                        </p>
+                                                        <a
+                                                            href={file.url}
+                                                            class="text-blue-500 hover:underline"
+                                                            download={file.name}
+                                                        >
+                                                            ダウンロード
+                                                        </a>
+                                                    </div>
+                                                {/if}
                                             {/each}
                                         </div>
                                     {/if}
