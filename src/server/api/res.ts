@@ -112,9 +112,6 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			if (bannedIPCache.get(threadId)?.has(getIP(socket))) return;
 		}
 
-		// simhashチェック
-		if (isSameSimhash(content.output.contentText, userId)) return;
-
 		// roomのチェック
 		if (
 			!exist(io, getThreadRoom(threadId)) ||
@@ -133,6 +130,9 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			logger.verbose(`🔒 ${res.output.nonce}`);
 			return;
 		}
+
+		// simhashチェック
+		if (isSameSimhash(content.output.contentText, userId)) return;
 
 		// 危険な処理
 		let poolClient: PoolClient | null = null;

@@ -60,9 +60,6 @@ export default ({ socket }: { socket: Socket }) => {
 			userAvatar: makeThread.output.userAvatar,
 		});
 
-		// simhashチェック
-		if (isSameSimhash(content.output.contentText, userId)) return;
-
 		// レートリミット
 		if (isBefore(new Date(), coolTimes.get(userId) ?? 0)) {
 			logger.verbose(`⌛ ${coolTimes.get(userId)}`);
@@ -79,6 +76,9 @@ export default ({ socket }: { socket: Socket }) => {
 			logger.verbose(`🔒 ${makeThread.output.nonce}`);
 			return;
 		}
+
+		// simhashチェック
+		if (isSameSimhash(content.output.contentText, userId)) return;
 
 		// 危険な処理
 		let poolClient: PoolClient | null = null;

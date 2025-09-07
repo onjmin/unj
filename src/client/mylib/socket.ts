@@ -7,7 +7,6 @@ import { PROD_MODE, decodeEnv, makePathname, pathname } from "./env.js";
 import {
 	authToken,
 	authTokenUpdatedAt,
-	banReason,
 	banStatus,
 	ninjaPokemon,
 	ninjaScore,
