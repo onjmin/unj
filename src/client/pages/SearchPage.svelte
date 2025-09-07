@@ -6,64 +6,103 @@
     ///////////////
 
     import { SearchIcon } from "@lucide/svelte";
+    import { format } from "date-fns";
+    import { ja } from "date-fns/locale";
+    import { type SearchResult } from "../../common/response/schema.js";
 
     // 検索クエリの状態管理
     let contentText = $state("");
     let loading = $state(false);
-    let searchResults: any[] = $state([]);
+    let searchResults: SearchResult[] = $state([]);
+    let currentQuery: string | null = $state(null);
 
     // 検索処理を行う関数
     const handleSearch = async () => {
+        if (!contentText.trim() || contentText.trim().length < 2) {
+            return;
+        }
+
         loading = true;
         searchResults = [];
+        currentQuery = contentText.trim();
 
-        // 空文字のクエリを除外
         const query = {
-            ...(contentText && { contentText }),
+            contentText: currentQuery,
         };
 
         console.log("検索クエリ:", query);
-
-        // TODO: ここに実際のAPI呼び出し処理を実装
-        // 例:
-        // try {
-        //   const response = await fetch('/api/search', {
-        //     method: 'POST',
-        //     headers: { 'Content-Type': 'application/json' },
-        //     body: JSON.stringify(query)
-        //   });
-        //   if (response.ok) {
-        //     searchResults = await response.json();
-        //   }
-        // } catch (error) {
-        //   console.error("検索エラー:", error);
-        // } finally {
-        //   loading = false;
-        // }
 
         // ダミーデータで代用
         await new Promise((r) => setTimeout(r, 1000));
         searchResults = [
             {
-                id: 1,
-                ccUserId: "user123",
-                ccUserName: "名無しさん",
-                ccUserAvatar: 1,
-                contentText: "テスト投稿",
-                contentUrl: "http://example.com/1",
-                contentType: 1,
+                ccUserId: "aQms",
+                contentText: "テスト投稿のダミーデータです。",
+                contentUrl: "",
+                resNum: 224,
+                createdAt: new Date("2025-09-07T15:11:00Z"),
+                resId: "res_abcde123",
+                threadId: "thread_fghij456",
+                title: "テスト用スレッド(857)",
+                resCount: 857,
             },
             {
-                id: 2,
-                ccUserId: "guest456",
-                ccUserName: "ゲスト",
-                ccUserAvatar: 2,
-                contentText: "検索機能のテストです",
+                ccUserId: "x1kM",
+                contentText: "てすや",
+                contentUrl: "http://example.com/link",
+                resNum: 176,
+                createdAt: new Date("2025-09-07T15:11:00Z"),
+                resId: "res_klmno789",
+                threadId: "thread_fghij456",
+                title: "テスト用スレッド(857)",
+                resCount: 857,
+            },
+            {
+                ccUserId: "7fFo",
+                contentText: "てすや",
                 contentUrl: "",
-                contentType: 1,
+                resNum: 56,
+                createdAt: new Date("2025-09-07T15:11:00Z"),
+                resId: "res_pqrst012",
+                threadId: "thread_fghij456",
+                title: "テスト用スレッド(857)",
+                resCount: 857,
+            },
+            {
+                ccUserId: "RT20",
+                contentText: "てすや",
+                contentUrl: "",
+                resNum: 98,
+                createdAt: new Date("2025-09-07T11:12:00Z"),
+                resId: "res_uvwxy345",
+                threadId: "thread_zabcd678",
+                title: "忍法帖レベル上げスレ(482)",
+                resCount: 482,
+            },
+            {
+                ccUserId: "8ohZ",
+                contentText: "おまたせしましたすごい奴",
+                contentUrl: "",
+                resNum: 3,
+                createdAt: new Date("2025-09-03T01:20:00Z"),
+                resId: "res_efghi901",
+                threadId: "thread_jklmn234",
+                title: "三大頭悪い歌詞｢おまたせしましたすごい奴｣｢今日から一番一番だ｣(13)",
+                resCount: 13,
             },
         ];
         loading = false;
+    };
+
+    const getFormattedText = (text: string, url: string, query: string) => {
+        const fullText = url ? `${text}${url}` : text;
+        if (!query || query.length < 2) return fullText;
+
+        const regex = new RegExp(`(${query})`, "gi");
+        return fullText.replace(
+            regex,
+            '<span class="bg-yellow-200 font-semibold">$1</span>',
+        );
     };
 </script>
 
@@ -92,7 +131,7 @@
                 <button
                     type="submit"
                     class="min-w-[70px] py-2 px-4 bg-blue-600 text-white rounded-md font-semibold hover:bg-blue-700 transition-colors duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed"
-                    disabled={loading}
+                    disabled={loading || contentText.trim().length < 2}
                     onclick={handleSearch}
                 >
                     {#if loading}
@@ -131,31 +170,58 @@
 
             {#if loading}
                 <p class="text-center text-gray-500">検索中...</p>
-            {:else if searchResults.length === 0}
+            {:else if searchResults.length === 0 && currentQuery}
                 <p class="text-center text-gray-500">
                     該当する投稿は見つかりませんでした。
                 </p>
-            {:else}
+            {:else if searchResults.length > 0}
                 <ul class="space-y-4">
                     {#each searchResults as result}
                         <li class="bg-white p-4 rounded-lg shadow-md">
-                            <div class="text-sm text-gray-500">
-                                <span>ID: {result.ccUserId}</span> |
-                                <span>名前: {result.ccUserName}</span>
+                            <!-- スレッドタイトルとレス数を表示 -->
+                            <h4
+                                class="text-lg font-bold text-gray-900 text-left"
+                            >
+                                {result.title}
+                            </h4>
+                            <!-- レス番号、ID、投稿内容を表示 -->
+                            <div class="flex flex-col mt-2 text-left">
+                                <div class="text-sm text-gray-800">
+                                    <span class="font-bold text-blue-600 mr-1">
+                                        {result.resNum}.ID:{result.ccUserId}
+                                    </span>
+                                    <span
+                                        class="text-gray-800"
+                                        tabindex="0"
+                                        role="button"
+                                        onkeydown={() => {}}
+                                        onclick={() =>
+                                            window.open(
+                                                `https://example.com/thread/${result.threadId}#${result.resNum}`,
+                                                "_blank",
+                                            )}
+                                    >
+                                        {@html getFormattedText(
+                                            result.contentText,
+                                            result.contentUrl,
+                                            currentQuery || "",
+                                        )}
+                                    </span>
+                                </div>
                             </div>
-                            <p class="mt-2 text-gray-800">
-                                {result.contentText}
-                            </p>
-                            {#if result.contentUrl}
-                                <a
-                                    href={result.contentUrl}
-                                    class="text-blue-600 hover:underline mt-2 inline-block break-all"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
+                            <!-- 投稿日時と掲示板情報を表示 -->
+                            <div
+                                class="mt-1 text-sm text-gray-500 flex justify-between"
+                            >
+                                <span>なんでも実況J</span>
+                                <span
+                                    >{format(
+                                        result.createdAt,
+                                        "yyyy/MM/dd HH:mm",
+                                        { locale: ja },
+                                    )}</span
                                 >
-                                    {result.contentUrl}
-                                </a>
-                            {/if}
+                            </div>
                         </li>
                     {/each}
                 </ul>

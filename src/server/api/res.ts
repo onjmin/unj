@@ -20,7 +20,6 @@ import type {
 import { randInt } from "../../common/util.js";
 import {
 	decodeThreadId,
-	encodeResId,
 	encodeThreadId,
 	encodeUserId,
 	flaky,
@@ -245,9 +244,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 				],
 			);
 			if (rowCount === 0) return;
-			const { id, created_at } = rows[0];
-			const resId = encodeResId(id);
-			if (resId === null) return;
+			const { created_at } = rows[0];
 
 			const query = new Map();
 

@@ -3,11 +3,7 @@ import type { Server, Socket } from "socket.io";
 import * as v from "valibot";
 import { HeadlineSchema } from "../../common/request/schema.js";
 import type { HeadlineThread } from "../../common/response/schema.js";
-import {
-	decodeThreadId,
-	encodeResId,
-	encodeThreadId,
-} from "../mylib/anti-debug.js";
+import { encodeThreadId } from "../mylib/anti-debug.js";
 import { logger } from "../mylib/log.js";
 import nonce from "../mylib/nonce.js";
 import { pool } from "../mylib/pool.js";
@@ -33,8 +29,8 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 
 			const values = [];
 			const query = [
-				"SELECT * FROM threads WHERE",
-				"(deleted_at IS NULL OR deleted_at > CURRENT_TIMESTAMP)",
+				"SELECT * FROM threads",
+				"WHERE (deleted_at IS NULL OR deleted_at > CURRENT_TIMESTAMP)",
 			];
 			const { limit, sinceDate, untilDate } = headline.output;
 			if (sinceDate !== null) {

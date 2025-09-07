@@ -16,6 +16,20 @@ export type HeadlineThread = {
 	badCount: number;
 };
 
+export type SearchResult = {
+	// 書き込み内容
+	ccUserId: string;
+	contentText: string;
+	contentUrl: string;
+	// メタ情報
+	resNum: number;
+	createdAt: Date;
+	resId: string; // カーソルページネーション用
+	threadId: string;
+	title: string;
+	resCount: number;
+};
+
 export type Res = {
 	yours: boolean;
 	// 書き込み内容

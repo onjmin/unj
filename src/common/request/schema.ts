@@ -1,7 +1,7 @@
 import { addDays } from "date-fns";
 import * as v from "valibot";
 import { avatarMap } from "./avatar.js";
-import { SAFE_TEXT_SINGLELINE } from "./content-schema.js";
+import { SAFE_SEARCH_KEYWORD, SAFE_TEXT_SINGLELINE } from "./content-schema.js";
 
 /**
  * うんJリリース日
@@ -115,6 +115,15 @@ export const joinThreadSchema = v.strictObject({
 });
 
 /**
+ * JWT風トークンのスキーマ
+ */
+export const AuthSchema = v.strictObject({
+	sign: AUTH_SIGN,
+	userId: USER_ID,
+	limit: AUTH_LIMIT,
+});
+
+/**
  * 草ボタンのスキーマ
  */
 export const lolSchema = v.strictObject({
@@ -181,8 +190,8 @@ export const ResSchema = v.strictObject({
 export const ReadThreadSchema = v.strictObject({
 	nonce: NONCE,
 	limit: LIMIT,
-	sinceResNum: v.nullable(RES_NUM), // >= sinceId
-	untilResNum: v.nullable(RES_NUM), // <= untilId
+	sinceResNum: v.nullable(RES_NUM), // >= since
+	untilResNum: v.nullable(RES_NUM), // <= until
 	threadId: THREAD_ID,
 });
 
@@ -192,15 +201,17 @@ export const ReadThreadSchema = v.strictObject({
 export const HeadlineSchema = v.strictObject({
 	nonce: NONCE,
 	limit: LIMIT,
-	sinceDate: v.nullable(UNJ_LIFETIME), // >= sinceId
-	untilDate: v.nullable(UNJ_LIFETIME), // <= untilId
+	sinceDate: v.nullable(UNJ_LIFETIME), // >= since
+	untilDate: v.nullable(UNJ_LIFETIME), // <= until
 });
 
 /**
- * JWT風トークンのスキーマ
+ * 全文検索のスキーマ
  */
-export const AuthSchema = v.strictObject({
-	sign: AUTH_SIGN,
-	userId: USER_ID,
-	limit: AUTH_LIMIT,
+export const SearchSchema = v.strictObject({
+	nonce: NONCE,
+	limit: LIMIT,
+	sinceResId: v.nullable(RES_ID), // >= since
+	untilResId: v.nullable(RES_ID), // <= until
+	keyword: SAFE_SEARCH_KEYWORD,
 });

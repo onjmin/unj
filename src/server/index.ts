@@ -31,6 +31,7 @@ import handleReadThread from "./api/readThread.js";
 import handleRes from "./api/res.js";
 import handleRpgInit from "./api/rpgInit.js";
 import handleRpgPatch from "./api/rpgPatch.js";
+import handleSearch from "./api/search.js";
 import { flaky } from "./mylib/anti-debug.js";
 import auth from "./mylib/auth.js";
 import { detectClientIp, getIP, isBannedIP, setIP } from "./mylib/ip.js";
@@ -215,6 +216,7 @@ io.on("connection", async (socket) => {
 	handleRes({ socket, io });
 	handleRpgInit({ socket });
 	handleRpgPatch({ socket, io });
+	handleSearch({ socket });
 
 	accessCount++;
 });

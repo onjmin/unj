@@ -2,7 +2,7 @@ import type { Socket } from "socket.io";
 import * as v from "valibot";
 import { ReadThreadSchema } from "../../common/request/schema.js";
 import type { Res, Thread } from "../../common/response/schema.js";
-import { decodeThreadId, encodeResId } from "../mylib/anti-debug.js";
+import { decodeThreadId } from "../mylib/anti-debug.js";
 import auth from "../mylib/auth.js";
 import {
 	ageResCache,
@@ -171,8 +171,6 @@ export default ({ socket }: { socket: Socket }) => {
 			const list: Res[] = [];
 			const { rows } = await pool.query(query.join(" "), values);
 			for (const record of rows) {
-				const resId = encodeResId(record.id);
-				if (resId === null) return;
 				list.push({
 					yours: record.user_id === userId,
 					// 書き込み内容

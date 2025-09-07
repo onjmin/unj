@@ -51,6 +51,11 @@ const SAFE_URL = v.pipe(
 	v.check((input) => !regexLf.test(input)),
 	v.url(), // 暗黙的に空文字が許容されなくなる
 );
+export const SAFE_SEARCH_KEYWORD = v.pipe(
+	SAFE_TEXT,
+	v.minLength(2),
+	v.check((input) => !regexLf.test(input)),
+);
 
 export const Enum = {
 	Text: 1,
