@@ -193,13 +193,13 @@
         </div>
     {/if}
     {#if timeline.length > 0}
-        <div class="text-left w-full max-w-[768px] mx-auto px-4 pb-4">
+        <div class="text-left w-full mx-auto px-4 pb-4">
             <p class="flex items-center font-bold text-[#409090]">
                 <FaviconPart {hostname} />
                 <span class="pl-1.5">{title}</span>
             </p>
         </div>
-        <div class="mx-auto my-0 w-full max-w-[768px] px-4">
+        <div class="mx-auto my-0 w-full px-4">
             <div class="space-y-4">
                 {#each timeline as note (note.id)}
                     {#if !note.isHidden && note.text !== null && note.userId !== "9tjlknm0fl"}
