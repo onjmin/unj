@@ -8,15 +8,15 @@
     import { SearchIcon } from "@lucide/svelte";
     import { format } from "date-fns";
     import { ja } from "date-fns/locale";
+    import { navigate } from "svelte-routing";
     import { type SearchResult } from "../../common/response/schema.js";
+    import { makePathname } from "../mylib/env.js";
 
-    // 検索クエリの状態管理
     let contentText = $state("");
     let loading = $state(false);
     let searchResults: SearchResult[] = $state([]);
-    let currentQuery: string | null = $state(null);
+    let currentQuery: string | null = $state(null); // 検索処理を行う関数
 
-    // 検索処理を行う関数
     const handleSearch = async () => {
         if (!contentText.trim() || contentText.trim().length < 2) {
             return;
@@ -30,9 +30,8 @@
             contentText: currentQuery,
         };
 
-        console.log("検索クエリ:", query);
+        console.log("検索クエリ:", query); // ダミーデータで代用
 
-        // ダミーデータで代用
         await new Promise((r) => setTimeout(r, 1000));
         searchResults = [
             {
@@ -94,12 +93,11 @@
         loading = false;
     };
 
-    const getFormattedText = (text: string, url: string, query: string) => {
-        const fullText = url ? `${text}${url}` : text;
-        if (!query || query.length < 2) return fullText;
+    const getFormattedText = (text: string, query: string) => {
+        if (!query || query.length < 2) return text;
 
         const regex = new RegExp(`(${query})`, "gi");
-        return fullText.replace(
+        return text.replace(
             regex,
             '<span class="bg-yellow-200 font-semibold">$1</span>',
         );
@@ -155,8 +153,7 @@
                                     fill="currentColor"
                                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                                 ></path>
-                            </svg>
-                            <span class="sr-only">検索中...</span>
+                            </svg> <span class="sr-only">検索中...</span>
                         </div>
                     {:else}
                         <span>検索</span>
@@ -164,7 +161,6 @@
                 </button>
             </div>
         </div>
-
         <div class="mt-8">
             <h3 class="text-xl font-bold mb-4">検索結果</h3>
 
@@ -178,40 +174,65 @@
                 <ul class="space-y-4">
                     {#each searchResults as result}
                         <li class="bg-white p-4 rounded-lg shadow-md">
-                            <!-- スレッドタイトルとレス数を表示 -->
-                            <h4
-                                class="text-lg font-bold text-gray-900 text-left"
+                            <div
+                                class="text-lg font-bold text-gray-900 text-left cursor-pointer hover:underline"
+                                tabindex="0"
+                                role="button"
+                                onkeydown={() => {}}
+                                onclick={() =>
+                                    navigate(
+                                        makePathname(
+                                            `/thread/${result.threadId}/`,
+                                        ),
+                                    )}
                             >
-                                {result.title}
-                            </h4>
-                            <!-- レス番号、ID、投稿内容を表示 -->
+                                {@html getFormattedText(
+                                    result.title,
+                                    currentQuery || "",
+                                )}
+                            </div>
                             <div class="flex flex-col mt-2 text-left">
                                 <div class="text-sm text-gray-800">
-                                    <span class="font-bold text-blue-600 mr-1">
-                                        {result.resNum}.ID:{result.ccUserId}
-                                    </span>
                                     <span
-                                        class="text-gray-800"
+                                        class="text-blue-800 cursor-pointer hover:underline"
                                         tabindex="0"
                                         role="button"
                                         onkeydown={() => {}}
                                         onclick={() =>
-                                            window.open(
-                                                `https://example.com/thread/${result.threadId}#${result.resNum}`,
-                                                "_blank",
+                                            navigate(
+                                                makePathname(
+                                                    `/thread/${result.threadId}/${result.resNum}`,
+                                                ),
                                             )}
                                     >
+                                        {result.resNum}.
+                                    </span>
+                                    <span class="text-gray-500">
+                                        ID:{result.ccUserId}
+                                    </span>
+                                    <span class="text-gray-800">
                                         {@html getFormattedText(
                                             result.contentText,
-                                            result.contentUrl,
                                             currentQuery || "",
                                         )}
                                     </span>
+                                    {#if result.contentUrl}
+                                        <a
+                                            href={result.contentUrl}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            class="text-blue-500 hover:underline ml-1"
+                                        >
+                                            {@html getFormattedText(
+                                                result.contentUrl,
+                                                currentQuery || "",
+                                            )}
+                                        </a>
+                                    {/if}
                                 </div>
                             </div>
-                            <!-- 投稿日時と掲示板情報を表示 -->
                             <div
-                                class="mt-1 text-sm text-gray-500 flex justify-between"
+                                class="mt-1 text-xs text-gray-500 flex justify-between"
                             >
                                 <span>なんでも実況J</span>
                                 <span
