@@ -30,7 +30,7 @@ export default ({ socket }: { socket: Socket }) => {
 			nonce.update(socket);
 
 			// レスの取得
-			const values: (string | number)[] = [search.output.keyword];
+			const values: (string | number)[] = [];
 			const query = [
 				"SELECT",
 				[
