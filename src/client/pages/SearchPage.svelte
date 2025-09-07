@@ -32,20 +32,9 @@
         currentQuery = contentText.trim();
         if (!pagination) {
             searchResults = data.list;
-            console.log(data.list);
         } else {
             if (searchResults) searchResults = searchResults.concat(data.list);
         }
-    };
-
-    const getFormattedText = (text: string, query: string) => {
-        if (!query || query.length < 1) return text;
-
-        const regex = new RegExp(`(${query})`, "gi");
-        return text.replace(
-            regex,
-            '<span class="bg-yellow-200 font-semibold">$1</span>',
-        );
     };
 
     $effect(() => {
@@ -157,7 +146,7 @@
                     {#each searchResults as result}
                         <li class="bg-white p-4 rounded-lg shadow-md">
                             <div
-                                class="text-lg font-bold text-gray-900 text-left cursor-pointer hover:underline"
+                                class="text-lg font-bold text-blue-800 text-left cursor-pointer hover:underline"
                                 tabindex="0"
                                 role="button"
                                 onkeydown={() => {}}
@@ -168,10 +157,16 @@
                                         ),
                                     )}
                             >
-                                {@html getFormattedText(
-                                    result.title,
-                                    currentQuery || "",
-                                )}
+                                {#each result.title.split(new RegExp(`(${currentQuery || ""})`, "gi")) as part}
+                                    {#if part.toLowerCase() === (currentQuery || "").toLowerCase()}
+                                        <span
+                                            class="bg-yellow-200 font-semibold"
+                                            >{part}</span
+                                        >
+                                    {:else}
+                                        {part}
+                                    {/if}
+                                {/each}
                             </div>
                             <div class="flex flex-col mt-2 text-left">
                                 <div class="text-sm text-gray-800">
@@ -193,10 +188,16 @@
                                         ID:{result.ccUserId}
                                     </span>
                                     <span class="text-gray-800">
-                                        {@html getFormattedText(
-                                            result.contentText,
-                                            currentQuery || "",
-                                        )}
+                                        {#each result.contentText.split(new RegExp(`(${currentQuery || ""})`, "gi")) as part}
+                                            {#if part.toLowerCase() === (currentQuery || "").toLowerCase()}
+                                                <span
+                                                    class="bg-yellow-200 font-semibold"
+                                                    >{part}</span
+                                                >
+                                            {:else}
+                                                {part}
+                                            {/if}
+                                        {/each}
                                     </span>
                                     {#if result.contentUrl}
                                         <a
@@ -205,10 +206,16 @@
                                             rel="noopener noreferrer"
                                             class="text-blue-500 hover:underline ml-1"
                                         >
-                                            {@html getFormattedText(
-                                                result.contentUrl,
-                                                currentQuery || "",
-                                            )}
+                                            {#each result.contentUrl.split(new RegExp(`(${currentQuery || ""})`, "gi")) as part}
+                                                {#if part.toLowerCase() === (currentQuery || "").toLowerCase()}
+                                                    <span
+                                                        class="bg-yellow-200 font-semibold"
+                                                        >{part}</span
+                                                    >
+                                                {:else}
+                                                    {part}
+                                                {/if}
+                                            {/each}
                                         </a>
                                     {/if}
                                 </div>
