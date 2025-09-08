@@ -30,7 +30,20 @@
     });
 </script>
 
-<HeaderPart title="レス履歴" />
+<HeaderPart title="レス履歴">
+    <button
+        class="text-xs text-red-500 font-medium px-2 py-1 rounded-full border border-red-500 hover:bg-red-50"
+        onclick={() => {
+            if (confirm("本当に履歴を全て削除してもよろしいですか？")) {
+                resHistories = [];
+                resHistoryCache.set([]);
+                alert("削除しました");
+            }
+        }}
+    >
+        履歴全件削除
+    </button>
+</HeaderPart>
 
 <MainPart>
     <div class="max-w-2xl mx-auto p-4 space-y-2 text-left">
