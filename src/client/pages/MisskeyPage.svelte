@@ -150,15 +150,15 @@
     let isModalOpen = $state(false);
     let selectedImageUrl = $state("");
 
-    function openModal(url: string) {
+    const openModal = (url: string) => {
         selectedImageUrl = url;
         isModalOpen = true;
-    }
+    };
 
-    function closeModal() {
+    const closeModal = () => {
         isModalOpen = false;
         selectedImageUrl = "";
-    }
+    };
 </script>
 
 <HeaderPart {title}>

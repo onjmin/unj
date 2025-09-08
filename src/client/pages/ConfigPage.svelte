@@ -5,20 +5,16 @@
     import MainPart from "../parts/MainPart.svelte";
     ///////////////
 
+    import {
+        ChevronDownIcon,
+        ChevronRightIcon,
+        CopyIcon,
+        PlayIcon,
+        Trash2Icon,
+        Volume2Icon,
+    } from "@lucide/svelte";
     import { Slider } from "@skeletonlabs/skeleton-svelte";
-    import Accordion, { Panel, Header, Content } from "@smui-extra/accordion";
-    import IconButton from "@smui/icon-button";
     import LayoutGrid, { Cell } from "@smui/layout-grid";
-    import List, {
-        Item,
-        Graphic,
-        Text,
-        PrimaryText,
-        Meta,
-        Label,
-        SecondaryText,
-    } from "@smui/list";
-    import Radio from "@smui/radio";
     import SegmentedButton, { Segment } from "@smui/segmented-button";
     import Snackbar, { Label as SnackbarLabel } from "@smui/snackbar";
     import { Howler } from "howler";
@@ -36,8 +32,6 @@
         replyResSoundHowl,
         soundMap,
         wafSound,
-        yajuKokoSound,
-        yajuShoutSound,
     } from "../mylib/sound.js";
     import {
         newResSound,
@@ -111,6 +105,24 @@
 
     let snackbar: Snackbar;
     $effect(() => () => snackbar.close());
+
+    let openAccordion: string | null = $state(null);
+    const toggleAccordion = (panelName: string) => {
+        openAccordion = openAccordion === panelName ? null : panelName;
+    };
+
+    let isModalOpen = $state(false);
+    let selectedImageUrl = $state("");
+
+    const openModal = (url: string) => {
+        selectedImageUrl = url;
+        isModalOpen = true;
+    };
+
+    const closeModal = () => {
+        isModalOpen = false;
+        selectedImageUrl = "";
+    };
 </script>
 
 <HeaderPart title="個人設定">
@@ -120,11 +132,24 @@
 
 <MainPart>
     <p>ここで設定変更できます</p>
-    <div class="accordion-container">
-        <Accordion>
-            <Panel>
-                <Header>テーマの変更</Header>
-                <Content>
+    <div class="space-y-4">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
+            <div
+                tabindex="0"
+                role="button"
+                onkeydown={() => {}}
+                class="flex justify-between items-center p-4 cursor-pointer"
+                onclick={() => toggleAccordion("theme")}
+            >
+                <h3 class="font-bold text-lg">テーマの変更</h3>
+                {#if openAccordion === "theme"}
+                    <ChevronDownIcon class="h-6 w-6" />
+                {:else}
+                    <ChevronRightIcon class="h-6 w-6" />
+                {/if}
+            </div>
+            {#if openAccordion === "theme"}
+                <div class="p-4 border-t border-gray-200 dark:border-gray-700">
                     <LayoutGrid>
                         <Cell span={12}>
                             <SegmentedButton
@@ -134,30 +159,49 @@
                             >
                                 {#snippet segment(segment: string)}
                                     <Segment {segment}>
-                                        <Label>{segment}</Label>
+                                        <div class="px-4 py-2">{segment}</div>
                                     </Segment>
                                 {/snippet}
                             </SegmentedButton>
                         </Cell>
                     </LayoutGrid>
-                    <List radioList>
+                    <div class="mt-4 space-y-2">
                         {#each themes as theme}
-                            <Item>
-                                <Graphic>
-                                    <Radio
-                                        bind:group={selectedTheme}
-                                        value={theme}
-                                    />
-                                </Graphic>
-                                <Label>{theme}</Label>
-                            </Item>
+                            <div class="flex items-center space-x-2 py-2">
+                                <input
+                                    type="radio"
+                                    id="{theme}-theme"
+                                    bind:group={selectedTheme}
+                                    value={theme}
+                                    class="form-radio h-4 w-4 text-blue-600 transition duration-150 ease-in-out"
+                                />
+                                <label for="{theme}-theme" class="flex-1"
+                                    >{theme}</label
+                                >
+                            </div>
                         {/each}
-                    </List>
-                </Content>
-            </Panel>
-            <Panel>
-                <Header>SE音量</Header>
-                <Content>
+                    </div>
+                </div>
+            {/if}
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
+            <div
+                tabindex="0"
+                role="button"
+                onkeydown={() => {}}
+                class="flex justify-between items-center p-4 cursor-pointer"
+                onclick={() => toggleAccordion("volume")}
+            >
+                <h3 class="font-bold text-lg">SE音量</h3>
+                {#if openAccordion === "volume"}
+                    <ChevronDownIcon class="h-6 w-6" />
+                {:else}
+                    <ChevronRightIcon class="h-6 w-6" />
+                {/if}
+            </div>
+            {#if openAccordion === "volume"}
+                <div class="p-4 border-t border-gray-200 dark:border-gray-700">
                     <div class="flex items-center space-x-4">
                         <div class="flex-1">
                             <Slider
@@ -170,108 +214,179 @@
                         <div class="flex-shrink-0">
                             音量：{soundVolumeSlider[0] | 0}%
                         </div>
+                        <button
+                            class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
+                            onclick={() => newResSoundHowl?.play()}
+                        >
+                            <Volume2Icon class="h-6 w-6" />
+                        </button>
                     </div>
-                </Content>
-            </Panel>
-            <Panel>
-                <Header>新着レスSE</Header>
-                <Content>
-                    <List radioList>
+                </div>
+            {/if}
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
+            <div
+                tabindex="0"
+                role="button"
+                onkeydown={() => {}}
+                class="flex justify-between items-center p-4 cursor-pointer"
+                onclick={() => toggleAccordion("newResSound")}
+            >
+                <h3 class="font-bold text-lg">新着レスSE</h3>
+                {#if openAccordion === "newResSound"}
+                    <ChevronDownIcon class="h-6 w-6" />
+                {:else}
+                    <ChevronRightIcon class="h-6 w-6" />
+                {/if}
+            </div>
+            {#if openAccordion === "newResSound"}
+                <div class="p-4 border-t border-gray-200 dark:border-gray-700">
+                    <div class="space-y-2">
                         {#each soundMap as [key, sound]}
-                            <Item>
-                                <Graphic>
-                                    <Radio
-                                        bind:group={selectedNewResSound}
-                                        value={key}
-                                    />
-                                </Graphic>
-                                <Label>{sound.label}</Label>
+                            <div class="flex items-center space-x-2 py-2">
+                                <input
+                                    type="radio"
+                                    id="{key}-new-res"
+                                    bind:group={selectedNewResSound}
+                                    value={key}
+                                    class="form-radio h-4 w-4 text-blue-600 transition duration-150 ease-in-out"
+                                />
+                                <label for="{key}-new-res" class="flex-1"
+                                    >{sound.label}</label
+                                >
                                 {#if sound.src !== null}
-                                    <IconButton
-                                        class="material-icons"
+                                    <button
+                                        class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
                                         onclick={() =>
-                                            setTimeout(() =>
-                                                newResSoundHowl?.play(),
-                                            )}>play_arrow</IconButton
+                                            setTimeout(
+                                                () => newResSoundHowl?.play(),
+                                                1,
+                                            )}
                                     >
+                                        <PlayIcon class="h-6 w-6" />
+                                    </button>
                                 {/if}
-                            </Item>
+                            </div>
                         {/each}
-                    </List>
-                </Content>
-            </Panel>
-            <Panel>
-                <Header>安価レスSE</Header>
-                <Content>
-                    <List radioList>
+                    </div>
+                </div>
+            {/if}
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
+            <div
+                tabindex="0"
+                role="button"
+                onkeydown={() => {}}
+                class="flex justify-between items-center p-4 cursor-pointer"
+                onclick={() => toggleAccordion("replyResSound")}
+            >
+                <h3 class="font-bold text-lg">安価レスSE</h3>
+                {#if openAccordion === "replyResSound"}
+                    <ChevronDownIcon class="h-6 w-6" />
+                {:else}
+                    <ChevronRightIcon class="h-6 w-6" />
+                {/if}
+            </div>
+            {#if openAccordion === "replyResSound"}
+                <div class="p-4 border-t border-gray-200 dark:border-gray-700">
+                    <div class="space-y-2">
                         {#each soundMap as [key, sound]}
-                            <Item>
-                                <Graphic>
-                                    <Radio
-                                        bind:group={selectedReplyResSound}
-                                        value={key}
-                                    />
-                                </Graphic>
-                                <Label>{sound.label}</Label>
+                            <div class="flex items-center space-x-2 py-2">
+                                <input
+                                    type="radio"
+                                    id="{key}-reply-res"
+                                    bind:group={selectedReplyResSound}
+                                    value={key}
+                                    class="form-radio h-4 w-4 text-blue-600 transition duration-150 ease-in-out"
+                                />
+                                <label for="{key}-reply-res" class="flex-1"
+                                    >{sound.label}</label
+                                >
                                 {#if sound.src !== null}
-                                    <IconButton
-                                        class="material-icons"
+                                    <button
+                                        class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
                                         onclick={() =>
-                                            setTimeout(() =>
-                                                replyResSoundHowl?.play(),
-                                            )}>play_arrow</IconButton
+                                            setTimeout(
+                                                () => replyResSoundHowl?.play(),
+                                                1,
+                                            )}
                                     >
+                                        <PlayIcon class="h-6 w-6" />
+                                    </button>
                                 {/if}
-                            </Item>
+                            </div>
                         {/each}
-                    </List>
-                </Content>
-            </Panel>
-            <Panel>
-                <Header>お絵描き履歴</Header>
-                <Content>
+                    </div>
+                </div>
+            {/if}
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
+            <div
+                tabindex="0"
+                role="button"
+                onkeydown={() => {}}
+                class="flex justify-between items-center p-4 cursor-pointer"
+                onclick={() => toggleAccordion("imgurHistory")}
+            >
+                <h3 class="font-bold text-lg">お絵描き履歴</h3>
+                {#if openAccordion === "imgurHistory"}
+                    <ChevronDownIcon class="h-6 w-6" />
+                {:else}
+                    <ChevronRightIcon class="h-6 w-6" />
+                {/if}
+            </div>
+            {#if openAccordion === "imgurHistory"}
+                <div class="p-4 border-t border-gray-200 dark:border-gray-700">
                     {#if !imgurList.length}
-                        <div style="color:gray">
+                        <div class="text-gray-500 text-center space-y-2">
                             <div>NO DATA...</div>
                             <div>いまんとこお絵描き履歴は空っぽみたい。。</div>
                             <div>お絵描きをうｐしてから出直してね。</div>
                         </div>
                     {:else}
-                        <div style="text-align:left;">
-                            <List twoLine avatarList>
-                                {#each imgurList as imgurResponse, i}
-                                    <Item>
-                                        <Graphic
-                                            class="uploaded-imgur-item-graphic"
-                                            style="background-image: url({imgurResponse.link});"
-                                        />
-                                        <Text>
-                                            <PrimaryText
-                                                >{imgurResponse.id}</PrimaryText
-                                            >
-                                            <SecondaryText
-                                                >{imgurResponse.link}</SecondaryText
-                                            >
-                                        </Text>
-                                        <Meta
-                                            class="material-icons"
-                                            onclick={() =>
-                                                window.open(
-                                                    imgurResponse.link,
-                                                    "_blank",
-                                                )}>open_in_new</Meta
+                        <div class="text-left space-y-4">
+                            {#each imgurList as imgurResponse}
+                                <div
+                                    tabindex="0"
+                                    role="button"
+                                    onkeydown={() => {}}
+                                    onclick={() =>
+                                        openModal(imgurResponse.link)}
+                                    class="flex items-center py-2 border-b border-gray-200 dark:border-gray-700 last:border-b-0"
+                                >
+                                    <div
+                                        class="w-12 h-12 flex-shrink-0 rounded-full bg-no-repeat bg-cover bg-center"
+                                        style="background-image: url({imgurResponse.link});"
+                                    ></div>
+                                    <div class="flex-1 ml-4 overflow-hidden">
+                                        <div class="font-bold truncate">
+                                            {imgurResponse.id}
+                                        </div>
+                                        <div
+                                            class="text-sm text-gray-500 truncate"
                                         >
-                                        <Meta
-                                            class="material-icons"
+                                            {imgurResponse.link}
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="flex flex-shrink-0 space-x-2 ml-4"
+                                    >
+                                        <button
+                                            class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
                                             onclick={async () => {
                                                 await navigator.clipboard.writeText(
                                                     imgurResponse.link,
                                                 );
                                                 snackbar.open();
-                                            }}>content_copy</Meta
+                                            }}
                                         >
-                                        <Meta
-                                            class="material-icons"
+                                            <CopyIcon class="h-6 w-6" />
+                                        </button>
+                                        <button
+                                            class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
                                             onclick={async () => {
                                                 if (
                                                     !confirm(
@@ -295,16 +410,18 @@
                                                         imgurResponse.id,
                                                 );
                                                 imgurHistory.set(imgurList);
-                                            }}>delete_forever</Meta
+                                            }}
                                         >
-                                    </Item>
-                                {/each}
-                            </List>
+                                            <Trash2Icon class="h-6 w-6" />
+                                        </button>
+                                    </div>
+                                </div>
+                            {/each}
                         </div>
                     {/if}
-                </Content>
-            </Panel>
-        </Accordion>
+                </div>
+            {/if}
+        </div>
     </div>
 </MainPart>
 
@@ -314,11 +431,27 @@
 
 <FooterPart />
 
-<style>
-    :global(.uploaded-imgur-item-graphic) {
-        background-repeat: no-repeat;
-        background-size: cover;
-        background-position: center;
-        border-radius: 0 !important;
-    }
-</style>
+{#if isModalOpen}
+    <div
+        class="fixed inset-0 z-50 flex items-center justify-center p-4"
+        onclick={closeModal}
+        onkeydown={(event) => {
+            if (event.key === "Escape") {
+                closeModal();
+            }
+        }}
+        tabindex="0"
+        role="button"
+        aria-label="Close enlarged image"
+    >
+        <div class="absolute inset-0 bg-black opacity-50"></div>
+
+        <div class="relative max-w-full max-h-full z-10">
+            <img
+                src={selectedImageUrl}
+                alt="拡大画像"
+                class="max-w-full max-h-full select-none"
+            />
+        </div>
+    </div>
+{/if}
