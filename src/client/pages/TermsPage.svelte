@@ -50,7 +50,7 @@
 </HeaderPart>
 
 <MainPart>
-    <div class="unj-terms text-left">
+    <div class="text-left">
         <TermsPart />
     </div>
 </MainPart>
