@@ -147,20 +147,20 @@
                 <div class="icon-container">
                     <IconButton
                         class="material-icons"
-                        aria-label="settings"
-                        onclick={() => navigate(makePathname("/config"))}
-                        >settings</IconButton
-                    >
-                    <div class="label-overlay">設定</div>
-                </div>
-                <div class="icon-container">
-                    <IconButton
-                        class="material-icons"
                         aria-label="edit_note"
                         onclick={() => navigate(makePathname("/new"))}
                         >edit_note</IconButton
                     >
                     <div class="label-overlay">スレ作成</div>
+                </div>
+                <div class="icon-container">
+                    <IconButton
+                        class="material-icons"
+                        aria-label="settings"
+                        onclick={() => navigate(makePathname("/config"))}
+                        >settings</IconButton
+                    >
+                    <div class="label-overlay">設定</div>
                 </div>
                 <div class="icon-container">
                     <IconButton
