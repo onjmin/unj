@@ -319,9 +319,6 @@
     background-size: cover;
     background-position: center;
   }
-  :global(body.dark .embed-favicon-item-graphic.nicovideo) {
-    background-color: black;
-  }
   .embed-image {
     display: block; /* インライン要素ではなくブロックにする */
     max-width: 100%; /* 親要素の幅に収まる */

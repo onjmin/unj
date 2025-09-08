@@ -38,7 +38,7 @@
       style="border-radius: 50%; margin-right: 10px;"
     />
     <img
-      src="https://github-readme-stats.vercel.app/api?username={sanitizedUsername}&show_icons=true&theme=dark"
+      src="https://github-readme-stats.vercel.app/api?username={sanitizedUsername}&show_icons=true"
       alt="GitHub Stats"
     />
   {/if}

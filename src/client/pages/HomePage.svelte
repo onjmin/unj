@@ -32,16 +32,6 @@
     onjKeyWords.filter((v) => v !== randomOnjKeyWord1),
   );
   const randomIllust = randArray(topIllusts.map((v) => v.src));
-
-  // 標準テーマ
-  const segmentedList = ["ダークモード", "ライトモード"];
-  let segmentedSelected = $state("");
-  if (theme.value === "metro-dark") segmentedSelected = "ダークモード";
-  if (theme.value === "unity") segmentedSelected = "ライトモード";
-  $effect(() => {
-    if (segmentedSelected === "ダークモード") theme.value = "metro-dark";
-    if (segmentedSelected === "ライトモード") theme.value = "unity";
-  });
 </script>
 
 <HeaderPart menu={false} title="うんｊ掲示板へようこそ" />
@@ -61,22 +51,6 @@
       variant="raised">入る</Button
     >
   </div>
-
-  <LayoutGrid>
-    <Cell span={12}>
-      <SegmentedButton
-        singleSelect
-        segments={segmentedList}
-        bind:selected={segmentedSelected}
-      >
-        {#snippet segment(segment: string)}
-          <Segment {segment}>
-            <Label>{segment}</Label>
-          </Segment>
-        {/snippet}
-      </SegmentedButton>
-    </Cell>
-  </LayoutGrid>
 </MainPart>
 
 <FooterPart menu={false} />

@@ -74,11 +74,6 @@ export const theme = new UnjStorage("theme", () => {
 	const v = theme.value ?? "";
 	const href = `https://cdn.jsdelivr.net/npm/svelte-material-ui@8.0.0-beta.3/themes/${v}.min.css`;
 	document.getElementById("unj-theme")?.setAttribute("href", href);
-	if (v.slice(-4) === "dark") {
-		document.body.classList.add("dark");
-	} else {
-		document.body.classList.remove("dark");
-	}
 });
 theme.value = theme.value ?? "unity";
 

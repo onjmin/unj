@@ -67,33 +67,17 @@
 
     const themes = [
         "bubblegum",
-        "bubblegum-dark",
         "fixation",
-        "fixation-dark",
         "material",
-        "material-dark",
         "metro",
-        "metro-dark",
         "svelte",
-        "svelte-dark",
         "unity",
-        "unity-dark",
     ];
 
     let selectedTheme: string = $state(theme.value ?? "");
     $effect(() => {
         if (!selectedTheme) return;
         theme.value = selectedTheme;
-    });
-
-    // 標準テーマ
-    const segmentedList = ["ダークモード", "ライトモード"];
-    let segmentedSelected = $state("");
-    if (theme.value === "metro-dark") segmentedSelected = "ダークモード";
-    if (theme.value === "unity") segmentedSelected = "ライトモード";
-    $effect(() => {
-        if (segmentedSelected === "ダークモード") theme.value = "metro-dark";
-        if (segmentedSelected === "ライトモード") theme.value = "unity";
     });
 
     let imgurList: ImgurResponse[] = $state([]);
@@ -133,7 +117,7 @@
 <MainPart>
     <p>ここで設定変更できます</p>
     <div class="space-y-4">
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
+        <div class="bg-white rounded-lg shadow">
             <div
                 tabindex="0"
                 role="button"
@@ -149,22 +133,7 @@
                 {/if}
             </div>
             {#if openAccordion === "theme"}
-                <div class="p-4 border-t border-gray-200 dark:border-gray-700">
-                    <LayoutGrid>
-                        <Cell span={12}>
-                            <SegmentedButton
-                                singleSelect
-                                segments={segmentedList}
-                                bind:selected={segmentedSelected}
-                            >
-                                {#snippet segment(segment: string)}
-                                    <Segment {segment}>
-                                        <div class="px-4 py-2">{segment}</div>
-                                    </Segment>
-                                {/snippet}
-                            </SegmentedButton>
-                        </Cell>
-                    </LayoutGrid>
+                <div class="p-4 border-t border-gray-200">
                     <div class="mt-4 space-y-2">
                         {#each themes as theme}
                             <div class="flex items-center space-x-2 py-2">
@@ -185,7 +154,7 @@
             {/if}
         </div>
 
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
+        <div class="bg-white rounded-lg shadow">
             <div
                 tabindex="0"
                 role="button"
@@ -201,7 +170,7 @@
                 {/if}
             </div>
             {#if openAccordion === "volume"}
-                <div class="p-4 border-t border-gray-200 dark:border-gray-700">
+                <div class="p-4 border-t border-gray-200">
                     <div class="flex items-center space-x-4">
                         <div class="flex-1">
                             <Slider
@@ -215,7 +184,7 @@
                             音量：{soundVolumeSlider[0] | 0}%
                         </div>
                         <button
-                            class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
+                            class="p-2 rounded-full hover:bg-gray-200"
                             onclick={() => newResSoundHowl?.play()}
                         >
                             <Volume2Icon class="h-6 w-6" />
@@ -225,7 +194,7 @@
             {/if}
         </div>
 
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
+        <div class="bg-white rounded-lg shadow">
             <div
                 tabindex="0"
                 role="button"
@@ -241,7 +210,7 @@
                 {/if}
             </div>
             {#if openAccordion === "newResSound"}
-                <div class="p-4 border-t border-gray-200 dark:border-gray-700">
+                <div class="p-4 border-t border-gray-200">
                     <div class="space-y-2">
                         {#each soundMap as [key, sound]}
                             <div class="flex items-center space-x-2 py-2">
@@ -257,12 +226,14 @@
                                 >
                                 {#if sound.src !== null}
                                     <button
-                                        class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
-                                        onclick={() =>
+                                        class="p-2 rounded-full hover:bg-gray-200"
+                                        onclick={() => {
+                                            selectedNewResSound = key;
                                             setTimeout(
                                                 () => newResSoundHowl?.play(),
                                                 1,
-                                            )}
+                                            );
+                                        }}
                                     >
                                         <PlayIcon class="h-6 w-6" />
                                     </button>
@@ -274,7 +245,7 @@
             {/if}
         </div>
 
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
+        <div class="bg-white rounded-lg shadow">
             <div
                 tabindex="0"
                 role="button"
@@ -290,7 +261,7 @@
                 {/if}
             </div>
             {#if openAccordion === "replyResSound"}
-                <div class="p-4 border-t border-gray-200 dark:border-gray-700">
+                <div class="p-4 border-t border-gray-200">
                     <div class="space-y-2">
                         {#each soundMap as [key, sound]}
                             <div class="flex items-center space-x-2 py-2">
@@ -306,12 +277,14 @@
                                 >
                                 {#if sound.src !== null}
                                     <button
-                                        class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
-                                        onclick={() =>
+                                        class="p-2 rounded-full hover:bg-gray-200"
+                                        onclick={() => {
+                                            selectedReplyResSound = key;
                                             setTimeout(
                                                 () => replyResSoundHowl?.play(),
                                                 1,
-                                            )}
+                                            );
+                                        }}
                                     >
                                         <PlayIcon class="h-6 w-6" />
                                     </button>
@@ -323,7 +296,7 @@
             {/if}
         </div>
 
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
+        <div class="bg-white rounded-lg shadow">
             <div
                 tabindex="0"
                 role="button"
@@ -339,7 +312,7 @@
                 {/if}
             </div>
             {#if openAccordion === "imgurHistory"}
-                <div class="p-4 border-t border-gray-200 dark:border-gray-700">
+                <div class="p-4 border-t border-gray-200">
                     {#if !imgurList.length}
                         <div class="text-gray-500 text-center space-y-2">
                             <div>NO DATA...</div>
@@ -350,7 +323,7 @@
                         <div class="text-left space-y-4">
                             {#each imgurList as imgurResponse}
                                 <div
-                                    class="flex items-center py-2 border-b border-gray-200 dark:border-gray-700 last:border-b-0"
+                                    class="flex items-center py-2 border-b border-gray-200 last:border-b-0"
                                 >
                                     <div
                                         tabindex="0"
@@ -375,7 +348,7 @@
                                         class="flex flex-shrink-0 space-x-2 ml-4"
                                     >
                                         <button
-                                            class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
+                                            class="p-2 rounded-full hover:bg-gray-200"
                                             onclick={async () => {
                                                 await navigator.clipboard.writeText(
                                                     imgurResponse.link,
@@ -386,7 +359,7 @@
                                             <CopyIcon class="h-6 w-6" />
                                         </button>
                                         <button
-                                            class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
+                                            class="p-2 rounded-full hover:bg-gray-200"
                                             onclick={async () => {
                                                 if (
                                                     !confirm(

@@ -22,7 +22,7 @@
     <p>よくある質問</p>
     <div class="space-y-4">
         {#each faq as [q, a], i}
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
+            <div class="bg-white rounded-lg shadow">
                 <div
                     tabindex="0"
                     role="button"
@@ -38,9 +38,7 @@
                     {/if}
                 </div>
                 {#if openQuestion === i}
-                    <div
-                        class="p-4 border-t border-gray-200 dark:border-gray-700"
-                    >
+                    <div class="p-4 border-t border-gray-200">
                         {a}
                     </div>
                 {/if}

@@ -287,7 +287,7 @@
             <label for="sage" class="text-sm">強制sage進行</label>
         </div>
         <div class="space-y-4">
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
+            <div class="bg-white rounded-lg shadow">
                 <div
                     tabindex="0"
                     role="button"
@@ -303,9 +303,7 @@
                     {/if}
                 </div>
                 {#if openAccordion === "ccLevel"}
-                    <div
-                        class="p-4 border-t border-gray-200 dark:border-gray-700"
-                    >
+                    <div class="p-4 border-t border-gray-200">
                         <p class="text-gray-500 text-sm mb-2">!jien</p>
                         <div class="space-y-2">
                             {#each ccOptions as v}
@@ -328,7 +326,7 @@
                 {/if}
             </div>
 
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
+            <div class="bg-white rounded-lg shadow">
                 <div
                     tabindex="0"
                     role="button"
@@ -344,9 +342,7 @@
                     {/if}
                 </div>
                 {#if openAccordion === "contentType"}
-                    <div
-                        class="p-4 border-t border-gray-200 dark:border-gray-700"
-                    >
+                    <div class="p-4 border-t border-gray-200">
                         <p class="text-gray-500 text-sm mb-2">!nopic</p>
                         <div class="space-y-2">
                             {#each contentTypeOptions as v}
@@ -370,7 +366,7 @@
                 {/if}
             </div>
 
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
+            <div class="bg-white rounded-lg shadow">
                 <div
                     tabindex="0"
                     role="button"
@@ -386,9 +382,7 @@
                     {/if}
                 </div>
                 {#if openAccordion === "maxRes"}
-                    <div
-                        class="p-4 border-t border-gray-200 dark:border-gray-700"
-                    >
+                    <div class="p-4 border-t border-gray-200">
                         <Textfield
                             disabled={emitting}
                             bind:value={max}
@@ -402,7 +396,7 @@
                 {/if}
             </div>
 
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
+            <div class="bg-white rounded-lg shadow">
                 <div
                     tabindex="0"
                     role="button"
@@ -418,9 +412,7 @@
                     {/if}
                 </div>
                 {#if openAccordion === "timer"}
-                    <div
-                        class="p-4 border-t border-gray-200 dark:border-gray-700"
-                    >
+                    <div class="p-4 border-t border-gray-200">
                         <Select
                             disabled={emitting}
                             key={String}
