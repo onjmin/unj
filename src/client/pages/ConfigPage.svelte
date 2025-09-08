@@ -144,7 +144,9 @@
                                     value={theme}
                                     class="form-radio h-4 w-4 text-blue-600 transition duration-150 ease-in-out"
                                 />
-                                <label for="{theme}-theme" class="flex-1"
+                                <label
+                                    for="{theme}-theme"
+                                    class="flex-1 text-left"
                                     >{description}</label
                                 >
                             </div>
@@ -221,7 +223,9 @@
                                     value={key}
                                     class="form-radio h-4 w-4 text-blue-600 transition duration-150 ease-in-out"
                                 />
-                                <label for="{key}-new-res" class="flex-1"
+                                <label
+                                    for="{key}-new-res"
+                                    class="flex-1 text-left"
                                     >{sound.label}</label
                                 >
                                 {#if sound.src !== null}
@@ -272,7 +276,9 @@
                                     value={key}
                                     class="form-radio h-4 w-4 text-blue-600 transition duration-150 ease-in-out"
                                 />
-                                <label for="{key}-reply-res" class="flex-1"
+                                <label
+                                    for="{key}-reply-res"
+                                    class="flex-1 text-left"
                                     >{sound.label}</label
                                 >
                                 {#if sound.src !== null}
