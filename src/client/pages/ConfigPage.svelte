@@ -350,14 +350,14 @@
                         <div class="text-left space-y-4">
                             {#each imgurList as imgurResponse}
                                 <div
-                                    tabindex="0"
-                                    role="button"
-                                    onkeydown={() => {}}
-                                    onclick={() =>
-                                        openModal(imgurResponse.link)}
                                     class="flex items-center py-2 border-b border-gray-200 dark:border-gray-700 last:border-b-0"
                                 >
                                     <div
+                                        tabindex="0"
+                                        role="button"
+                                        onkeydown={() => {}}
+                                        onclick={() =>
+                                            openModal(imgurResponse.link)}
                                         class="w-12 h-12 flex-shrink-0 rounded-full bg-no-repeat bg-cover bg-center"
                                         style="background-image: url({imgurResponse.link});"
                                     ></div>

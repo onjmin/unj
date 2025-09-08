@@ -5,11 +5,8 @@
     import MainPart from "../parts/MainPart.svelte";
     ///////////////
 
-    import Accordion, { Panel, Header, Content } from "@smui-extra/accordion";
+    import { ChevronDownIcon, ChevronRightIcon } from "@lucide/svelte";
     import Button from "@smui/button";
-    import Checkbox from "@smui/checkbox";
-    import FormField from "@smui/form-field";
-    import List, { Item, Meta, Label } from "@smui/list";
     import Select, { Option } from "@smui/select";
     import Textfield from "@smui/textfield";
     import CharacterCounter from "@smui/textfield/character-counter";
@@ -155,8 +152,8 @@
     const tryMakeThread = async () => {
         // 利用規約同意
         // if (termsAgreement.value !== "yes") {
-        //     openConfirm = true;
-        //     return;
+        //     openConfirm = true;
+        //     return;
         // }
         if (emitting || !check1) return;
         emitting = true;
@@ -252,9 +249,15 @@
 
     if (isRef) {
         // $effect(() => {
-        //     // 次スレの場合はkeyvalから次スレ情報を取ってくる
+        //     // 次スレの場合はkeyvalから次スレ情報を取ってくる
         // });
     }
+
+    // アコーディオンの状態を管理するSvelteの状態
+    let openAccordion: string | null = $state(null);
+    const toggleAccordion = (panelName: string) => {
+        openAccordion = openAccordion === panelName ? null : panelName;
+    };
 </script>
 
 <HeaderPart title="新規スレッド作成">
@@ -263,61 +266,129 @@
         <p>ｳﾜｧｧ━━｡ﾟ(ﾟ´Д｀ﾟ)ﾟ｡━━ﾝ!!</p>
     {:else}
         <p>高度な設定</p>
-        <FormField>
-            <Checkbox disabled={emitting} bind:checked={varsan} />
-            {#snippet label()}
-                事前バルサン
-            {/snippet}
-        </FormField>
-        <FormField>
-            <Checkbox disabled={emitting} bind:checked={sage} />
-            {#snippet label()}
-                強制sage進行
-            {/snippet}
-        </FormField>
-        <div class="accordion-container">
-            <Accordion>
-                <Panel>
-                    <Header>匿名レベルの変更</Header>
-                    <Content>
-                        <Label>!jien</Label>
-                        <List checkList>
+        <div class="flex items-center space-x-2">
+            <input
+                type="checkbox"
+                id="varsan"
+                disabled={emitting}
+                bind:checked={varsan}
+                class="h-4 w-4 text-blue-600 rounded"
+            />
+            <label for="varsan" class="text-sm">事前バルサン</label>
+        </div>
+        <div class="flex items-center space-x-2">
+            <input
+                type="checkbox"
+                id="sage"
+                disabled={emitting}
+                bind:checked={sage}
+                class="h-4 w-4 text-blue-600 rounded"
+            />
+            <label for="sage" class="text-sm">強制sage進行</label>
+        </div>
+        <div class="space-y-4">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
+                <div
+                    tabindex="0"
+                    role="button"
+                    onkeydown={() => {}}
+                    class="flex justify-between items-center p-4 cursor-pointer"
+                    onclick={() => toggleAccordion("ccLevel")}
+                >
+                    <h3 class="font-bold text-lg">匿名レベルの変更</h3>
+                    {#if openAccordion === "ccLevel"}
+                        <ChevronDownIcon class="h-6 w-6" />
+                    {:else}
+                        <ChevronRightIcon class="h-6 w-6" />
+                    {/if}
+                </div>
+                {#if openAccordion === "ccLevel"}
+                    <div
+                        class="p-4 border-t border-gray-200 dark:border-gray-700"
+                    >
+                        <p class="text-gray-500 text-sm mb-2">!jien</p>
+                        <div class="space-y-2">
                             {#each ccOptions as v}
-                                <Item>
-                                    <Label>{v.label}</Label>
-                                    <Meta>
-                                        <Checkbox
-                                            bind:group={ccBitmask}
-                                            value={v.bit}
-                                        />
-                                    </Meta>
-                                </Item>
+                                <div class="flex items-center justify-between">
+                                    <label for="cc-{v.bit}" class="flex-1"
+                                        >{v.label}</label
+                                    >
+                                    <input
+                                        type="checkbox"
+                                        id="cc-{v.bit}"
+                                        disabled={emitting}
+                                        bind:group={ccBitmask}
+                                        value={v.bit}
+                                        class="form-checkbox h-5 w-5 text-blue-600"
+                                    />
+                                </div>
                             {/each}
-                        </List>
-                    </Content>
-                </Panel>
-                <Panel>
-                    <Header>投稿許可リスト</Header>
-                    <Content>
-                        <Label>!nopic</Label>
-                        <List checkList>
+                        </div>
+                    </div>
+                {/if}
+            </div>
+
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
+                <div
+                    tabindex="0"
+                    role="button"
+                    onkeydown={() => {}}
+                    class="flex justify-between items-center p-4 cursor-pointer"
+                    onclick={() => toggleAccordion("contentType")}
+                >
+                    <h3 class="font-bold text-lg">投稿許可リスト</h3>
+                    {#if openAccordion === "contentType"}
+                        <ChevronDownIcon class="h-6 w-6" />
+                    {:else}
+                        <ChevronRightIcon class="h-6 w-6" />
+                    {/if}
+                </div>
+                {#if openAccordion === "contentType"}
+                    <div
+                        class="p-4 border-t border-gray-200 dark:border-gray-700"
+                    >
+                        <p class="text-gray-500 text-sm mb-2">!nopic</p>
+                        <div class="space-y-2">
                             {#each contentTypeOptions as v}
-                                <Item>
-                                    <Label>{v.label}</Label>
-                                    <Meta>
-                                        <Checkbox
-                                            bind:group={contentTypesBitmask}
-                                            value={v.bit}
-                                        />
-                                    </Meta>
-                                </Item>
+                                <div class="flex items-center justify-between">
+                                    <label
+                                        for="contentType-{v.bit}"
+                                        class="flex-1">{v.label}</label
+                                    >
+                                    <input
+                                        type="checkbox"
+                                        id="contentType-{v.bit}"
+                                        disabled={emitting}
+                                        bind:group={contentTypesBitmask}
+                                        value={v.bit}
+                                        class="form-checkbox h-5 w-5 text-blue-600"
+                                    />
+                                </div>
                             {/each}
-                        </List>
-                    </Content>
-                </Panel>
-                <Panel>
-                    <Header>レス数上限</Header>
-                    <Content>
+                        </div>
+                    </div>
+                {/if}
+            </div>
+
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
+                <div
+                    tabindex="0"
+                    role="button"
+                    onkeydown={() => {}}
+                    class="flex justify-between items-center p-4 cursor-pointer"
+                    onclick={() => toggleAccordion("maxRes")}
+                >
+                    <h3 class="font-bold text-lg">レス数上限</h3>
+                    {#if openAccordion === "maxRes"}
+                        <ChevronDownIcon class="h-6 w-6" />
+                    {:else}
+                        <ChevronRightIcon class="h-6 w-6" />
+                    {/if}
+                </div>
+                {#if openAccordion === "maxRes"}
+                    <div
+                        class="p-4 border-t border-gray-200 dark:border-gray-700"
+                    >
                         <Textfield
                             disabled={emitting}
                             bind:value={max}
@@ -325,25 +396,45 @@
                             type="number"
                             input$min="10"
                             input$max="1000"
+                            class="w-full"
                         />
-                    </Content>
-                </Panel>
-                <Panel>
-                    <Header>時間制限</Header>
-                    <Content>
+                    </div>
+                {/if}
+            </div>
+
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
+                <div
+                    tabindex="0"
+                    role="button"
+                    onkeydown={() => {}}
+                    class="flex justify-between items-center p-4 cursor-pointer"
+                    onclick={() => toggleAccordion("timer")}
+                >
+                    <h3 class="font-bold text-lg">時間制限</h3>
+                    {#if openAccordion === "timer"}
+                        <ChevronDownIcon class="h-6 w-6" />
+                    {:else}
+                        <ChevronRightIcon class="h-6 w-6" />
+                    {/if}
+                </div>
+                {#if openAccordion === "timer"}
+                    <div
+                        class="p-4 border-t border-gray-200 dark:border-gray-700"
+                    >
                         <Select
                             disabled={emitting}
                             key={String}
                             bind:value={timer}
                             label="!timer"
+                            class="w-full"
                         >
                             {#each timerOptions as v}
                                 <Option value={v.key}>{v.label}</Option>
                             {/each}
                         </Select>
-                    </Content>
-                </Panel>
-            </Accordion>
+                    </div>
+                {/if}
+            </div>
         </div>
     {/if}
 </HeaderPart>
@@ -375,12 +466,16 @@
             bind:toDataURL
             tryRes={tryMakeThread}
         />
-        <FormField>
-            <Checkbox disabled={emitting} bind:checked={check1} />
-            {#snippet label()}
-                スレ立て準備完了？
-            {/snippet}
-        </FormField>
+        <div class="flex items-center space-x-2 mt-4">
+            <input
+                type="checkbox"
+                id="check1"
+                disabled={emitting}
+                bind:checked={check1}
+                class="h-4 w-4 text-blue-600 rounded"
+            />
+            <label for="check1" class="text-sm">スレ立て準備完了？</label>
+        </div>
         <Button
             onclick={tryMakeThread}
             variant="raised"
