@@ -65,14 +65,14 @@
         changeReplyResSound();
     });
 
-    const themes = [
-        "bubblegum",
-        "fixation",
-        "material",
-        "metro",
-        "svelte",
-        "unity",
-    ];
+    const themeMap = new Map<string, string>([
+        ["bubblegum", "バブルガム風（カラフルでポップ）"],
+        ["fixation", "強調テーマ（ハッキリ目立つ）"],
+        ["material", "紙っぽいデザイン（Google風）"],
+        ["metro", "四角タイル風（Windowsっぽい）"],
+        ["svelte", "スッキリ軽め（Svelte公式っぽい）"],
+        ["unity", "調和・統一感（まとまりある）"],
+    ]);
 
     let selectedTheme: string = $state(theme.value ?? "");
     $effect(() => {
@@ -135,7 +135,7 @@
             {#if openAccordion === "theme"}
                 <div class="p-4 border-t border-gray-200">
                     <div class="mt-4 space-y-2">
-                        {#each themes as theme}
+                        {#each themeMap as [theme, description]}
                             <div class="flex items-center space-x-2 py-2">
                                 <input
                                     type="radio"
@@ -145,7 +145,7 @@
                                     class="form-radio h-4 w-4 text-blue-600 transition duration-150 ease-in-out"
                                 />
                                 <label for="{theme}-theme" class="flex-1"
-                                    >{theme}</label
+                                    >{description}</label
                                 >
                             </div>
                         {/each}
