@@ -52,6 +52,7 @@
         uploadImgur,
     } from "../mylib/imgur.js";
     import { ObjectStorage } from "../mylib/object-storage.js";
+    import { type ResHistory } from "../mylib/res-history.js";
     import { goodbye, hello, ok, socket } from "../mylib/socket.js";
     import {
         changeNewResSound,
@@ -194,6 +195,18 @@
         });
     });
 
+    let resHistories: ResHistory[] | null = $state(null);
+    const resHistoryCache = new ObjectStorage<ResHistory[]>("resHistoryCache");
+    $effect(() => {
+        resHistoryCache.get().then((v) => {
+            if (v && !resHistories) {
+                resHistories = v;
+            } else {
+                resHistories = [];
+            }
+        });
+    });
+
     let title = $state("スレ取得中");
     let lolCount = $state(0);
     let goodVotes = $state(0);
@@ -251,6 +264,15 @@
             uploadedImgur = null;
             await sleep(512);
             scrollToEnd();
+            resHistories?.unshift({
+                latestRes: data.new.contentText || data.new.contentUrl,
+                resNum: data.new.num,
+                createdAt: new Date(data.new.createdAt),
+                threadId: threadId,
+                title: title,
+                resCount: data.new.num,
+            });
+            resHistoryCache.set(resHistories);
         } else if (!isAlreadyScrollEnd) {
             openNewResNotice = true;
             newResCount++;

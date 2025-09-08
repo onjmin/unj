@@ -34,6 +34,8 @@
         imgurHistory,
         uploadImgur,
     } from "../mylib/imgur.js";
+    import { ObjectStorage } from "../mylib/object-storage.js";
+    import { type ResHistory } from "../mylib/res-history.js";
     import { goodbye, hello, ok, socket } from "../mylib/socket.js";
     import {
         UnjStorage,
@@ -103,6 +105,18 @@
 
     let check1 = $state(false);
 
+    let resHistories: ResHistory[] | null = $state(null);
+    const resHistoryCache = new ObjectStorage<ResHistory[]>("resHistoryCache");
+    $effect(() => {
+        resHistoryCache.get().then((v) => {
+            if (v && !resHistories) {
+                resHistories = v;
+            } else {
+                resHistories = [];
+            }
+        });
+    });
+
     const handleMakeThread = (data: {
         ok: boolean;
         new: HeadlineThread;
@@ -114,6 +128,15 @@
         ok(data.nonceKey ?? "");
         titleUnjStorage.value = null;
         contentTextUnjStorage.value = null;
+        resHistories?.unshift({
+            latestRes: data.new.latestRes,
+            resNum: 1,
+            createdAt: new Date(data.new.latestResAt),
+            threadId: data.new.id,
+            title: title,
+            resCount: 1,
+        });
+        resHistoryCache.set(resHistories);
         navigate(makePathname(`/thread/${data.new.id}`));
     };
 

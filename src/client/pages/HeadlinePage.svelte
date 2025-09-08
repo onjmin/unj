@@ -31,6 +31,7 @@
         misskeyList,
     } from "../mylib/misskey.js";
     import { ObjectStorage } from "../mylib/object-storage.js";
+    import { type ResHistory } from "../mylib/res-history.js";
     import { goodbye, hello, ok, socket } from "../mylib/socket.js";
     import { nonceKey } from "../mylib/unj-storage.js";
     import AccessCounterPart from "../parts/AccessCounterPart.svelte";
@@ -75,6 +76,18 @@
         });
     });
 
+    let resHistories: ResHistory[] | null = $state(null);
+    const resHistoryCache = new ObjectStorage<ResHistory[]>("resHistoryCache");
+    $effect(() => {
+        resHistoryCache.get().then((v) => {
+            if (v && !resHistories) {
+                resHistories = v;
+            } else {
+                resHistories = [];
+            }
+        });
+    });
+
     let filteredThreadList: HeadlineThread[] | undefined = $state();
     const filterThreadList = () => {
         filteredThreadList = threadList?.filter((v) =>
@@ -90,6 +103,16 @@
             threadList = data.list;
             for (const f of reactiveTasks) f();
             cache.set(threadList);
+            // 計算量は O(n + m)
+            // n=32, m=32 の固定サイズなので、実際には最大 64 ステップしかかからない
+            const map = new Map(data.list.map((v) => [v.id, v]));
+            for (const resHistory of resHistories?.slice(0, queryResultLimit) ??
+                []) {
+                const next = map.get(resHistory.threadId);
+                if (next && next.resCount > resHistory.resCount) {
+                    resHistory.resCount = next.resCount;
+                }
+            }
         } else {
             if (threadList) threadList = threadList.concat(data.list);
         }
