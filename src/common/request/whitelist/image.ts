@@ -56,5 +56,6 @@ export default [
 		description: "2010年誕生の、基本無料で使える多機能Webチャット🐱",
 		src: "https://www2.x-feeder.info/unjupiter/pictures/PIC_EqbZ2y.png",
 		hostnames: ["www1.x-feeder.info"],
+		href: "https://www2.x-feeder.info/gZYDuRRm",
 	}),
 ];
