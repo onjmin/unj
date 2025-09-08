@@ -27,11 +27,11 @@
         changeNewResSound,
         changeReplyResSound,
         changeVolume,
-        coinSound,
         newResSoundHowl,
         replyResSoundHowl,
         soundMap,
-        wafSound,
+        yajuKokoSound,
+        yajuShoutSound,
     } from "../mylib/sound.js";
     import {
         newResSound,
@@ -46,10 +46,10 @@
 
     let soundVolumeSlider = $state([Howler.volume() * 100]);
     let selectedNewResSound: string = $state(
-        newResSound.value ?? coinSound.key,
+        newResSound.value ?? yajuKokoSound.key,
     );
     let selectedReplyResSound: string = $state(
-        replyResSound.value ?? wafSound.key,
+        replyResSound.value ?? yajuShoutSound.key,
     );
 
     $effect(() => {

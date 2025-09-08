@@ -21,8 +21,8 @@ new Sound({
 });
 
 export const coinSound = new Sound({
-	label: "コインの音（マリオ）",
-	src: "https://rpgen.org/dq/sound/res/79.mp3",
+	label: "[マリオRPG]コイン",
+	src: "https://rpgen.org/dq/sound/res/370.mp3",
 });
 export const wafSound = new Sound({
 	label: "和風扉",
@@ -108,7 +108,7 @@ export let newResSoundHowl: Howl | null;
 export const changeNewResSound = () => {
 	newResSoundHowl = newResSound.value
 		? make(newResSound.value)
-		: make(coinSound.key);
+		: make(yajuKokoSound.key);
 };
 
 /**
@@ -118,5 +118,5 @@ export let replyResSoundHowl: Howl | null;
 export const changeReplyResSound = () => {
 	replyResSoundHowl = replyResSound.value
 		? make(replyResSound.value)
-		: make(wafSound.key);
+		: make(yajuShoutSound.key);
 };
