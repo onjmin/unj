@@ -26,6 +26,7 @@
     import { ObjectStorage } from "../mylib/object-storage.js";
     import EmbedPart from "../parts/EmbedPart.svelte";
     import FaviconPart from "../parts/FaviconPart.svelte";
+    import ImagePreviewModal from "../parts/ImagePreviewModal.svelte";
 
     const INITIAL_LIMIT = 16;
     const LOAD_MORE_LIMIT = 16;
@@ -36,18 +37,6 @@
     const hostname = misskey?.hostname ?? "";
     const title = misskey?.title ?? "";
     const api = misskey?.api ?? "";
-
-    let online = $state(0);
-    let pv = $state(0);
-    const handleJoinThread = (data: {
-        ok: boolean;
-        size: number;
-        pv: number | null;
-    }) => {
-        if (!data.ok) return;
-        online = data.size;
-        pv = data.pv ?? pv;
-    };
 
     let timeline = $state<Note[]>([]);
     let isLoading = $state(false);
@@ -147,18 +136,8 @@
         return () => clearTimeout(id);
     });
 
-    let isModalOpen = $state(false);
-    let selectedImageUrl = $state("");
-
-    const openModal = (url: string) => {
-        selectedImageUrl = url;
-        isModalOpen = true;
-    };
-
-    const closeModal = () => {
-        isModalOpen = false;
-        selectedImageUrl = "";
-    };
+    let open = $state(false);
+    let src = $state("");
 </script>
 
 <HeaderPart {title}>
@@ -251,8 +230,10 @@
                                                 {#if file.type.startsWith("image/")}
                                                     <button
                                                         class="w-full h-auto rounded-lg object-cover cursor-pointer"
-                                                        onclick={() =>
-                                                            openModal(file.url)}
+                                                        onclick={() => {
+                                                            src = file.url;
+                                                            open = true;
+                                                        }}
                                                         aria-label={`View enlarged version of ${file.name}`}
                                                     >
                                                         <img
@@ -383,27 +364,4 @@
 
 <FooterPart />
 
-{#if isModalOpen}
-    <div
-        class="fixed inset-0 z-50 flex items-center justify-center p-4"
-        onclick={closeModal}
-        onkeydown={(event) => {
-            if (event.key === "Escape") {
-                closeModal();
-            }
-        }}
-        tabindex="0"
-        role="button"
-        aria-label="Close enlarged image"
-    >
-        <div class="absolute inset-0 bg-black opacity-50"></div>
-
-        <div class="relative max-w-full max-h-full z-10">
-            <img
-                src={selectedImageUrl}
-                alt="拡大画像"
-                class="max-w-full max-h-full select-none"
-            />
-        </div>
-    </div>
-{/if}
+<ImagePreviewModal bind:open bind:src />

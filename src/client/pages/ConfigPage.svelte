@@ -39,6 +39,7 @@
         soundVolume,
         theme,
     } from "../mylib/unj-storage.js";
+    import ImagePreviewModal from "../parts/ImagePreviewModal.svelte";
 
     changeVolume();
     changeNewResSound();
@@ -95,18 +96,8 @@
         openAccordion = openAccordion === panelName ? null : panelName;
     };
 
-    let isModalOpen = $state(false);
-    let selectedImageUrl = $state("");
-
-    const openModal = (url: string) => {
-        selectedImageUrl = url;
-        isModalOpen = true;
-    };
-
-    const closeModal = () => {
-        isModalOpen = false;
-        selectedImageUrl = "";
-    };
+    let open = $state(false);
+    let src = $state("");
 </script>
 
 <HeaderPart title="個人設定">
@@ -335,8 +326,10 @@
                                         tabindex="0"
                                         role="button"
                                         onkeydown={() => {}}
-                                        onclick={() =>
-                                            openModal(imgurResponse.link)}
+                                        onclick={() => {
+                                            src = imgurResponse.link;
+                                            open = true;
+                                        }}
                                         class="w-12 h-12 flex-shrink-0 rounded-full bg-no-repeat bg-cover bg-center"
                                         style="background-image: url({imgurResponse.link});"
                                     ></div>
@@ -410,27 +403,4 @@
 
 <FooterPart />
 
-{#if isModalOpen}
-    <div
-        class="fixed inset-0 z-50 flex items-center justify-center p-4"
-        onclick={closeModal}
-        onkeydown={(event) => {
-            if (event.key === "Escape") {
-                closeModal();
-            }
-        }}
-        tabindex="0"
-        role="button"
-        aria-label="Close enlarged image"
-    >
-        <div class="absolute inset-0 bg-black opacity-50"></div>
-
-        <div class="relative max-w-full max-h-full z-10">
-            <img
-                src={selectedImageUrl}
-                alt="拡大画像"
-                class="max-w-full max-h-full select-none"
-            />
-        </div>
-    </div>
-{/if}
+<ImagePreviewModal bind:open bind:src />
