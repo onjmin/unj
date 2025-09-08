@@ -71,7 +71,7 @@ export const openRight = new UnjStorage("openRight");
 
 // theme-color
 export const theme = new UnjStorage("theme", () => {
-	const v = theme.value ?? "";
+	const v = (theme.value ?? "").replace("-dark", "");
 	const href = `https://cdn.jsdelivr.net/npm/svelte-material-ui@8.0.0-beta.3/themes/${v}.min.css`;
 	document.getElementById("unj-theme")?.setAttribute("href", href);
 });
