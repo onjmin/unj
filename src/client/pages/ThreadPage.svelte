@@ -461,7 +461,7 @@
                 } catch (err) {}
             })();
             if (!result) {
-                await sleep(4096);
+                await sleep(1024);
                 emitting = false;
                 return;
             }
@@ -492,12 +492,12 @@
             return res.output;
         })();
         if (!result) {
-            await sleep(4096);
+            await sleep(1024);
             emitting = false;
             return;
         }
         socket.emit("res", { ...result, contentMeta });
-        await sleep(4096);
+        await sleep(1024);
         emitting = false;
         ok();
     };

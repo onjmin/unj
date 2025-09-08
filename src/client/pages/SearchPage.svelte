@@ -64,12 +64,12 @@
             return search.output;
         })();
         if (!result) {
-            await sleep(4096);
+            await sleep(1024);
             emitting = false;
             return;
         }
         socket.emit("search", result);
-        await sleep(4096);
+        await sleep(1024);
         emitting = false;
         ok();
     };

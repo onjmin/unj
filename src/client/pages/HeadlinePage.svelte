@@ -223,7 +223,7 @@
             sinceDate: null,
             untilDate: threadList?.at(-1)?.latestResAt ?? null,
         });
-        await sleep(2048);
+        await sleep(1024);
         emitting = false;
         ok();
     };
