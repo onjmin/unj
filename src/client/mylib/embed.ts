@@ -31,6 +31,11 @@ export const parseImageEmbedNicoseiga = (url: URL): string | undefined => {
 	if (!id) return;
 	return `https://lohas.nicoseiga.jp//thumb/${id}i`;
 };
+export const parseImageEmbedFeeder = (url: URL): string | undefined => {
+	const parts = url.pathname.split("/").filter(Boolean);
+	if (parts.length !== 3 || parts[1] !== "pictures") return;
+	return `https://${url.hostname}/${parts[0]}/${parts[1]}/${parts[2]}`;
+};
 export const parseImageEmbedPixiv = (url: URL): string | undefined => {
 	const id = url.pathname.match(/[0-9]+/)?.[0];
 	if (!id) return;

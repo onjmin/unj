@@ -50,4 +50,11 @@ export default [
 		description: "イラスト・マンガ・小説コミュニティサイト",
 		src: "https://www.pixiv.net/artworks/120257879",
 	}),
+	new SiteInfo({
+		id: 405,
+		name: "Feeder",
+		description: "2010年誕生の、基本無料で使える多機能Webチャット🐱",
+		src: "https://www2.x-feeder.info/unjupiter/pictures/PIC_EqbZ2y.png",
+		hostnames: ["www1.x-feeder.info"],
+	}),
 ];

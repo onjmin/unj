@@ -24,6 +24,7 @@
     parseGifEmbedImgx,
     parseGifEmbedYonet,
     parseImageEmbedAlu,
+    parseImageEmbedFeeder,
     parseImageEmbedImgBB,
     parseImageEmbedImgur,
     parseImageEmbedImgx,
@@ -87,6 +88,10 @@
               embedError = true;
               embedding = false;
             });
+          break;
+        case 405:
+          imageEmbed = true;
+          embedUrl = parseImageEmbedFeeder(url) ?? "";
           break;
         case 411:
           imageEmbed = true;
