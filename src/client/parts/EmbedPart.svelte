@@ -185,7 +185,7 @@
     if (
       embeddable &&
       siteInfo &&
-      ([401, 402, 403, 411].includes(siteInfo.id) || temp === oekaki)
+      ([401, 402, 403, 405, 411].includes(siteInfo.id) || temp === oekaki)
     ) {
       tryEmbed(siteInfo);
     }
