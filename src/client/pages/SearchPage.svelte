@@ -8,7 +8,7 @@
     import { SearchIcon } from "@lucide/svelte";
     import { format } from "date-fns";
     import { ja } from "date-fns/locale";
-    import { navigate } from "svelte-routing";
+    import { Link, navigate } from "svelte-routing";
     import * as v from "valibot";
     import {
         SearchSchema,
@@ -145,45 +145,41 @@
                 <ul class="space-y-4">
                     {#each searchResults as result}
                         <li class="bg-white p-4 rounded-lg shadow-md">
-                            <div
-                                class="text-lg font-bold text-blue-800 text-left cursor-pointer hover:underline"
-                                tabindex="0"
-                                role="button"
-                                onkeydown={() => {}}
-                                onclick={() =>
-                                    navigate(
-                                        makePathname(
+                            <div>
+                                <div class="flex items-end">
+                                    <Link
+                                        to={makePathname(
                                             `/thread/${result.threadId}/`,
-                                        ),
-                                    )}
-                            >
-                                {#each result.title.split(new RegExp(`(${currentQuery || ""})`, "gi")) as part}
-                                    {#if part.toLowerCase() === (currentQuery || "").toLowerCase()}
-                                        <span
-                                            class="bg-yellow-200 font-semibold"
-                                            >{part}</span
-                                        >
-                                    {:else}
-                                        {part}
-                                    {/if}
-                                {/each}
+                                        )}
+                                        class="text-lg font-bold text-left cursor-pointer hover:underline"
+                                    >
+                                        <span>
+                                            {#each result.title.split(new RegExp(`(${currentQuery || ""})`, "gi")) as part}
+                                                {#if part.toLowerCase() === (currentQuery || "").toLowerCase()}
+                                                    <span
+                                                        class="bg-yellow-200 font-semibold"
+                                                        >{part}</span
+                                                    >
+                                                {:else}
+                                                    {part}
+                                                {/if}
+                                            {/each}
+                                        </span>
+                                    </Link>
+                                    <span class="text-gray-500 ml-1"
+                                        >({result.resCount})</span
+                                    >
+                                </div>
                             </div>
                             <div class="flex flex-col mt-2 text-left">
                                 <div class="text-sm text-gray-800">
-                                    <span
-                                        class="text-blue-800 cursor-pointer hover:underline"
-                                        tabindex="0"
-                                        role="button"
-                                        onkeydown={() => {}}
-                                        onclick={() =>
-                                            navigate(
-                                                makePathname(
-                                                    `/thread/${result.threadId}/${result.resNum}`,
-                                                ),
-                                            )}
+                                    <Link
+                                        to={makePathname(
+                                            `/thread/${result.threadId}/${result.resNum}`,
+                                        )}
+                                        class="cursor-pointer hover:underline"
+                                        >{result.resNum}.</Link
                                     >
-                                        {result.resNum}.
-                                    </span>
                                     <span class="text-gray-500">
                                         ID:{result.ccUserId}
                                     </span>
@@ -200,23 +196,16 @@
                                         {/each}
                                     </span>
                                     {#if result.contentUrl}
-                                        <a
-                                            href={result.contentUrl}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            class="text-blue-500 hover:underline ml-1"
-                                        >
-                                            {#each result.contentUrl.split(new RegExp(`(${currentQuery || ""})`, "gi")) as part}
-                                                {#if part.toLowerCase() === (currentQuery || "").toLowerCase()}
-                                                    <span
-                                                        class="bg-yellow-200 font-semibold"
-                                                        >{part}</span
-                                                    >
-                                                {:else}
-                                                    {part}
-                                                {/if}
-                                            {/each}
-                                        </a>
+                                        {#each result.contentUrl.split(new RegExp(`(${currentQuery || ""})`, "gi")) as part}
+                                            {#if part.toLowerCase() === (currentQuery || "").toLowerCase()}
+                                                <span
+                                                    class="bg-yellow-200 font-semibold"
+                                                    >{part}</span
+                                                >
+                                            {:else}
+                                                {part}
+                                            {/if}
+                                        {/each}
                                     {/if}
                                 </div>
                             </div>
