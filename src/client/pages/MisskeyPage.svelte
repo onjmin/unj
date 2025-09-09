@@ -26,7 +26,7 @@
     import { ObjectStorage } from "../mylib/object-storage.js";
     import EmbedPart from "../parts/EmbedPart.svelte";
     import FaviconPart from "../parts/FaviconPart.svelte";
-    import ImagePreviewModal from "../parts/ImagePreviewModal.svelte";
+    import ImagePreviewModal from "../parts/ImagePreviewPart.svelte";
 
     const INITIAL_LIMIT = 16;
     const LOAD_MORE_LIMIT = 16;

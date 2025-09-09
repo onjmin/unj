@@ -34,6 +34,7 @@
     parseVideoEmbedNicovideo,
     parseVideoEmbedYouTube,
   } from "../mylib/embed.js";
+  import ImagePreviewModal from "../parts/ImagePreviewPart.svelte";
 
   let { ccUserAvatar = 0, contentUrl = "", contentType = 0 } = $props();
 
@@ -190,6 +191,9 @@
       tryEmbed(siteInfo);
     }
   });
+
+  let open = $state(false);
+  let src = $state("");
 </script>
 
 {#if siteInfo}
@@ -255,11 +259,20 @@
           {/if}
         </div>
       {:else}
-        <img
-          class="embed-image gimp-checkered-background"
-          src={embedUrl}
-          alt="embed"
-        />
+        <button
+          class="relative cursor-pointer"
+          aria-label="View larger image"
+          onclick={() => {
+            src = embedUrl;
+            open = true;
+          }}
+        >
+          <img
+            class="embed-image gimp-checkered-background"
+            src={embedUrl}
+            alt="embed"
+          />
+        </button>
       {/if}
     {:else if videoEmbedYouTube}
       <iframe
@@ -314,6 +327,8 @@
     {/if}
   {/if}
 {/if}
+
+<ImagePreviewModal bind:open bind:src />
 
 <style>
   .system-color {

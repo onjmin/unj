@@ -14,8 +14,6 @@
         Volume2Icon,
     } from "@lucide/svelte";
     import { Slider } from "@skeletonlabs/skeleton-svelte";
-    import LayoutGrid, { Cell } from "@smui/layout-grid";
-    import SegmentedButton, { Segment } from "@smui/segmented-button";
     import Snackbar, { Label as SnackbarLabel } from "@smui/snackbar";
     import { Howler } from "howler";
     import {
@@ -39,7 +37,7 @@
         soundVolume,
         theme,
     } from "../mylib/unj-storage.js";
-    import ImagePreviewModal from "../parts/ImagePreviewModal.svelte";
+    import ImagePreviewModal from "../parts/ImagePreviewPart.svelte";
 
     changeVolume();
     changeNewResSound();
