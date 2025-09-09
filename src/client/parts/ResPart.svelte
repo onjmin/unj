@@ -8,6 +8,7 @@
   import { seededRandArray } from "../../common/util.js";
   import { activeController } from "../mylib/background-embed.js";
   import { makeHref } from "../mylib/env.js";
+  import { ObjectStorage } from "../mylib/object-storage.js";
   import EmbedPart from "./EmbedPart.svelte";
 
   let {
@@ -31,9 +32,11 @@
     createdAt = new Date(),
     // メタ情報
     threadId = "",
+    ignoreList = $bindable(),
   } = $props();
 
   const toaster = createToaster();
+  const ignoreListCache = new ObjectStorage<string[]>("ignoreListCache");
 </script>
 
 <div
@@ -75,7 +78,10 @@
     <button
       class="material-icons text-xl text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors duration-200 ease-in-out font-['Lucida_Grande']"
       onclick={() => {
-        if (ccUserId) {
+        if (ccUserId && ignoreList) {
+          ignoreList.add(ccUserId);
+          ignoreList = new Set(ignoreList);
+          ignoreListCache.set([...ignoreList]);
           toaster.success({
             title: `ID:${ccUserId}をバツポチしました`,
           });

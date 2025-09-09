@@ -22,6 +22,7 @@
         deleteImgur,
         imgurHistory,
     } from "../mylib/imgur.js";
+    import { ObjectStorage } from "../mylib/object-storage.js";
     import {
         changeNewResSound,
         changeReplyResSound,
@@ -96,6 +97,18 @@
 
     let open = $state(false);
     let src = $state("");
+
+    let ignoreList: Set<string> | null = $state(null);
+    const ignoreListCache = new ObjectStorage<string[]>("ignoreListCache");
+    $effect(() => {
+        ignoreListCache.get().then((v) => {
+            if (v && !ignoreList) {
+                ignoreList = new Set(v);
+            } else {
+                ignoreList = new Set();
+            }
+        });
+    });
 </script>
 
 <HeaderPart title="個人設定">
@@ -382,6 +395,66 @@
                                                         imgurResponse.id,
                                                 );
                                                 imgurHistory.set(imgurList);
+                                            }}
+                                        >
+                                            <Trash2Icon class="h-6 w-6" />
+                                        </button>
+                                    </div>
+                                </div>
+                            {/each}
+                        </div>
+                    {/if}
+                </div>
+            {/if}
+        </div>
+
+        <div class="bg-white rounded-lg shadow">
+            <div
+                tabindex="0"
+                role="button"
+                onkeydown={() => {}}
+                class="flex justify-between items-center p-4 cursor-pointer"
+                onclick={() => toggleAccordion("ignoreList")}
+            >
+                <h3 class="font-bold text-lg">無視リスト</h3>
+                {#if openAccordion === "ignoreList"}
+                    <ChevronDownIcon class="h-6 w-6" />
+                {:else}
+                    <ChevronRightIcon class="h-6 w-6" />
+                {/if}
+            </div>
+            {#if openAccordion === "ignoreList"}
+                <div class="p-4 border-t border-gray-200">
+                    {#if !ignoreList || ignoreList.size === 0}
+                        <div class="text-gray-500 text-center space-y-2">
+                            <div>NO DATA...</div>
+                            <div>無視リストは空っぽみたい。。</div>
+                        </div>
+                    {:else}
+                        <div class="text-left space-y-4">
+                            {#each [...ignoreList] as id}
+                                <div
+                                    class="flex items-center py-2 border-b border-gray-200 last:border-b-0"
+                                >
+                                    <div class="flex-1 ml-4 overflow-hidden">
+                                        <div class="font-bold truncate">
+                                            {id}
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="flex flex-shrink-0 space-x-2 ml-4"
+                                    >
+                                        <button
+                                            class="p-2 rounded-full hover:bg-gray-200"
+                                            onclick={() => {
+                                                if (!ignoreList) return;
+                                                ignoreList.delete(id);
+                                                ignoreList = new Set(
+                                                    ignoreList,
+                                                );
+                                                ignoreListCache.set([
+                                                    ...ignoreList,
+                                                ]);
                                             }}
                                         >
                                             <Trash2Icon class="h-6 w-6" />

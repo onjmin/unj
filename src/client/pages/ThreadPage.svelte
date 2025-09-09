@@ -208,6 +208,18 @@
         });
     });
 
+    let ignoreList: Set<string> | null = $state(null);
+    const ignoreListCache = new ObjectStorage<string[]>("ignoreListCache");
+    $effect(() => {
+        ignoreListCache.get().then((v) => {
+            if (v && !ignoreList) {
+                ignoreList = new Set(v);
+            } else {
+                ignoreList = new Set();
+            }
+        });
+    });
+
     let title = $state("スレ取得中");
     let lolCount = $state(0);
     let goodVotes = $state(0);
@@ -694,12 +706,13 @@
     {/snippet}
 </Banner>
 
-{#if thread?.ageRes}
+{#if thread?.ageRes && !ignoreList?.has(thread?.ageRes.ccUserId)}
     <div class="ageRes">
         <!-- backgroundEmbedControls={siteInfo?.id === 1601 ||
                 siteInfo?.id === 1602 ||
                 siteInfo?.id === 3201} -->
         <ResPart
+            bind:ignoreList
             bind:input={contentText}
             backgroundEmbedControls={false}
             {focus}
@@ -878,59 +891,73 @@
             {@render paginationControls()}
         </div>
         <div class="res-list">
-            <ResPart
-                {focus}
-                bind:input={contentText}
-                ccUserId={thread.ccUserId}
-                ccUserName={thread.ccUserName}
-                ccUserAvatar={thread.ccUserAvatar}
-                contentText={thread.contentText}
-                contentUrl={thread.contentUrl}
-                contentType={thread.contentType}
-                ps={thread.ps}
-                num={1}
-                isOwner={true}
-                createdAt={thread.createdAt}
-                threadId={thread.id}
-            >
-                <div class="unj-like-vote-container">
-                    <div class="vote-buttons">
-                        <Button class="good-vote" onclick={() => tryLike(true)}
-                            >ｲｲ!</Button
-                        >
-                        <span class="good-count">+{goodVotes}</span>
-                        <div class="bar">
-                            <div class="good" style="width:{goodRatio}%;"></div>
-                            <div class="bad" style="width:{badRatio}%;"></div>
-                        </div>
-                        <span class="bad-count">-{badVotes}</span>
-                        <Button class="bad-vote" onclick={() => tryLike(false)}
-                            >ｲｸﾅｲ!</Button
-                        >
-                    </div>
-                </div>
-            </ResPart>
-            {#each thread.resList as res}
+            {#if !ignoreList?.has(thread.ccUserId)}
                 <ResPart
                     {focus}
+                    bind:ignoreList
                     bind:input={contentText}
-                    ccUserId={res.ccUserId}
-                    ccUserName={res.ccUserName}
-                    ccUserAvatar={res.ccUserAvatar}
-                    contentText={res.contentText}
-                    contentUrl={res.contentUrl}
-                    contentType={res.contentType}
-                    commandResult={res.commandResult}
-                    num={res.num}
-                    isOwner={res.isOwner}
-                    sage={res.sage}
-                    createdAt={res.createdAt}
+                    ccUserId={thread.ccUserId}
+                    ccUserName={thread.ccUserName}
+                    ccUserAvatar={thread.ccUserAvatar}
+                    contentText={thread.contentText}
+                    contentUrl={thread.contentUrl}
+                    contentType={thread.contentType}
+                    ps={thread.ps}
+                    num={1}
+                    isOwner={true}
+                    createdAt={thread.createdAt}
                     threadId={thread.id}
                 >
-                    {#if res.num === thread.balsResNum}
-                        <BalsPart {threadId} />
-                    {/if}
+                    <div class="unj-like-vote-container">
+                        <div class="vote-buttons">
+                            <Button
+                                class="good-vote"
+                                onclick={() => tryLike(true)}>ｲｲ!</Button
+                            >
+                            <span class="good-count">+{goodVotes}</span>
+                            <div class="bar">
+                                <div
+                                    class="good"
+                                    style="width:{goodRatio}%;"
+                                ></div>
+                                <div
+                                    class="bad"
+                                    style="width:{badRatio}%;"
+                                ></div>
+                            </div>
+                            <span class="bad-count">-{badVotes}</span>
+                            <Button
+                                class="bad-vote"
+                                onclick={() => tryLike(false)}>ｲｸﾅｲ!</Button
+                            >
+                        </div>
+                    </div>
                 </ResPart>
+            {/if}
+            {#each thread.resList as res}
+                {#if !ignoreList?.has(res.ccUserId)}
+                    <ResPart
+                        {focus}
+                        bind:ignoreList
+                        bind:input={contentText}
+                        ccUserId={res.ccUserId}
+                        ccUserName={res.ccUserName}
+                        ccUserAvatar={res.ccUserAvatar}
+                        contentText={res.contentText}
+                        contentUrl={res.contentUrl}
+                        contentType={res.contentType}
+                        commandResult={res.commandResult}
+                        num={res.num}
+                        isOwner={res.isOwner}
+                        sage={res.sage}
+                        createdAt={res.createdAt}
+                        threadId={thread.id}
+                    >
+                        {#if res.num === thread.balsResNum}
+                            <BalsPart {threadId} />
+                        {/if}
+                    </ResPart>
+                {/if}
             {/each}
         </div>
         <div
