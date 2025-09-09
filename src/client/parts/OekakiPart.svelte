@@ -409,7 +409,7 @@
   // activeLayerが変わったときにstateを同期する
   $effect(() => {
     if (!activeLayer) return;
-    // opacity[0] = activeLayer.opacity; TODO直す
+    opacity = [activeLayer.opacity];
     layerVisible = activeLayer.visible;
     layerName = activeLayer.name;
     layerNameDisabled = true;
