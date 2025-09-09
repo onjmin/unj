@@ -75,8 +75,6 @@
 <div
   class="unj-panel font-['Lucida_Grande'] p-4 bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-lg shadow-lg max-w-sm mx-auto select-none"
 >
-  <div class="text-xl font-bold mb-4">レイヤーパネル</div>
-
   <div class="space-y-2">
     <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
       <span class="material-icons text-base">arrow_upward</span>
