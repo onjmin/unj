@@ -88,6 +88,18 @@
         });
     });
 
+    let ignoreList: Set<string> | null = $state(null);
+    const ignoreListCache = new ObjectStorage<string[]>("ignoreListCache");
+    $effect(() => {
+        ignoreListCache.get().then((v) => {
+            if (v && !ignoreList) {
+                ignoreList = new Set(v);
+            } else {
+                ignoreList = new Set();
+            }
+        });
+    });
+
     let filteredThreadList: HeadlineThread[] | undefined = $state();
     const filterThreadList = () => {
         filteredThreadList = threadList?.filter((v) =>
@@ -305,99 +317,103 @@
             <div class="text-left w-full mx-auto">
                 <ul class="list-none p-0 m-0">
                     {#each filteredThreadList ?? threadList as thread, i}
-                        <li class="mb-2 last:mb-0">
-                            <div
-                                tabindex="0"
-                                role="button"
-                                onkeydown={() => {}}
-                                class="block w-full text-left p-3 bg-gray-100 hover:bg-gray-200 transition-colors duration-150 ease-in-out cursor-pointer"
-                                onclick={() =>
-                                    navigate(
-                                        makePathname(
-                                            findMisskey(thread.id)
-                                                ? `/misskey/${findMisskey(thread.id)?.misskeyId}`
-                                                : `/thread/${thread.id}/${thread.resCount > queryResultLimit ? thread.resCount - 8 : ""}`,
-                                        ),
-                                    )}
-                            >
-                                <div class="flex items-start">
-                                    <div class="mr-2 flex-shrink-0">
-                                        {#if findMisskey(thread.id)}
-                                            <FaviconPart
-                                                hostname={findMisskey(thread.id)
-                                                    ?.hostname}
-                                            />
-                                        {:else}
-                                            <TwemojiPart seed={thread.id} />
-                                        {/if}
-                                    </div>
-                                    <div class="flex-grow min-w-0">
-                                        <div
-                                            class="flex flex-col sm:flex-row sm:items-baseline sm:justify-between"
-                                        >
+                        {#if !ignoreList?.has(thread.ccUserId)}
+                            <li class="mb-2 last:mb-0">
+                                <div
+                                    tabindex="0"
+                                    role="button"
+                                    onkeydown={() => {}}
+                                    class="block w-full text-left p-3 bg-gray-100 hover:bg-gray-200 transition-colors duration-150 ease-in-out cursor-pointer"
+                                    onclick={() =>
+                                        navigate(
+                                            makePathname(
+                                                findMisskey(thread.id)
+                                                    ? `/misskey/${findMisskey(thread.id)?.misskeyId}`
+                                                    : `/thread/${thread.id}/${thread.resCount > queryResultLimit ? thread.resCount - 8 : ""}`,
+                                            ),
+                                        )}
+                                >
+                                    <div class="flex items-start">
+                                        <div class="mr-2 flex-shrink-0">
+                                            {#if findMisskey(thread.id)}
+                                                <FaviconPart
+                                                    hostname={findMisskey(
+                                                        thread.id,
+                                                    )?.hostname}
+                                                />
+                                            {:else}
+                                                <TwemojiPart seed={thread.id} />
+                                            {/if}
+                                        </div>
+                                        <div class="flex-grow min-w-0">
                                             <div
-                                                class="flex-grow overflow-hidden whitespace-nowrap text-base font-medium text-gray-800 leading-tight pr-2"
+                                                class="flex flex-col sm:flex-row sm:items-baseline sm:justify-between"
                                             >
                                                 <div
                                                     class="flex-grow overflow-hidden whitespace-nowrap text-base font-medium text-gray-800 leading-tight pr-2"
                                                 >
                                                     <div
-                                                        class="inline-flex items-baseline max-w-full"
+                                                        class="flex-grow overflow-hidden whitespace-nowrap text-base font-medium text-gray-800 leading-tight pr-2"
                                                     >
-                                                        <span class="truncate"
-                                                            >{thread.title}</span
+                                                        <div
+                                                            class="inline-flex items-baseline max-w-full"
                                                         >
-                                                        <span
-                                                            class="inline-block flex-shrink-0"
-                                                            >({thread.resCount})</span
-                                                        >
+                                                            <span
+                                                                class="truncate"
+                                                                >{thread.title}</span
+                                                            >
+                                                            <span
+                                                                class="inline-block flex-shrink-0"
+                                                                >({thread.resCount})</span
+                                                            >
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div
-                                                class="text-xs text-gray-500 flex-shrink-0 mt-1 sm:mt-0 sm:ml-2"
-                                            >
-                                                {formatTimeAgo(
-                                                    thread.latestResAt,
-                                                )}
-                                            </div>
-                                        </div>
-                                        <div
-                                            class="flex items-center text-xs mt-1"
-                                        >
-                                            <div
-                                                class="transition-all duration-200 ease-in font-medium"
-                                                class:text-gray-500={thread.online ===
-                                                    0}
-                                                class:text-blue-600={thread.online ===
-                                                    1}
-                                                class:text-orange-600={thread.online ===
-                                                    2}
-                                                class:text-red-600={thread.online >=
-                                                    3}
-                                            >
-                                                {thread.online}人閲覧中
-                                            </div>
-                                        </div>
-                                        {#if thread.latestRes}
-                                            <div
-                                                class="text-gray-600 text-sm mt-1 whitespace-pre-line break-words"
-                                            >
-                                                <div class="truncate">
-                                                    {thread.latestRes}
+                                                <div
+                                                    class="text-xs text-gray-500 flex-shrink-0 mt-1 sm:mt-0 sm:ml-2"
+                                                >
+                                                    {formatTimeAgo(
+                                                        thread.latestResAt,
+                                                    )}
                                                 </div>
                                             </div>
-                                        {/if}
+                                            <div
+                                                class="flex items-center text-xs mt-1"
+                                            >
+                                                <div
+                                                    class="transition-all duration-200 ease-in font-medium"
+                                                    class:text-gray-500={thread.online ===
+                                                        0}
+                                                    class:text-blue-600={thread.online ===
+                                                        1}
+                                                    class:text-orange-600={thread.online ===
+                                                        2}
+                                                    class:text-red-600={thread.online >=
+                                                        3}
+                                                >
+                                                    {thread.online}人閲覧中
+                                                </div>
+                                            </div>
+                                            {#if thread.latestRes}
+                                                <div
+                                                    class="text-gray-600 text-sm mt-1 whitespace-pre-line break-words"
+                                                >
+                                                    <div class="truncate">
+                                                        {thread.latestRes}
+                                                    </div>
+                                                </div>
+                                            {/if}
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            {#if i % 4 === 3 && i !== (threadList ?? []).length - 1}
-                                <div
-                                    class="border-t border-gray-300 mt-6"
-                                ></div>
-                            {/if}
-                        </li>
+                                {#if i % 4 === 3 && i !== (threadList ?? []).length - 1}
+                                    <div
+                                        class="border-t border-gray-300 mt-6"
+                                    ></div>
+                                {/if}
+                            </li>
+                        {/if}
                     {/each}
                 </ul>
                 <center class="mt-8">
