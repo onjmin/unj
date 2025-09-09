@@ -975,6 +975,45 @@
                 </div>
             </Content>
         </Paper>
+
+        <div
+            class="mx-auto w-full max-w-sm flex flex-col space-y-2 p-4 bg-gray-200 text-gray-400 rounded-lg"
+        >
+            <div class="flex items-center space-x-2 justify-center">
+                <span class="text-sm font-medium">無視設定件数：</span>
+                <span class="text-lg font-bold">
+                    {ignoreList?.size ?? 0}件
+                </span>
+            </div>
+            <div class="flex space-x-2">
+                <Button
+                    class="flex-1 bg-gray-600 hover:bg-gray-500"
+                    disabled={!ignoreList?.size}
+                    onclick={() => {
+                        if (!ignoreList) return;
+                        const newIgnoreList = new Set(
+                            [...ignoreList].slice(0, -1),
+                        );
+                        ignoreList = newIgnoreList;
+                        ignoreListCache.set([...newIgnoreList]);
+                    }}
+                >
+                    一個戻す
+                </Button>
+                <Button
+                    class="flex-1 bg-gray-600 hover:bg-gray-500"
+                    disabled={!ignoreList?.size}
+                    onclick={() => {
+                        if (!ignoreList) return;
+                        ignoreList = new Set();
+                        ignoreListCache.set([]);
+                    }}
+                >
+                    全クリア
+                </Button>
+            </div>
+        </div>
+
         <div
             class="flex flex-col space-y-2 p-4 bg-gray-800 text-gray-200 rounded-lg"
         >
