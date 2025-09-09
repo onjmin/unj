@@ -1005,6 +1005,12 @@
                     disabled={!ignoreList?.size}
                     onclick={() => {
                         if (!ignoreList) return;
+                        if (
+                            !confirm(
+                                "無視設定をクリアします。\nよろしいですか？",
+                            )
+                        )
+                            return;
                         ignoreList = new Set();
                         ignoreListCache.set([]);
                     }}
