@@ -35,8 +35,8 @@ importers:
         specifier: 1.0.6
         version: 1.0.6
       '@onjmin/oekaki':
-        specifier: 1.0.47
-        version: 1.0.47
+        specifier: 1.0.53
+        version: 1.0.53
       '@rpgja/rpgen-map':
         specifier: 1.0.0
         version: 1.0.0
@@ -701,8 +701,8 @@ packages:
   '@onjmin/cors-killer@1.0.6':
     resolution: {integrity: sha512-m7LurTNk/wO1GtH+XeP85kAZ/u/+0y2wiaydzmq0A9wLNBPL4jnNNE2M7JTq+vbGUlXG4I+2Q9KJO3w+1sTKzQ==}
 
-  '@onjmin/oekaki@1.0.47':
-    resolution: {integrity: sha512-0HvsviAAzBb/uInTJ6udLEl2B/8Y/bYTdx6OpAV14UjUCycb676KywYkJqqd+Ts3je7T6EqjpXvljSqCq3SPSQ==}
+  '@onjmin/oekaki@1.0.53':
+    resolution: {integrity: sha512-M5suEtVjSxcmtckjO0E5LyJU39wsFl0M1uYwEsYPzT/EkDo8eyPx8ynIf6edtzijTf/3tlLG0ebD1v2t5Wco+Q==}
 
   '@parcel/watcher-android-arm64@2.5.1':
     resolution: {integrity: sha512-KF8+j9nNbUN8vzOFDpRMsaKBHZ/mcjEjMToVMJOhTozkDonQFFrRcfdLWn6yWKCmJKmdVxSgHiYvTCef4/qcBA==}
@@ -3860,7 +3860,7 @@ snapshots:
 
   '@onjmin/cors-killer@1.0.6': {}
 
-  '@onjmin/oekaki@1.0.47': {}
+  '@onjmin/oekaki@1.0.53': {}
 
   '@parcel/watcher-android-arm64@2.5.1':
     optional: true

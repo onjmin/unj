@@ -324,6 +324,9 @@
         if (!activeLayer) activeLayer = new oekaki.LayeredCanvas("レイヤー #1");
         oekaki.refresh();
       } else {
+        const bgLayer = new oekaki.LayeredCanvas("白背景");
+        bgLayer.fill("#FFF");
+        bgLayer.trace();
         activeLayer = new oekaki.LayeredCanvas("レイヤー #1");
       }
     })();
