@@ -41,6 +41,7 @@
         termsAgreement,
     } from "../mylib/unj-storage.js";
     import { oekakiLogger } from "../mylib/webhook.js";
+    import LayerPanelPart from "../parts/LayerPanelPart.svelte";
     import ResFormPart from "../parts/ResFormPart.svelte";
     import TermsConfirmPart from "../parts/TermsConfirmPart.svelte";
 
@@ -53,6 +54,7 @@
     let contentText = $state("");
     let contentUrl = $state("");
     let contentType: EnumType = $state(Enum.Text);
+    let activeLayer = $state(null);
 
     // UnjStorage
     const titleUnjStorage = new UnjStorage("title");
@@ -429,6 +431,9 @@
             </div>
         </div>
     {/if}
+    {#if contentType === Enum.Oekaki}
+        <LayerPanelPart bind:activeLayer />
+    {/if}
 </HeaderPart>
 
 <TermsConfirmPart {openConfirm} />
@@ -456,6 +461,7 @@
             threadId={sha256(Math.random().toString())}
             oekaki
             bind:toDataURL
+            bind:activeLayer
             tryRes={tryMakeThread}
         />
         <div class="flex items-center space-x-2 mt-4">

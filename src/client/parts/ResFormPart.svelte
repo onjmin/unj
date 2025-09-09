@@ -34,6 +34,7 @@
     threadId,
     oekaki,
     toDataURL = $bindable(),
+    activeLayer = $bindable(null),
     tryRes,
     isExpand = true,
   } = $props();
@@ -177,7 +178,7 @@
 {#key contentType}
   {#if contentType === Enum.Oekaki}
     {#if oekaki}
-      <OekakiPart {threadId} bind:toDataURL />
+      <OekakiPart {threadId} bind:toDataURL bind:activeLayer />
     {:else}
       <ColorWheelPart />
     {/if}

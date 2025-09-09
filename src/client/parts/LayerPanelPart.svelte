@@ -1,40 +1,10 @@
 <script lang="ts">
   import * as oekaki from "@onjmin/oekaki";
-  import Button, { Label, Icon } from "@smui/button";
-  import Dialog, { Title, Content, Actions } from "@smui/dialog";
-  import List, {
-    Item,
-    Graphic,
-    Text,
-    PrimaryText,
-    SecondaryText,
-    Meta,
-  } from "@smui/list";
 
-  let { open = $bindable(false), activeLayer = $bindable(null) } = $props();
+  let { activeLayer = $bindable(null) } = $props();
 
   let layers: oekaki.LayeredCanvas[] = $state([]);
-
-  $effect(() => {
-    layers = oekaki.getLayers();
-  });
-  $effect(() => {
-    selectionIndex = layers.map((v) => v?.index).indexOf(activeLayer?.index);
-  });
-
   let selectionIndex: number = $state(0);
-  const closeHandler = (e: CustomEvent<{ action: string }>) => {
-    switch (e.detail.action) {
-      case "accept":
-        activeLayer = layers[selectionIndex];
-        break;
-      default:
-        selectionIndex = layers
-          .map((v) => v?.index)
-          .indexOf(activeLayer?.index);
-        break;
-    }
-  };
 
   let pointerupTimestamp = $state(0);
   const updatePointerupTimestamp = () => {
@@ -47,107 +17,153 @@
     return () =>
       document.removeEventListener("pointerup", updatePointerupTimestamp);
   });
+
+  // コンポーネントがマウントされたとき、およびレイヤーが変更されたときにlayersを更新
+  $effect(() => {
+    if (!activeLayer && !pointerupTimestamp) return;
+    layers = oekaki.getLayers();
+  });
+
+  // activeLayerが変更されたら、selectionIndexを更新
+  $effect(() => {
+    const newIndex = layers.findIndex((v) => v === activeLayer);
+    if (newIndex !== -1) {
+      selectionIndex = newIndex;
+    }
+  });
+
+  // レイヤー選択
+  const selectLayer = (index: number) => {
+    selectionIndex = index;
+    activeLayer = layers[index];
+  };
+
+  // レイヤーロックのトグル
+  const toggleLock = (layer: oekaki.LayeredCanvas) => {
+    layer.locked = !layer.locked;
+    // UIを更新するため、layers配列を再代入
+    layers = [...layers];
+  };
+
+  // レイヤー表示のトグル
+  const toggleVisibility = (layer: oekaki.LayeredCanvas) => {
+    layer.visible = !layer.visible;
+    // UIを更新するため、layers配列を再代入
+    layers = [...layers];
+  };
+
+  // レイヤーの移動
+  const moveLayer = (layer: oekaki.LayeredCanvas, direction: "up" | "down") => {
+    const targetLayer = direction === "up" ? layer.prev : layer.next;
+    if (targetLayer) {
+      layer.swap(targetLayer.index);
+      // swap後にlayersを再取得してUIを更新
+      layers = oekaki.getLayers();
+    }
+  };
+
+  // レイヤー追加
+  const addLayer = () => {
+    const newLayer = new oekaki.LayeredCanvas(`レイヤー #${layers.length + 1}`);
+    // 新しいレイヤーをアクティブにする
+    activeLayer = newLayer;
+    // layersを再取得してUIを更新
+    layers = oekaki.getLayers();
+  };
 </script>
 
-<Dialog
-  class="unj-dialog-part unj-user-select"
-  bind:open
-  onSMUIDialogClosed={closeHandler}
+<div
+  class="unj-panel font-['Lucida_Grande'] p-4 bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-lg shadow-lg max-w-sm mx-auto select-none"
 >
-  <Title>レイヤーパネル</Title>
-  <Content>
-    <div>
-      <Icon class="material-icons">arrow_upward</Icon>
+  <div class="text-xl font-bold mb-4">レイヤーパネル</div>
+
+  <div class="space-y-2">
+    <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
+      <span class="material-icons text-base">arrow_upward</span>
       最背面
     </div>
-    <div style="text-align:left;">
-      <List twoLine avatarList singleSelection selectedIndex={selectionIndex}>
-        {#each layers as layer, i}
-          {#key activeLayer === layer ? pointerupTimestamp : "noop"}
-            <Item
-              onSMUIAction={() => (selectionIndex = i)}
-              selected={selectionIndex === i}
+
+    {#key pointerupTimestamp}
+      {#each layers as layer, i (layer.index)}
+        <div
+          tabindex="0"
+          role="button"
+          onkeydown={() => {}}
+          class="flex items-center p-2 rounded-lg cursor-pointer transition-colors duration-200 ease-in-out"
+          class:bg-blue-200={selectionIndex === i}
+          class:dark:bg-blue-700={selectionIndex === i}
+          onclick={() => selectLayer(i)}
+        >
+          <div
+            class="w-10 h-10 border border-gray-300 dark:border-gray-600 mr-3 rounded-sm bg-cover bg-center"
+            style="background-image: url({layer.used
+              ? layer.canvas.toDataURL('image/png')
+              : 'https://placehold.co/40x40?text=new'});"
+          ></div>
+
+          <div class="flex-grow">
+            <div class="font-semibold">{layer.name}</div>
+            <div
+              class="text-xs text-gray-600 dark:text-gray-400 flex items-center gap-1"
             >
-              <Graphic
-                class="canvas-preview-item-graphic"
-                style="background-image:url({layer.used
-                  ? layer.canvas.toDataURL('image/png')
-                  : 'https://placehold.co/32x32?text=new'});"
-              />
-              <Text>
-                <PrimaryText>{layer.name}</PrimaryText>
-                <SecondaryText
-                  ><Icon
-                    class="material-icons"
-                    onclick={() => {
-                      layer.locked = !layer.locked;
-                    }}>{layer.locked ? "lock" : "lock_open"}</Icon
-                  ><Icon
-                    class="material-icons"
-                    onclick={() => {
-                      layer.visible = !layer.visible;
-                    }}>{layer.visible ? "visibility" : "visibility_off"}</Icon
-                  >{layer.opacity}%</SecondaryText
-                >
-              </Text>
-              <Meta
-                class="material-icons"
-                onclick={() => {
-                  const { next } = layer;
-                  if (next) {
-                    layer.swap(next.index);
-                    layers = oekaki.getLayers();
-                  }
-                }}>arrow_downward</Meta
+              <span
+                tabindex="0"
+                role="button"
+                onkeydown={() => {}}
+                class="material-icons text-sm cursor-pointer"
+                onclick={() => toggleLock(layer)}
               >
-              <Meta
-                class="material-icons"
-                onclick={() => {
-                  const { prev } = layer;
-                  if (prev) {
-                    layer.swap(prev.index);
-                    layers = oekaki.getLayers();
-                  }
-                }}>arrow_upward</Meta
+                {layer.locked ? "lock" : "lock_open"}
+              </span>
+              <span
+                tabindex="0"
+                role="button"
+                onkeydown={() => {}}
+                class="material-icons text-sm cursor-pointer"
+                onclick={() => toggleVisibility(layer)}
               >
-            </Item>
-          {/key}
-        {/each}
-      </List>
-    </div>
-    <div>
-      <Icon class="material-icons">arrow_downward</Icon>
+                {layer.visible ? "visibility" : "visibility_off"}
+              </span>
+              <span>{layer.opacity}%</span>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-1 text-gray-500 dark:text-gray-400">
+            <span
+              tabindex="0"
+              role="button"
+              onkeydown={() => {}}
+              class="material-icons text-sm cursor-pointer hover:text-gray-800 dark:hover:text-gray-100 transition-colors"
+              onclick={() => moveLayer(layer, "up")}
+              class:opacity-50={!layer.prev}
+            >
+              arrow_upward
+            </span>
+            <span
+              tabindex="0"
+              role="button"
+              onkeydown={() => {}}
+              class="material-icons text-sm cursor-pointer hover:text-gray-800 dark:hover:text-gray-100 transition-colors"
+              onclick={() => moveLayer(layer, "down")}
+              class:opacity-50={!layer.next}
+            >
+              arrow_downward
+            </span>
+          </div>
+        </div>
+      {/each}
+    {/key}
+
+    <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
+      <span class="material-icons text-base">arrow_downward</span>
       最前面
     </div>
-    <Button
-      variant="raised"
-      onclick={() => {
-        activeLayer = new oekaki.LayeredCanvas(
-          `レイヤー #${layers.length + 1}`,
-        );
-        layers = oekaki.getLayers();
-      }}>レイヤー追加</Button
-    >
-  </Content>
-  <Actions>
-    <Button action="accept">
-      <Label>選択</Label>
-    </Button>
-    <Button action="reject">
-      <Label>キャンセル</Label>
-    </Button>
-  </Actions>
-</Dialog>
+  </div>
 
-<style>
-  :global(.canvas-preview-item-graphic) {
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center;
-    border-radius: 0 !important;
-  }
-
-  :global(.unj-user-select) {
-    user-select: none;
-  }
-</style>
+  <button
+    class="mt-4 w-full px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-200 ease-in-out"
+    onclick={addLayer}
+  >
+    レイヤー追加
+  </button>
+</div>

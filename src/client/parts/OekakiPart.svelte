@@ -27,9 +27,16 @@
   import { ObjectStorage } from "../mylib/object-storage.js";
   import { color } from "../mylib/store.js";
   import * as unjStorage from "../mylib/unj-storage.js";
-  import LayerPanelPart from "./LayerPanelPart.svelte";
 
-  let { threadId, toDataURL = $bindable() } = $props();
+  let {
+    threadId,
+    toDataURL = $bindable(),
+    activeLayer = $bindable(null),
+  }: {
+    threadId: string;
+    toDataURL: () => string;
+    activeLayer: oekaki.LayeredCanvas | null;
+  } = $props();
   toDataURL = () => {
     if (oekaki.getLayers().every((v) => !v.used)) return "";
     return oekaki.render().toDataURL();
@@ -91,10 +98,6 @@
       case "Z":
         e.preventDefault();
         doAction(tool.redo);
-        break;
-      case "l":
-        e.preventDefault();
-        doAction(tool.layersPanel);
         break;
       case "s":
         e.preventDefault();
@@ -249,7 +252,6 @@
   };
 
   let oekakiWrapper: HTMLDivElement;
-  let activeLayer: oekaki.LayeredCanvas | null = $state(null);
   let upperLayer: oekaki.LayeredCanvas | null = $state(null);
   let lowerLayer: oekaki.LayeredCanvas | null = $state(null);
 
@@ -404,8 +406,6 @@
     oekaki.onClick((x, y, buttons) => {});
   });
 
-  let layersPanelOpen = $state(false);
-
   // activeLayerが変わったときにstateを同期する
   $effect(() => {
     if (!activeLayer) return;
@@ -506,7 +506,6 @@
     // アクション系
     undo: { label: "戻る", icon: mdiUndo },
     redo: { label: "進む", icon: mdiRedo },
-    layersPanel: { label: "レイヤーパネル", icon: mdiLayers },
     save: { label: "画像を保存", icon: mdiContentSaveOutline },
     clear: { label: "全消し", icon: mdiTrashCanOutline },
   } as const;
@@ -561,7 +560,7 @@
     isGrid = toggle.map((v) => v.label).includes(tool.grid.label);
   });
 
-  let actions = [tool.undo, tool.redo, tool.layersPanel, tool.save, tool.clear];
+  let actions = [tool.undo, tool.redo, tool.save, tool.clear];
   const doAction = (action: Tool) => {
     switch (action.label) {
       case tool.undo.label:
@@ -571,9 +570,6 @@
       case tool.redo.label:
         activeLayer?.redo();
         saveData();
-        break;
-      case tool.layersPanel.label:
-        layersPanelOpen = !layersPanelOpen;
         break;
       case tool.save.label:
         {
@@ -591,10 +587,6 @@
     }
   };
 </script>
-
-{#key layersPanelOpen}
-  <LayerPanelPart bind:open={layersPanelOpen} bind:activeLayer />
-{/key}
 
 <div class="top-tools-wrapper">
   <span class="size">{opacity}%</span>
@@ -816,7 +808,6 @@
         <p>Ctrl + G：グリッド表示</p>
         <p>Ctrl + Z：戻す</p>
         <p>Ctrl + Shift + Z ：やり直す</p>
-        <p>Ctrl + L：レイヤーパネルを開く</p>
         <p>Ctrl + S：保存</p>
         <p>Ctrl + C：コピー</p>
         <p>Ctrl + V：貼り付け</p>

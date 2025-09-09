@@ -79,6 +79,7 @@
     import BackgroundEmbedPart from "../parts/BackgroundEmbedPart.svelte";
     import BalsPart from "../parts/BalsPart.svelte";
     import DressUpPart from "../parts/DressUpPart.svelte";
+    import LayerPanelPart from "../parts/LayerPanelPart.svelte";
     import ResFormPart from "../parts/ResFormPart.svelte";
     import ResPart from "../parts/ResPart.svelte";
     import RpgPart from "../parts/RpgPart.svelte";
@@ -215,6 +216,7 @@
     let denominator = $state(0);
     let goodRatio = $state(0);
     let badRatio = $state(0);
+    let activeLayer = $state(null);
 
     const loadThread = async (_thread: Thread) => {
         thread = _thread;
@@ -564,7 +566,7 @@
     });
 </script>
 
-{#snippet form(oekaki = false)}
+{#snippet form(menu = false)}
     <ResFormPart
         disabled={emitting}
         bind:textarea
@@ -575,8 +577,9 @@
         bind:contentType
         contentTypesBitmask={thread?.contentTypesBitmask ?? 0}
         {threadId}
-        {oekaki}
+        oekaki={!menu}
         bind:toDataURL
+        bind:activeLayer
         {tryRes}
         {isExpand}
     />
@@ -634,7 +637,7 @@
             }}>checkroom</IconButton
         >
     {/if} -->
-        {#if oekaki}
+        {#if !menu}
             <Switch
                 controlActive="bg-secondary-500"
                 checked={checkedOekaki}
@@ -669,7 +672,10 @@
 
 <HeaderPart {title}>
     <AccessCounterPart {online} {pv} />
-    <div>{@render form()}</div>
+    <div>{@render form(true)}</div>
+    {#if contentType === Enum.Oekaki}
+        <LayerPanelPart bind:activeLayer />
+    {/if}
 </HeaderPart>
 
 <TermsConfirmPart {openConfirm} />
@@ -938,7 +944,7 @@
         <Paper>
             <Content>
                 <div class="flex flex-col items-center">
-                    {@render form(true)}
+                    {@render form(false)}
                 </div>
             </Content>
         </Paper>
