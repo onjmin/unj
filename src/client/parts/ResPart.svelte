@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { BanIcon, XIcon } from "@lucide/svelte";
   import { createToaster } from "@skeletonlabs/skeleton-svelte";
   import { Toaster } from "@skeletonlabs/skeleton-svelte";
   import IconButton from "@smui/icon-button";
@@ -7,7 +8,6 @@
   import { avatarMap } from "../../common/request/avatar.js";
   import { seededRandArray } from "../../common/util.js";
   import { activeController } from "../mylib/background-embed.js";
-  import { makeHref } from "../mylib/env.js";
   import { ObjectStorage } from "../mylib/object-storage.js";
   import EmbedPart from "./EmbedPart.svelte";
 
@@ -37,6 +37,7 @@
 
   const toaster = createToaster();
   const ignoreListCache = new ObjectStorage<string[]>("ignoreListCache");
+  let showBlockButtons: boolean = $state(false);
 </script>
 
 <div
@@ -75,21 +76,44 @@
     {#if isOwner}
       <span class="text-xs system-color">主</span>
     {/if}
-    <button
-      class="material-icons text-xl text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors duration-200 ease-in-out font-['Lucida_Grande']"
-      onclick={() => {
-        if (ccUserId && ignoreList) {
-          ignoreList.add(ccUserId);
-          ignoreList = new Set(ignoreList);
-          ignoreListCache.set([...ignoreList]);
-          toaster.success({
-            title: `ID:${ccUserId}をバツポチしました`,
-          });
-        }
-      }}
-    >
-      close
-    </button>
+    {#if showBlockButtons}
+      <div class="inline-flex flex-shrink-0 space-x-2 items-end">
+        <button
+          class="p-1 rounded-full text-red-500 bg-gray-100 hover:bg-gray-200 self-end"
+          onclick={() => {
+            if (ccUserId && ignoreList) {
+              toaster.success({
+                title: `ID:${ccUserId}をバツポチしました`,
+              });
+              ignoreList.add(ccUserId);
+              ignoreList = new Set(ignoreList);
+              ignoreListCache.set([...ignoreList]);
+              showBlockButtons = false; // 処理後に元の状態に戻す
+            }
+          }}
+        >
+          <BanIcon class="h-4 w-4" />
+        </button>
+
+        <button
+          class="p-1 rounded-full text-gray-500 bg-gray-100 hover:bg-gray-200 self-end"
+          onclick={() => {
+            showBlockButtons = false; // 元の状態に戻る
+          }}
+        >
+          <XIcon class="h-4 w-4" />
+        </button>
+      </div>
+    {:else}
+      <button
+        class="text-gray-500 hover:text-gray-700 transition-colors duration-200 ease-in-out self-end"
+        onclick={() => {
+          showBlockButtons = true; // クリックで2つのボタンを表示
+        }}
+      >
+        <XIcon class="h-4 w-4" />
+      </button>
+    {/if}
     {#if backgroundEmbedControls}
       <IconButton
         class="material-icons"
