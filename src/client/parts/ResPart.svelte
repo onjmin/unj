@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { createToaster } from "@skeletonlabs/skeleton-svelte";
+  import { Toaster } from "@skeletonlabs/skeleton-svelte";
   import IconButton from "@smui/icon-button";
   import { format } from "date-fns";
   import { ja } from "date-fns/locale";
@@ -31,16 +33,7 @@
     threadId = "",
   } = $props();
 
-  let open = $state(false);
-
-  const makeSharedLink = () => makeHref(`/thread/${threadId}/${num}`);
-  let sharedLink = $state("");
-
-  $effect(() => {
-    if (open) {
-      sharedLink = makeSharedLink();
-    }
-  });
+  const toaster = createToaster();
 </script>
 
 <div
@@ -79,6 +72,18 @@
     {#if isOwner}
       <span class="text-xs system-color">主</span>
     {/if}
+    <button
+      class="material-icons text-xl text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors duration-200 ease-in-out font-['Lucida_Grande']"
+      onclick={() => {
+        if (ccUserId) {
+          toaster.success({
+            title: `ID:${ccUserId}をバツポチしました`,
+          });
+        }
+      }}
+    >
+      close
+    </button>
     {#if backgroundEmbedControls}
       <IconButton
         class="material-icons"
@@ -145,6 +150,8 @@
   </div>
   {@render children?.()}
 </div>
+
+<Toaster {toaster}></Toaster>
 
 <style>
   .system-color {

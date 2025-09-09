@@ -13,8 +13,9 @@
         Trash2Icon,
         Volume2Icon,
     } from "@lucide/svelte";
+    import { createToaster } from "@skeletonlabs/skeleton-svelte";
+    import { Toaster } from "@skeletonlabs/skeleton-svelte";
     import { Slider } from "@skeletonlabs/skeleton-svelte";
-    import Snackbar, { Label as SnackbarLabel } from "@smui/snackbar";
     import { Howler } from "howler";
     import {
         type ImgurResponse,
@@ -38,6 +39,8 @@
         theme,
     } from "../mylib/unj-storage.js";
     import ImagePreviewModal from "../parts/ImagePreviewPart.svelte";
+
+    const toaster = createToaster();
 
     changeVolume();
     changeNewResSound();
@@ -85,9 +88,6 @@
             imgurList = v ? v : [];
         });
     });
-
-    let snackbar: Snackbar;
-    $effect(() => () => snackbar.close());
 
     let openAccordion: string | null = $state(null);
     const toggleAccordion = (panelName: string) => {
@@ -350,7 +350,9 @@
                                                 await navigator.clipboard.writeText(
                                                     imgurResponse.link,
                                                 );
-                                                snackbar.open();
+                                                toaster.create({
+                                                    title: "コピーしました",
+                                                });
                                             }}
                                         >
                                             <CopyIcon class="h-6 w-6" />
@@ -360,7 +362,7 @@
                                             onclick={async () => {
                                                 if (
                                                     !confirm(
-                                                        `${imgurResponse.id}を削除しますか？`,
+                                                        `ID:${imgurResponse.id}を削除しますか？`,
                                                     )
                                                 )
                                                     return;
@@ -370,7 +372,7 @@
                                                     );
                                                 } catch (err) {
                                                     alert(
-                                                        `${imgurResponse.id}の削除に失敗しました`,
+                                                        `ID:${imgurResponse.id}の削除に失敗しました`,
                                                     );
                                                     return;
                                                 }
@@ -395,9 +397,7 @@
     </div>
 </MainPart>
 
-<Snackbar bind:this={snackbar}>
-    <SnackbarLabel>コピーしました</SnackbarLabel>
-</Snackbar>
+<Toaster {toaster}></Toaster>
 
 <FooterPart />
 

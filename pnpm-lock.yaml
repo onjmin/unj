@@ -194,9 +194,6 @@ importers:
       '@smui/select':
         specifier: 8.0.0-beta.3
         version: 8.0.0-beta.3
-      '@smui/snackbar':
-        specifier: 8.0.0-beta.3
-        version: 8.0.0-beta.3
       '@smui/tab':
         specifier: 8.0.0-beta.3
         version: 8.0.0-beta.3

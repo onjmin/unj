@@ -5,10 +5,11 @@
     import MainPart from "../parts/MainPart.svelte";
     ///////////////
 
+    import { createToaster } from "@skeletonlabs/skeleton-svelte";
+    import { Toaster } from "@skeletonlabs/skeleton-svelte";
     import Button from "@smui/button";
     import LayoutGrid, { Cell } from "@smui/layout-grid";
     import Select, { Option } from "@smui/select";
-    import Snackbar from "@smui/snackbar";
     import Tab, { Icon, Label } from "@smui/tab";
     import TabBar from "@smui/tab-bar";
     import Textfield from "@smui/textfield";
@@ -25,6 +26,8 @@
     import AGPL3Part from "../parts/contact/AGPL3Part.svelte";
     import KaizenPart from "../parts/contact/KaizenPart.svelte";
     import PolicePart from "../parts/contact/PolicePart.svelte";
+
+    const toaster = createToaster();
 
     let AGPL3PartInstance: AGPL3Part | null = $state(null);
     let KaizenPartInstance: KaizenPart | null = $state(null);
@@ -64,21 +67,18 @@
         enabledSubmit = replyEmail !== "" && fill && !!deadline && !isSuspend;
     });
 
-    let snackbar: Snackbar;
-    $effect(() => () => snackbar.close());
-    let snackbarText = $state("");
-
     const handleSubmit = async () => {
-        snackbar.close();
         if (isSuspend) {
-            snackbarText = "受付停止中です。";
-            snackbar.open();
+            toaster.warning({
+                title: "受付停止中です。",
+            });
             return;
         }
         const emailSchema = v.pipe(v.string(), v.email());
         if (!v.safeParse(emailSchema, replyEmail).success) {
-            snackbarText = "不正なメールアドレスです。";
-            snackbar.open();
+            toaster.warning({
+                title: "不正なメールアドレスです。",
+            });
             return;
         }
         const header = [`納期：${deadline}`, `メアド：${replyEmail}`];
@@ -110,12 +110,15 @@
         } catch (err) {}
         if (success) {
             contactedAt.value = `${+new Date()}`;
-            snackbarText = "送信しました。";
             isSuspend = true;
+            toaster.success({
+                title: "送信しました。",
+            });
         } else {
-            snackbarText = "送信に失敗しました。";
+            toaster.error({
+                title: "送信に失敗しました。",
+            });
         }
-        snackbar.open();
     };
 
     let isSuspend = $state(true);
@@ -207,11 +210,7 @@
 
 <FooterPart />
 
-<!-- ここから固有のUI -->
-
-<Snackbar bind:this={snackbar}>
-    <Label>{snackbarText}</Label>
-</Snackbar>
+<Toaster {toaster}></Toaster>
 
 <style>
     .form-container {

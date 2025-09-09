@@ -82,9 +82,6 @@ body {
 	opacity: 0;
 	pointer-events: none;
 }
-.mdc-snackbar.mdc-snackbar--open {
-	z-index: 1024;
-}
 
 /* レスポンシブな画像表示 */
 .unj-img {
