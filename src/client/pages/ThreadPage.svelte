@@ -258,6 +258,12 @@
         }
     });
 
+    const isAI = (str: string) =>
+        str.startsWith("!beep") ||
+        str.startsWith("!ai") ||
+        str.startsWith("!gen");
+    let expectedResNum = 0;
+
     const handleRes = async (data: {
         ok: boolean;
         new: Res;
@@ -288,6 +294,20 @@
                 resCount: data.new.num,
             });
             resHistoryCache.set(resHistories);
+
+            // AI機能
+            if (isAI(data.new.contentText) && expectedResNum === data.new.num) {
+                expectedResNum = 0;
+                const input = data.new.contentText;
+                try {
+                    aiWebhook([
+                        genAiWebhookHash(input), // 不正防止用ハッシュ
+                        threadId,
+                        String(data.new.num), // レス番号
+                        input,
+                    ]);
+                } catch (err) {}
+            }
         } else if (!isAlreadyScrollEnd) {
             openNewResNotice = true;
             newResCount++;
@@ -516,20 +536,8 @@
         }
 
         // AI機能
-        if (
-            result.contentText.startsWith("!beep") ||
-            result.contentText.startsWith("!ai") ||
-            result.contentText.startsWith("!gen")
-        ) {
-            const input = result.contentText;
-            try {
-                aiWebhook([
-                    genAiWebhookHash(input), // 不正防止用ハッシュ
-                    threadId,
-                    String(thread.resCount + 1), // レス番号
-                    input,
-                ]);
-            } catch (err) {}
+        if (isAI(result.contentText)) {
+            expectedResNum = thread.resCount + 1;
         }
 
         socket.emit("res", { ...result, contentMeta });
