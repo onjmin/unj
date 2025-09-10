@@ -49,8 +49,8 @@
   const embeddable =
     temp !== game || (siteInfo?.id === 6401 && url?.searchParams.has("map"));
 
-  let embedding = $state(false);
   let embedError = $state(false);
+  let embedding = $state(false);
   let embedUrl = $state("");
   let embedHtml = $state("");
   let imageEmbed = $state(false);
@@ -87,7 +87,6 @@
             })
             .catch((v) => {
               embedError = true;
-              embedding = false;
             });
           break;
         case 405:
@@ -154,7 +153,6 @@
       if (!embedUrl) throw 114514;
     } catch (err) {
       embedError = true;
-      embedding = false;
     }
   };
 
@@ -200,7 +198,17 @@
   {#if temp === oekaki}
     <div class="system-color">※お絵描き機能</div>
   {/if}
-  {#if !embedding}
+  {#if embedError}
+    <div
+      class="bg-blue-50 border border-blue-200 text-blue-800 p-6 rounded-lg shadow-md"
+    >
+      <h2 class="text-xl font-semibold">
+        埋め込みコンテンツの展開に失敗しました。
+      </h2>
+      <h3 class="text-base mt-2">不正なURL、またはバグです。。</h3>
+      <p class="mt-4">ごめんよぉ…</p>
+    </div>
+  {:else if !embedding}
     <List twoLine
       ><Item
         onclick={() => {
@@ -228,17 +236,6 @@
         >
       </Item>
     </List>
-    {#if embedError}
-      <div
-        class="bg-blue-50 border border-blue-200 text-blue-800 p-6 rounded-lg shadow-md"
-      >
-        <h2 class="text-xl font-semibold">
-          埋め込みコンテンツの展開に失敗しました。
-        </h2>
-        <h3 class="text-base mt-2">不正なURL、またはバグです。。</h3>
-        <p class="mt-4">ごめんよぉ…</p>
-      </div>
-    {/if}
   {:else}
     <IconButton class="material-icons" onclick={() => (embedding = false)}
       >close</IconButton
