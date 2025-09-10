@@ -271,6 +271,9 @@
             class="embed-image gimp-checkered-background"
             src={embedUrl}
             alt="embed"
+            onerror={() => {
+              embedError = true;
+            }}
           />
         </button>
       {/if}
@@ -284,6 +287,9 @@
         allowfullscreen
         frameborder="0"
         referrerpolicy="strict-origin-when-cross-origin"
+        onerror={() => {
+          embedError = true;
+        }}
       ></iframe>
     {:else if videoEmbedNicovideo}
       <iframe
@@ -293,6 +299,9 @@
         {height}
         allow="autoplay"
         allowfullscreen
+        onerror={() => {
+          embedError = true;
+        }}
       ></iframe>
     {:else if audioEmbedSoundCloud}
       <iframe
@@ -303,6 +312,9 @@
         allow="autoplay"
         scrolling="no"
         frameborder="no"
+        onerror={() => {
+          embedError = true;
+        }}
       ></iframe>
     {:else if audioEmbedSpotify}
       <iframe
@@ -314,6 +326,9 @@
         allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
         allowfullscreen={null}
         loading="lazy"
+        onerror={() => {
+          embedError = true;
+        }}
       ></iframe>
     {:else if gameEmbedRPGEN}
       <iframe
@@ -323,6 +338,9 @@
         {height}
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
         scrolling="no"
+        onerror={() => {
+          embedError = true;
+        }}
       ></iframe>
     {/if}
   {/if}
