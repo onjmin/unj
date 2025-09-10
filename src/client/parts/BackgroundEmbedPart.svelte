@@ -27,8 +27,8 @@
   const temp = contentTemplateMap.get(contentType) ?? [];
   const siteInfo = url ? findIn(temp, url.hostname) : null;
 
-  let embedding = $state(false);
   let embedError = $state(false);
+  let embedding = $state(false);
   let embedUrl = $state("");
   let videoEmbedYouTube = $state(false);
   let videoEmbedNicovideo = $state(false);
@@ -69,7 +69,6 @@
       if (!embedUrl) throw 114514;
     } catch (err) {
       embedError = true;
-      embedding = false;
     }
   };
 
@@ -114,7 +113,7 @@
   });
 </script>
 
-{#if embedding}
+{#if !embedError && embedding}
   <div id="unj-background-embed">
     <div class="middle-wrapper">
       {#if videoEmbedYouTube}
