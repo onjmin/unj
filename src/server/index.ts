@@ -19,6 +19,7 @@ import registerDebugZombie from "./admin/debug/zombie.js";
 import registerLogGrep from "./admin/log/grep.js";
 import registerLogLevel from "./admin/log/level.js";
 import registerThreadOwner from "./admin/thread/owner.js";
+import registerThreadRes from "./admin/thread/res.js";
 import registerUserNinja from "./admin/user/ninja.js";
 import handleGetNonceKey from "./api/getNonceKey.js";
 import handleHeadline from "./api/headline.js";
@@ -113,6 +114,7 @@ registerBlacklistTor(router);
 registerBlacklistVpngate(router);
 registerDebugZombie(router, io, online);
 registerThreadOwner(router);
+registerThreadRes(router, io);
 registerUserNinja(router);
 // TODO: 自動BANの基準を変更
 // TODO: 一律Socket新規発行停止

@@ -75,8 +75,8 @@ const AUTH_LIMIT = v.pipe(
 	v.regex(hashidsRegex),
 );
 
-const USER_NAME = v.pipe(SAFE_TEXT_SINGLELINE, v.maxLength(32));
-const USER_AVATAR = v.pipe(
+export const USER_NAME = v.pipe(SAFE_TEXT_SINGLELINE, v.maxLength(32));
+export const USER_AVATAR = v.pipe(
 	SMALLINT,
 	v.check((n) => avatarMap.has(n)),
 );

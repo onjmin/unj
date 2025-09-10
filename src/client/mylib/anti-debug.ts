@@ -32,10 +32,6 @@ export const genNonce = (key: string): string => {
 	return str.slice(0, nonceLength);
 };
 
-const VITE_UNJ_BAN_VERIFY_CODE_PEPPER = decodeEnv(
-	import.meta.env.VITE_UNJ_BAN_VERIFY_CODE_PEPPER,
-);
-
 // アンチデバッグ機構
 if (
 	antiTreeShaking() || // Tree shaking対策
