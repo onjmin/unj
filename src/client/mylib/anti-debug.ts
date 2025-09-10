@@ -7,6 +7,10 @@ const VITE_UNJ_FLAKY_RATE = Number(
 	decodeEnv(import.meta.env.VITE_UNJ_FLAKY_RATE),
 );
 
+const VITE_UNJ_AI_WEBHOOK_SECRET_PEPPER = decodeEnv(
+	import.meta.env.VITE_UNJ_AI_WEBHOOK_SECRET_PEPPER,
+);
+
 /**
  * 再現性を下げる
  */
@@ -30,6 +34,16 @@ const VITE_UNJ_NONCE_SECRET_PEPPER = decodeEnv(
 export const genNonce = (key: string): string => {
 	const str = sha256([VITE_UNJ_NONCE_SECRET_PEPPER, key].join(delimiter));
 	return str.slice(0, nonceLength);
+};
+
+/**
+ * AI Webhook不正防止用ハッシュを生成
+ */
+export const genAiWebhookHash = (input: string): string => {
+	const str = sha256(
+		[VITE_UNJ_AI_WEBHOOK_SECRET_PEPPER, sha256(input)].join(delimiter),
+	);
+	return str.slice(0, 8); // 実用上問題ないので8文字に削減
 };
 
 // アンチデバッグ機構

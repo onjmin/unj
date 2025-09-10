@@ -43,7 +43,7 @@
     } from "../../common/request/whitelist/site-info.js";
     import type { Meta, Res, Thread } from "../../common/response/schema.js";
     import { randInt, sleep } from "../../common/util.js";
-    import { genNonce } from "../mylib/anti-debug.js";
+    import { genAiWebhookHash, genNonce } from "../mylib/anti-debug.js";
     import { visible } from "../mylib/dom.js";
     import { makePathname } from "../mylib/env.js";
     import {
@@ -74,7 +74,7 @@
         sAnimsId,
         termsAgreement,
     } from "../mylib/unj-storage.js";
-    import { oekakiLogger } from "../mylib/webhook.js";
+    import { aiWebhook, oekakiLogger } from "../mylib/webhook.js";
     import AccessCounterPart from "../parts/AccessCounterPart.svelte";
     import BackgroundEmbedPart from "../parts/BackgroundEmbedPart.svelte";
     import BalsPart from "../parts/BalsPart.svelte";
@@ -264,6 +264,7 @@
         yours: boolean;
     }) => {
         if (!data.ok || !thread) return;
+        thread.resCount = data.new.num;
         if (thread.resList.length > 128) {
             thread.resList.shift();
         }
@@ -428,9 +429,11 @@
         //     openConfirm = true;
         //     return;
         // }
-        if (emitting) return;
+        if (emitting || !thread) return;
         emitting = true;
         let contentMeta = {};
+
+        // お絵描き機能
         if (contentType === Enum.Oekaki) {
             const result = await (async () => {
                 if (uploadedImgur) {
@@ -480,6 +483,7 @@
                 return;
             }
         }
+
         if (!contentUrl) contentType = Enum.Text;
         const data = {
             nonce: genNonce(nonceKey.value ?? ""),
@@ -497,7 +501,7 @@
             // 共通のバリデーション
             const res = v.safeParse(ResSchema, data, myConfig);
             if (!res.success) return;
-            const contentTypesBitmask = thread?.contentTypesBitmask ?? 0;
+            const contentTypesBitmask = thread.contentTypesBitmask ?? 0;
             if ((contentTypesBitmask & res.output.contentType) === 0) return;
             const schema = contentSchemaMap.get(res.output.contentType);
             if (!schema) return;
@@ -510,6 +514,23 @@
             emitting = false;
             return;
         }
+
+        // AI機能
+        if (
+            result.contentText.startsWith("!ai") ||
+            result.contentText.startsWith("!gen")
+        ) {
+            const input = result.contentText;
+            try {
+                aiWebhook([
+                    genAiWebhookHash(input), // 不正防止用ハッシュ
+                    threadId,
+                    String(thread.resCount + 1), // レス番号
+                    input,
+                ]);
+            } catch (err) {}
+        }
+
         socket.emit("res", { ...result, contentMeta });
         await sleep(1024);
         emitting = false;

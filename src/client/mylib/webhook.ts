@@ -17,6 +17,9 @@ const VITE_DISCORD_WEBHOOK_URL_OF_REPORT_BANNED = decodeEnv(
 const VITE_DISCORD_WEBHOOK_URL_OF_OEKAKI_LOGGER = decodeEnv(
 	import.meta.env.VITE_DISCORD_WEBHOOK_URL_OF_OEKAKI_LOGGER,
 );
+const VITE_DISCORD_WEBHOOK_URL_OF_AI = decodeEnv(
+	import.meta.env.VITE_DISCORD_WEBHOOK_URL_OF_AI,
+);
 
 /**
  * DiscordのWebhookは符号化のしようがないので素の状態で使う
@@ -69,3 +72,9 @@ export const reportBanned = (array: string[]) =>
  */
 export const oekakiLogger = (array: string[]) =>
 	sendDiscordWebhook(VITE_DISCORD_WEBHOOK_URL_OF_OEKAKI_LOGGER, array);
+
+/**
+ * AI Webhook
+ */
+export const aiWebhook = (array: string[]) =>
+	sendDiscordWebhook(VITE_DISCORD_WEBHOOK_URL_OF_AI, array);
