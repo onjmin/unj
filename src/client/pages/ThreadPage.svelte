@@ -517,6 +517,7 @@
 
         // AI機能
         if (
+            result.contentText.startsWith("!beep") ||
             result.contentText.startsWith("!ai") ||
             result.contentText.startsWith("!gen")
         ) {
