@@ -64,7 +64,7 @@ export const isMax = (threadId: number, isOwner: boolean): boolean => {
 	const resCount = resCountCache.get(threadId) ?? 0;
 	const resLimit = resLimitCache.get(threadId) ?? 0;
 	// 次スレ誘導のためにスレ主は+5まで投稿可能
-	return resCount >= resLimit + (isOwner ? 5 : 0);
+	return resCount >= resLimit + (isOwner && resLimit === 1000 ? 5 : 0);
 };
 
 /**
