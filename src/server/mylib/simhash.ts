@@ -6,7 +6,7 @@ const simhashCache: Map<number, number> = new Map();
  */
 export const isSameSimhash = (text: string, userId: number): boolean => {
 	if (text.length < 16) return false;
-	if (!text.startsWith("!gen")) return false; // 画像生成コマンドの場合は免除
+	if (text.startsWith("!gen")) return false; // 画像生成コマンドの場合は免除
 	const simhash1 = calcSimhash(text);
 	if (!simhash1) return false;
 	if (simhashCache.has(userId)) {
