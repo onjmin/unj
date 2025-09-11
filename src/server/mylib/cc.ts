@@ -56,6 +56,8 @@ const escapeUserName = (str: string) =>
 	str
 		.replace(/◆/g, "◇")
 		.replace(/■/g, "□")
+		.replace(/★/g, "☆")
+		.replace(/●/g, "○")
 		.replace(/【/g, "｛")
 		.replace(/】/g, "｝");
 
