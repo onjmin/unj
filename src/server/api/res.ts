@@ -130,8 +130,12 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			return;
 		}
 
-		// simhashチェック
-		if (isSameSimhash(content.output.contentText, userId)) return;
+		// simhashチェック（画像生成の場合は免除）
+		if (
+			!content.output.contentText.startsWith("!gen") &&
+			isSameSimhash(content.output.contentText, userId)
+		)
+			return;
 
 		// 危険な処理
 		let poolClient: PoolClient | null = null;
