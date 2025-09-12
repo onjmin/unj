@@ -29,6 +29,7 @@
     import * as v from "valibot";
     import {
         Enum,
+        ankaRegex,
         contentSchemaMap,
         contentTemplateMap,
     } from "../../common/request/content-schema.js";
@@ -312,15 +313,17 @@
             openNewResNotice = true;
             newResCount++;
         }
-        const m = data.new.contentText.match(/>>([0-9]+)/);
-        if (m) {
-            const num = Number(m[1]);
-            const replyTo = thread.resList.find(
-                (v) => v.yours && v.num === num,
-            );
+
+        const multiAnka = data.new.contentText
+            .match(ankaRegex)
+            ?.map((v) => v.slice(2))
+            .map(Number);
+        for (const n of multiAnka ?? []) {
+            const replyTo = thread.resList.find((v) => v.yours && v.num === n);
             if (replyTo) {
                 await sleep(512);
                 replyResSoundHowl?.play();
+                break;
             }
         }
     };

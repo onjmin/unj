@@ -5,9 +5,12 @@
   import IconButton from "@smui/icon-button";
   import { format } from "date-fns";
   import { ja } from "date-fns/locale";
+  import { Link } from "svelte-routing";
   import { avatarMap } from "../../common/request/avatar.js";
+  import { ankaRegex } from "../../common/request/content-schema.js";
   import { seededRandArray } from "../../common/util.js";
   import { activeController } from "../mylib/background-embed.js";
+  import { makePathname } from "../mylib/env.js";
   import { ObjectStorage } from "../mylib/object-storage.js";
   import EmbedPart from "./EmbedPart.svelte";
 
@@ -38,6 +41,27 @@
   const toaster = createToaster();
   const ignoreListCache = new ObjectStorage<string[]>("ignoreListCache");
   let showBlockButtons: boolean = $state(false);
+
+  const parseContent = function* (text: string) {
+    let lastIndex = 0;
+    let match: RegExpExecArray | null = ankaRegex.exec(text);
+
+    while (match !== null) {
+      if (match.index > lastIndex) {
+        yield {
+          type: "text" as const,
+          value: text.slice(lastIndex, match.index),
+        };
+      }
+      yield { type: "link" as const, value: match[0].slice(2) }; // 数字だけ
+      lastIndex = ankaRegex.lastIndex;
+      match = ankaRegex.exec(text);
+    }
+
+    if (lastIndex < text.length) {
+      yield { type: "text" as const, value: text.slice(lastIndex) };
+    }
+  };
 </script>
 
 <div
@@ -48,12 +72,7 @@
     <button
       class="reply {sage ? 'sage' : ''}"
       onclick={() => {
-        const m = input.match(/>>([0-9]+)/);
-        if (m) {
-          input = input.replace(/>>([0-9]+)/, `>>${num}`);
-        } else {
-          input = input.replace(/^[^\S]*/, `>>${num}\n`);
-        }
+        input = input.replace(ankaRegex, "").replace(/^[^\S]*/, `>>${num}\n`);
         focus();
       }}
       >{num}：<span class="text-[#409090] font-bold"
@@ -144,7 +163,18 @@
     <div class="content">
       {#if contentText !== ""}
         <div class="content-text">
-          {contentText}
+          {#each parseContent(contentText) as part}
+            {#if part.type === "text"}
+              {part.value}
+            {:else if part.type === "link"}
+              <Link
+                to={makePathname(`/thread/${threadId}/${part.value}`)}
+                class="cursor-pointer hover:underline"
+              >
+                >>{part.value}</Link
+              >
+            {/if}
+          {/each}
         </div>
       {/if}
       {#if commandResult !== ""}

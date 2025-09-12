@@ -12,6 +12,8 @@ import whitelistOekaki from "./whitelist/oekaki.js";
 import { findIn } from "./whitelist/site-info.js";
 import whitelistVideo from "./whitelist/video.js";
 
+export const ankaRegex = />>(?:[1-9][0-9]{0,3})(?![0-9])/g; // >>1-9999
+
 const SAFE_TEXT = v.pipe(
 	v.string(),
 	v.trim(),

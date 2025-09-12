@@ -1,7 +1,7 @@
 import type { PoolClient } from "@neondatabase/serverless";
 import { addMinutes } from "date-fns";
 import type { Socket } from "socket.io";
-import { Enum } from "../../common/request/content-schema.js";
+import { Enum, ankaRegex } from "../../common/request/content-schema.js";
 import { randInt } from "../../common/util.js";
 import { coolTimes as makeThreadCoolTimes } from "../api/makeThread.js";
 import {
@@ -142,7 +142,7 @@ export const parseCommand = async ({
 	if (cmds && cmds.length < 8) {
 		const results = [];
 		const multiAnka = str
-			.match(/>>[0-9]{1,4}/g)
+			.match(ankaRegex)
 			?.map((v) => v.slice(2))
 			.map(Number)
 			.filter(isValidRangeAnka);
