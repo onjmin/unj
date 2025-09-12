@@ -73,6 +73,39 @@
         emitting = false;
         ok();
     };
+
+    const highlightSafe = function* (text: string, query: string) {
+        if (!query) {
+            yield { type: "text" as const, value: text };
+            return;
+        }
+
+        const lowerText = text.toLowerCase();
+        const lowerQuery = query.toLowerCase();
+        let lastIndex = 0;
+        let index = lowerText.indexOf(lowerQuery, lastIndex);
+
+        while (index !== -1) {
+            if (index > lastIndex) {
+                yield {
+                    type: "text" as const,
+                    value: text.slice(lastIndex, index),
+                };
+            }
+            yield {
+                type: "highlight" as const,
+                value: text.slice(index, index + query.length),
+            };
+            lastIndex = index + query.length;
+
+            // 条件式の中で代入せずに次の検索
+            index = lowerText.indexOf(lowerQuery, lastIndex);
+        }
+
+        if (lastIndex < text.length) {
+            yield { type: "text" as const, value: text.slice(lastIndex) };
+        }
+    };
 </script>
 
 <HeaderPart title="全文検索" />
@@ -134,7 +167,6 @@
         </div>
         <div class="mt-8">
             <h3 class="text-xl font-bold mb-4">検索結果</h3>
-
             {#if emitting}
                 <p class="text-center text-gray-500">検索中...</p>
             {:else if searchResults.length === 0 && currentQuery}
@@ -144,6 +176,17 @@
             {:else if searchResults.length > 0}
                 <ul class="space-y-4">
                     {#each searchResults as result}
+                        {#snippet highlight(text: string)}
+                            {#each highlightSafe(text, currentQuery || "") as part}
+                                {#if part.type === "highlight"}
+                                    <span class="bg-yellow-200 font-semibold"
+                                        >{part.value}</span
+                                    >
+                                {:else}
+                                    {part.value}
+                                {/if}
+                            {/each}
+                        {/snippet}
                         <li class="bg-white p-4 rounded-lg shadow-md">
                             <div>
                                 <div class="flex items-end">
@@ -154,16 +197,7 @@
                                         class="text-lg font-bold text-left cursor-pointer hover:underline"
                                     >
                                         <span>
-                                            {#each result.title.split(new RegExp(`(${currentQuery || ""})`, "gi")) as part}
-                                                {#if part.toLowerCase() === (currentQuery || "").toLowerCase()}
-                                                    <span
-                                                        class="bg-yellow-200 font-semibold"
-                                                        >{part}</span
-                                                    >
-                                                {:else}
-                                                    {part}
-                                                {/if}
-                                            {/each}
+                                            {@render highlight(result.title)}
                                         </span>
                                     </Link>
                                     <span class="text-gray-500 ml-1"
@@ -184,28 +218,10 @@
                                         ID:{result.ccUserId}
                                     </span>
                                     <span class="text-gray-800">
-                                        {#each result.contentText.split(new RegExp(`(${currentQuery || ""})`, "gi")) as part}
-                                            {#if part.toLowerCase() === (currentQuery || "").toLowerCase()}
-                                                <span
-                                                    class="bg-yellow-200 font-semibold"
-                                                    >{part}</span
-                                                >
-                                            {:else}
-                                                {part}
-                                            {/if}
-                                        {/each}
+                                        {@render highlight(result.contentText)}
                                     </span>
                                     {#if result.contentUrl}
-                                        {#each result.contentUrl.split(new RegExp(`(${currentQuery || ""})`, "gi")) as part}
-                                            {#if part.toLowerCase() === (currentQuery || "").toLowerCase()}
-                                                <span
-                                                    class="bg-yellow-200 font-semibold"
-                                                    >{part}</span
-                                                >
-                                            {:else}
-                                                {part}
-                                            {/if}
-                                        {/each}
+                                        {@render highlight(result.contentUrl)}
                                     {/if}
                                 </div>
                             </div>
