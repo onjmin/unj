@@ -12,21 +12,21 @@ export const links = [
 		description: "にんにく実況(garlic)",
 		src: "https://www.z-z.jp/?livegarlic",
 	}),
-	new SiteInfo({
-		name: "🥺ぷゆゆな集会場🥺",
-		description: "あらすなよ☝️🥺URL変なのわ御愛嬌🥺",
-		src: "https://hikakinmania4-cmyk.github.io/puyuyu-na-shukaijo/",
-	}),
-	new SiteInfo({
-		name: "なんI",
-		description: "掲示板作ったんやが",
-		src: "https://openlive2ch.pages.dev/",
-	}),
-	new SiteInfo({
-		name: "なんでも実況osv",
-		description: "OSVを内部で用いています",
-		src: "https://openosv.net/bbs/livejupiter/",
-	}),
+	// new SiteInfo({
+	// 	name: "🥺ぷゆゆな集会場🥺",
+	// 	description: "あらすなよ☝️🥺URL変なのわ御愛嬌🥺",
+	// 	src: "https://hikakinmania4-cmyk.github.io/puyuyu-na-shukaijo/",
+	// }),
+	// new SiteInfo({
+	// 	name: "なんI",
+	// 	description: "掲示板作ったんやが",
+	// 	src: "https://openlive2ch.pages.dev/",
+	// }),
+	// new SiteInfo({
+	// 	name: "なんでも実況osv",
+	// 	description: "OSVを内部で用いています",
+	// 	src: "https://openosv.net/bbs/livejupiter/",
+	// }),
 	new SiteInfo({
 		name: "KomirkaBBS",
 		description: "マイナンバー登録制の匿名掲示板",
