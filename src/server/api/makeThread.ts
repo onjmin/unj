@@ -13,6 +13,7 @@ import { encodeThreadId } from "../mylib/anti-debug.js";
 import auth from "../mylib/auth.js";
 import { makeCcUserAvatar, makeCcUserId, makeCcUserName } from "../mylib/cc.js";
 import { PROD_MODE } from "../mylib/env.js";
+import { getIP } from "../mylib/ip.js";
 import { logger } from "../mylib/log.js";
 import nonce from "../mylib/nonce.js";
 import { pool } from "../mylib/pool.js";
@@ -119,8 +120,9 @@ export default ({ socket }: { socket: Socket }) => {
 						"deleted_at",
 						// メタ情報
 						"latest_res",
+						"ip",
 					].join(",")})`,
-					"VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)",
+					"VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)",
 					"RETURNING *",
 				].join(" "),
 				[
@@ -144,6 +146,7 @@ export default ({ socket }: { socket: Socket }) => {
 					deletedAt,
 					// メタ情報
 					latestRes,
+					getIP(socket),
 				],
 			);
 			if (rowCount === 0) return;

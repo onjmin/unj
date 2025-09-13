@@ -6,7 +6,7 @@ CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    ip INET NOT NULL,
+    ip INET NOT NULL DEFAULT '0.0.0.0',
     auth TEXT NOT NULL DEFAULT '', -- JWT風トークン
     ninja_pokemon SMALLINT NOT NULL DEFAULT 0, -- 忍法帖ポケモンのID「■忍【LV38,ピカチュウ,9S】◆KOSOVO//9k」
     ninja_score SMALLINT NOT NULL DEFAULT 0 -- 忍法帖スコア
@@ -17,6 +17,7 @@ CREATE TABLE threads (
     id SERIAL PRIMARY KEY,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     deleted_at TIMESTAMP, -- 論理削除の予定日時（!timer用）
+    ip INET NOT NULL DEFAULT '0.0.0.0',
     res_count SMALLINT NOT NULL DEFAULT 1, -- count()よりも軽量。レス投稿後に発行されるIDが真の値。
     latest_res TEXT NOT NULL DEFAULT '', -- 最終レス
     latest_res_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 最終レスの日時
@@ -54,6 +55,7 @@ CREATE TABLE res (
     thread_id INT NOT NULL REFERENCES threads(id) ON DELETE CASCADE,
     num SMALLINT NOT NULL DEFAULT 2, -- レス番号（各スレッド内で連番）
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    ip INET NOT NULL DEFAULT '0.0.0.0',
     is_owner BOOLEAN NOT NULL DEFAULT FALSE, -- スレ主フラグ
     sage BOOLEAN NOT NULL DEFAULT FALSE,
     -- 書き込み内容

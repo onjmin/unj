@@ -19,6 +19,7 @@ import {
 	isMax,
 	resCountCache,
 } from "../../mylib/cache.js";
+import { genTestIP } from "../../mylib/ip.js";
 import { logger } from "../../mylib/log.js";
 import { pool } from "../../mylib/pool.js";
 import { exist, getThreadRoom } from "../../mylib/socket.js";
@@ -105,8 +106,9 @@ export default (router: Router, io: Server) => {
 					"thread_id",
 					"num",
 					"sage",
+					"ip",
 				].join(", ")})`,
-				"VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)",
+				"VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)",
 				"RETURNING *",
 			].join(" ");
 
@@ -121,6 +123,7 @@ export default (router: Router, io: Server) => {
 				threadId,
 				nextResNum,
 				sage,
+				genTestIP(),
 			]);
 			if (rowCount === 0) return;
 			const { created_at } = rows[0];

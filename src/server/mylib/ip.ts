@@ -4,7 +4,7 @@ import { torIPList } from "../admin/blacklist/tor.js";
 import { vpngateIPList } from "../admin/blacklist/vpngate.js";
 import { DEV_MODE, STG_MODE } from "./env.js";
 
-const genTestIP = () => "0.0.0.0"; // Bogon
+export const genTestIP = () => "0.0.0.0"; // Bogon
 
 export const detectClientIp = (
 	fastlyClientIp: string | string[] | undefined,

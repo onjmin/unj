@@ -222,8 +222,9 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 						"num",
 						"is_owner",
 						"sage",
+						"ip",
 					].join(",")})`,
-					"VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)",
+					"VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)",
 					"RETURNING *",
 				].join(" "),
 				[
@@ -241,6 +242,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 					nextResNum,
 					isOwner,
 					sage,
+					getIP(socket),
 				],
 			);
 			if (rowCount === 0) return;
