@@ -11,7 +11,7 @@
 <HeaderPart title="リンク集" />
 
 <MainPart>
-    <p class="mb-4 text-left">おんj発の掲示板群</p>
+    <p class="mb-4">おんj発の掲示板群</p>
     <div class="w-full max-w-lg mx-auto">
         <ul class="rounded-lg shadow-md divide-y divide-gray-200 bg-white">
             {#each links as siteInfo, i}
