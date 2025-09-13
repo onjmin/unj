@@ -5,14 +5,13 @@
   import MainPart from "../parts/MainPart.svelte";
   ///////////////
 
-  import Button, { Label } from "@smui/button";
-  import LayoutGrid, { Cell } from "@smui/layout-grid";
-  import SegmentedButton, { Segment } from "@smui/segmented-button";
-  import { navigate } from "svelte-routing";
+  import Button from "@smui/button";
+  import { Link, navigate } from "svelte-routing";
+  import { Enum } from "../../common/request/content-schema.js";
   import { randArray } from "../../common/util.js";
   import { makePathname } from "../mylib/env.js";
   import { topIllusts } from "../mylib/top-illusts.js";
-  import { theme } from "../mylib/unj-storage.js";
+  import EmbedPart from "../parts/EmbedPart.svelte";
 
   const catchphrase = [
     "運営と運命を共にする、うんち実況（セーラージュピター）",
@@ -25,13 +24,14 @@
     "ブラウザゲーム",
     "ガーティックフォン",
     "絵チャ",
-    "OSV",
   ];
   const randomOnjKeyWord1 = randArray(onjKeyWords);
   const randomOnjKeyWord2 = randArray(
     onjKeyWords.filter((v) => v !== randomOnjKeyWord1),
   );
   const randomIllust = randArray(topIllusts.map((v) => v.src));
+
+  let open = $state(false);
 </script>
 
 <HeaderPart menu={false} title="うんｊ掲示板へようこそ" />
@@ -50,6 +50,28 @@
       }}
       variant="raised">入る</Button
     >
+  </div>
+  <div class="flex flex-col items-center">
+    <div class="flex space-x-4">
+      <Link to={makePathname("/terms")} class="cursor-pointer hover:underline"
+        >利用規約</Link
+      >
+      <button
+        class="text-sm text-blue-500 hover:underline bg-transparent border-none p-0 cursor-pointer"
+        onclick={() => {
+          open = true;
+        }}
+      >
+        クッキーポリシー
+      </button>
+    </div>
+    {#if open}
+      <EmbedPart
+        contentUrl="https://www.nicovideo.jp/watch/sm9720246"
+        contentType={Enum.Video}
+        auto
+      />
+    {/if}
   </div>
 </MainPart>
 

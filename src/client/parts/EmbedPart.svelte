@@ -36,7 +36,12 @@
   } from "../mylib/embed.js";
   import ImagePreviewModal from "../parts/ImagePreviewPart.svelte";
 
-  let { ccUserAvatar = 0, contentUrl = "", contentType = 0 } = $props();
+  let {
+    ccUserAvatar = 0,
+    contentUrl = "",
+    contentType = 0,
+    auto = false,
+  } = $props();
 
   const url = (() => {
     try {
@@ -184,7 +189,9 @@
     if (
       embeddable &&
       siteInfo &&
-      ([401, 402, 403, 405, 411].includes(siteInfo.id) || temp === oekaki)
+      (auto ||
+        [401, 402, 403, 405, 411].includes(siteInfo.id) ||
+        temp === oekaki)
     ) {
       tryEmbed(siteInfo);
     }
