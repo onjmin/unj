@@ -61,17 +61,10 @@
             重要なお知らせ
         </h2>
         <p class="text-sm md:text-base text-gray-700">
-            この度は、リンク集が不正アクセスに悪用されたため、
+            この度は、リンク集が不正アクセスに悪用されたため、一時的に公開を停止しております。
         </p>
-        <p class="text-sm md:text-base text-gray-700">
-            一時的に公開を停止しております。
-        </p>
-        <br />
-        <p class="text-sm md:text-base text-gray-700">
-            ご不便をおかけして大変申し訳ございませんが、
-        </p>
-        <p class="text-sm md:text-base text-gray-700">
-            何卒ご理解いただけますようお願い申し上げます。
+        <p class="text-sm md:text-base text-gray-700 mt-2">
+            ご不便をおかけして大変申し訳ございませんが、何卒ご理解いただけますようお願い申し上げます。
         </p>
         <hr class="w-full border-t border-gray-200 my-4" />
         <p class="text-sm md:text-base text-gray-700 font-bold mb-2">
@@ -79,11 +72,7 @@
         </p>
         <p class="text-xs text-gray-600">
             当サイトのリンク集が不正アクセスに悪用され、
-        </p>
-        <p class="text-xs text-gray-600">
             ご迷惑をおかけしたことを深くお詫び申し上げます。
-        </p>
-        <p class="text-xs text-gray-600">
             この度は、大変申し訳ございませんでした。
         </p>
         <p class="text-xs text-gray-600 mt-2">
