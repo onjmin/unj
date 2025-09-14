@@ -5,13 +5,13 @@
   import IconButton from "@smui/icon-button";
   import { format } from "date-fns";
   import { ja } from "date-fns/locale";
-  import { Link } from "svelte-routing";
   import { avatarMap } from "../../common/request/avatar.js";
   import { ankaRegex } from "../../common/request/content-schema.js";
   import { seededRandArray } from "../../common/util.js";
   import { activeController } from "../mylib/background-embed.js";
   import { makePathname } from "../mylib/env.js";
   import { ObjectStorage } from "../mylib/object-storage.js";
+  import { jumpToAnka, makeUnjResNumId } from "../mylib/scroll.js";
   import EmbedPart from "./EmbedPart.svelte";
 
   let {
@@ -65,6 +65,7 @@
 </script>
 
 <div
+  id={makeUnjResNumId(num.toString())}
   class="bg-transparent border-[2mm] border-solid border-white border-opacity-10 p-4 rounded-lg shadow-inner"
 >
   <!-- 上段: 名前欄 -->
@@ -167,11 +168,11 @@
             {#if part.type === "text"}
               {part.value}
             {:else if part.type === "link"}
-              <Link
-                to={makePathname(`/thread/${threadId}/${part.value}`)}
-                class="cursor-pointer hover:underline"
+              <button
+                onclick={() => jumpToAnka(part.value, threadId)}
+                class="bg-transparent border-none p-0 cursor-pointer hover:underline text-blue-500"
               >
-                >>{part.value}</Link
+                >>{part.value}</button
               >
             {/if}
           {/each}

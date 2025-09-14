@@ -54,6 +54,7 @@
     } from "../mylib/imgur.js";
     import { ObjectStorage } from "../mylib/object-storage.js";
     import { type ResHistory } from "../mylib/res-history.js";
+    import { scrollToAnka, scrollToEnd } from "../mylib/scroll.js";
     import { goodbye, hello, ok, socket } from "../mylib/socket.js";
     import {
         changeNewResSound,
@@ -247,6 +248,7 @@
         ok();
         loadThread(data.thread);
         cache.set(data.thread);
+        setTimeout(() => scrollToAnka(resNum.toString()));
     };
 
     let openNewResNotice = $state(false);
@@ -340,11 +342,6 @@
         thread.balsResNum = data.new.balsResNum;
         updateChips();
         updateContentType();
-    };
-
-    const scrollToEnd = () => {
-        const main = document.querySelector(".unj-main-part") ?? document.body;
-        main.scrollTo({ top: main.scrollHeight, behavior: "smooth" });
     };
 
     const handleLoL = (data: {
