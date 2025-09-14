@@ -6,6 +6,10 @@
     ///////////////
 
     import { topIllusts } from "../mylib/top-illusts.js";
+    import ImagePreviewModal from "../parts/ImagePreviewPart.svelte";
+
+    let open = $state(false);
+    let src = $state("");
 </script>
 
 <HeaderPart title="TOP絵集" />
@@ -23,17 +27,14 @@
     <div class="container mx-auto grid grid-cols-1 gap-8">
         {#each topIllusts as topIllust, i}
             <div class="col-span-12 space-y-2">
-                <a
-                    href={topIllust.src}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                <button
+                    onclick={() => {
+                        src = topIllust.src;
+                        open = true;
+                    }}
                 >
-                    <img
-                        class="w-full h-auto rounded-lg shadow-lg"
-                        alt="TOP絵"
-                        src={topIllust.src}
-                    />
-                </a>
+                    <img class="unj-img" alt="TOP絵" src={topIllust.src} />
+                </button>
                 <div class="text-sm text-gray-700 break-words">
                     図{i + 1}
                     {topIllust.label}
@@ -52,3 +53,5 @@
 </MainPart>
 
 <FooterPart />
+
+<ImagePreviewModal bind:open bind:src />
