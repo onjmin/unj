@@ -60,24 +60,34 @@
         <h2 class="text-xl md:text-2xl font-bold text-gray-900 mb-2">
             重要なお知らせ
         </h2>
-        <p class="text-sm md:text-base text-gray-700 mb-4">
-            リンク集が荒らし行為に悪用される事態が発生したため、<br
-                class="md:hidden"
-            />一時的に公開を停止しております。
+        <p class="text-sm md:text-base text-gray-700">
+            この度は、リンク集が不正アクセスに悪用されたため、
         </p>
-        <p class="text-sm md:text-base text-gray-700 mb-6">
-            ご不便をおかけして大変申し訳ございませんが、<br
-                class="md:hidden"
-            />何卒ご理解いただけますようお願い申し上げます。
+        <p class="text-sm md:text-base text-gray-700">
+            一時的に公開を停止しております。
+        </p>
+        <br />
+        <p class="text-sm md:text-base text-gray-700">
+            ご不便をおかけして大変申し訳ございませんが、
+        </p>
+        <p class="text-sm md:text-base text-gray-700">
+            何卒ご理解いただけますようお願い申し上げます。
         </p>
         <hr class="w-full border-t border-gray-200 my-4" />
         <p class="text-sm md:text-base text-gray-700 font-bold mb-2">
-            ぷゆゆ管理人様へ
+            ぷゆゆ管理人様、なんI管理人様へ
         </p>
         <p class="text-xs text-gray-600">
-            この度は、当サイトのリンク集が悪質な行為に利用されてしまい、ご迷惑をおかけして大変申し訳ございませんでした。
-            このような事態になってしまったことを深くお詫び申し上げます。
-            いつもぷゆゆを運営していただき、心より感謝申し上げます。
+            当サイトのリンク集が不正アクセスに悪用され、
+        </p>
+        <p class="text-xs text-gray-600">
+            ご迷惑をおかけしたことを深くお詫び申し上げます。
+        </p>
+        <p class="text-xs text-gray-600">
+            この度は、大変申し訳ございませんでした。
+        </p>
+        <p class="text-xs text-gray-600 mt-2">
+            日頃より掲示板を運営していただき、心より感謝申し上げます。
         </p>
     </div>
 </MainPart>
