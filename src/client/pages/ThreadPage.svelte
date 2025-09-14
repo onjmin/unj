@@ -92,7 +92,7 @@
     changeNewResSound();
     changeReplyResSound();
 
-    let { threadId = "", resNum = 2, noScroll = false } = $props();
+    let { threadId = "", resNum = 2 } = $props();
 
     let openConfirm = $state(false);
     let textarea: HTMLTextAreaElement | null = $state(null);
@@ -248,7 +248,8 @@
         ok();
         loadThread(data.thread);
         cache.set(data.thread);
-        if (!noScroll) setTimeout(() => scrollToAnka(resNum.toString()));
+        if (!new URLSearchParams(location.search).has("top"))
+            setTimeout(() => scrollToAnka(resNum.toString()));
     };
 
     let openNewResNotice = $state(false);
