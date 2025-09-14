@@ -545,6 +545,15 @@
         await sleep(1024);
         emitting = false;
         ok();
+
+        // 投稿後、お絵描きモード解除
+        if (
+            contentType === Enum.Oekaki &&
+            (thread.contentTypesBitmask & Enum.Text) !== 0
+        ) {
+            contentType = Enum.Text;
+            checkedOekaki = false;
+        }
     };
 
     const tryLoL = () => {
