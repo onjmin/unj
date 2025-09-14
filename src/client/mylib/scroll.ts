@@ -12,7 +12,11 @@ export const scrollToAnka = (resNum: string): boolean => {
 	const main = document.querySelector(".unj-main-part") ?? document.body;
 	const ankaRes = document.getElementById(makeUnjResNumId(resNum));
 	if (ankaRes) {
-		main.scrollTo({ top: ankaRes.offsetTop, behavior: "smooth" });
+		// 画面の高さの半分から、要素の高さの半分を引くことで、画面の真ん中を算出
+		const offset =
+			ankaRes.offsetTop - main.clientHeight / 2 + ankaRes.clientHeight / 2;
+
+		main.scrollTo({ top: offset, behavior: "smooth" });
 		setTimeout(() => {
 			ankaRes.classList.add(
 				"bg-yellow-200",

@@ -49,6 +49,13 @@
   <Route path="{makePathname('/thread')}/:threadId/:resNum" let:params>
     <ThreadPage threadId={params.threadId} resNum={Number(params.resNum)} />
   </Route>
+  <Route path="{makePathname('/thread')}/:threadId/:resNum/top" let:params>
+    <ThreadPage
+      threadId={params.threadId}
+      resNum={Number(params.resNum)}
+      noScroll
+    />
+  </Route>
   <!-- Misskey -->
   <Route path={makePathname("/misskey/inmusky")} let:params>
     <MisskeyPage misskeyId="inmusky" />

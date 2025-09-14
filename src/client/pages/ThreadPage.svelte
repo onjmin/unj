@@ -92,7 +92,7 @@
     changeNewResSound();
     changeReplyResSound();
 
-    let { threadId = "", resNum = 2 } = $props();
+    let { threadId = "", resNum = 2, noScroll = false } = $props();
 
     let openConfirm = $state(false);
     let textarea: HTMLTextAreaElement | null = $state(null);
@@ -248,7 +248,7 @@
         ok();
         loadThread(data.thread);
         cache.set(data.thread);
-        setTimeout(() => scrollToAnka(resNum.toString()));
+        if (!noScroll) setTimeout(() => scrollToAnka(resNum.toString()));
     };
 
     let openNewResNotice = $state(false);

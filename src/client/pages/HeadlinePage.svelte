@@ -329,7 +329,7 @@
                                             makePathname(
                                                 findMisskey(thread.id)
                                                     ? `/misskey/${findMisskey(thread.id)?.misskeyId}`
-                                                    : `/thread/${thread.id}/${thread.resCount > queryResultLimit ? thread.resCount - 8 : ""}`,
+                                                    : `/thread/${thread.id}/${thread.resCount > queryResultLimit ? `${thread.resCount - 8}/top` : ""}`,
                                             ),
                                         )}
                                 >
