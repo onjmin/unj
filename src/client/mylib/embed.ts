@@ -121,6 +121,13 @@ export const parseAudioEmbedSpotify = (url: URL): string | undefined => {
 	const id = match[2];
 	return `https://open.spotify.com/embed/${type}/${id}?utm_source=generator`;
 };
+export const parseAudioEmbedSuno = (url: URL): string | undefined => {
+	const match = url.pathname.match(/\/(song)\/([a-f0-9-]{36})/);
+	if (!match) return;
+	const type = match[1];
+	const id = match[2];
+	return `https://suno.com/embed/${id}`;
+};
 export const parseGameEmbedRPGEN = (url: URL): string | undefined => {
 	const id = url?.searchParams.get("map");
 	if (!id) return;

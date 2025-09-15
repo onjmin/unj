@@ -17,6 +17,7 @@
   import {
     parseAudioEmbedSoundCloud,
     parseAudioEmbedSpotify,
+    parseAudioEmbedSuno,
     parseGameEmbedRPGEN,
     parseGifEmbedGIPHY,
     parseGifEmbedImgBB,
@@ -63,6 +64,7 @@
   let videoEmbedNicovideo = $state(false);
   let audioEmbedSoundCloud = $state(false);
   let audioEmbedSpotify = $state(false);
+  let audioEmbedSuno = $state(false);
   let gameEmbedRPGEN = $state(false);
   const tryEmbed = (siteInfo: SiteInfo) => {
     if (!url) return;
@@ -145,6 +147,10 @@
         case 3202:
           audioEmbedSpotify = true;
           embedUrl = parseAudioEmbedSpotify(url) ?? "";
+          break;
+        case 3203:
+          audioEmbedSuno = true;
+          embedUrl = parseAudioEmbedSuno(url) ?? "";
           break;
         case 6401:
           gameEmbedRPGEN = true;
@@ -330,6 +336,20 @@
         allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
         allowfullscreen={null}
         loading="lazy"
+        onerror={() => {
+          embedError = true;
+        }}
+      ></iframe>
+    {:else if audioEmbedSuno}
+      <iframe
+        title="embed"
+        src={embedUrl}
+        {width}
+        {height}
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen
+        frameborder="0"
+        referrerpolicy="strict-origin-when-cross-origin"
         onerror={() => {
           embedError = true;
         }}
