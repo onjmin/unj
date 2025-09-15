@@ -48,9 +48,7 @@
 </HeaderPart>
 
 <MainPart>
-    <div class="text-left">
-        <TermsPart />
-    </div>
+    <TermsPart />
 </MainPart>
 
 <FooterPart />
