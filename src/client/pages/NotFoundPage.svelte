@@ -17,11 +17,8 @@
     });
 
     const illusts = [
-        "https://lohas.nicoseiga.jp//thumb/11535917i",
+        "https://i.imgur.com/O01c9cc.png",
         "https://lohas.nicoseiga.jp//thumb/11535907i",
-        "https://lohas.nicoseiga.jp//thumb/11535911i",
-        "https://lohas.nicoseiga.jp//thumb/11532522i",
-        "https://lohas.nicoseiga.jp/thumb/11537788i",
         "https://lohas.nicoseiga.jp/thumb/11539312i",
     ];
     const randomIllust = randArray(illusts);
