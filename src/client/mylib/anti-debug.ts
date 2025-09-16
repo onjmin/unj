@@ -39,9 +39,9 @@ export const genNonce = (key: string): string => {
 /**
  * AI Webhook不正防止用ハッシュを生成
  */
-export const genAiWebhookHash = (input: string): string => {
+export const genAiWebhookHash = (input: string, nonce: string): string => {
 	const str = sha256(
-		[VITE_UNJ_AI_WEBHOOK_SECRET_PEPPER, sha256(input)].join(delimiter),
+		[VITE_UNJ_AI_WEBHOOK_SECRET_PEPPER, sha256(input), nonce].join(delimiter),
 	);
 	return str.slice(0, 8); // 実用上問題ないので8文字に削減
 };

@@ -25,6 +25,7 @@
         differenceInSeconds,
         intervalToDuration,
     } from "date-fns";
+    import { sha256 } from "js-sha256";
     import { navigate } from "svelte-routing";
     import * as v from "valibot";
     import {
@@ -303,9 +304,11 @@
             if (isAI(data.new.contentText) && expectedResNum === data.new.num) {
                 expectedResNum = 0;
                 const input = data.new.contentText;
+                const nonce = sha256(Math.random().toString()).slice(0, 8);
                 try {
                     aiWebhook([
-                        genAiWebhookHash(input), // 不正防止用ハッシュ
+                        genAiWebhookHash(input, nonce), // 不正防止用ハッシュ
+                        nonce,
                         threadId,
                         String(data.new.num), // レス番号
                         input,

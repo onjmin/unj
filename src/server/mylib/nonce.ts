@@ -6,7 +6,7 @@ import auth from "./auth.js";
 const nonces: Map<number, string> = new Map();
 const locks: Map<number, boolean> = new Map();
 
-const genNonceKey = () => sha256(Math.random().toString()).slice(0, 8);
+const genNonceKey = () => crypto.randomUUID().slice(0, 8);
 
 export const init = (socket: Socket) => {
 	const key = auth.getUserId(socket);
