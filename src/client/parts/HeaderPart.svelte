@@ -4,7 +4,6 @@
 
   let { children = null, title = "", menu = true } = $props();
   import { ArrowLeftIcon } from "@lucide/svelte";
-  import { randArray } from "../../common/util.js";
   import {
     isEnabledRightMenu,
     isMobile,
@@ -45,9 +44,7 @@
         class="flex items-center space-x-1 px-3 py-2 rounded bg-gray-600 text-gray-200 hover:opacity-80"
         onclick={() => navigate(makePathname("/new"))}
       >
-        <span class="text-sm font-medium"
-          >{randArray(["スレッド", "スッドレ"])}作成</span
-        >
+        <span class="text-sm font-medium">スレ作成</span>
       </button>
     {:else}
       <button
