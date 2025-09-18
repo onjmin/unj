@@ -330,7 +330,7 @@
         activeLayer.fill("#FFF");
         activeLayer.trace();
         saveData();
-        activeLayer = new oekaki.LayeredCanvas("レイヤー #1");
+        activeLayer = new oekaki.LayeredCanvas("レイヤー #2");
         saveData();
       }
     })();
