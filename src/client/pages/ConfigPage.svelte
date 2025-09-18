@@ -117,8 +117,9 @@
     let currentPage: number = $state(1); // 現在のページ
     const itemsPerPage: number = 10; // 1ページあたりの表示枚数
     const totalPages = $derived(Math.ceil(imgurList.length / itemsPerPage));
+    const reversedImgurList = $derived([...imgurList].reverse());
     const paginatedImgurList = $derived(
-        imgurList.slice(
+        reversedImgurList.slice(
             (currentPage - 1) * itemsPerPage,
             currentPage * itemsPerPage,
         ),
