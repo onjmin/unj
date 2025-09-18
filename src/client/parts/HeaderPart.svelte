@@ -21,6 +21,7 @@
   }
 
   $isEnabledRightMenu = children !== null;
+  const pathname1 = pathname().split("/")[1] ?? "";
 </script>
 
 <svelte:head>
@@ -31,8 +32,21 @@
 
 <header class="unj-header-part w-full bg-gray-800 text-gray-200 shadow-md">
   <div class="max-w-6xl mx-auto px-4 flex items-center">
-    <!-- 左端：戻るボタン -->
-    {#if pathname() !== "/" && pathname().split("/")[1] !== "headline"}
+    <!-- ヘッダー左端：ボタン -->
+    {#if pathname1 === ""}
+      <!-- empty -->
+    {:else if pathname1 === "error"}
+      <!-- empty -->
+    {:else if pathname1 === "akukin"}
+      <!-- empty -->
+    {:else if pathname1 === "headline"}
+      <button
+        class="flex items-center space-x-1 px-3 py-2 rounded bg-gray-600 text-gray-200 hover:opacity-80"
+        onclick={() => navigate(makePathname("/new"))}
+      >
+        <span class="text-sm font-medium">スレッド作成</span>
+      </button>
+    {:else}
       <button
         class="flex items-center space-x-1 px-3 py-2 rounded bg-gray-600 text-gray-200 hover:opacity-80"
         onclick={() => navigate(makePathname("/headline"))}

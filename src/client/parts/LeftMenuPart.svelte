@@ -13,6 +13,8 @@
     import { makePathname, pathname } from "../mylib/env.js";
 
     let { open = false } = $props();
+
+    const pathname1 = pathname().split("/")[1] ?? "";
 </script>
 
 {#snippet margin()}
@@ -33,7 +35,7 @@
         <List>
             <Item
                 onclick={() => navigate(makePathname("/new"))}
-                activated={pathname().split("/")[1] === "new"}
+                activated={pathname1 === "new"}
             >
                 <Graphic class="material-icons" aria-hidden="true"
                     >edit_note</Graphic
@@ -42,7 +44,7 @@
             </Item>
             <Item
                 onclick={() => navigate(makePathname("/headline"))}
-                activated={pathname().split("/")[1] === "headline"}
+                activated={pathname1 === "headline"}
             >
                 <Graphic class="material-icons" aria-hidden="true"
                     >article</Graphic
@@ -51,7 +53,7 @@
             </Item>
             <Item
                 onclick={() => navigate(makePathname("/search"))}
-                activated={pathname().split("/")[1] === "search"}
+                activated={pathname1 === "search"}
             >
                 <Graphic class="material-icons" aria-hidden="true"
                     >search</Graphic
@@ -60,7 +62,7 @@
             </Item>
             <Item
                 onclick={() => navigate(makePathname("/history"))}
-                activated={pathname().split("/")[1] === "history"}
+                activated={pathname1 === "history"}
             >
                 <Graphic class="material-icons" aria-hidden="true"
                     >history</Graphic
@@ -69,7 +71,7 @@
             </Item>
             <Item
                 onclick={() => navigate(makePathname("/config"))}
-                activated={pathname().split("/")[1] === "config"}
+                activated={pathname1 === "config"}
             >
                 <Graphic class="material-icons" aria-hidden="true"
                     >settings</Graphic
@@ -81,7 +83,7 @@
             <Subheader tag="h6">サイト情報</Subheader>
             <Item
                 onclick={() => navigate(makePathname("/terms"))}
-                activated={pathname().split("/")[1] === "terms"}
+                activated={pathname1 === "terms"}
             >
                 <Graphic class="material-icons" aria-hidden="true"
                     >gavel</Graphic
@@ -90,7 +92,7 @@
             </Item>
             <Item
                 onclick={() => navigate(makePathname("/contact"))}
-                activated={pathname().split("/")[1] === "contact"}
+                activated={pathname1 === "contact"}
             >
                 <Graphic class="material-icons" aria-hidden="true">help</Graphic
                 >
@@ -98,7 +100,7 @@
             </Item>
             <Item
                 onclick={() => navigate(makePathname("/news"))}
-                activated={pathname().split("/")[1] === "news"}
+                activated={pathname1 === "news"}
             >
                 <Graphic class="material-icons" aria-hidden="true"
                     >newspaper</Graphic
@@ -107,7 +109,7 @@
             </Item>
             <Item
                 onclick={() => navigate(makePathname("/art"))}
-                activated={pathname().split("/")[1] === "art"}
+                activated={pathname1 === "art"}
             >
                 <Graphic class="material-icons" aria-hidden="true"
                     >view_carousel</Graphic
@@ -116,7 +118,7 @@
             </Item>
             <Item
                 onclick={() => navigate(makePathname("/links"))}
-                activated={pathname().split("/")[1] === "links"}
+                activated={pathname1 === "links"}
             >
                 <Graphic class="material-icons" aria-hidden="true">link</Graphic
                 >

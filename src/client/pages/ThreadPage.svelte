@@ -275,12 +275,13 @@
         yours: boolean;
     }) => {
         if (!data.ok || !thread) return;
-        thread.resCount = data.new.num;
+        const newResNum = data.new.num;
+        thread.resCount = newResNum;
         if (thread.resList.length > 128) {
             thread.resList.shift();
         }
         thread.resList.push(data.new);
-        if (thread.ageResNum === data.new.num) thread.ageRes = data.new;
+        if (thread.ageResNum === newResNum) thread.ageRes = data.new;
         newResSoundHowl?.play();
         if (data.yours) {
             ok();
@@ -292,26 +293,25 @@
             scrollToEnd();
             resHistories?.unshift({
                 latestRes: data.new.contentText || data.new.contentUrl,
-                resNum: data.new.num,
+                resNum: newResNum,
                 createdAt: new Date(data.new.createdAt),
                 threadId: threadId,
                 title: title,
-                resCount: data.new.num,
+                resCount: newResNum,
             });
             resHistoryCache.set(resHistories);
 
             // AI機能
-            if (isAI(data.new.contentText) && expectedResNum === data.new.num) {
+            if (isAI(data.new.contentText) && expectedResNum === newResNum) {
                 expectedResNum = 0;
-                const input = data.new.contentText;
                 const nonce = sha256(Math.random().toString()).slice(0, 8);
                 try {
                     aiWebhook([
-                        genAiWebhookHash(input, nonce), // 不正防止用ハッシュ
+                        genAiWebhookHash(nonce, threadId, newResNum),
                         nonce,
                         threadId,
-                        String(data.new.num), // レス番号
-                        input,
+                        String(newResNum), // レス番号
+                        data.new.contentText,
                     ]);
                 } catch (err) {}
             }
