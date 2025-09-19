@@ -94,9 +94,9 @@
         >
           <div
             class="w-10 h-10 border border-gray-300 dark:border-gray-600 mr-3 rounded-sm bg-cover bg-center"
-            style="background-image: url({layer.used
-              ? layer.canvas.toDataURL('image/png')
-              : 'https://placehold.co/40x40?text=new'});"
+            style="background-image: url({layer.canvas.toDataURL(
+              'image/png',
+            )});"
           ></div>
 
           <div class="flex-grow">

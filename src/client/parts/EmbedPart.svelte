@@ -7,7 +7,10 @@
     PrimaryText,
     SecondaryText,
   } from "@smui/list";
-  import { contentTemplateMap } from "../../common/request/content-schema.js";
+  import {
+    Enum,
+    contentTemplateMap,
+  } from "../../common/request/content-schema.js";
   import game from "../../common/request/whitelist/game.js";
   import oekaki from "../../common/request/whitelist/oekaki.js";
   import {
@@ -35,6 +38,7 @@
     parseVideoEmbedNicovideo,
     parseVideoEmbedYouTube,
   } from "../mylib/embed.js";
+  import { scrollToEnd } from "../mylib/scroll.js";
   import ImagePreviewModal from "../parts/ImagePreviewPart.svelte";
 
   let {
@@ -42,6 +46,8 @@
     contentUrl = "",
     contentType = 0,
     auto = false,
+    oekakiCollab = $bindable(""),
+    bindContentType = $bindable(0),
   } = $props();
 
   const url = (() => {
@@ -209,7 +215,7 @@
 
 {#if siteInfo}
   {#if temp === oekaki}
-    <div class="system-color">※お絵描き機能</div>
+    <div class="text-red-400">※お絵描き機能</div>
   {/if}
   {#if embedError}
     <div
@@ -250,9 +256,24 @@
       </Item>
     </List>
   {:else}
-    <IconButton class="material-icons" onclick={() => (embedding = false)}
-      >close</IconButton
-    >
+    <div class="flex items-center">
+      <IconButton class="material-icons" onclick={() => (embedding = false)}
+        >close</IconButton
+      >
+      {#if temp === oekaki || siteInfo.id === 405}
+        <button
+          class="ml-4 text-blue-500 hover:text-blue-700 font-bold transition duration-300"
+          onclick={() => {
+            if (!confirm("お絵描きコラボしますか？")) return;
+            oekakiCollab = contentUrl;
+            bindContentType = Enum.Oekaki;
+            scrollToEnd();
+          }}
+        >
+          お絵描きコラボ
+        </button>
+      {/if}
+    </div>
     <br />
     {#if imageEmbed}
       {#if siteInfo.id === 404}
@@ -373,9 +394,6 @@
 <ImagePreviewModal bind:open bind:src />
 
 <style>
-  .system-color {
-    color: #e57373;
-  }
   :global(.embed-favicon-item-graphic) {
     background-repeat: no-repeat;
     background-size: cover;

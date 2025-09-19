@@ -6,9 +6,9 @@ export const scrollToEnd = () => {
 	main.scrollTo({ top: main.scrollHeight, behavior: "smooth" });
 };
 
-export const makeUnjResNumId = (resNum: string) => `unj-res-num-${resNum}`;
+export const makeUnjResNumId = (resNum: number) => `unj-res-num-${resNum}`;
 
-export const scrollToAnka = (resNum: string): boolean => {
+export const scrollToAnka = (resNum: number): boolean => {
 	const main = document.querySelector(".unj-main-part") ?? document.body;
 	const ankaRes = document.getElementById(makeUnjResNumId(resNum));
 	if (ankaRes) {
@@ -32,7 +32,7 @@ export const scrollToAnka = (resNum: string): boolean => {
 	return false;
 };
 
-export const jumpToAnka = (resNum: string, threadId: string) => {
+export const jumpToAnka = (resNum: number, threadId: string) => {
 	if (!scrollToAnka(resNum)) {
 		navigate(makePathname(`/thread/${threadId}/${resNum}`));
 	}

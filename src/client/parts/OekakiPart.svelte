@@ -9,12 +9,12 @@
     mdiFormatColorFill,
     mdiGrid,
     mdiHandBackRight,
-    mdiLayers,
     mdiPen,
     mdiRedo,
     mdiTrashCanOutline,
     mdiUndo,
   } from "@mdi/js";
+  import { corsKiller } from "@onjmin/cors-killer";
   import * as oekaki from "@onjmin/oekaki";
   import { Slider } from "@skeletonlabs/skeleton-svelte";
   import Button, { Label } from "@smui/button";
@@ -30,10 +30,12 @@
 
   let {
     threadId,
+    oekakiCollab,
     toDataURL = $bindable(),
     activeLayer = $bindable(null),
   }: {
     threadId: string;
+    oekakiCollab: string;
     toDataURL: () => string;
     activeLayer: oekaki.LayeredCanvas | null;
   } = $props();
@@ -163,14 +165,8 @@
     if (!text.includes(MAGIC_STRING)) return;
     // クリップボードから画像を取得
     const bitmap = await createImageBitmap(blob);
-    // 中央配置
-    const ratio = Math.min(width / bitmap.width, height / bitmap.height);
-    const w = bitmap.width * ratio;
-    const h = bitmap.height * ratio;
-    const offsetX = (width - w) / 2;
-    const offsetY = (height - h) / 2;
-    activeLayer.ctx.drawImage(bitmap, offsetX, offsetY, w, h);
-    activeLayer?.trace();
+    activeLayer.paste(bitmap);
+    activeLayer.trace();
   };
   $effect(() => {
     if (!upperLayer) return;
@@ -181,11 +177,9 @@
 
   const dropper = (x: number, y: number) => {
     if (!activeLayer) return;
-    const ctx = oekaki.render().getContext("2d", { willReadFrequently: true });
-    if (!ctx) return;
-    const { data } = ctx.getImageData(0, 0, width, height);
-    const index = (y * width + x) * 4;
-    const [r, g, b, a] = data.subarray(index, index + 4);
+    const result = oekaki.dropper(x, y);
+    if (!result) return;
+    const [r, g, b, a] = result;
     if (a) {
       setErasable(false);
       erasable = false;
@@ -257,9 +251,41 @@
 
   let width = 0;
   let height = 0;
+  let conflictId: NodeJS.Timeout;
   $effect(() => {
-    init();
+    if (oekakiCollab === "") {
+      init();
+    } else {
+      const imgUrl = oekakiCollab;
+      deleteSaveData().then(init);
+      clearTimeout(conflictId);
+      conflictId = setTimeout(async () => {
+        if (_conflictId !== conflictId) return;
+        const img = await new Promise<HTMLImageElement>((resolve) => {
+          const image = new Image();
+          image.onload = () => resolve(image);
+          image.crossOrigin = "anonymous";
+          image.src = corsKiller(imgUrl);
+        });
+        if (_conflictId !== conflictId) return;
+        activeLayer?.paste(img);
+        activeLayer?.trace();
+        saveData();
+        activeLayer = new oekaki.LayeredCanvas("お絵描きコラボ");
+        saveData();
+      }, 500);
+      let _conflictId = conflictId;
+    }
   });
+  const deleteSaveData = () =>
+    Promise.all([
+      widthCache.set(null),
+      heightCache.set(null),
+      uuidsCache.set(null),
+      activeUuidCache.set(null),
+      ...oekaki.getLayers().map((v) => metaCacheByUuid(v.uuid).set(null)),
+      ...oekaki.getLayers().map((v) => dataCacheByUuid(v.uuid).set(null)),
+    ]);
   const init = async () => {
     const [w, h] = await Promise.all([widthCache.get(), heightCache.get()]);
     if (w && h) {
@@ -645,14 +671,7 @@
         !confirm("後悔しませんね？")
       )
         return;
-      await Promise.all([
-        widthCache.set(null),
-        heightCache.set(null),
-        uuidsCache.set(null),
-        activeUuidCache.set(null),
-        ...oekaki.getLayers().map((v) => metaCacheByUuid(v.uuid).set(null)),
-        ...oekaki.getLayers().map((v) => dataCacheByUuid(v.uuid).set(null)),
-      ]);
+      await deleteSaveData();
       init();
     }}>delete_forever</IconButton
   >

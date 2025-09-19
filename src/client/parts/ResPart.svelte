@@ -9,7 +9,6 @@
   import { ankaRegex } from "../../common/request/content-schema.js";
   import { seededRandArray } from "../../common/util.js";
   import { activeController } from "../mylib/background-embed.js";
-  import { makePathname } from "../mylib/env.js";
   import { ObjectStorage } from "../mylib/object-storage.js";
   import { jumpToAnka, makeUnjResNumId } from "../mylib/scroll.js";
   import EmbedPart from "./EmbedPart.svelte";
@@ -18,7 +17,10 @@
     children = null,
     backgroundEmbedControls = false,
     focus,
-    input = $bindable(""),
+    ignoreList = $bindable(),
+    oekakiCollab = $bindable(""),
+    bindContentText = $bindable(""),
+    bindContentType = $bindable(0),
     // 書き込み内容
     ccUserId = "",
     ccUserName = "",
@@ -35,7 +37,6 @@
     createdAt = new Date(),
     // メタ情報
     threadId = "",
-    ignoreList = $bindable(),
   } = $props();
 
   const toaster = createToaster();
@@ -65,7 +66,7 @@
 </script>
 
 <div
-  id={makeUnjResNumId(num.toString())}
+  id={makeUnjResNumId(num)}
   class="bg-transparent border-[2mm] border-solid border-white border-opacity-10 p-4 rounded-lg shadow-inner"
 >
   <!-- 上段: 名前欄 -->
@@ -73,7 +74,9 @@
     <button
       class="reply {sage ? 'sage' : ''}"
       onclick={() => {
-        input = input.replace(ankaRegex, "").replace(/^[^\S]*/, `>>${num}\n`);
+        bindContentText = bindContentText
+          .replace(ankaRegex, "")
+          .replace(/^[^\S]*/, `>>${num}\n`);
         focus();
       }}
       >{num}：<span class="text-[#409090] font-bold"
@@ -94,7 +97,7 @@
     })}
     ID:{ccUserId !== "" ? ccUserId : "???"}
     {#if isOwner}
-      <span class="text-xs system-color">主</span>
+      <span class="text-xs text-red-400">主</span>
     {/if}
     {#if showBlockButtons}
       <div class="inline-flex flex-shrink-0 space-x-2 items-end">
@@ -169,7 +172,7 @@
               {part.value}
             {:else if part.type === "link"}
               <button
-                onclick={() => jumpToAnka(part.value, threadId)}
+                onclick={() => jumpToAnka(Number(part.value), threadId)}
                 class="bg-transparent border-none p-0 cursor-pointer hover:underline text-blue-500"
               >
                 >>{part.value}</button
@@ -179,14 +182,14 @@
         </div>
       {/if}
       {#if commandResult !== ""}
-        <div class="content-text system-color">
+        <div class="content-text text-red-400">
           {commandResult}
         </div>
       {/if}
       {#if ps !== ""}
         <div class="ps">
           <br />
-          <div class="system-color">※追記</div>
+          <div class="text-red-400">※追記</div>
           <div class="content-text">{ps}</div>
         </div>
       {/if}
@@ -203,7 +206,12 @@
         </div>
         {#key num}
           <div class="content-embed">
-            <EmbedPart {ccUserAvatar} {contentUrl} {contentType} />
+            <EmbedPart
+              {contentUrl}
+              {contentType}
+              bind:oekakiCollab
+              bind:bindContentType
+            />
           </div>
         {/key}
       {/if}
@@ -215,9 +223,6 @@
 <Toaster {toaster}></Toaster>
 
 <style>
-  .system-color {
-    color: #e57373;
-  }
   .sage {
     text-decoration: underline;
   }

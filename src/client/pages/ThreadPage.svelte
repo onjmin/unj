@@ -55,7 +55,7 @@
     } from "../mylib/imgur.js";
     import { ObjectStorage } from "../mylib/object-storage.js";
     import { type ResHistory } from "../mylib/res-history.js";
-    import { scrollToAnka, scrollToEnd } from "../mylib/scroll.js";
+    import { scrollToAnka } from "../mylib/scroll.js";
     import { goodbye, hello, ok, socket } from "../mylib/socket.js";
     import {
         changeNewResSound,
@@ -107,6 +107,7 @@
     let contentText = $state("");
     let contentUrl = $state("");
     let contentType = $state(0);
+    let oekakiCollab = $state("");
     let isSage = $state(false);
     let isNinja = $state(false);
     let isExpand = $state(resFormExpand.value === "1");
@@ -250,11 +251,12 @@
         loadThread(data.thread);
         cache.set(data.thread);
         if (!new URLSearchParams(location.search).has("top"))
-            setTimeout(() => scrollToAnka(resNum.toString()));
+            setTimeout(() => scrollToAnka(resNum));
     };
 
     let openNewResNotice = $state(false);
     let newResCount = $state(0);
+    let newResNum = $state(0);
     let isAlreadyScrollEnd = $state(false);
     $effect(() => {
         if (isAlreadyScrollEnd) {
@@ -275,7 +277,7 @@
         yours: boolean;
     }) => {
         if (!data.ok || !thread) return;
-        const newResNum = data.new.num;
+        newResNum = data.new.num;
         thread.resCount = newResNum;
         if (thread.resList.length > 128) {
             thread.resList.shift();
@@ -290,7 +292,7 @@
             contentUrl = "";
             uploadedImgur = null;
             await sleep(512);
-            scrollToEnd();
+            scrollToAnka(newResNum);
             resHistories?.unshift({
                 latestRes: data.new.contentText || data.new.contentUrl,
                 resNum: newResNum,
@@ -637,6 +639,7 @@
         bind:activeLayer
         {tryRes}
         {isExpand}
+        {oekakiCollab}
     />
     <div class="w-full max-w-xs">
         <Button disabled={emitting} onclick={tryRes} variant="raised"
@@ -744,7 +747,7 @@
         <Label>{newResCount}件の新着レス</Label>
     {/snippet}
     {#snippet actions()}
-        <Button onclick={scrollToEnd}>見に行く</Button>
+        <Button onclick={() => scrollToAnka(newResNum)}>見に行く</Button>
         <Button>却下</Button>
     {/snippet}
 </Banner>
@@ -756,7 +759,9 @@
                 siteInfo?.id === 3201} -->
         <ResPart
             bind:ignoreList
-            bind:input={contentText}
+            bind:oekakiCollab
+            bind:bindContentText={contentText}
+            bind:bindContentType={contentType}
             backgroundEmbedControls={false}
             {focus}
             ccUserId={thread?.ageRes.ccUserId}
@@ -938,7 +943,9 @@
                 <ResPart
                     {focus}
                     bind:ignoreList
-                    bind:input={contentText}
+                    bind:oekakiCollab
+                    bind:bindContentText={contentText}
+                    bind:bindContentType={contentType}
                     ccUserId={thread.ccUserId}
                     ccUserName={thread.ccUserName}
                     ccUserAvatar={thread.ccUserAvatar}
@@ -982,7 +989,9 @@
                     <ResPart
                         {focus}
                         bind:ignoreList
-                        bind:input={contentText}
+                        bind:oekakiCollab
+                        bind:bindContentText={contentText}
+                        bind:bindContentType={contentType}
                         ccUserId={res.ccUserId}
                         ccUserName={res.ccUserName}
                         ccUserAvatar={res.ccUserAvatar}
