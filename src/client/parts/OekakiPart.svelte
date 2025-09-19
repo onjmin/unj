@@ -268,7 +268,7 @@
           image.src = corsKiller(imgUrl);
         });
         if (_conflictId !== conflictId || !activeLayer) return;
-        activeLayer.name = "お絵描きコラボ";
+        activeLayer.name = "コラボ";
         activeLayer.paste(img);
         activeLayer.trace();
         saveData();
