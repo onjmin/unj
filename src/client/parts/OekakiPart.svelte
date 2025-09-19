@@ -267,11 +267,12 @@
           image.crossOrigin = "anonymous";
           image.src = corsKiller(imgUrl);
         });
-        if (_conflictId !== conflictId) return;
-        activeLayer?.paste(img);
-        activeLayer?.trace();
+        if (_conflictId !== conflictId || !activeLayer) return;
+        activeLayer.name = "お絵描きコラボ";
+        activeLayer.paste(img);
+        activeLayer.trace();
         saveData();
-        activeLayer = new oekaki.LayeredCanvas("お絵描きコラボ");
+        activeLayer = new oekaki.LayeredCanvas("レイヤー #3");
         saveData();
       }, 500);
       let _conflictId = conflictId;
