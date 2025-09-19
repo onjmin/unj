@@ -107,6 +107,9 @@
         );
     };
 
+    /**
+     * 初回ロード or ページネーション
+     */
     const handleHeadline = (data: { ok: boolean; list: HeadlineThread[] }) => {
         if (!data.ok) return;
         ok();
@@ -115,6 +118,7 @@
             threadList = data.list;
             for (const f of reactiveTasks) f();
             cache.set(threadList);
+            // レス履歴の更新
             // 計算量は O(n + m)
             // n=32, m=32 の固定サイズなので、実際には最大 64 ステップしかかからない
             const map = new Map(data.list.map((v) => [v.id, v]));
@@ -130,12 +134,23 @@
         }
     };
 
+    /**
+     * 新規スレッド or 新着レス
+     */
     const handleNewHeadline = (data: { ok: boolean; new: HeadlineThread }) => {
         if (!data.ok || !threadList) return;
         if (threadList.length > 128) {
             threadList.pop();
         }
         threadList.unshift(data.new);
+        const set = new Set();
+        const sorted = threadList.filter((v) => {
+            if (set.has(v.id)) return false;
+            set.add(v.id);
+            return true;
+        });
+        threadList = sorted;
+        // TODO: レス履歴の更新
     };
 
     const fetchMisskey = (misskey: Misskey) => {
