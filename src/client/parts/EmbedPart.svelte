@@ -42,6 +42,7 @@
   import ImagePreviewModal from "../parts/ImagePreviewPart.svelte";
 
   let {
+    ccUserId = "",
     ccUserAvatar = 0,
     contentUrl = "",
     contentType = 0,
@@ -260,7 +261,7 @@
       <IconButton class="material-icons" onclick={() => (embedding = false)}
         >close</IconButton
       >
-      {#if temp === oekaki || siteInfo.id === 405}
+      {#if temp === oekaki || (siteInfo.id === 405 && ccUserId === "AI")}
         <button
           class="ml-4 text-blue-500 hover:text-blue-700 font-bold transition duration-300"
           onclick={() => {

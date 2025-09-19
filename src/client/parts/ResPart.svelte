@@ -207,6 +207,7 @@
         {#key num}
           <div class="content-embed">
             <EmbedPart
+              {ccUserId}
               {contentUrl}
               {contentType}
               bind:oekakiCollab
