@@ -265,7 +265,12 @@
         <button
           class="ml-4 text-blue-500 hover:text-blue-700 font-bold transition duration-300"
           onclick={() => {
-            if (!confirm("お絵描きコラボしますか？")) return;
+            if (
+              !confirm(
+                "お絵描きコラボしますか？（お絵描き中のデータは消えます）",
+              )
+            )
+              return;
             oekakiCollab = contentUrl;
             bindContentType = Enum.Oekaki;
             scrollToEnd();
