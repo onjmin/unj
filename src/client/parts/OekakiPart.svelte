@@ -681,7 +681,7 @@
   <br />
 </div>
 
-<div class={isGrid ? "grid" : ""} bind:this={oekakiWrapper}></div>
+<div class={isGrid ? "unj-canvas-grid" : ""} bind:this={oekakiWrapper}></div>
 
 <div class="bottom-tools-wrapper">
   <SegmentedButton
@@ -867,7 +867,10 @@
     height: 1.6rem;
     border-radius: 50%;
   }
-  :global(.grid .upper-canvas) {
+  :global(.upper-canvas) {
+    box-shadow: inset 0 0 0 1px gray;
+  }
+  :global(.unj-canvas-grid .upper-canvas) {
     opacity: 0.4;
     background-image: linear-gradient(to right, gray 1px, transparent 1px),
       linear-gradient(to bottom, gray 1px, transparent 1px);
