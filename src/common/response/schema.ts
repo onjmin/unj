@@ -24,7 +24,6 @@ export type SearchResult = {
 	// メタ情報
 	resNum: number;
 	createdAt: Date;
-	resId: string; // カーソルページネーション用
 	threadId: string;
 	title: string;
 	resCount: number;

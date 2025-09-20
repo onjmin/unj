@@ -211,7 +211,5 @@ export const HeadlineSchema = v.strictObject({
 export const SearchSchema = v.strictObject({
 	nonce: NONCE,
 	limit: LIMIT,
-	sinceResId: v.nullable(RES_ID), // >= since
-	untilResId: v.nullable(RES_ID), // <= until
 	keyword: SAFE_SEARCH_KEYWORD,
 });

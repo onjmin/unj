@@ -73,8 +73,6 @@
         const data = {
             nonce: genNonce(nonceKey.value ?? ""),
             limit: queryResultLimit,
-            sinceResId: null,
-            untilResId: null,
             keyword: currentQuery,
         };
         const result = (() => {

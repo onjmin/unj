@@ -31,35 +31,49 @@ export default ({ socket }: { socket: Socket }) => {
 
 			// レスの取得
 			const values: (string | number)[] = [];
+			values.push(`%${search.output.keyword}%`);
 			const query = [
+				"SELECT * FROM (",
 				"SELECT",
 				[
-					"res.*",
+					"res.cc_user_id",
+					"res.content_text",
+					"res.content_url",
+					"res.num",
+					"res.created_at",
 					"threads.id AS thread_id",
 					"threads.title AS title",
 					"threads.res_count AS res_count",
+					"threads.deleted_at AS deleted_at",
 				].join(","),
 				"FROM res",
 				"INNER JOIN threads ON res.thread_id = threads.id",
+				"WHERE (threads.deleted_at IS NULL OR threads.deleted_at > CURRENT_TIMESTAMP)",
+				`AND (LOWER(res.cc_user_id) LIKE LOWER($${values.length})`,
+				`OR LOWER(res.content_text) LIKE LOWER($${values.length})`,
+				`OR LOWER(res.content_url) LIKE LOWER($${values.length}))`,
+				"UNION ALL",
+				"SELECT",
+				[
+					"cc_user_id",
+					"content_text",
+					"content_url",
+					"1 AS num",
+					"created_at",
+					"id AS thread_id",
+					"title",
+					"res_count",
+					"deleted_at",
+				].join(","),
+				"FROM threads",
 				"WHERE (deleted_at IS NULL OR deleted_at > CURRENT_TIMESTAMP)",
+				`AND (LOWER(cc_user_id) LIKE LOWER($${values.length})`,
+				`OR LOWER(content_text) LIKE LOWER($${values.length})`,
+				`OR LOWER(content_url) LIKE LOWER($${values.length}))`,
+				") AS combined_results",
 			];
 
-			values.push(`%${search.output.keyword}%`);
-			query.push(`AND (LOWER(res.cc_user_id) LIKE LOWER($${values.length})`);
-			query.push(`OR LOWER(res.content_text) LIKE LOWER($${values.length})`);
-			query.push(`OR LOWER(res.content_url) LIKE LOWER($${values.length}))`);
-
-			const sinceResId = decodeResId(search.output.sinceResId ?? "");
-			if (sinceResId !== null) {
-				values.push(sinceResId);
-				query.push(`AND id >= $${values.length}`);
-			}
-			const untilResId = decodeResId(search.output.untilResId ?? "");
-			if (untilResId !== null) {
-				values.push(untilResId);
-				query.push(`AND id <= $${values.length}`);
-			}
-			query.push("ORDER BY created_at DESC");
+			query.push("ORDER BY combined_results.created_at DESC");
 			values.push(search.output.limit);
 			query.push(`LIMIT $${values.length}`);
 
@@ -74,7 +88,6 @@ export default ({ socket }: { socket: Socket }) => {
 					// メタ情報
 					resNum: record.num,
 					createdAt: record.created_at,
-					resId: encodeResId(record.id) ?? "",
 					threadId: encodeThreadId(record.thread_id) ?? "",
 					title: record.title,
 					resCount: record.res_count,
