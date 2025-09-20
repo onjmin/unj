@@ -293,21 +293,15 @@
       width = w;
       height = h;
     } else {
-      const w = window.innerWidth * 0.8;
-      const h = window.innerHeight * 0.8;
-      let w2 = 0;
-      let h2 = 0;
-      if (w < h) {
-        w2 = w;
-        h2 = w2 * (9 / 16);
-      } else {
-        h2 = h * 0.6;
-        w2 = h2 * (16 / 9);
-      }
-      width = w2 | 0;
-      height = h2 | 0;
-      widthCache.set(width);
-      heightCache.set(height);
+      const isPortrait = window.innerWidth < window.innerHeight;
+      const contentRatio = isPortrait ? 16 / 9 : 9 / 16;
+
+      const main = document.querySelector(".unj-main-part") ?? document.body;
+      const targetWidth = main.clientWidth * 0.8;
+      const targetHeight = targetWidth * contentRatio;
+
+      width = targetWidth | 0;
+      height = targetHeight | 0;
     }
 
     oekaki.init(oekakiWrapper, width, height);
