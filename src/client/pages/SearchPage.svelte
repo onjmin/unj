@@ -31,16 +31,17 @@
 
     let searchQuery = $state("");
     let isQueryValid = $derived(searchQuery.trim().length > 0);
-    let searchResults: SearchResult[] = $state([]);
+    let searchResults = $state(new Map<string, SearchResult[]>());
 
     const handleSearch = (data: { ok: boolean; list: SearchResult[] }) => {
         if (!data.ok) return;
         ok();
-        if (!pagination) {
-            searchResults = data.list;
-        } else {
-            if (searchResults) searchResults = searchResults.concat(data.list);
+        for (const v of data.list) {
+            const arr = searchResults.get(v.threadId) ?? [];
+            arr.push(v);
+            searchResults.set(v.threadId, arr);
         }
+        searchResults = new Map(searchResults);
     };
 
     $effect(() => {
@@ -63,10 +64,10 @@
     };
 
     let emitting = $state(false);
-    let pagination = $state(false); // TODO: ページネーション
     const trySearch = async () => {
         if (currentQuery === "") return;
         searchQuery = currentQuery;
+        searchResults = new Map();
         if (emitting) return;
         emitting = true;
         const data = {
@@ -188,13 +189,13 @@
             <h3 class="text-xl font-bold mb-4">検索結果</h3>
             {#if emitting}
                 <p class="text-center text-gray-500">検索中...</p>
-            {:else if searchResults.length === 0 && currentQuery !== ""}
+            {:else if searchResults.size === 0 && currentQuery !== ""}
                 <p class="text-center text-gray-500">
                     該当する投稿は見つかりませんでした。
                 </p>
-            {:else if searchResults.length > 0}
+            {:else if searchResults.size > 0}
                 <ul class="space-y-4">
-                    {#each searchResults as result}
+                    {#each searchResults as [threadId, results]}
                         {#snippet highlight(text: string)}
                             {#each highlightSafe(text, currentQuery) as part}
                                 {#if part.type === "highlight"}
@@ -211,46 +212,56 @@
                                 <div class="flex items-end">
                                     <Link
                                         to={makePathname(
-                                            `/thread/${result.threadId}/`,
+                                            `/thread/${threadId}/`,
                                         )}
                                         class="text-lg font-bold text-left cursor-pointer hover:underline"
                                     >
                                         <span>
-                                            {@render highlight(result.title)}
+                                            {@render highlight(
+                                                results[0].title,
+                                            )}
                                         </span>
                                     </Link>
                                     <span class="text-gray-500 ml-1"
-                                        >({result.resCount})</span
+                                        >({results[0].resCount})</span
                                     >
                                 </div>
                             </div>
-                            <div class="flex flex-col mt-2 text-left">
-                                <div class="text-sm text-gray-800">
-                                    <Link
-                                        to={makePathname(
-                                            `/thread/${result.threadId}/${result.resNum}`,
-                                        )}
-                                        class="cursor-pointer hover:underline"
-                                        >{result.resNum}.</Link
-                                    >
-                                    <span class="text-gray-500">
-                                        ID:{result.ccUserId}
-                                    </span>
-                                    <span class="text-gray-800">
-                                        {@render highlight(result.contentText)}
-                                    </span>
-                                    {#if result.contentUrl}
-                                        {@render highlight(result.contentUrl)}
-                                    {/if}
+                            {#each results as result}
+                                <div class="flex flex-col mt-2 text-left">
+                                    <div class="text-sm text-gray-800">
+                                        <Link
+                                            to={makePathname(
+                                                `/thread/${threadId}/${result.resNum}`,
+                                            )}
+                                            class="cursor-pointer hover:underline"
+                                            >{result.resNum}.</Link
+                                        >
+                                        <span class="text-gray-500">
+                                            ID:{@render highlight(
+                                                result.ccUserId,
+                                            )}
+                                        </span>
+                                        <span class="text-gray-800">
+                                            {@render highlight(
+                                                result.contentText,
+                                            )}
+                                        </span>
+                                        {#if result.contentUrl}
+                                            {@render highlight(
+                                                result.contentUrl,
+                                            )}
+                                        {/if}
+                                    </div>
                                 </div>
-                            </div>
+                            {/each}
                             <div
                                 class="mt-1 text-xs text-gray-500 flex justify-between"
                             >
                                 <span>うんち実況J</span>
                                 <span
                                     >{format(
-                                        result.createdAt,
+                                        results[0].createdAt,
                                         "yyyy/MM/dd HH:mm",
                                         { locale: ja },
                                     )}</span
