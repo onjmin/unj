@@ -9,6 +9,7 @@
   } from "@smui/list";
   import {
     Enum,
+    ankaRegex,
     contentTemplateMap,
   } from "../../common/request/content-schema.js";
   import game from "../../common/request/whitelist/game.js";
@@ -46,8 +47,10 @@
     ccUserAvatar = 0,
     contentUrl = "",
     contentType = 0,
+    resNum = 0,
     auto = false,
     oekakiCollab = $bindable(""),
+    bindContentText = $bindable(""),
     bindContentType = $bindable(0),
   } = $props();
 
@@ -274,6 +277,10 @@
             oekakiCollab = contentUrl;
             bindContentType = Enum.Oekaki;
             scrollToEnd();
+            bindContentText = bindContentText
+              .replace(ankaRegex, "")
+              .replace(/^[^\S]*/, `>>${resNum}\n`);
+            focus();
           }}
         >
           お絵描きコラボ

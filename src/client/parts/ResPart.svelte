@@ -210,7 +210,9 @@
               {ccUserId}
               {contentUrl}
               {contentType}
+              resNum={num}
               bind:oekakiCollab
+              bind:bindContentText
               bind:bindContentType
             />
           </div>
