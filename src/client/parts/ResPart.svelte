@@ -5,10 +5,12 @@
   import IconButton from "@smui/icon-button";
   import { format } from "date-fns";
   import { ja } from "date-fns/locale";
+  import { Link } from "svelte-routing";
   import { avatarMap } from "../../common/request/avatar.js";
   import { ankaRegex } from "../../common/request/content-schema.js";
   import { seededRandArray } from "../../common/util.js";
   import { activeController } from "../mylib/background-embed.js";
+  import { makePathname } from "../mylib/env.js";
   import { ObjectStorage } from "../mylib/object-storage.js";
   import { jumpToAnka, makeUnjResNumId } from "../mylib/scroll.js";
   import EmbedPart from "./EmbedPart.svelte";
@@ -95,7 +97,15 @@
     </button>：{format(createdAt, "yy/MM/dd(EEE) HH:mm:ss", {
       locale: ja,
     })}
-    ID:{ccUserId !== "" ? ccUserId : "???"}
+
+    {#if ccUserId === ""}
+      ID:???
+    {:else if ccUserId === "AI"}
+      ID:{ccUserId}
+    {:else}
+      ID:<Link to={makePathname(`/search?q=${ccUserId}`)}>{ccUserId}</Link>
+    {/if}
+
     {#if isOwner}
       <span class="text-xs text-red-400">主</span>
     {/if}

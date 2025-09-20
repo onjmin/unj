@@ -22,14 +22,20 @@
     import { goodbye, hello, ok, socket } from "../mylib/socket.js";
     import { nonceKey } from "../mylib/unj-storage.js";
 
-    let contentText = $state("");
+    let currentQuery = $state("");
+    try {
+        currentQuery = decodeURIComponent(
+            (new URLSearchParams(window.location.search).get("q") ?? "").trim(),
+        );
+    } catch (err) {}
+
+    let searchQuery = $state("");
+    let isQueryValid = $derived(searchQuery.trim().length > 0);
     let searchResults: SearchResult[] = $state([]);
-    let currentQuery: string | null = $state(null); // 検索処理を行う関数
 
     const handleSearch = (data: { ok: boolean; list: SearchResult[] }) => {
         if (!data.ok) return;
         ok();
-        currentQuery = contentText.trim();
         if (!pagination) {
             searchResults = data.list;
         } else {
@@ -40,15 +46,27 @@
     $effect(() => {
         hello();
         socket.on("search", handleSearch);
+        setTimeout(trySearch);
         return () => {
             goodbye();
             socket.off("search", handleSearch);
         };
     });
 
+    const jumpToSearch = () => {
+        const trimmed = searchQuery.trim();
+        if (!trimmed.length) return;
+        const q = encodeURIComponent(trimmed);
+        navigate(makePathname(`/search?q=${q}`));
+        currentQuery = trimmed;
+        trySearch();
+    };
+
     let emitting = $state(false);
     let pagination = $state(false); // TODO: ページネーション
     const trySearch = async () => {
+        if (currentQuery === "") return;
+        searchQuery = currentQuery;
         if (emitting) return;
         emitting = true;
         const data = {
@@ -56,7 +74,7 @@
             limit: queryResultLimit,
             sinceResId: null,
             untilResId: null,
-            keyword: contentText,
+            keyword: currentQuery,
         };
         const result = (() => {
             const search = v.safeParse(SearchSchema, data, myConfig);
@@ -124,17 +142,18 @@
                     <input
                         id="contentText"
                         type="text"
-                        bind:value={contentText}
+                        bind:value={searchQuery}
                         class="w-full p-2 pl-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="全文検索"
-                        onkeydown={(e) => e.key === "Enter" && trySearch()}
+                        onkeydown={(e) =>
+                            e.key === "Enter" && isQueryValid && jumpToSearch()}
                     />
                 </div>
                 <button
                     type="submit"
                     class="min-w-[70px] py-2 px-4 bg-blue-600 text-white rounded-md font-semibold hover:bg-blue-700 transition-colors duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed"
-                    disabled={emitting || contentText.trim().length < 1}
-                    onclick={trySearch}
+                    disabled={emitting || !isQueryValid}
+                    onclick={jumpToSearch}
                 >
                     {#if emitting}
                         <div class="flex items-center justify-center">
@@ -169,7 +188,7 @@
             <h3 class="text-xl font-bold mb-4">検索結果</h3>
             {#if emitting}
                 <p class="text-center text-gray-500">検索中...</p>
-            {:else if searchResults.length === 0 && currentQuery}
+            {:else if searchResults.length === 0 && currentQuery !== ""}
                 <p class="text-center text-gray-500">
                     該当する投稿は見つかりませんでした。
                 </p>
@@ -177,7 +196,7 @@
                 <ul class="space-y-4">
                     {#each searchResults as result}
                         {#snippet highlight(text: string)}
-                            {#each highlightSafe(text, currentQuery || "") as part}
+                            {#each highlightSafe(text, currentQuery) as part}
                                 {#if part.type === "highlight"}
                                     <span class="bg-yellow-200 font-semibold"
                                         >{part.value}</span

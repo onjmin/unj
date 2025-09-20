@@ -121,7 +121,9 @@
             // レス履歴の更新
             // 計算量は O(n + m)
             // n=32, m=32 の固定サイズなので、実際には最大 64 ステップしかかからない
-            const map = new Map(data.list.map((v) => [v.id, v]));
+            const map = new Map(
+                data.list.slice(0, queryResultLimit).map((v) => [v.id, v]),
+            );
             for (const resHistory of resHistories?.slice(0, queryResultLimit) ??
                 []) {
                 const next = map.get(resHistory.threadId);
@@ -129,6 +131,7 @@
                     resHistory.resCount = next.resCount;
                 }
             }
+            resHistoryCache.set(resHistories);
         } else {
             if (threadList) threadList = threadList.concat(data.list);
         }

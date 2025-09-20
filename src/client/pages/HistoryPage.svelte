@@ -16,12 +16,12 @@
         resHistoryCache.get().then((v) => {
             if (v && !resHistories) {
                 const set = new Set();
-                const sorted = v.filter((v) => {
+                const filtered = v.filter((v) => {
                     if (set.has(v.threadId)) return false;
                     set.add(v.threadId);
                     return true;
                 });
-                resHistories = sorted;
+                resHistories = filtered;
                 resHistoryCache.set(resHistories);
             } else {
                 resHistories = [];
