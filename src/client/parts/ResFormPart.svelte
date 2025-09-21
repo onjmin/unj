@@ -37,7 +37,7 @@
     activeLayer = $bindable(null),
     tryRes,
     isExpand = true,
-    oekakiCollab = "",
+    oekakiCollab = $bindable(""),
   } = $props();
 
   let openUrlTemplate = $state(false);
@@ -179,7 +179,12 @@
 {#key contentType}
   {#if contentType === Enum.Oekaki}
     {#if oekaki}
-      <OekakiPart {threadId} {oekakiCollab} bind:toDataURL bind:activeLayer />
+      <OekakiPart
+        {threadId}
+        bind:oekakiCollab
+        bind:toDataURL
+        bind:activeLayer
+      />
     {:else}
       <ColorWheelPart />
     {/if}

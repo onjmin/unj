@@ -639,7 +639,7 @@
         bind:activeLayer
         {tryRes}
         {isExpand}
-        {oekakiCollab}
+        bind:oekakiCollab
     />
     <div class="w-full max-w-xs">
         <Button disabled={emitting} onclick={tryRes} variant="raised"

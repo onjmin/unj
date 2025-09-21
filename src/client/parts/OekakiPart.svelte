@@ -30,7 +30,7 @@
 
   let {
     threadId,
-    oekakiCollab,
+    oekakiCollab = $bindable(""),
     toDataURL = $bindable(),
     activeLayer = $bindable(null),
   }: {
@@ -277,6 +277,9 @@
       }, 500);
       let _conflictId = conflictId;
     }
+    return () => {
+      oekakiCollab = "";
+    };
   });
   const deleteSaveData = () =>
     Promise.all([
@@ -302,6 +305,9 @@
 
       width = targetWidth | 0;
       height = targetHeight | 0;
+
+      widthCache.set(width);
+      heightCache.set(height);
     }
 
     oekaki.init(oekakiWrapper, width, height);
@@ -657,7 +663,7 @@
   >
   <IconButton
     class="material-icons"
-    onclick={async () => {
+    onclick={() => {
       if (
         layerLocked ||
         !activeLayer ||
@@ -666,8 +672,7 @@
         !confirm("後悔しませんね？")
       )
         return;
-      await deleteSaveData();
-      init();
+      deleteSaveData().then(init);
     }}>delete_forever</IconButton
   >
 
