@@ -353,15 +353,19 @@
                                 >
                                     <div class="flex items-start">
                                         <div class="mr-2 flex-shrink-0">
-                                            {#if findMisskey(thread.id)}
-                                                <FaviconPart
-                                                    hostname={findMisskey(
-                                                        thread.id,
-                                                    )?.hostname}
-                                                />
-                                            {:else}
-                                                <TwemojiPart seed={thread.id} />
-                                            {/if}
+                                            {#key thread.id}
+                                                {#if findMisskey(thread.id)}
+                                                    <FaviconPart
+                                                        hostname={findMisskey(
+                                                            thread.id,
+                                                        )?.hostname}
+                                                    />
+                                                {:else}
+                                                    <TwemojiPart
+                                                        seed={thread.id}
+                                                    />
+                                                {/if}
+                                            {/key}
                                         </div>
                                         <div class="flex-grow min-w-0">
                                             <div
