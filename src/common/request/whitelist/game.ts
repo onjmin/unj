@@ -4,8 +4,7 @@ export default [
 	new SiteInfo({
 		id: 6401,
 		name: "RPGEN",
-		description:
-			"小学生の頃作った秘密基地を世界中に作る感じのオンラインゲームです",
+		description: "秘密基地的なMMORPGサイト",
 		src: "https://rpgen.org/dq/?map=5085",
 		href: "https://rpgen.org/dq/maps/tagCloud.php",
 	}),
@@ -63,6 +62,16 @@ export default [
 		name: "板対抗バトロワ",
 		description: "まったり戦争",
 		src: "https://br2ch.pgw.jp/br2ch/brlist.cgi",
+	}),
+	new SiteInfo({
+		name: "ゴッドフィールド",
+		description: "最大9人で対戦できるカードバトルゲーム",
+		src: "https://godfield.net/",
+	}),
+	new SiteInfo({
+		name: "TETR.IO",
+		description: "テトリスの対戦ゲーム",
+		src: "https://tetr.io/",
 	}),
 	new SiteInfo({
 		name: "Bandit.RIP",
