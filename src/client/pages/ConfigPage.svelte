@@ -9,9 +9,9 @@
         ChevronDownIcon,
         ChevronRightIcon,
         CopyIcon,
+        LightbulbIcon,
         PlayIcon,
         Trash2Icon,
-        TriangleAlertIcon,
         Volume2Icon,
     } from "@lucide/svelte";
     import { createToaster } from "@skeletonlabs/skeleton-svelte";
@@ -239,24 +239,21 @@
             </div>
 
             <div
-                class="p-3 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 rounded-lg flex flex-col space-y-1"
+                class="p-3 bg-green-100 border-l-4 border-green-500 text-green-800 rounded-lg flex flex-col space-y-1"
             >
                 <div class="flex items-center">
-                    <TriangleAlertIcon
-                        class="w-5 h-5 flex-shrink-0 text-yellow-600 mr-2"
+                    <LightbulbIcon
+                        class="w-5 h-5 flex-shrink-0 text-green-600 mr-2"
                     />
-                    <p class="font-bold text-sm">注意</p>
+                    <p class="font-bold text-sm">ヒント</p>
                 </div>
-                <ul class="list-disc list-inside text-xs space-y-1 ml-1 pl-3">
-                    <li>
+                <div class="text-xs">
+                    <p>
                         このトークンは<strong>最大4日</strong
-                        >で失効します。長期間保管しても無意味です。
-                    </li>
-                    <li>
-                        <strong>端末の引っ越し</strong
-                        >を行う短い間だけ利用可能です。移行が完了したら速やかに破棄してください。
-                    </li>
-                </ul>
+                        >で失効します。<strong>端末の引っ越し</strong
+                        >にお使いください。
+                    </p>
+                </div>
             </div>
         </div>
     </section>
