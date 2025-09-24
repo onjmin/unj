@@ -3,7 +3,7 @@ import { type Socket, io } from "socket.io-client";
 import { navigate } from "svelte-routing";
 import type { Ninja } from "../../common/response/schema.js";
 import { sleep } from "../../common/util.js";
-import { PROD_MODE, decodeEnv, makePathname, pathname } from "./env.js";
+import { PROD_MODE, decodeEnv, makePathname } from "./env.js";
 import {
 	authToken,
 	authTokenUpdatedAt,
