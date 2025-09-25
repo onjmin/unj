@@ -7,7 +7,11 @@
   import { ja } from "date-fns/locale";
   import { Link } from "svelte-routing";
   import { avatarMap } from "../../common/request/avatar.js";
-  import { ankaRegex } from "../../common/request/content-schema.js";
+  import {
+    ankaRegex,
+    contentTemplateMap,
+  } from "../../common/request/content-schema.js";
+  import { findIn } from "../../common/request/whitelist/site-info.js";
   import { seededRandArray } from "../../common/util.js";
   import { activeController } from "../mylib/background-embed.js";
   import { makePathname } from "../mylib/env.js";
@@ -40,6 +44,14 @@
     // メタ情報
     threadId = "",
   } = $props();
+
+  const url = (() => {
+    try {
+      return new URL(contentUrl);
+    } catch (err) {}
+  })();
+  const temp = contentTemplateMap.get(contentType) ?? [];
+  const siteInfo = url ? findIn(temp, url.hostname) : null;
 
   const toaster = createToaster();
   const ignoreListCache = new ObjectStorage<string[]>("ignoreListCache");
@@ -206,7 +218,7 @@
       {#if contentUrl !== ""}
         <div class="content-url">
           <a
-            href={contentUrl}
+            href={siteInfo?.id === 1616 ? siteInfo.href : contentUrl}
             target="_blank"
             rel="noopener noreferrer"
             class="cursor-pointer"

@@ -23,7 +23,6 @@
       return new URL(contentUrl);
     } catch (err) {}
   })();
-
   const temp = contentTemplateMap.get(contentType) ?? [];
   const siteInfo = url ? findIn(temp, url.hostname) : null;
 

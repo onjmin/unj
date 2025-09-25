@@ -58,24 +58,26 @@
       <div style="text-align:left;">
         <List twoLine avatarList singleSelection selectedIndex={selectionIndex}>
           {#each temp as siteInfo, i}
-            <Item
-              onSMUIAction={() => (selectionIndex = i)}
-              selected={selectionIndex === i}
-            >
-              <Graphic
-                class="favicon-item-graphic"
-                style="background-image: url({siteInfo.favicon});"
-              />
-              <Text>
-                <PrimaryText>{siteInfo.name}</PrimaryText>
-                <SecondaryText>{siteInfo.description}</SecondaryText>
-              </Text>
-              <Meta
-                class="material-icons"
-                onclick={() => window.open(siteInfo.href, "_blank")}
-                >open_in_new</Meta
+            {#if siteInfo.id !== 1616}
+              <Item
+                onSMUIAction={() => (selectionIndex = i)}
+                selected={selectionIndex === i}
               >
-            </Item>
+                <Graphic
+                  class="favicon-item-graphic"
+                  style="background-image: url({siteInfo.favicon});"
+                />
+                <Text>
+                  <PrimaryText>{siteInfo.name}</PrimaryText>
+                  <SecondaryText>{siteInfo.description}</SecondaryText>
+                </Text>
+                <Meta
+                  class="material-icons"
+                  onclick={() => window.open(siteInfo.href, "_blank")}
+                  >open_in_new</Meta
+                >
+              </Item>
+            {/if}
           {/each}
         </List>
       </div>

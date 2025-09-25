@@ -59,7 +59,6 @@
       return new URL(contentUrl);
     } catch (err) {}
   })();
-
   const temp = contentTemplateMap.get(contentType) ?? [];
   const siteInfo = url ? findIn(temp, url.hostname) : null;
   const embeddable =
@@ -149,6 +148,10 @@
         case 1602:
           videoEmbedNicovideo = true;
           embedUrl = parseVideoEmbedNicovideo(url) ?? "";
+          break;
+        case 1616:
+          videoEmbedYouTube = true;
+          embedUrl = parseVideoEmbedYouTube(new URL(siteInfo.href)) ?? "";
           break;
         case 3201:
           audioEmbedSoundCloud = true;

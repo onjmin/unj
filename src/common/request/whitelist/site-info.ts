@@ -35,15 +35,27 @@ export class SiteInfo {
 
 export const findIn = (() => {
 	const map: Map<SiteInfo[], Map<string, SiteInfo>> = new Map();
+	const wildcard: Map<SiteInfo[], Map<string, SiteInfo>> = new Map();
 	return (arr: SiteInfo[], hostname: string): SiteInfo | null => {
 		if (!map.has(arr)) {
 			const m: Map<string, SiteInfo> = new Map();
+			const w: Map<string, SiteInfo> = new Map();
 			for (const siteInfo of arr) {
 				for (const hostname of siteInfo.hostnames) {
-					m.set(hostname, siteInfo);
+					if (hostname.startsWith("*")) {
+						w.set(hostname, siteInfo);
+					} else {
+						m.set(hostname, siteInfo);
+					}
 				}
 			}
 			map.set(arr, m);
+			wildcard.set(arr, w);
+		}
+		for (const [k, v] of wildcard.get(arr) ?? []) {
+			if (hostname.endsWith(k.slice(1))) {
+				return v;
+			}
 		}
 		return map.get(arr)?.get(hostname) ?? null;
 	};

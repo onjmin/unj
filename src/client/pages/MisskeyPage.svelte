@@ -27,6 +27,7 @@
     import EmbedPart from "../parts/EmbedPart.svelte";
     import FaviconPart from "../parts/FaviconPart.svelte";
     import ImagePreviewModal from "../parts/ImagePreviewPart.svelte";
+    import KomePart from "../parts/KomePart.svelte";
 
     const INITIAL_LIMIT = 16;
     const LOAD_MORE_LIMIT = 16;
@@ -157,6 +158,8 @@
             <span class="text-sm font-medium">Misskeyを開く</span>
         </a>
     </div>
+    <br />
+    <KomePart online={0} room={misskeyId} />
 </HeaderPart>
 
 <MainPart>

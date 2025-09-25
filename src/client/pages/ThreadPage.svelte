@@ -82,6 +82,7 @@
     import BackgroundEmbedPart from "../parts/BackgroundEmbedPart.svelte";
     import BalsPart from "../parts/BalsPart.svelte";
     import DressUpPart from "../parts/DressUpPart.svelte";
+    import KomePart from "../parts/KomePart.svelte";
     import LayerPanelPart from "../parts/LayerPanelPart.svelte";
     import ResFormPart from "../parts/ResFormPart.svelte";
     import ResPart from "../parts/ResPart.svelte";
@@ -734,6 +735,8 @@
     {#if contentType === Enum.Oekaki}
         <LayerPanelPart bind:activeLayer />
     {/if}
+    <br />
+    <KomePart {online} room={threadId} />
 </HeaderPart>
 
 <TermsConfirmPart {openConfirm} />

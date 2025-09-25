@@ -36,6 +36,7 @@
     import { nonceKey } from "../mylib/unj-storage.js";
     import AccessCounterPart from "../parts/AccessCounterPart.svelte";
     import FaviconPart from "../parts/FaviconPart.svelte";
+    import KomePart from "../parts/KomePart.svelte";
     import TwemojiPart from "../parts/TwemojiPart.svelte";
 
     const formatTimeAgo = (date: Date): string => {
@@ -271,7 +272,8 @@
 
 <HeaderPart title="ヘッドライン {online}人閲覧中">
     <AccessCounterPart {online} {pv} />
-    <p>検索UI</p>
+    <br />
+    <KomePart {online} />
 </HeaderPart>
 
 <MainPart>
