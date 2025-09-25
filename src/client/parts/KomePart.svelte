@@ -40,21 +40,10 @@
     signInAnonymously(auth)
       .then((userCredential) => {
         myUserId = userCredential.user.uid;
-        console.log("匿名認証に成功しました。UID:", myUserId);
       })
-      .catch((error) => {
-        console.error("匿名認証エラー:", error.code, error.message);
-      });
+      .catch(() => {});
     return () => {
-      signOut(auth)
-        .then(() => {
-          console.log(
-            "コンポーネント破棄に伴い匿名認証セッションを破棄しました。",
-          );
-        })
-        .catch((error) => {
-          console.error("サインアウトエラー:", error);
-        });
+      signOut(auth).catch(() => {});
     };
   });
 
