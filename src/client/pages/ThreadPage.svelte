@@ -733,6 +733,7 @@
     <AccessCounterPart {online} {pv} />
     <div>{@render form(true)}</div>
     {#if contentType === Enum.Oekaki}
+        <br />
         <LayerPanelPart bind:activeLayer />
     {/if}
     <br />
