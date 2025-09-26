@@ -1,5 +1,9 @@
 <script lang="ts">
-  import { MessageCircleIcon, UserRoundIcon } from "@lucide/svelte";
+  import {
+    ChevronsRightIcon,
+    MessageCircleIcon,
+    UserRoundIcon,
+  } from "@lucide/svelte";
   import { initializeApp } from "firebase/app";
   import { getAuth, signInAnonymously, signOut } from "firebase/auth";
   import {
@@ -12,6 +16,7 @@
     ref,
   } from "firebase/database";
   import { tick } from "svelte";
+  import { fade } from "svelte/transition";
   import { queryResultLimit } from "../../common/request/schema.js";
   import { decodeEnv } from "../mylib/env.js";
 
@@ -35,11 +40,16 @@
   const db = getDatabase(app);
   const auth = getAuth(app);
   let myUserId = $state("anon");
+  let showKomeStartMessage = $state(false);
 
   $effect.root(() => {
     signInAnonymously(auth)
       .then((userCredential) => {
         myUserId = userCredential.user.uid;
+        showKomeStartMessage = true;
+        setTimeout(() => {
+          showKomeStartMessage = false;
+        }, 3000);
       })
       .catch(() => {});
     return () => {
@@ -124,6 +134,17 @@
   <span class="text-xs text-sky-300 px-2 py-1 bg-black/80"
     >Room:{room === "headline" ? "板全体" : "スレ限定"}</span
   >
+
+  {#if showKomeStartMessage}
+    <div
+      id="kmessage"
+      class="text-xs bg-green-700 text-white px-2 py-1 flex items-center font-semibold **absolute top-0 w-full**"
+      transition:fade
+    >
+      <ChevronsRightIcon size={14} class="text-green-300 mr-1" />
+      <span>komeを開始しますた。</span>
+    </div>
+  {/if}
 
   <ul
     id="chat-list"
