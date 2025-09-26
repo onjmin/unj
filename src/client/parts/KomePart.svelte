@@ -39,28 +39,11 @@
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
   const auth = getAuth(app);
+
   let myUserId = $state("anon");
   let showKomeStartMessage = $state(false);
-
-  $effect.root(() => {
-    signInAnonymously(auth)
-      .then((userCredential) => {
-        myUserId = userCredential.user.uid;
-        showKomeStartMessage = true;
-        setTimeout(() => {
-          showKomeStartMessage = false;
-        }, 3000);
-      })
-      .catch(() => {});
-    return () => {
-      signOut(auth).catch(() => {});
-    };
-  });
-
-  // $state ルーンでリアクティブな状態を定義
   let messages = $state<{ user: string; text: string; ts: number }[]>([]);
   let input = $state("");
-  // 💡 追加: 自分で送信したメッセージのタイムスタンプを保存する配列
   let myMessageTimestamps = $state<number[]>([]);
 
   const getMessagesRef = (id: string) => {
@@ -68,14 +51,10 @@
     return ref(db, path);
   };
 
-  // 新着メッセージをリアルタイムで取得し、自動スクロールを実行
-  // $effect.root でコンポーネントのライフサイクルに結合
-  $effect.root(() => {
-    // 💡 getMessagesRef を呼び出し、動的な参照を取得
+  const startMessageListener = () => {
     const baseRef = getMessagesRef(room);
     const messagesQuery = query(baseRef, limitToLast(queryResultLimit));
 
-    // onChildAddedのコールバックもアロー関数
     const unsubscribe = onChildAdded(
       messagesQuery,
       (snapshot: DataSnapshot) => {
@@ -84,7 +63,6 @@
           text: string;
           ts: number;
         };
-        // messages.update の代わりに直接配列を更新
         messages = [...messages, msg];
 
         // 自動スクロール処理を $tick で DOM 更新後に実行
@@ -94,7 +72,32 @@
         });
       },
     );
-    // クリーンアップ関数は不要 (onChildAddedはコンポーネント破棄時に自動で解除されないため、本来は onValueなどを使うか、明示的な処理が必要だが、この例では省略)
+    return unsubscribe;
+  };
+
+  $effect.root(() => {
+    let unsubscribe: (() => void) | null = null;
+    signInAnonymously(auth)
+      .then((userCredential) => {
+        myUserId = userCredential.user.uid;
+        showKomeStartMessage = true;
+        setTimeout(() => {
+          showKomeStartMessage = false;
+        }, 3000);
+
+        unsubscribe = startMessageListener();
+      })
+      .catch((error) => {
+        console.error("Anonymous sign-in failed:", error);
+      });
+
+    return () => {
+      // コンポーネント破棄時に認証解除とリスナー解除を行う
+      if (unsubscribe) {
+        unsubscribe(); // メッセージリスナーを解除
+      }
+      signOut(auth).catch(() => {});
+    };
   });
 
   // メッセージ送信 (アロー関数)
