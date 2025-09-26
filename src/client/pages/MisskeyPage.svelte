@@ -9,7 +9,7 @@
     import { format } from "date-fns";
     import { ja } from "date-fns/locale";
     import { navigate } from "svelte-routing";
-    import { Enum } from "../../common/request/content-schema.js";
+    import { Enum, regexUrl } from "../../common/request/content-schema.js";
     import audio from "../../common/request/whitelist/audio.js";
     import game from "../../common/request/whitelist/game.js";
     import gif from "../../common/request/whitelist/gif.js";
@@ -100,15 +100,59 @@
         }
     };
 
-    const regexUrl = /(https?:\/\/[A-Za-z0-9\-\._~:/?#[\]@!$&'()*+,;=%]+)/gi;
-
     const formatText = (text: string) => {
-        let formattedText = text.replace(/\n/g, "<br />");
-        formattedText = formattedText.replace(
-            regexUrl,
-            '<a href="$1" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:underline break-all">$1</a>',
-        );
-        return formattedText;
+        const segments: Array<{
+            type: "text" | "url" | "br";
+            content: string;
+        }> = [];
+
+        // 1. まず改行文字 '\n' でテキスト全体を分割
+        const lines = text.split("\n");
+
+        // for...of文を使用してlines配列を処理
+        for (const [lineIndex, line] of lines.entries()) {
+            let lastIndex = 0;
+
+            // 2. 各行をさらにURLで分割
+            // Array.from(line.matchAll(regexUrl)) を for...of文で使用
+            const matches = line.matchAll(regexUrl);
+
+            for (const match of matches) {
+                const url = match[0];
+                const matchIndex = match.index ?? 0;
+
+                // URLより前のテキスト部分
+                if (matchIndex > lastIndex) {
+                    segments.push({
+                        type: "text",
+                        content: line.substring(lastIndex, matchIndex),
+                    });
+                }
+
+                // URL部分
+                segments.push({
+                    type: "url",
+                    content: url,
+                });
+
+                lastIndex = matchIndex + url.length;
+            }
+
+            // 最後のURLより後のテキスト部分
+            if (lastIndex < line.length) {
+                segments.push({
+                    type: "text",
+                    content: line.substring(lastIndex),
+                });
+            }
+
+            // 3. 行の終わりに改行セグメントを追加 (ただし最終行は除く)
+            if (lineIndex < lines.length - 1) {
+                segments.push({ type: "br", content: "" });
+            }
+        }
+
+        return segments;
     };
 
     const findEmbeddable = (text: string): [string, number] | undefined => {
@@ -222,7 +266,25 @@
                                     <div
                                         class="text-gray-800 text-left overflow-wrap break-word whitespace-pre-wrap mb-2"
                                     >
-                                        {@html formatText(note.text)}
+                                        {#each formatText(note.text) as segment}
+                                            {#if segment.type === "url"}
+                                                <a
+                                                    href={segment.content}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    class="text-blue-500 hover:underline break-all"
+                                                >
+                                                    {segment.content}
+                                                </a>
+                                            {:else if segment.type === "br"}
+                                                <br />
+                                            {:else}
+                                                <span
+                                                    class="whitespace-pre-wrap"
+                                                    >{segment.content}</span
+                                                >
+                                            {/if}
+                                        {/each}
                                     </div>
 
                                     {#if note.files && note.files.length > 0}

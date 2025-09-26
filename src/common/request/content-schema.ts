@@ -13,6 +13,7 @@ import { findIn } from "./whitelist/site-info.js";
 import whitelistVideo from "./whitelist/video.js";
 
 export const ankaRegex = />>(?:[1-9][0-9]{0,3})(?![0-9])/g; // >>1-9999
+export const regexUrl = /https?:\/\/[A-Za-z0-9\-\._~:/?#[\]@!$&'()*+,;=%]+/gi;
 
 const SAFE_TEXT = v.pipe(
 	v.string(),
@@ -37,7 +38,6 @@ const SAFE_TEXT = v.pipe(
 	v.check((input) => !/[\uD800-\uDFFF]/u.test(input)),
 );
 const regexLf = /\n/;
-const regexUrl = /ttps?:\/\//;
 export const SAFE_TEXT_SINGLELINE = v.pipe(
 	SAFE_TEXT,
 	v.check((input) => !regexLf.test(input)),

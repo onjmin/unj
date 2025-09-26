@@ -4,6 +4,8 @@
     MessageCircleIcon,
     UserRoundIcon,
   } from "@lucide/svelte";
+  import { format, isToday } from "date-fns";
+  import { ja } from "date-fns/locale";
   import { initializeApp } from "firebase/app";
   import { getAuth, signInAnonymously, signOut } from "firebase/auth";
   import {
@@ -17,6 +19,7 @@
   } from "firebase/database";
   import { tick } from "svelte";
   import { fade } from "svelte/transition";
+  import { regexUrl } from "../../common/request/content-schema.js";
   import { queryResultLimit } from "../../common/request/schema.js";
   import { decodeEnv } from "../mylib/env.js";
 
@@ -115,10 +118,50 @@
   const handleKey = (e: KeyboardEvent) => {
     if (e.key === "Enter") sendMessage();
   };
+
+  const formatText = (text: string) => {
+    const segments: Array<{ type: "text" | "url"; content: string }> = [];
+    let lastIndex = 0;
+
+    // matchAllのイテレータを for...of で直接処理
+    const matches = text.matchAll(regexUrl);
+
+    for (const match of matches) {
+      const url = match[0];
+      const matchIndex = match.index ?? 0;
+
+      // 1. URLより前のテキスト部分 (改行を含む可能性がある)
+      if (matchIndex > lastIndex) {
+        segments.push({
+          type: "text",
+          content: text.substring(lastIndex, matchIndex),
+        });
+      }
+
+      // 2. URL部分
+      segments.push({
+        type: "url",
+        content: url,
+      });
+
+      // 処理済み位置を更新
+      lastIndex = matchIndex + url.length;
+    }
+
+    // 3. 最後のURLより後のテキスト部分 (改行を含む可能性がある)
+    if (lastIndex < text.length) {
+      segments.push({
+        type: "text",
+        content: text.substring(lastIndex),
+      });
+    }
+
+    return segments;
+  };
 </script>
 
 <div
-  class="w-full h-[350px]
+  class="w-full h-[350px] bg-black/90
          flex flex-col border border-gray-300 rounded-md
          overflow-hidden shadow-lg"
 >
@@ -134,24 +177,26 @@
     </div>
   </div>
 
-  <span class="text-xs text-sky-300 px-2 py-1 bg-black/80"
-    >Room:{room === "headline" ? "板全体" : "スレ限定"}</span
-  >
-
-  {#if showKomeStartMessage}
-    <div
-      id="kmessage"
-      class="text-xs bg-green-700 text-white px-2 py-1 flex items-center font-semibold **absolute top-0 w-full**"
-      transition:fade
+  <div class="relative">
+    <span class="text-xs text-sky-300 px-2 py-1"
+      >Room:{room === "headline" ? "板全体" : "スレ限定"}</span
     >
-      <ChevronsRightIcon size={14} class="text-green-300 mr-1" />
-      <span>komeを開始しますた。</span>
-    </div>
-  {/if}
+
+    {#if showKomeStartMessage}
+      <div
+        id="kmessage"
+        class="absolute top-0 left-0 right-0 text-xs bg-green-700 text-white px-2 py-1 flex items-center font-semibold"
+        transition:fade
+      >
+        <ChevronsRightIcon size={14} class="text-green-300 mr-1" />
+        <span>komeを開始しますた。</span>
+      </div>
+    {/if}
+  </div>
 
   <ul
     id="chat-list"
-    class="flex-1 overflow-y-auto px-2 py-1 space-y-1 text-white bg-black/90 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-transparent"
+    class="flex-1 overflow-y-auto px-2 py-1 space-y-1 text-white scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-transparent"
   >
     {#each messages as msg (msg.ts)}
       <li
@@ -159,11 +204,26 @@
 {myMessageTimestamps.includes(msg.ts) ? 'text-yellow-300' : 'text-white'}"
       >
         <span class="text-gray-400"
-          >{new Date(msg.ts).toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          })}</span
-        > <span class="ml-1">{msg.text}</span>
+          >{isToday(msg.ts)
+            ? format(msg.ts, "HH:mm", { locale: ja })
+            : format(msg.ts, "M/dd", { locale: ja })}</span
+        >
+        <span class="ml-1">
+          {#each formatText(msg.text) as segment}
+            {#if segment.type === "url"}
+              <a
+                href={segment.content}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-blue-500 hover:underline break-all"
+              >
+                {segment.content}
+              </a>
+            {:else}
+              <span class="whitespace-pre-wrap">{segment.content}</span>
+            {/if}
+          {/each}</span
+        >
       </li>
     {/each}
   </ul>

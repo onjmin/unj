@@ -7,6 +7,7 @@
   import {
     Enum,
     contentTypeOptions,
+    regexUrl,
   } from "../../common/request/content-schema.js";
   import audio from "../../common/request/whitelist/audio.js";
   import game from "../../common/request/whitelist/game.js";
@@ -19,8 +20,6 @@
   import ColorWheelPart from "./ColorWheelPart.svelte";
   import OekakiPart from "./OekakiPart.svelte";
   import UrlTemplatePart from "./UrlTemplatePart.svelte";
-
-  const regexUrl = /(https?:\/\/[A-Za-z0-9\-\._~:/?#[\]@!$&'()*+,;=%]+)/gi;
 
   let {
     disabled = false,
