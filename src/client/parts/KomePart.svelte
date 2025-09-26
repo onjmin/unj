@@ -105,7 +105,7 @@
 </script>
 
 <div
-  class="w-[220px] h-[350px]
+  class="w-full h-[350px]
          flex flex-col border border-gray-300 rounded-md
          overflow-hidden shadow-lg"
 >
