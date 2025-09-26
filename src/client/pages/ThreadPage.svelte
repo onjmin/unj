@@ -929,7 +929,7 @@
                     >
                 </button>
                 <div
-                    class="relative overflow-hidden whitespace-nowrap text-red-500"
+                    class="relative overflow-hidden whitespace-nowrap text-green-800"
                 >
                     <span
                         class="inline-block animate-wave text-base font-normal leading-none tracking-tight"
