@@ -9,6 +9,7 @@
     import { format } from "date-fns";
     import { ja } from "date-fns/locale";
     import { navigate } from "svelte-routing";
+    import type { Board } from "../../common/request/board.js";
     import { Enum, regexUrl } from "../../common/request/content-schema.js";
     import audio from "../../common/request/whitelist/audio.js";
     import game from "../../common/request/whitelist/game.js";
@@ -32,9 +33,9 @@
     const INITIAL_LIMIT = 16;
     const LOAD_MORE_LIMIT = 16;
 
-    let { misskeyId = "" } = $props();
+    let { board, misskeyId }: { board: Board; misskeyId: string } = $props();
 
-    const misskey: Misskey | undefined = findMisskey(misskeyId);
+    const misskey: Misskey | undefined = findMisskey(board.key, misskeyId);
     const hostname = misskey?.hostname ?? "";
     const title = misskey?.title ?? "";
     const api = misskey?.api ?? "";
@@ -185,7 +186,7 @@
     let src = $state("");
 </script>
 
-<HeaderPart {title}>
+<HeaderPart {board} {title}>
     <div class="flex flex-col items-end space-y-2 text-right">
         <p class="text-xs text-gray-500">
             このページからの投稿は許可されていません
@@ -206,7 +207,7 @@
     <KomePart online={0} room={misskeyId} />
 </HeaderPart>
 
-<MainPart>
+<MainPart {board}>
     {#if timeline.length === 0}
         <p>スレ取得中…</p>
         <div
@@ -410,7 +411,7 @@
         >
             <button
                 class="flex items-center space-x-2 px-4 py-2 rounded-lg bg-gray-600 hover:bg-gray-700 transition-colors duration-200"
-                onclick={() => navigate(makePathname("/headline"))}
+                onclick={() => navigate(makePathname(`/${board.key}/headline`))}
             >
                 <CircleArrowLeftIcon size={16} />
                 <span class="text-sm font-medium">板トップに戻る</span>
@@ -418,7 +419,7 @@
 
             <button
                 class="flex items-center space-x-2 px-4 py-2 rounded-lg bg-gray-600 hover:bg-gray-700 transition-colors duration-200"
-                onclick={() => navigate(makePathname("/history"))}
+                onclick={() => navigate(makePathname(`/${board.key}/history`))}
             >
                 <CircleArrowLeftIcon size={16} />
                 <span class="text-sm font-medium">履歴に戻る</span>

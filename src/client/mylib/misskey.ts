@@ -8,11 +8,13 @@ export type Misskey = {
 /**
  * Misskeyの情報を取得する関数
  */
-export const findMisskey = (misskeyId: string) => {
-	return misskeyList.find((item) => item.misskeyId === misskeyId);
+export const findMisskey = (board: string, misskeyId: string) => {
+	return misskeyList.get(board)?.find((item) => item.misskeyId === misskeyId);
 };
 
-export const misskeyList: Misskey[] = [
+export const misskeyList: Map<string, Misskey[]> = new Map();
+
+misskeyList.set("unj", [
 	{
 		misskeyId: "inmusky",
 		hostname: "inmusky.net",
@@ -25,7 +27,7 @@ export const misskeyList: Misskey[] = [
 		title: "ぬくもりすきー（Nukumori-Sky）",
 		api: "https://misskey.nukumori-sky.net/api/notes/local-timeline",
 	},
-];
+]);
 
 /**
  * Misskeyのタイムラインを取得する関数

@@ -2,7 +2,7 @@
   import { navigate } from "svelte-routing";
   import { DEV_MODE, STG_MODE, makePathname, pathname } from "../mylib/env.js";
 
-  let { children = null, title = "", menu = true } = $props();
+  let { board = null, children = null, title = "", menu = true } = $props();
   import { ArrowLeftIcon } from "@lucide/svelte";
   import {
     isEnabledRightMenu,
@@ -21,7 +21,7 @@
   }
 
   $isEnabledRightMenu = children !== null;
-  const pathname1 = pathname().split("/")[1] ?? "";
+  const pathname2 = pathname().split("/")[2] ?? "";
 </script>
 
 <svelte:head>
@@ -33,23 +33,20 @@
 <header class="unj-header-part w-full bg-gray-800 text-gray-200 shadow-md">
   <div class="max-w-6xl mx-auto px-4 flex items-center">
     <!-- ヘッダー左端：ボタン -->
-    {#if pathname1 === ""}
+    {#if pathname2 === ""}
       <!-- empty -->
-    {:else if pathname1 === "error"}
-      <!-- empty -->
-    {:else if pathname1 === "akukin"}
-      <!-- empty -->
-    {:else if pathname1 === "headline"}
+    {:else if pathname2 === "headline"}
       <button
         class="flex items-center space-x-1 px-3 py-2 rounded bg-gray-600 text-gray-200 hover:opacity-80"
-        onclick={() => navigate(makePathname("/new"))}
+        onclick={() => navigate(makePathname("/"))}
       >
-        <span class="text-sm font-medium">スレ作成</span>
+        <ArrowLeftIcon class="w-5 h-5" />
+        <span class="text-sm font-medium">板一覧</span>
       </button>
     {:else}
       <button
         class="flex items-center space-x-1 px-3 py-2 rounded bg-gray-600 text-gray-200 hover:opacity-80"
-        onclick={() => navigate(makePathname("/headline"))}
+        onclick={() => navigate(makePathname(`/${board.key}/headline`))}
       >
         <ArrowLeftIcon class="w-5 h-5" />
         <span class="text-sm font-medium">板TOP</span>
@@ -71,7 +68,7 @@
 </header>
 
 {#if menu}
-  <LeftMenuPart open={$openLeft} />
+  <LeftMenuPart {board} open={$openLeft} />
   {#if children !== null}
     <RightMenuPart open={$openRight && $isEnabledRightMenu}>
       {@render children?.()}

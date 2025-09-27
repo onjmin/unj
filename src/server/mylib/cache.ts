@@ -16,7 +16,7 @@ export const createdAtCache: Map<number, Date> = new Map();
 export const userIdCache: Map<number, number> = new Map();
 // 基本的な情報
 export const titleCache: Map<number, string> = new Map();
-export const threadTypeCache: Map<number, number> = new Map();
+export const boardCache: Map<number, number> = new Map();
 // 高度な設定
 export const varsanCache: Map<number, boolean> = new Map();
 export const sageCache: Map<number, boolean> = new Map();

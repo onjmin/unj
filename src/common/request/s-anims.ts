@@ -1,9 +1,9 @@
 export const sAnimsMap: Map<number, SAnim> = new Map();
 class SAnim {
-	name;
-	description;
-	src;
-	href;
+	readonly name;
+	readonly description;
+	readonly src;
+	readonly href;
 	constructor({
 		id,
 		name,

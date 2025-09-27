@@ -13,9 +13,9 @@ export default [
 		id: 802,
 		name: "GIPHY",
 		description: "大量のGIFの検索とシェアが出来るサイト",
-		src: "https://giphy.com/gifs/0jQfLUbvgusmtOmgpM",
+		src: "https://giphy.com/gifs/3o7btNj3JqvhvVNU52",
 		hostnames: ["media3.giphy.com", "gif.open2ch.net"],
-		href: "https://gif.open2ch.net/g/0jQfLUbvgusmtOmgpM",
+		href: "https://gif.open2ch.net/g/3o7btNj3JqvhvVNU52",
 	}),
 	new SiteInfo({
 		id: 811,

@@ -28,6 +28,7 @@
     import { sha256 } from "js-sha256";
     import { navigate } from "svelte-routing";
     import * as v from "valibot";
+    import type { Board } from "../../common/request/board.js";
     import {
         Enum,
         ankaRegex,
@@ -94,7 +95,11 @@
     changeNewResSound();
     changeReplyResSound();
 
-    let { threadId = "", resNum = 2 } = $props();
+    let {
+        board,
+        threadId,
+        resNum = 2,
+    }: { board: Board; threadId: string; resNum?: number } = $props();
 
     let openConfirm = $state(false);
     let textarea: HTMLTextAreaElement | null = $state(null);
@@ -385,7 +390,7 @@
         const now = new Date();
         const diffSeconds = differenceInSeconds(date, now);
         if (diffSeconds < 0) {
-            navigate(makePathname("/headline"), { replace: true });
+            navigate(makePathname(`/${board.key}/headline`), { replace: true });
             return "期限切れ";
         }
         if (diffSeconds <= 359999) {
@@ -626,6 +631,7 @@
 
 {#snippet form(menu = false)}
     <ResFormPart
+        {board}
         disabled={emitting}
         bind:textarea
         bind:userName
@@ -729,7 +735,7 @@
     </div>
 {/snippet}
 
-<HeaderPart {title}>
+<HeaderPart {board} {title}>
     <AccessCounterPart {online} {pv} />
     <div>{@render form(true)}</div>
     {#if contentType === Enum.Oekaki}
@@ -762,6 +768,7 @@
                 siteInfo?.id === 1602 ||
                 siteInfo?.id === 3201} -->
         <ResPart
+            {board}
             bind:ignoreList
             bind:oekakiCollab
             bind:bindContentText={contentText}
@@ -801,7 +808,7 @@
             disabled={emitting || resNum < 3}
             onclick={() => {
                 if (!thread) return;
-                navigate(makePathname(`/thread/${thread.id}/`));
+                navigate(makePathname(`/${board.key}/thread/${thread.id}/`));
             }}
         >
             <ChevronFirstIcon class="w-5 h-5" />
@@ -815,7 +822,7 @@
                 if (!thread) return;
                 navigate(
                     makePathname(
-                        `/thread/${thread.id}/${Math.max(resNum - queryResultLimit, 2)}`.replace(
+                        `/${board.key}/thread/${thread.id}/${Math.max(resNum - queryResultLimit, 2)}`.replace(
                             /\/2$/,
                             "/",
                         ),
@@ -842,7 +849,7 @@
                 if (!thread) return;
                 navigate(
                     makePathname(
-                        `/thread/${thread.id}/${Math.min(resNum + queryResultLimit, thread.resCount - queryResultLimit + 1)}`,
+                        `/${board.key}/thread/${thread.id}/${Math.min(resNum + queryResultLimit, thread.resCount - queryResultLimit + 1)}`,
                     ),
                 );
             }}
@@ -861,7 +868,7 @@
                 if (!thread) return;
                 navigate(
                     makePathname(
-                        `/thread/${thread.id}/${thread.resCount - queryResultLimit + 1}`,
+                        `/${board.key}/thread/${thread.id}/${thread.resCount - queryResultLimit + 1}`,
                     ),
                 );
             }}
@@ -945,6 +952,7 @@
         <div class="res-list">
             {#if !ignoreList?.has(thread.ccUserId)}
                 <ResPart
+                    {board}
                     {focus}
                     bind:ignoreList
                     bind:oekakiCollab
@@ -991,6 +999,7 @@
             {#each thread.resList as res}
                 {#if !ignoreList?.has(res.ccUserId)}
                     <ResPart
+                        {board}
                         {focus}
                         bind:ignoreList
                         bind:oekakiCollab
@@ -1081,7 +1090,7 @@
         >
             <button
                 class="flex items-center space-x-2 px-4 py-2 rounded-lg bg-gray-600 hover:bg-gray-700 transition-colors duration-200"
-                onclick={() => navigate(makePathname("/headline"))}
+                onclick={() => navigate(makePathname(`/${board.key}/headline`))}
             >
                 <CircleArrowLeftIcon size={16} />
                 <span class="text-sm font-medium">板トップに戻る</span>
@@ -1089,7 +1098,7 @@
 
             <button
                 class="flex items-center space-x-2 px-4 py-2 rounded-lg bg-gray-600 hover:bg-gray-700 transition-colors duration-200"
-                onclick={() => navigate(makePathname("/history"))}
+                onclick={() => navigate(makePathname(`/${board.key}/history`))}
             >
                 <CircleArrowLeftIcon size={16} />
                 <span class="text-sm font-medium">履歴に戻る</span>

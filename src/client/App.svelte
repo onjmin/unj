@@ -1,6 +1,7 @@
 <script lang="ts">
   import "./global.css";
   import { Route, Router } from "svelte-routing";
+  import { boardMap, undefinedBoard } from "../common/request/board.js";
   import { makePathname } from "./mylib/env.js";
   import ArtPage from "./pages/ArtPage.svelte";
   import ArticlePage from "./pages/ArticlePage.svelte";
@@ -20,6 +21,8 @@
   import TermsPage from "./pages/TermsPage.svelte";
   import ThreadPage from "./pages/ThreadPage.svelte";
   import UnbannedCheck from "./plugs/UnbannedCheck.svelte";
+
+  const b = (b: string) => boardMap.get(b) ?? undefinedBoard;
 </script>
 
 <Router>
@@ -33,79 +36,80 @@
     <ErrorPage />
   </Route>
 
+  <!-- 直リンでは辿り着けないアク禁ページ -->
+  <Route path={makePathname("/akukin")}>
+    <UnbannedCheck>
+      <BannedPage />
+    </UnbannedCheck>
+  </Route>
+
   <!-- エントリページ -->
   <Route path={makePathname("/")}>
     <HomePage />
   </Route>
 
   <!-- スレ一覧 -->
-  <Route path={makePathname("/headline")}>
-    <HeadlinePage />
+  <Route path={makePathname("/:board/headline")} let:params>
+    <HeadlinePage board={b(params.board)} />
   </Route>
   <!-- スレ個別 -->
-  <Route path="{makePathname('/thread')}/:threadId" let:params>
-    <ThreadPage threadId={params.threadId} />
+  <Route path="{makePathname('/:board/thread')}/:threadId" let:params>
+    <ThreadPage board={b(params.board)} threadId={params.threadId} />
   </Route>
-  <Route path="{makePathname('/thread')}/:threadId/:resNum" let:params>
-    <ThreadPage threadId={params.threadId} resNum={Number(params.resNum)} />
+  <Route path="{makePathname('/:board/thread')}/:threadId/:resNum" let:params>
+    <ThreadPage
+      board={b(params.board)}
+      threadId={params.threadId}
+      resNum={Number(params.resNum)}
+    />
   </Route>
   <!-- Misskey -->
-  <Route path={makePathname("/misskey/inmusky")} let:params>
-    <MisskeyPage misskeyId="inmusky" />
-  </Route>
-  <Route path={makePathname("/misskey/nukumori")} let:params>
-    <MisskeyPage misskeyId="nukumori" />
+  <Route path={makePathname("/:board/misskey/:misskeyId")} let:params>
+    <MisskeyPage board={b(params.board)} misskeyId={params.misskeyId} />
   </Route>
 
   <!-- スレ立て -->
-  <Route path={makePathname("/new")}>
-    <NewPage />
+  <Route path={makePathname("/:board/new")} let:params>
+    <NewPage board={b(params.board)} />
   </Route>
-  <Route path={makePathname("/new/next")}>
-    <NewPage isRef />
+  <Route path={makePathname("/:board/new/next")} let:params>
+    <NewPage board={b(params.board)} isRef />
   </Route>
   <!-- 検索 -->
-  <Route path={makePathname("/search")}>
-    <SearchPage />
+  <Route path={makePathname("/:board/search")} let:params>
+    <SearchPage board={b(params.board)} />
   </Route>
   <!-- 履歴 -->
-  <Route path={makePathname("/history")}>
-    <HistoryPage />
+  <Route path={makePathname("/:board/history")} let:params>
+    <HistoryPage board={b(params.board)} />
   </Route>
   <!-- 個人設定 -->
-  <Route path={makePathname("/config")}>
-    <ConfigPage />
+  <Route path={makePathname("/:board/config")} let:params>
+    <ConfigPage board={b(params.board)} />
   </Route>
 
   <!-- 利用規約 -->
-  <Route path={makePathname("/terms")}>
-    <TermsPage />
+  <Route path={makePathname("/:board/terms")} let:params>
+    <TermsPage board={b(params.board)} />
   </Route>
   <!-- お問い合わせ -->
-  <Route path={makePathname("/contact")}>
-    <ContactPage />
+  <Route path={makePathname("/:board/contact")} let:params>
+    <ContactPage board={b(params.board)} />
   </Route>
   <!-- ブログ一覧 -->
-  <Route path={makePathname("/news")}>
-    <NewsPage />
+  <Route path={makePathname("/:board/news")} let:params>
+    <NewsPage board={b(params.board)} />
   </Route>
   <!-- ブログ個別 -->
-  <Route path="{makePathname('/news')}/:newsId" let:params>
-    <ArticlePage newsId={params.newsId} />
+  <Route path="{makePathname('/:board/news')}/:newsId" let:params>
+    <ArticlePage board={b(params.board)} newsId={params.newsId} />
   </Route>
   <!-- TOP絵集 -->
-  <Route path={makePathname("/art")}>
-    <ArtPage />
+  <Route path={makePathname("/:board/art")} let:params>
+    <ArtPage board={b(params.board)} />
   </Route>
   <!-- リンク集 -->
-  <Route path={makePathname("/links")}>
-    <LinksPage />
-  </Route>
-
-  <!-- 直リンでは辿り着けない -->
-  <Route path={makePathname("/akukin")}>
-    <UnbannedCheck>
-      <BannedPage />
-    </UnbannedCheck>
+  <Route path={makePathname("/:board/links")} let:params>
+    <LinksPage board={b(params.board)} />
   </Route>
 </Router>

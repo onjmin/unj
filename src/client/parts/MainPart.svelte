@@ -14,7 +14,7 @@
     } from "../mylib/store.js";
     // import { adsDeletedAt } from "../mylib/unj-storage.js";
 
-    let { children, menu = true } = $props();
+    let { board = null, children, menu = true } = $props();
 
     // let showAd = $state(true);
 
@@ -148,7 +148,8 @@
                     <IconButton
                         class="material-icons"
                         aria-label="edit_note"
-                        onclick={() => navigate(makePathname("/new"))}
+                        onclick={() =>
+                            navigate(makePathname(`/${board.key}/new`))}
                         >edit_note</IconButton
                     >
                     <div class="label-overlay">スレ作成</div>
@@ -157,7 +158,8 @@
                     <IconButton
                         class="material-icons"
                         aria-label="settings"
-                        onclick={() => navigate(makePathname("/config"))}
+                        onclick={() =>
+                            navigate(makePathname(`/${board.key}/config`))}
                         >settings</IconButton
                     >
                     <div class="label-overlay">設定</div>
@@ -166,7 +168,8 @@
                     <IconButton
                         class="material-icons"
                         aria-label="search"
-                        onclick={() => navigate(makePathname("/search"))}
+                        onclick={() =>
+                            navigate(makePathname(`/${board.key}/search`))}
                         >search</IconButton
                     >
                     <div class="label-overlay">検索</div>
@@ -175,7 +178,8 @@
                     <IconButton
                         class="material-icons"
                         aria-label="history"
-                        onclick={() => navigate(makePathname("/history"))}
+                        onclick={() =>
+                            navigate(makePathname(`/${board.key}/history`))}
                         >history</IconButton
                     >
                     <div class="label-overlay">履歴</div>

@@ -3,7 +3,6 @@
   import Select, { Option } from "@smui/select";
   import Textfield from "@smui/textfield";
   import CharacterCounter from "@smui/textfield/character-counter";
-  import { avatarMap } from "../../common/request/avatar.js";
   import {
     Enum,
     contentTypeOptions,
@@ -22,6 +21,7 @@
   import UrlTemplatePart from "./UrlTemplatePart.svelte";
 
   let {
+    board,
     disabled = false,
     textarea = $bindable(null),
     userName = $bindable(""),
@@ -60,7 +60,7 @@
 
   let avatarSrc = $state("");
   $effect(() => {
-    avatarSrc = avatarMap.get(userAvatar)?.src ?? "";
+    avatarSrc = board.avatarMap.get(userAvatar)?.src ?? "";
   });
 
   const visibleUrlField = (contentType: number) =>
@@ -74,7 +74,7 @@
     contentType === Enum.Game;
 </script>
 
-<AvatarPart bind:open={openAvatar} bind:userAvatar />
+<AvatarPart {board} bind:open={openAvatar} bind:userAvatar />
 <UrlTemplatePart bind:open={openUrlTemplate} bind:contentUrl {contentType} />
 
 {#if isExpand}

@@ -11,6 +11,7 @@
     import { addHours, differenceInHours, format } from "date-fns";
     import { ja } from "date-fns/locale";
     import * as v from "valibot";
+    import type { Board } from "../../common/request/board.js";
     import { contactedAt } from "../mylib/unj-storage.js";
     import {
         contactAGPL3,
@@ -20,6 +21,8 @@
     import AGPL3Part from "../parts/contact/AGPL3Part.svelte";
     import KaizenPart from "../parts/contact/KaizenPart.svelte";
     import PolicePart from "../parts/contact/PolicePart.svelte";
+
+    let { board }: { board: Board } = $props();
 
     const toaster = createToaster();
 
@@ -131,9 +134,9 @@
     });
 </script>
 
-<HeaderPart title="お問い合わせ" />
+<HeaderPart {board} title="お問い合わせ" />
 
-<MainPart>
+<MainPart {board}>
     <p class="text-gray-700">
         当ページからのお問い合わせには、迅速に対応いたします。
     </p>

@@ -11,6 +11,7 @@ import {
 	balsResNumCache,
 	bannedCache,
 	bannedIPCache,
+	boardCache,
 	ccBitmaskCache,
 	ccUserAvatarCache,
 	ccUserIdCache,
@@ -31,7 +32,6 @@ import {
 	sageCache,
 	subbedCache,
 	threadCached,
-	threadTypeCache,
 	titleCache,
 	userIdCache,
 	varsanCache,
@@ -87,7 +87,7 @@ export default ({ socket }: { socket: Socket }) => {
 				userIdCache.set(threadId, threadRecord.user_id);
 				// 基本的な情報
 				titleCache.set(threadId, threadRecord.title);
-				threadTypeCache.set(threadId, threadRecord.thread_type);
+				boardCache.set(threadId, threadRecord.board);
 				// 高度な設定
 				varsanCache.set(threadId, threadRecord.varsan);
 				sageCache.set(threadId, threadRecord.sage);
@@ -200,7 +200,7 @@ export default ({ socket }: { socket: Socket }) => {
 				contentType: contentTypeCache.get(threadId) ?? 0,
 				// 基本的な情報
 				title: titleCache.get(threadId) ?? "",
-				threadType: threadTypeCache.get(threadId) ?? 0,
+				board: boardCache.get(threadId) ?? 0,
 				// 高度な設定
 				varsan: varsanCache.get(threadId) ?? false,
 				sage: sageCache.get(threadId) ?? false,

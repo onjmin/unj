@@ -7,6 +7,7 @@
 
   import Button from "@smui/button";
   import { Link, navigate } from "svelte-routing";
+  import { publicBoards } from "../../common/request/board.js";
   import { Enum } from "../../common/request/content-schema.js";
   import { randArray } from "../../common/util.js";
   import { makePathname } from "../mylib/env.js";
@@ -46,15 +47,34 @@
   <div class="flex justify-center">
     <Button
       onclick={() => {
-        navigate(makePathname("/headline"));
+        navigate(makePathname("/unj/headline"));
       }}
       variant="raised">入る</Button
     >
   </div>
+  <div class="text-center">
+    <ul class="p-2 space-y-1">
+      {#each publicBoards as b}
+        <li class="list-none">
+          <a
+            href={makePathname(`/${b.key}/headline`)}
+            class="
+                        block px-3 py-1 rounded-md transition-colors
+                        focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500
+                        text-gray-700 hover:bg-gray-100
+                    "
+          >
+            {b.name}
+          </a>
+        </li>
+      {/each}
+    </ul>
+  </div>
   <div class="flex flex-col items-center">
     <div class="flex space-x-4">
-      <Link to={makePathname("/terms")} class="cursor-pointer hover:underline"
-        >利用規約</Link
+      <Link
+        to={makePathname("/unj/terms")}
+        class="cursor-pointer hover:underline">利用規約</Link
       >
       <button
         class="text-sm text-blue-500 hover:underline bg-transparent border-none p-0 cursor-pointer"

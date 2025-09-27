@@ -1,6 +1,7 @@
 import { format } from "date-fns";
 import type { Server, Socket } from "socket.io";
 import * as v from "valibot";
+import { boardIdMap } from "../../common/request/board.js";
 import { HeadlineSchema } from "../../common/request/schema.js";
 import type { HeadlineThread } from "../../common/response/schema.js";
 import { encodeThreadId } from "../mylib/anti-debug.js";
@@ -16,6 +17,9 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		const headline = v.safeParse(HeadlineSchema, data);
 		if (!headline.success) return;
 
+		const board = boardIdMap.get(headline.output.board);
+		if (!board) return;
+
 		// Nonce値の完全一致チェック
 		if (!nonce.isValid(socket, headline.output.nonce)) {
 			logger.verbose(`🔒 ${headline.output.nonce}`);
@@ -27,10 +31,11 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			nonce.lock(socket);
 			nonce.update(socket);
 
-			const values = [];
+			const values: (number | string)[] = [board.id];
 			const query = [
 				"SELECT * FROM threads",
 				"WHERE (deleted_at IS NULL OR deleted_at > CURRENT_TIMESTAMP)",
+				`AND board = $${values.length}`,
 			];
 			const { limit, sinceDate, untilDate } = headline.output;
 			if (sinceDate !== null) {

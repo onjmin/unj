@@ -178,8 +178,8 @@
   </div>
 
   <div class="relative">
-    <span class="text-xs text-sky-300 px-2 py-1"
-      >Room:{room === "headline" ? "板全体" : "スレ限定"}</span
+    <span class="text-xs text-sky-200 px-2 py-1"
+      >Room:{room === "headline" ? "全板共通" : "スレ限定"}</span
     >
 
     {#if showKomeStartMessage}

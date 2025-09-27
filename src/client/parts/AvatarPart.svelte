@@ -10,11 +10,10 @@
     Meta,
   } from "@smui/list";
   import Portal from "svelte-portal";
-  import { avatarMap } from "../../common/request/avatar.js";
 
-  let { open = $bindable(false), userAvatar = $bindable(0) } = $props();
+  let { board, open = $bindable(false), userAvatar = $bindable(0) } = $props();
 
-  const index2key = [...avatarMap.keys()];
+  const index2key = [...board.avatarMap.keys()];
   let selectionIndex = $state(index2key.indexOf(userAvatar));
   const closeHandler = (e: CustomEvent<{ action: string }>) => {
     switch (e.detail.action) {
@@ -34,7 +33,7 @@
     <Content>
       <div style="text-align:left;">
         <List twoLine avatarList singleSelection selectedIndex={selectionIndex}>
-          {#each avatarMap.values() as avatar, i}
+          {#each board.avatarMap.values() as avatar, i}
             <Item
               onSMUIAction={() => (selectionIndex = i)}
               selected={selectionIndex === i}

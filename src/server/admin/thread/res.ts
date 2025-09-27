@@ -6,7 +6,6 @@ import { contentSchemaMap } from "../../../common/request/content-schema.js";
 import {
 	SMALLINT,
 	THREAD_ID,
-	USER_AVATAR,
 	USER_NAME,
 	myConfig,
 } from "../../../common/request/schema.js";
@@ -27,25 +26,23 @@ import { exist, getThreadRoom } from "../../mylib/socket.js";
 const api = "/thread/res";
 const userId = 1; // システムに使っていい実在のusers.id
 
+const requestSchema = v.strictObject({
+	threadId: THREAD_ID,
+	ccUserId: v.string(),
+	ccUserName: USER_NAME,
+	ccUserAvatar: SMALLINT,
+	contentText: v.string(), // この段階では簡易的にしか見ない
+	contentUrl: v.string(), // この段階では簡易的にしか見ない
+	contentType: v.pipe(
+		SMALLINT,
+		v.check<number>((n) => (n & (n - 1)) === 0),
+	),
+});
+
 export default (router: Router, io: Server) => {
 	router.post(api, async (req: Request, res: Response) => {
 		// レスAPI用バリデーション
-		const result = v.safeParse(
-			v.object({
-				threadId: THREAD_ID,
-				ccUserId: v.string(),
-				ccUserName: USER_NAME,
-				ccUserAvatar: USER_AVATAR,
-				contentText: v.string(), // この段階では簡易的にしか見ない
-				contentUrl: v.string(), // この段階では簡易的にしか見ない
-				contentType: v.pipe(
-					SMALLINT,
-					v.check<number>((n) => (n & (n - 1)) === 0),
-				),
-			}),
-			req.body,
-			myConfig,
-		);
+		const result = v.safeParse(requestSchema, req.body, myConfig);
 		if (!result.success) {
 			res.status(400).json({ error: "Invalid threadId" });
 			return;

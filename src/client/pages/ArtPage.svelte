@@ -5,16 +5,19 @@
     import MainPart from "../parts/MainPart.svelte";
     ///////////////
 
+    import type { Board } from "../../common/request/board.js";
     import { topIllusts } from "../mylib/top-illusts.js";
     import ImagePreviewModal from "../parts/ImagePreviewPart.svelte";
+
+    let { board }: { board: Board } = $props();
 
     let open = $state(false);
     let src = $state("");
 </script>
 
-<HeaderPart title="TOP絵集" />
+<HeaderPart {board} title="TOP絵集" />
 
-<MainPart>
+<MainPart {board}>
     <div class="space-y-4">
         <p class="mb-4">
             当サイト「うんｊ」のトップページで使用している各イラストは、複数の絵師による合同制作作品です。

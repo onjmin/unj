@@ -19,6 +19,7 @@
     import { Slider } from "@skeletonlabs/skeleton-svelte";
     import { Howler } from "howler";
     import { pokemonMap } from "../../common/pokemon.js";
+    import type { Board } from "../../common/request/board.js";
     import {
         type ImgurResponse,
         deleteImgur,
@@ -47,6 +48,8 @@
         theme,
     } from "../mylib/unj-storage.js";
     import ImagePreviewModal from "../parts/ImagePreviewPart.svelte";
+
+    let { board }: { board: Board } = $props();
 
     const toaster = createToaster();
 
@@ -144,7 +147,7 @@
         `https://www.pokemon.jp/special/nakigoe151/sound/m/${pokemonId.toString().padStart(3, "0")}.mp3`;
 </script>
 
-<HeaderPart title="個人設定">
+<HeaderPart {board} title="個人設定">
     <p>高度な設定</p>
     <section class="mb-8 p-6 bg-white rounded-lg shadow-md">
         <h2 class="text-xl font-semibold mb-4 border-b pb-2 text-gray-700">
@@ -259,7 +262,7 @@
     </section>
 </HeaderPart>
 
-<MainPart>
+<MainPart {board}>
     <p>ここで設定変更できます</p>
     <div class="space-y-4">
         <div class="bg-white rounded-lg shadow">

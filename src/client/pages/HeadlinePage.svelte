@@ -19,6 +19,7 @@
     } from "date-fns";
     import { navigate } from "svelte-routing";
     import { Link } from "svelte-routing";
+    import type { Board } from "../../common/request/board.js";
     import { queryResultLimit } from "../../common/request/schema.js";
     import type { HeadlineThread } from "../../common/response/schema.js";
     import { sleep } from "../../common/util.js";
@@ -38,6 +39,8 @@
     import FaviconPart from "../parts/FaviconPart.svelte";
     import KomePart from "../parts/KomePart.svelte";
     import TwemojiPart from "../parts/TwemojiPart.svelte";
+
+    let { board }: { board: Board } = $props();
 
     const formatTimeAgo = (date: Date): string => {
         const now = new Date();
@@ -70,7 +73,9 @@
     };
 
     let threadList: HeadlineThread[] | undefined = $state();
-    const cache = new ObjectStorage<HeadlineThread[]>("headlineCache");
+    const cache = new ObjectStorage<HeadlineThread[]>(
+        `headlineCache###${board.id}`,
+    );
     $effect(() => {
         cache.get().then((v) => {
             if (v && !threadList) threadList = v;
@@ -114,7 +119,6 @@
     const handleHeadline = (data: { ok: boolean; list: HeadlineThread[] }) => {
         if (!data.ok) return;
         ok();
-        if (!data.list.length) return;
         if (!pagination) {
             threadList = data.list;
             for (const f of reactiveTasks) f();
@@ -223,6 +227,7 @@
         hello(() => {
             socket.emit("joinHeadline", {});
             socket.emit("headline", {
+                board: board.id,
                 nonce: genNonce(nonceKey.value ?? ""),
                 limit: queryResultLimit,
                 sinceDate: null,
@@ -232,13 +237,13 @@
         socket.on("joinHeadline", handleJoinHeadline);
         socket.on("headline", handleHeadline);
         socket.on("newHeadline", handleNewHeadline);
-        const aborts = misskeyList.map(fetchMisskey);
+        const aborts = misskeyList.get(board.key)?.map(fetchMisskey);
         return () => {
             goodbye();
             socket.off("joinHeadline", handleJoinHeadline);
             socket.off("headline", handleHeadline);
             socket.off("newHeadline", handleNewHeadline);
-            aborts.map((func) => func());
+            aborts?.map((func) => func());
         };
     });
 
@@ -249,6 +254,7 @@
         emitting = true;
         pagination = true;
         socket.emit("headline", {
+            board: board.id,
             nonce: genNonce(nonceKey.value ?? ""),
             limit: queryResultLimit,
             sinceDate: null,
@@ -270,13 +276,39 @@
     let searchQuery = $state("");
 </script>
 
-<HeaderPart title="ヘッドライン {online}人閲覧中">
+<HeaderPart {board} title={board.name}>
     <AccessCounterPart {online} {pv} />
     <br />
     <KomePart {online} />
 </HeaderPart>
 
-<MainPart>
+<MainPart {board}>
+    <div class="p-4 sm:p-6 bg-white border-b border-gray-200">
+        <div
+            class="w-[490px] h-[120px] max-w-full mx-auto mb-4 border border-gray-300 flex items-center justify-center overflow-hidden"
+        >
+            {#if board.banner}
+                <img
+                    src={board.banner}
+                    alt={`${board.name} バナー`}
+                    class="w-full h-full object-cover"
+                />
+            {:else}
+                <span class="text-gray-500 text-lg font-semibold"
+                    >バナーはまだぬい</span
+                >
+            {/if}
+        </div>
+
+        <div class="text-left mb-4">
+            <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-1">
+                {board.name}
+            </h1>
+            <p class="text-sm text-gray-600">
+                {board.description}
+            </p>
+        </div>
+    </div>
     {#if !threadList}
         <p>ヘッドライン取得中…</p>
         <div
@@ -287,6 +319,10 @@
             <h3 class="text-base mt-2">サーバーが落ちてるかも。。</h3>
             <p class="mt-4">ページ更新してみてね。</p>
         </div>
+    {:else if threadList.length === 0}
+        <p class="text-center text-gray-500 py-10 text-lg">
+            この板にまだスレッドが建てられてないみたい。。。
+        </p>
     {:else}
         <div class="mb-3 flex items-center gap-2">
             <div class="relative w-full">
@@ -329,7 +365,8 @@
                 <p>該当はありませんでした。</p>
                 <p>キーワードを変えてみてね。</p>
                 <p>
-                    <Link to={makePathname("/search")}>全文検索</Link
+                    <Link to={makePathname(`/${board.key}/search`)}
+                        >全文検索</Link
                     >でも試してちょ
                 </p>
             </div>
@@ -347,18 +384,22 @@
                                     onclick={() =>
                                         navigate(
                                             makePathname(
-                                                findMisskey(thread.id)
-                                                    ? `/misskey/${findMisskey(thread.id)?.misskeyId}`
-                                                    : `/thread/${thread.id}/${thread.resCount > queryResultLimit ? thread.resCount - 8 : ""}?top`,
+                                                findMisskey(
+                                                    board.key,
+                                                    thread.id,
+                                                )
+                                                    ? `/${board.key}/misskey/${findMisskey(board.key, thread.id)?.misskeyId}`
+                                                    : `/${board.key}/thread/${thread.id}/${thread.resCount > queryResultLimit ? thread.resCount - 8 : ""}?top`,
                                             ),
                                         )}
                                 >
                                     <div class="flex items-start">
                                         <div class="mr-2 flex-shrink-0">
                                             {#key thread.id}
-                                                {#if findMisskey(thread.id)}
+                                                {#if findMisskey(board.key, thread.id)}
                                                     <FaviconPart
                                                         hostname={findMisskey(
+                                                            board.key,
                                                             thread.id,
                                                         )?.hostname}
                                                     />

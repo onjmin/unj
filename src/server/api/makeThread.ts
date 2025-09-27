@@ -2,6 +2,7 @@ import type { PoolClient } from "@neondatabase/serverless";
 import { addHours, addSeconds, isBefore } from "date-fns";
 import type { Socket } from "socket.io";
 import * as v from "valibot";
+import { boardIdMap } from "../../common/request/board.js";
 import {
 	contentSchemaMap,
 	oekakiSchema,
@@ -34,6 +35,10 @@ export default ({ socket }: { socket: Socket }) => {
 		if (!schema) return;
 		const content = v.safeParse(schema, data, myConfig);
 		if (!content.success) return;
+
+		const board = boardIdMap.get(makeThread.output.board);
+		if (!board) return;
+		if (!board.avatarMap.has(makeThread.output.userAvatar)) return;
 
 		if (schema === oekakiSchema) {
 			const oekaki = v.safeParse(oekakiSchema, data, myConfig);
@@ -110,7 +115,7 @@ export default ({ socket }: { socket: Socket }) => {
 						"content_type",
 						// 基本的な情報
 						"title",
-						"thread_type",
+						"board",
 						// 高度な設定
 						"varsan",
 						"sage",
@@ -136,7 +141,7 @@ export default ({ socket }: { socket: Socket }) => {
 					content.output.contentType,
 					// 基本的な情報
 					makeThread.output.title,
-					0, // TODO
+					board.id,
 					// 高度な設定
 					makeThread.output.varsan,
 					makeThread.output.sage,

@@ -5,12 +5,15 @@
     import MainPart from "../parts/MainPart.svelte";
     ///////////////
 
+    import type { Board } from "../../common/request/board.js";
     import { links } from "../mylib/links.js";
+
+    let { board }: { board: Board } = $props();
 </script>
 
-<HeaderPart title="リンク集" />
+<HeaderPart {board} title="リンク集" />
 
-<!-- <MainPart>
+<!-- <MainPart {board}>
     <p class="mb-4">おんj発の掲示板群</p>
     <div class="w-full max-w-lg mx-auto">
         <ul class="rounded-lg shadow-md divide-y divide-gray-200 bg-white">
@@ -39,7 +42,7 @@
     </div>
 </MainPart> -->
 
-<MainPart>
+<MainPart {board}>
     <div
         class="flex flex-col items-center justify-center text-left p-8 bg-white rounded-lg shadow-md max-w-lg mx-auto mt-10"
     >

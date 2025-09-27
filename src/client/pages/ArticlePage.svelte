@@ -15,6 +15,7 @@
     } from "@lucide/svelte";
     import Chip, { Set as ChipSet, LeadingIcon, Text } from "@smui/chips";
     import { navigate } from "svelte-routing";
+    import type { Board } from "../../common/request/board.js";
     import {
         type BloggerItem,
         formatDate,
@@ -23,7 +24,7 @@
     import { decodeEnv, makePathname } from "../mylib/env.js";
     import { ObjectStorage } from "../mylib/object-storage.js";
 
-    let { newsId = "" } = $props();
+    let { board, newsId }: { board: Board; newsId: string } = $props();
 
     const VITE_BLOGGER_BLOG_ID = decodeEnv(
         import.meta.env.VITE_BLOGGER_BLOG_ID,
@@ -101,7 +102,7 @@
     });
 </script>
 
-<HeaderPart {title} />
+<HeaderPart {board} {title} />
 
 {#snippet paginationControls()}
     <div class="flex justify-center items-center space-x-2">
@@ -109,7 +110,8 @@
         <button
             class="p-2 rounded bg-gray-600 text-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={first === null}
-            onclick={() => navigate(makePathname(`/news/${first}`))}
+            onclick={() =>
+                navigate(makePathname(`/${board.key}/news/${first}`))}
         >
             <ChevronFirstIcon class="w-5 h-5" />
         </button>
@@ -118,7 +120,7 @@
         <button
             class="p-2 rounded bg-gray-600 text-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={prev === null}
-            onclick={() => navigate(makePathname(`/news/${prev}`))}
+            onclick={() => navigate(makePathname(`/${board.key}/news/${prev}`))}
         >
             <ChevronLeftIcon class="w-5 h-5" />
         </button>
@@ -132,7 +134,7 @@
         <button
             class="p-2 rounded bg-gray-600 text-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={next === null}
-            onclick={() => navigate(makePathname(`/news/${next}`))}
+            onclick={() => navigate(makePathname(`/${board.key}/news/${next}`))}
         >
             <ChevronRightIcon class="w-5 h-5" />
         </button>
@@ -141,14 +143,14 @@
         <button
             class="p-2 rounded bg-gray-600 text-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={last === null}
-            onclick={() => navigate(makePathname(`/news/${last}`))}
+            onclick={() => navigate(makePathname(`/${board.key}/news/${last}`))}
         >
             <ChevronLastIcon class="w-5 h-5" />
         </button>
     </div>
 {/snippet}
 
-<MainPart>
+<MainPart {board}>
     {#if error}
         <div
             class="bg-red-50 border border-red-200 text-red-800 p-6 rounded-lg shadow-md"
@@ -200,7 +202,7 @@
         >
             <button
                 class="flex items-center space-x-2 px-4 py-2 rounded-lg bg-gray-600 hover:bg-gray-700 transition-colors duration-200"
-                onclick={() => navigate(makePathname("/news"))}
+                onclick={() => navigate(makePathname(`/${board.key}/news`))}
             >
                 <CircleArrowLeftIcon size={16} />
                 <span class="text-sm font-medium">ニュース一覧に戻る</span>

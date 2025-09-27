@@ -6,9 +6,12 @@
     ///////////////
 
     import { Link } from "svelte-routing";
+    import type { Board } from "../../common/request/board.js";
     import { makePathname } from "../mylib/env.js";
     import { ObjectStorage } from "../mylib/object-storage.js";
     import { type ResHistory } from "../mylib/res-history.js";
+
+    let { board }: { board: Board } = $props();
 
     let resHistories: ResHistory[] | null = $state(null);
     const resHistoryCache = new ObjectStorage<ResHistory[]>("resHistoryCache");
@@ -30,7 +33,7 @@
     });
 </script>
 
-<HeaderPart title="レス履歴">
+<HeaderPart {board} title="レス履歴">
     <button
         class="text-xs text-red-500 font-medium px-2 py-1 rounded-full border border-red-500 hover:bg-red-50"
         onclick={() => {
@@ -45,7 +48,7 @@
     </button>
 </HeaderPart>
 
-<MainPart>
+<MainPart {board}>
     <div class="max-w-2xl mx-auto p-4 space-y-2 text-left">
         {#if !resHistories?.length}
             <div class="text-center p-4">
@@ -54,7 +57,7 @@
                 </p>
                 <p class="text-sm text-gray-500">
                     なんか適当に<Link
-                        to={makePathname("/new")}
+                        to={makePathname(`/${board.key}/new`)}
                         class="font-medium text-gray-900">投稿</Link
                     >したり「あとで読む」をしてみてね。
                 </p>
@@ -64,7 +67,7 @@
                 {@const newResponses = resHistory.resCount - resHistory.resNum}
                 <Link
                     to={makePathname(
-                        `/thread/${resHistory.threadId}/${resHistory.resNum}`,
+                        `/${board.key}/thread/${resHistory.threadId}/${resHistory.resNum}`,
                     )}
                     class="block p-2 bg-white rounded hover:bg-gray-50 transition"
                 >

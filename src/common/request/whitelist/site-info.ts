@@ -1,11 +1,11 @@
 export class SiteInfo {
-	id;
-	name;
-	description;
-	src;
-	hostnames;
-	favicon;
-	href;
+	readonly id;
+	readonly name;
+	readonly description;
+	readonly src;
+	readonly hostnames;
+	readonly favicon;
+	readonly href;
 	constructor({
 		id, // フロントで使う
 		name, // 表示用のラベル

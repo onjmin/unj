@@ -6,8 +6,11 @@
     ///////////////
 
     import { ChevronDownIcon, ChevronRightIcon } from "@lucide/svelte";
+    import type { Board } from "../../common/request/board.js";
     import { faq } from "../mylib/faq.js";
     import TermsPart from "../parts/TermsPart.svelte";
+
+    let { board }: { board: Board } = $props();
 
     // 開いている質問のインデックスを管理する状態
     let openQuestion: number | null = $state(null);
@@ -18,7 +21,7 @@
     };
 </script>
 
-<HeaderPart title="うんｊ利用規約">
+<HeaderPart {board} title="うんｊ利用規約">
     <p>よくある質問</p>
     <div class="space-y-4">
         {#each faq as [q, a], i}
@@ -47,7 +50,7 @@
     </div>
 </HeaderPart>
 
-<MainPart>
+<MainPart {board}>
     <TermsPart />
 </MainPart>
 

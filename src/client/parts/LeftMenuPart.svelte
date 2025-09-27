@@ -9,12 +9,13 @@
         Subheader,
     } from "@smui/list";
     import TopAppBar, { Row } from "@smui/top-app-bar";
-    import { navigate } from "svelte-routing";
+    import { Link, navigate } from "svelte-routing";
+    import { publicBoards } from "../../common/request/board.js";
     import { makePathname, pathname } from "../mylib/env.js";
 
-    let { open = false } = $props();
+    let { board, open = false } = $props();
 
-    const pathname1 = pathname().split("/")[1] ?? "";
+    const pathname2 = pathname().split("/")[2] ?? "";
 </script>
 
 {#snippet margin()}
@@ -34,8 +35,8 @@
     <div class="content">
         <List>
             <Item
-                onclick={() => navigate(makePathname("/new"))}
-                activated={pathname1 === "new"}
+                onclick={() => navigate(makePathname(`/${board.key}/new`))}
+                activated={pathname2 === "new"}
             >
                 <Graphic class="material-icons" aria-hidden="true"
                     >edit_note</Graphic
@@ -43,8 +44,8 @@
                 <Text>スレ立て</Text>
             </Item>
             <Item
-                onclick={() => navigate(makePathname("/headline"))}
-                activated={pathname1 === "headline"}
+                onclick={() => navigate(makePathname(`/${board.key}/headline`))}
+                activated={pathname2 === "headline"}
             >
                 <Graphic class="material-icons" aria-hidden="true"
                     >article</Graphic
@@ -52,8 +53,8 @@
                 <Text>ヘッドライン</Text>
             </Item>
             <Item
-                onclick={() => navigate(makePathname("/search"))}
-                activated={pathname1 === "search"}
+                onclick={() => navigate(makePathname(`/${board.key}/search`))}
+                activated={pathname2 === "search"}
             >
                 <Graphic class="material-icons" aria-hidden="true"
                     >search</Graphic
@@ -61,8 +62,8 @@
                 <Text>検索</Text>
             </Item>
             <Item
-                onclick={() => navigate(makePathname("/history"))}
-                activated={pathname1 === "history"}
+                onclick={() => navigate(makePathname(`/${board.key}/history`))}
+                activated={pathname2 === "history"}
             >
                 <Graphic class="material-icons" aria-hidden="true"
                     >history</Graphic
@@ -70,8 +71,8 @@
                 <Text>履歴</Text>
             </Item>
             <Item
-                onclick={() => navigate(makePathname("/config"))}
-                activated={pathname1 === "config"}
+                onclick={() => navigate(makePathname(`/${board.key}/config`))}
+                activated={pathname2 === "config"}
             >
                 <Graphic class="material-icons" aria-hidden="true"
                     >settings</Graphic
@@ -82,8 +83,8 @@
             <Separator />
             <Subheader tag="h6">サイト情報</Subheader>
             <Item
-                onclick={() => navigate(makePathname("/terms"))}
-                activated={pathname1 === "terms"}
+                onclick={() => navigate(makePathname(`/${board.key}/terms`))}
+                activated={pathname2 === "terms"}
             >
                 <Graphic class="material-icons" aria-hidden="true"
                     >gavel</Graphic
@@ -91,16 +92,16 @@
                 <Text>利用規約</Text>
             </Item>
             <Item
-                onclick={() => navigate(makePathname("/contact"))}
-                activated={pathname1 === "contact"}
+                onclick={() => navigate(makePathname(`/${board.key}/contact`))}
+                activated={pathname2 === "contact"}
             >
                 <Graphic class="material-icons" aria-hidden="true">help</Graphic
                 >
                 <Text>お問い合わせ</Text>
             </Item>
             <Item
-                onclick={() => navigate(makePathname("/news"))}
-                activated={pathname1 === "news"}
+                onclick={() => navigate(makePathname(`/${board.key}/news`))}
+                activated={pathname2 === "news"}
             >
                 <Graphic class="material-icons" aria-hidden="true"
                     >newspaper</Graphic
@@ -108,8 +109,8 @@
                 <Text>ニュース</Text>
             </Item>
             <Item
-                onclick={() => navigate(makePathname("/art"))}
-                activated={pathname1 === "art"}
+                onclick={() => navigate(makePathname(`/${board.key}/art`))}
+                activated={pathname2 === "art"}
             >
                 <Graphic class="material-icons" aria-hidden="true"
                     >view_carousel</Graphic
@@ -117,14 +118,34 @@
                 <Text>TOP絵集</Text>
             </Item>
             <Item
-                onclick={() => navigate(makePathname("/links"))}
-                activated={pathname1 === "links"}
+                onclick={() => navigate(makePathname(`/${board.key}/links`))}
+                activated={pathname2 === "links"}
             >
                 <Graphic class="material-icons" aria-hidden="true">link</Graphic
                 >
                 <Text>リンク集</Text>
             </Item>
         </List>
+    </div>
+    <div class="text-left">
+        <ul class="p-2 space-y-1">
+            {#each publicBoards as b}
+                <li class="list-none">
+                    <a
+                        href={makePathname(`/${b.key}/headline`)}
+                        class="
+                        block px-3 py-1 rounded-md transition-colors
+                        focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500
+                        {b.key === board
+                            ? 'bg-green-600 text-white font-bold shadow-md'
+                            : 'text-gray-700 hover:bg-gray-100'}
+                    "
+                    >
+                        {b.name}
+                    </a>
+                </li>
+            {/each}
+        </ul>
     </div>
     {@render margin()}
 </Card>

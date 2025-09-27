@@ -8,6 +8,7 @@
     import Chip, { Set as ChipSet, LeadingIcon, Text } from "@smui/chips";
     import List, { Item, Separator } from "@smui/list";
     import { Link } from "svelte-routing";
+    import type { Board } from "../../common/request/board.js";
     import {
         type BloggerItem,
         formatDate,
@@ -15,6 +16,8 @@
     } from "../mylib/blogger.js";
     import { decodeEnv, makePathname } from "../mylib/env.js";
     import { ObjectStorage } from "../mylib/object-storage.js";
+
+    let { board }: { board: Board } = $props();
 
     const VITE_BLOGGER_BLOG_ID = decodeEnv(
         import.meta.env.VITE_BLOGGER_BLOG_ID,
@@ -55,9 +58,9 @@
     });
 </script>
 
-<HeaderPart title="ニュース" />
+<HeaderPart {board} title="ニュース" />
 
-<MainPart>
+<MainPart {board}>
     {#if error}
         <div
             class="bg-red-50 border border-red-200 text-red-800 p-6 rounded-lg shadow-md"
@@ -96,7 +99,7 @@
                         </ChipSet>
                     </div>
                     <div class="news-link text-left">
-                        <Link to={makePathname(`/news/${item.id}`)}
+                        <Link to={makePathname(`/${board.key}/news/${item.id}`)}
                             >{item.title}</Link
                         >
                     </div>

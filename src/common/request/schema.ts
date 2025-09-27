@@ -1,6 +1,5 @@
 import { addDays } from "date-fns";
 import * as v from "valibot";
-import { avatarMap } from "./avatar.js";
 import { SAFE_SEARCH_KEYWORD, SAFE_TEXT_SINGLELINE } from "./content-schema.js";
 
 /**
@@ -76,10 +75,6 @@ const AUTH_LIMIT = v.pipe(
 );
 
 export const USER_NAME = v.pipe(SAFE_TEXT_SINGLELINE, v.maxLength(32));
-export const USER_AVATAR = v.pipe(
-	SMALLINT,
-	v.check((n) => avatarMap.has(n)),
-);
 const THREAD_TITLE = v.pipe(
 	SAFE_TEXT_SINGLELINE,
 	v.minLength(1),
@@ -144,6 +139,7 @@ export const likeSchema = v.strictObject({
  * スレ立てのスキーマ
  */
 export const MakeThreadSchema = v.strictObject({
+	board: SMALLINT,
 	nonce: NONCE,
 	title: THREAD_TITLE,
 	varsan: v.boolean(),
@@ -154,7 +150,7 @@ export const MakeThreadSchema = v.strictObject({
 	timer: v.pipe(v.number(), v.integer(), v.minValue(0), v.maxValue(8760)),
 	// 書き込み内容
 	userName: USER_NAME,
-	userAvatar: USER_AVATAR,
+	userAvatar: SMALLINT,
 	contentText: v.string(), // この段階では簡易的にしか見ない
 	contentUrl: v.string(), // この段階では簡易的にしか見ない
 	contentMeta: v.object({}), // この段階では簡易的にしか見ない
@@ -172,7 +168,7 @@ export const ResSchema = v.strictObject({
 	threadId: THREAD_ID,
 	// 書き込み内容
 	userName: USER_NAME,
-	userAvatar: USER_AVATAR,
+	userAvatar: SMALLINT,
 	contentText: v.string(), // この段階では簡易的にしか見ない
 	contentUrl: v.string(), // この段階では簡易的にしか見ない
 	contentMeta: v.object({}), // この段階では簡易的にしか見ない
@@ -199,6 +195,7 @@ export const ReadThreadSchema = v.strictObject({
  * ヘッドライン取得のスキーマ
  */
 export const HeadlineSchema = v.strictObject({
+	board: SMALLINT,
 	nonce: NONCE,
 	limit: LIMIT,
 	sinceDate: v.nullable(UNJ_LIFETIME), // >= since

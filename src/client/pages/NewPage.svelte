@@ -14,6 +14,7 @@
     import { sha256 } from "js-sha256";
     import { navigate } from "svelte-routing";
     import * as v from "valibot";
+    import type { Board } from "../../common/request/board.js";
     import {
         Enum,
         type EnumType,
@@ -45,7 +46,7 @@
     import ResFormPart from "../parts/ResFormPart.svelte";
     import TermsConfirmPart from "../parts/TermsConfirmPart.svelte";
 
-    let { isRef = false } = $props();
+    let { board, isRef = false }: { board: Board; isRef?: boolean } = $props();
 
     let openConfirm = $state(false);
     let title = $state("");
@@ -136,7 +137,7 @@
             resCount: 1,
         });
         resHistoryCache.set(resHistories);
-        navigate(makePathname(`/thread/${data.new.id}`));
+        navigate(makePathname(`/${board.key}/thread/${data.new.id}`));
     };
 
     $effect(() => {
@@ -211,6 +212,7 @@
         }
         if (!contentUrl) contentType = Enum.Text;
         const data = {
+            board: board.id,
             nonce: genNonce(nonceKey.value ?? ""),
             userName,
             userAvatar,
@@ -262,7 +264,7 @@
     };
 </script>
 
-<HeaderPart title="新規スレッド作成">
+<HeaderPart {board} title="新規スレッド作成">
     {#if isRef}
         <p>次スレはスレタイ固定です。</p>
         <p>ｳﾜｧｧ━━｡ﾟ(ﾟ´Д｀ﾟ)ﾟ｡━━ﾝ!!</p>
@@ -438,7 +440,7 @@
 
 <TermsConfirmPart {openConfirm} />
 
-<MainPart>
+<MainPart {board}>
     <div class="px-4 pb-8 flex flex-col gap-2">
         <Textfield
             disabled={emitting || isRef}
@@ -451,6 +453,7 @@
             {/snippet}
         </Textfield>
         <ResFormPart
+            {board}
             disabled={emitting || isRef}
             bind:userName
             bind:userAvatar

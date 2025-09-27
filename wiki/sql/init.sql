@@ -25,7 +25,7 @@ CREATE TABLE threads (
     latest_cursor INT NOT NULL DEFAULT 0, -- 削除予定カラム
     -- 基本的な情報
     title TEXT NOT NULL DEFAULT '',
-    thread_type SMALLINT DEFAULT 0, -- スレッドの種類（実況スレ、地震スレ、安価スレ、スレタイで振り分けられる。または、SSスレ、運営スレ、語尾が変わる特殊なスレなど）
+    board SMALLINT DEFAULT 0,
     -- 高度な設定
     varsan BOOLEAN NOT NULL DEFAULT FALSE, -- !バルサン
     sage BOOLEAN NOT NULL DEFAULT FALSE, -- 強制sage進行

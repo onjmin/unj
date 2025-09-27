@@ -6,7 +6,6 @@
   import { format } from "date-fns";
   import { ja } from "date-fns/locale";
   import { Link } from "svelte-routing";
-  import { avatarMap } from "../../common/request/avatar.js";
   import {
     ankaRegex,
     contentTemplateMap,
@@ -20,6 +19,7 @@
   import EmbedPart from "./EmbedPart.svelte";
 
   let {
+    board,
     children = null,
     backgroundEmbedControls = false,
     focus,
@@ -115,7 +115,9 @@
     {:else if ccUserId === "AI"}
       ID:{ccUserId}
     {:else}
-      ID:<Link to={makePathname(`/search?q=${ccUserId}`)}>{ccUserId}</Link>
+      ID:<Link to={makePathname(`/${board.key}/search?q=${ccUserId}`)}
+        >{ccUserId}</Link
+      >
     {/if}
 
     {#if isOwner}
@@ -177,10 +179,10 @@
   <!-- 下段: アイコンと内容 -->
   <div class="content-row">
     <!-- 固定幅・高さのアイコン -->
-    {#if ccUserAvatar && avatarMap.get(ccUserAvatar)}
+    {#if ccUserAvatar && board.avatarMap.get(ccUserAvatar)}
       <div
         class="avatar"
-        style="background-image:url({avatarMap.get(ccUserAvatar)?.src});"
+        style="background-image:url({board.avatarMap.get(ccUserAvatar)?.src});"
       ></div>
     {:else}
       <div class="empty-avatar"></div>
@@ -194,7 +196,8 @@
               {part.value}
             {:else if part.type === "link"}
               <button
-                onclick={() => jumpToAnka(Number(part.value), threadId)}
+                onclick={() =>
+                  jumpToAnka(board.key, Number(part.value), threadId)}
                 class="bg-transparent border-none p-0 cursor-pointer hover:underline text-blue-500"
               >
                 >>{part.value}</button

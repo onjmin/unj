@@ -2,6 +2,7 @@ import type { PoolClient } from "@neondatabase/serverless";
 import { addSeconds, isBefore } from "date-fns";
 import type { Server, Socket } from "socket.io";
 import * as v from "valibot";
+import { boardIdMap } from "../../common/request/board.js";
 import {
 	contentSchemaMap,
 	oekakiSchema,
@@ -32,6 +33,7 @@ import {
 	balsResNumCache,
 	bannedCache,
 	bannedIPCache,
+	boardCache,
 	ccBitmaskCache,
 	contentTypesBitmaskCache,
 	createdAtCache,
@@ -89,6 +91,10 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		if (!schema) return;
 		const content = v.safeParse(schema, data, myConfig);
 		if (!content.success) return;
+
+		const board = boardIdMap.get(boardCache.get(threadId) ?? -1);
+		if (!board) return;
+		if (!board.avatarMap.has(res.output.userAvatar)) return;
 
 		if (schema === oekakiSchema) {
 			const oekaki = v.safeParse(oekakiSchema, data, myConfig);

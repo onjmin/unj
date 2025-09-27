@@ -10,6 +10,7 @@
     import { ja } from "date-fns/locale";
     import { Link, navigate } from "svelte-routing";
     import * as v from "valibot";
+    import { type Board, boardIdMap } from "../../common/request/board.js";
     import {
         SearchSchema,
         myConfig,
@@ -21,6 +22,8 @@
     import { makePathname } from "../mylib/env.js";
     import { goodbye, hello, ok, socket } from "../mylib/socket.js";
     import { nonceKey } from "../mylib/unj-storage.js";
+
+    let { board }: { board: Board } = $props();
 
     let currentQuery = $state("");
     try {
@@ -58,7 +61,7 @@
         const trimmed = searchQuery.trim();
         if (!trimmed.length) return;
         const q = encodeURIComponent(trimmed);
-        navigate(makePathname(`/search?q=${q}`));
+        navigate(makePathname(`/${board.key}/search?q=${q}`));
         currentQuery = trimmed;
         trySearch();
     };
@@ -125,9 +128,9 @@
     };
 </script>
 
-<HeaderPart title="全文検索" />
+<HeaderPart {board} title="全文検索" />
 
-<MainPart>
+<MainPart {board}>
     <div class="container mx-auto p-4 max-w-2xl">
         <div class="bg-white p-6 rounded-lg shadow-md">
             <div class="flex items-center gap-2">
@@ -210,7 +213,7 @@
                                 <div class="flex items-end">
                                     <Link
                                         to={makePathname(
-                                            `/thread/${threadId}/`,
+                                            `/${results[0].board}/thread/${threadId}/`,
                                         )}
                                         class="text-lg font-bold text-left cursor-pointer hover:underline"
                                     >
@@ -230,7 +233,7 @@
                                     <div class="text-sm text-gray-800">
                                         <Link
                                             to={makePathname(
-                                                `/thread/${threadId}/${result.resNum}`,
+                                                `/${board.key}/thread/${threadId}/${result.resNum}`,
                                             )}
                                             class="cursor-pointer hover:underline"
                                             >{result.resNum}.</Link
@@ -256,7 +259,10 @@
                             <div
                                 class="mt-1 text-xs text-gray-500 flex justify-between"
                             >
-                                <span>うんち実況J</span>
+                                <span
+                                    >{boardIdMap.get(results[0].board)
+                                        ?.name}</span
+                                >
                                 <span
                                     >{format(
                                         results[0].createdAt,

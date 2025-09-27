@@ -67,7 +67,7 @@ export const parseGifEmbedGIPHY = (url: URL): string | undefined => {
 		const last = url.pathname.split("/").at(-1);
 		if (last) id = last;
 	} else if (url.hostname === "giphy.com") {
-		const last = url.pathname.split("/").at(-1);
+		const last = url.pathname.split("/").at(-1)?.split("-").at(-1);
 		if (last) id = last;
 	} else if (url.hostname === "media3.giphy.com") {
 		const last = url.pathname.split("/").at(-2);
