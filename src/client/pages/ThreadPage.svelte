@@ -116,7 +116,7 @@
     let oekakiCollab = $state("");
     let isSage = $state(false);
     let isNinja = $state(false);
-    let isExpand = $state(resFormExpand.value === "1");
+    let isExpand = $state(resFormExpand.value !== "0");
     let isRpgMode = $state(rpgMode.value === "1");
     let openDressUp = $state(false);
     let nowSAnimsId = $state(Number(sAnimsId.value ?? 2086));
@@ -796,9 +796,9 @@
     {/key}
 {/if}
 
-{#if isRpgMode}
+<!-- {#if isRpgMode}
     <RpgPart {threadId} bind:dressUp />
-{/if}
+{/if} -->
 
 {#snippet paginationControls()}
     <div class="flex justify-center items-center space-x-2">
