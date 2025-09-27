@@ -104,7 +104,9 @@ const UNJ_LIFETIME = v.pipe(
  * コストが低い処理のためNonce値の検証は不要
  */
 export const getNonceKeySchema = v.strictObject({});
-export const joinHeadlineSchema = v.strictObject({});
+export const joinHeadlineSchema = v.strictObject({
+	boardId: SMALLINT,
+});
 export const joinThreadSchema = v.strictObject({
 	threadId: THREAD_ID,
 });
@@ -139,7 +141,7 @@ export const likeSchema = v.strictObject({
  * スレ立てのスキーマ
  */
 export const MakeThreadSchema = v.strictObject({
-	board: SMALLINT,
+	boardId: SMALLINT,
 	nonce: NONCE,
 	title: THREAD_TITLE,
 	varsan: v.boolean(),
@@ -195,7 +197,7 @@ export const ReadThreadSchema = v.strictObject({
  * ヘッドライン取得のスキーマ
  */
 export const HeadlineSchema = v.strictObject({
-	board: SMALLINT,
+	boardId: SMALLINT,
 	nonce: NONCE,
 	limit: LIMIT,
 	sinceDate: v.nullable(UNJ_LIFETIME), // >= since

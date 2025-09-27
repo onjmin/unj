@@ -92,7 +92,7 @@ export default ({ socket }: { socket: Socket }) => {
 					createdAt: record.created_at,
 					threadId: encodeThreadId(record.thread_id) ?? "",
 					title: record.title,
-					board: record.board,
+					boardId: record.board,
 					resCount: record.res_count,
 				});
 			}

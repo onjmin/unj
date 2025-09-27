@@ -32,8 +32,12 @@ export const scrollToAnka = (resNum: number): boolean => {
 	return false;
 };
 
-export const jumpToAnka = (board: string, resNum: number, threadId: string) => {
+export const jumpToAnka = (
+	boardKey: string,
+	resNum: number,
+	threadId: string,
+) => {
 	if (!scrollToAnka(resNum)) {
-		navigate(makePathname(`/${board}/thread/${threadId}/${resNum}`));
+		navigate(makePathname(`/${boardKey}/thread/${threadId}/${resNum}`));
 	}
 };

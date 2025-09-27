@@ -33,7 +33,7 @@ import {
 	balsResNumCache,
 	bannedCache,
 	bannedIPCache,
-	boardCache,
+	boardIdCache,
 	ccBitmaskCache,
 	contentTypesBitmaskCache,
 	createdAtCache,
@@ -65,8 +65,8 @@ import { doppelgangers, humans } from "../mylib/rpg.js";
 import { isSameSimhash } from "../mylib/simhash.js";
 import {
 	exist,
+	getHeadlineRoom,
 	getThreadRoom,
-	headlineRoom,
 	joined,
 	sizeOf,
 } from "../mylib/socket.js";
@@ -92,7 +92,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		const content = v.safeParse(schema, data, myConfig);
 		if (!content.success) return;
 
-		const board = boardIdMap.get(boardCache.get(threadId) ?? -1);
+		const board = boardIdMap.get(boardIdCache.get(threadId) ?? -1);
 		if (!board) return;
 		if (!board.avatarMap.has(res.output.userAvatar)) return;
 
@@ -337,7 +337,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 					badCount: badCountCache.get(threadId) ?? 0,
 				};
 				socket
-					.to(headlineRoom)
+					.to(getHeadlineRoom(board.id))
 					.emit("newHeadline", { ok: true, new: newHeadline, yours: false });
 			}
 

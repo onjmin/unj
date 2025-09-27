@@ -4,7 +4,6 @@ import { joinThreadSchema } from "../../common/request/schema.js";
 import { decodeThreadId } from "../mylib/anti-debug.js";
 import { isDeleted } from "../mylib/cache.js";
 import { getThreadRoom, sizeOf, switchTo } from "../mylib/socket.js";
-import headline from "./headline.js";
 
 const api = "joinThread";
 export const pvCache: Map<number, number> = new Map();
@@ -34,7 +33,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			io.to(room).emit(api, { ok: true, size, pv });
 			// 元いたスレに退室通知
 			const { prevRoom } = socket.data;
-			if (prevRoom !== "" && prevRoom !== headline) {
+			if (prevRoom !== "") {
 				const size = sizeOf(io, prevRoom);
 				socket.to(prevRoom).emit(api, { ok: true, size, pv: null });
 			}
@@ -45,7 +44,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 	});
 	socket.on("disconnect", () => {
 		const { prevRoom } = socket.data;
-		if (prevRoom !== "" && prevRoom !== headline) {
+		if (prevRoom !== "") {
 			const size = sizeOf(io, prevRoom);
 			socket.to(prevRoom).emit(api, { ok: true, size, pv: null });
 		}

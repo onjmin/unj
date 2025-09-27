@@ -8,8 +8,10 @@ export type Misskey = {
 /**
  * Misskeyの情報を取得する関数
  */
-export const findMisskey = (board: string, misskeyId: string) => {
-	return misskeyList.get(board)?.find((item) => item.misskeyId === misskeyId);
+export const findMisskey = (boardKey: string, misskeyId: string) => {
+	return misskeyList
+		.get(boardKey)
+		?.find((item) => item.misskeyId === misskeyId);
 };
 
 export const misskeyList: Map<string, Misskey[]> = new Map();

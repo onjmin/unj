@@ -58,14 +58,14 @@
     let activeLayer = $state(null);
 
     // UnjStorage
-    const titleUnjStorage = new UnjStorage("title");
+    const titleUnjStorage = new UnjStorage(`title###${board.id}`);
     title = titleUnjStorage.value ?? "";
     $effect(() => {
         titleUnjStorage.value = title;
     });
 
     // UnjStorage
-    const contentTextUnjStorage = new UnjStorage("contentText");
+    const contentTextUnjStorage = new UnjStorage(`contentText###${board.id}`);
     contentText = contentTextUnjStorage.value ?? "";
     $effect(() => {
         contentTextUnjStorage.value = contentText;
@@ -212,7 +212,7 @@
         }
         if (!contentUrl) contentType = Enum.Text;
         const data = {
-            board: board.id,
+            boardId: board.id,
             nonce: genNonce(nonceKey.value ?? ""),
             userName,
             userAvatar,

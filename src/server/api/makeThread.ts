@@ -19,7 +19,7 @@ import { logger } from "../mylib/log.js";
 import nonce from "../mylib/nonce.js";
 import { pool } from "../mylib/pool.js";
 import { isSameSimhash } from "../mylib/simhash.js";
-import { headlineRoom } from "../mylib/socket.js";
+import { getHeadlineRoom } from "../mylib/socket.js";
 
 const api = "makeThread";
 export const coolTimes: Map<number, Date> = new Map();
@@ -36,7 +36,7 @@ export default ({ socket }: { socket: Socket }) => {
 		const content = v.safeParse(schema, data, myConfig);
 		if (!content.success) return;
 
-		const board = boardIdMap.get(makeThread.output.board);
+		const board = boardIdMap.get(makeThread.output.boardId);
 		if (!board) return;
 		if (!board.avatarMap.has(makeThread.output.userAvatar)) return;
 
@@ -116,7 +116,7 @@ export default ({ socket }: { socket: Socket }) => {
 						"content_type",
 						// 基本的な情報
 						"title",
-						"board",
+						"board_id",
 						// 高度な設定
 						"varsan",
 						"sage",
@@ -185,7 +185,7 @@ export default ({ socket }: { socket: Socket }) => {
 
 			// ヘッドライン更新
 			socket
-				.to(headlineRoom)
+				.to(getHeadlineRoom(board.id))
 				.emit("newHeadline", { ok: true, new: newThread, yours: false });
 
 			await poolClient.query("COMMIT"); // 問題なければコミット

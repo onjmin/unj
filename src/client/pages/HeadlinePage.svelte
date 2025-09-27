@@ -225,9 +225,11 @@
 
     $effect(() => {
         hello(() => {
-            socket.emit("joinHeadline", {});
+            socket.emit("joinHeadline", {
+                boardId: board.id,
+            });
             socket.emit("headline", {
-                board: board.id,
+                boardId: board.id,
                 nonce: genNonce(nonceKey.value ?? ""),
                 limit: queryResultLimit,
                 sinceDate: null,
@@ -254,7 +256,7 @@
         emitting = true;
         pagination = true;
         socket.emit("headline", {
-            board: board.id,
+            boardId: board.id,
             nonce: genNonce(nonceKey.value ?? ""),
             limit: queryResultLimit,
             sinceDate: null,

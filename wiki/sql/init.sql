@@ -25,7 +25,7 @@ CREATE TABLE threads (
     latest_cursor INT NOT NULL DEFAULT 0, -- 削除予定カラム
     -- 基本的な情報
     title TEXT NOT NULL DEFAULT '',
-    board SMALLINT DEFAULT 0,
+    board_id SMALLINT DEFAULT 0,
     -- 高度な設定
     varsan BOOLEAN NOT NULL DEFAULT FALSE, -- !バルサン
     sage BOOLEAN NOT NULL DEFAULT FALSE, -- 強制sage進行

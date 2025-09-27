@@ -17,7 +17,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		const headline = v.safeParse(HeadlineSchema, data);
 		if (!headline.success) return;
 
-		const board = boardIdMap.get(headline.output.board);
+		const board = boardIdMap.get(headline.output.boardId);
 		if (!board) return;
 
 		// Nonce値の完全一致チェック
@@ -35,7 +35,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			const query = [
 				"SELECT * FROM threads",
 				"WHERE (deleted_at IS NULL OR deleted_at > CURRENT_TIMESTAMP)",
-				`AND board = $${values.length}`,
+				`AND board_id = $${values.length}`,
 			];
 			const { limit, sinceDate, untilDate } = headline.output;
 			if (sinceDate !== null) {

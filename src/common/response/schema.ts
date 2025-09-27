@@ -26,7 +26,7 @@ export type SearchResult = {
 	createdAt: Date;
 	threadId: string;
 	title: string;
-	board: number;
+	boardId: number;
 	resCount: number;
 };
 
@@ -62,7 +62,7 @@ export type Thread = {
 	resList: Res[];
 	// 基本的な情報
 	title: string;
-	board: number;
+	boardId: number;
 	// 高度な設定
 	varsan: boolean;
 	sage: boolean;

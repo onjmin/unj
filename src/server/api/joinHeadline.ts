@@ -1,9 +1,10 @@
 import type { Server, Socket } from "socket.io";
 import * as v from "valibot";
+import { boardIdMap } from "../../common/request/board.js";
 import { joinHeadlineSchema } from "../../common/request/schema.js";
 import {
 	type Online,
-	headlineRoom,
+	getHeadlineRoom,
 	sizeOf,
 	switchTo,
 } from "../mylib/socket.js";
@@ -25,7 +26,11 @@ export default ({
 	socket.on(api, async (data) => {
 		const joinHeadline = v.safeParse(joinHeadlineSchema, data);
 		if (!joinHeadline.success) return;
-		const room = headlineRoom;
+
+		const board = boardIdMap.get(joinHeadline.output.boardId);
+		if (!board) return;
+
+		const room = getHeadlineRoom(board.id);
 		const moved = await switchTo(socket, room);
 		const { size } = online;
 		const accessCount = accessCounter();
@@ -43,9 +48,11 @@ export default ({
 		}
 	});
 	socket.on("disconnect", () => {
-		const room = headlineRoom;
+		const { prevRoom } = socket.data;
 		const { size } = online;
 		const accessCount = accessCounter();
-		socket.to(room).emit(api, { ok: true, size, accessCount });
+		if (prevRoom !== "") {
+			socket.to(prevRoom).emit(api, { ok: true, size, accessCount });
+		}
 	});
 };

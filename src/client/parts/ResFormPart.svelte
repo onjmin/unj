@@ -43,14 +43,14 @@
   let openAvatar = $state(false);
 
   // UnjStorage
-  const userNameUnjStorage = new UnjStorage("userName");
+  const userNameUnjStorage = new UnjStorage(`userName###${board.id}`);
   userName = userNameUnjStorage.value ?? "";
   $effect(() => {
     userNameUnjStorage.value = userName;
   });
 
   // UnjStorage
-  const userAvatarUnjStorage = new UnjStorage("userAvatar");
+  const userAvatarUnjStorage = new UnjStorage(`userAvatar###${board.id}`);
   userAvatar = userAvatarUnjStorage.value
     ? Number(userAvatarUnjStorage.value)
     : 0;

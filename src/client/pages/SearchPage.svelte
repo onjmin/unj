@@ -213,7 +213,7 @@
                                 <div class="flex items-end">
                                     <Link
                                         to={makePathname(
-                                            `/${results[0].board}/thread/${threadId}/`,
+                                            `/${results[0].boardId}/thread/${threadId}/`,
                                         )}
                                         class="text-lg font-bold text-left cursor-pointer hover:underline"
                                     >
@@ -260,7 +260,7 @@
                                 class="mt-1 text-xs text-gray-500 flex justify-between"
                             >
                                 <span
-                                    >{boardIdMap.get(results[0].board)
+                                    >{boardIdMap.get(results[0].boardId)
                                         ?.name}</span
                                 >
                                 <span
