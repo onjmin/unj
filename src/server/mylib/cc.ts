@@ -1,4 +1,5 @@
 import baseX from "base-x";
+import { differenceInDays } from "date-fns";
 import { sha256 } from "js-sha256";
 import type { Socket } from "socket.io";
 import { pokemonMap } from "../../common/pokemon.js";
@@ -12,41 +13,44 @@ const base62 = baseX(
 	"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
 );
 
-const sha256Base62 = (input: string): string => {
-	const bytes = sha256.array(input.toString());
+const genId = (userId: number, boardId: number): string => {
+	const basedTime = differenceInDays(new Date(), new Date(0));
+	const bytes = sha256.array([userId, boardId, basedTime].join("###"));
 	return base62.encode(new Uint8Array(bytes));
 };
 
 export const makeCcUserId = ({
 	ccBitmask,
 	userId,
+	boardId,
 	socket,
 }: {
 	ccBitmask: number;
 	userId: number;
+	boardId: number;
 	socket: Socket;
 }): string => {
+	// IDが非表示になる板
+	if ([2, 3].includes(boardId)) {
+		return "";
+	}
+
 	if ((ccBitmask & 2) !== 0) {
 		// 2: 自演防止ID表示 # （ID:8z.8u.L60）
-		const result = encodeUserId(userId, new Date());
-		if (result !== null) {
-			const ip = getIP(socket);
-			const ipRange = sliceIPRange(ip);
-			const ninjaScore = ninjaScoreCache.get(userId) ?? 0;
-			const ninjaLv = (ninjaScore ** (1 / 3)) | 0;
-			// 「IDの最初の2文字」「プロパイダを基にした文字」「忍法帖レベル」
-			return [
-				sha256Base62(result).slice(0, 2),
-				sha256(ipRange).slice(0, 2),
-				`L${ninjaLv}`,
-			].join(".");
-		}
-	} else if ((ccBitmask & 1) !== 0) {
+		const ip = getIP(socket);
+		const ipRange = sliceIPRange(ip);
+		const ninjaScore = ninjaScoreCache.get(userId) ?? 0;
+		const ninjaLv = (ninjaScore ** (1 / 3)) | 0;
+		// 「IDの最初の2文字」「プロパイダを基にした文字」「忍法帖レベル」
+		return [
+			genId(userId, boardId).slice(0, 2),
+			sha256(ipRange).slice(0, 2),
+			`L${ninjaLv}`,
+		].join(".");
+	}
+	if ((ccBitmask & 1) !== 0) {
 		// 1: ID表示 # （ID:byNL）
-		const result = encodeUserId(userId, new Date());
-		if (result !== null) {
-			return sha256Base62(result).slice(0, 4);
-		}
+		return genId(userId, boardId).slice(0, 4);
 	}
 	// 0: ID非表示
 	return "";

@@ -53,6 +53,7 @@ export default ({ socket }: { socket: Socket }) => {
 		const ccUserId = makeCcUserId({
 			ccBitmask,
 			userId,
+			boardId: board.id,
 			socket,
 		});
 		const ccUserName = makeCcUserName({
