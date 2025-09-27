@@ -878,7 +878,7 @@
     </div>
 {/snippet}
 
-<MainPart>
+<MainPart {board}>
     {#if thread === null}
         <p>スレ取得中…</p>
         <div
