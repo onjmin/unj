@@ -65,9 +65,30 @@
   // レイヤー追加
   const addLayer = () => {
     const newLayer = new oekaki.LayeredCanvas(`レイヤー #${layers.length + 1}`);
-    // 新しいレイヤーをアクティブにする
     activeLayer = newLayer;
-    // layersを再取得してUIを更新
+    layers = oekaki.getLayers();
+  };
+
+  // バナーレイヤー追加
+  const addBannerLayer = () => {
+    const newLayer = new oekaki.LayeredCanvas(`バナー枠 #${layers.length + 1}`);
+    newLayer.opacity = 50;
+    const ctx = newLayer.ctx;
+    const { width, height } = ctx.canvas;
+    const bannerHeight = width * (12 / 49);
+    const strokeColor = "rgba(255, 0, 255, 1)";
+    const lineWidth = 2;
+    const halfLine = lineWidth / 2;
+    const startY = (height - bannerHeight) / 2;
+    ctx.strokeStyle = strokeColor;
+    ctx.lineWidth = lineWidth;
+    ctx.strokeRect(
+      halfLine,
+      startY,
+      width - lineWidth,
+      bannerHeight - lineWidth,
+    );
+    newLayer.trace();
     layers = oekaki.getLayers();
   };
 </script>
@@ -163,5 +184,12 @@
     onclick={addLayer}
   >
     レイヤー追加
+  </button>
+
+  <button
+    class="mt-4 w-full px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors duration-200 ease-in-out"
+    onclick={addBannerLayer}
+  >
+    バナー枠追加
   </button>
 </div>
