@@ -28,7 +28,7 @@
     import { sha256 } from "js-sha256";
     import { navigate } from "svelte-routing";
     import * as v from "valibot";
-    import type { Board } from "../../common/request/board.js";
+    import { type Board, boardIdMap } from "../../common/request/board.js";
     import {
         Enum,
         ankaRegex,
@@ -254,6 +254,15 @@
     const handleReadThread = async (data: { ok: boolean; thread: Thread }) => {
         if (!data.ok) return;
         ok();
+        if (data.thread.boardId !== board.id) {
+            const board = boardIdMap.get(data.thread.boardId);
+            if (board) {
+                navigate(makePathname(`/${board.key}/thread/${threadId}/`));
+            } else {
+                navigate(makePathname("/"));
+            }
+            return;
+        }
         loadThread(data.thread);
         cache.set(data.thread);
         if (!new URLSearchParams(location.search).has("top"))

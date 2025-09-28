@@ -52,24 +52,6 @@
       variant="raised">入る</Button
     >
   </div>
-  <div class="text-center">
-    <ul class="p-2 space-y-1">
-      {#each publicBoards as b}
-        <li class="list-none">
-          <a
-            href={makePathname(`/${b.key}/headline`)}
-            class="
-                        block px-3 py-1 rounded-md transition-colors
-                        focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500
-                        text-gray-700 hover:bg-gray-100
-                    "
-          >
-            {b.name}
-          </a>
-        </li>
-      {/each}
-    </ul>
-  </div>
   <div class="flex flex-col items-center">
     <div class="flex space-x-4">
       <Link
@@ -92,6 +74,21 @@
         auto
       />
     {/if}
+  </div>
+  <div class="text-center">
+    <ul class="p-2 space-y-1">
+      <li>板一覧</li>
+      {#each publicBoards as b}
+        <li>
+          <Link
+            to={makePathname(`/${b.key}/headline`)}
+            class="block px-3 py-1 rounded-md transition-colors"
+          >
+            {b.name}
+          </Link>
+        </li>
+      {/each}
+    </ul>
   </div>
 </MainPart>
 

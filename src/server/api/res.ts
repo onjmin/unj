@@ -92,7 +92,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		const content = v.safeParse(schema, data, myConfig);
 		if (!content.success) return;
 
-		const board = boardIdMap.get(boardIdCache.get(threadId) ?? -1);
+		const board = boardIdMap.get(boardIdCache.get(threadId) ?? 0);
 		if (!board) return;
 		if (!board.avatarMap.has(res.output.userAvatar)) return;
 

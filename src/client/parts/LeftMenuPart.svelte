@@ -129,20 +129,15 @@
     </div>
     <div class="text-left">
         <ul class="p-2 space-y-1">
+            <li>板一覧</li>
             {#each publicBoards as b}
-                <li class="list-none">
-                    <a
-                        href={makePathname(`/${b.key}/headline`)}
-                        class="
-                        block px-3 py-1 rounded-md transition-colors
-                        focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500
-                        {b.key === board
-                            ? 'bg-green-600 text-white font-bold shadow-md'
-                            : 'text-gray-700 hover:bg-gray-100'}
-                    "
+                <li>
+                    <Link
+                        to={makePathname(`/${b.key}/headline`)}
+                        class="block px-3 py-1 rounded-md transition-colors"
                     >
                         {b.name}
-                    </a>
+                    </Link>
                 </li>
             {/each}
         </ul>

@@ -161,7 +161,7 @@
         // TODO: レス履歴の更新
     };
 
-    const fetchMisskey = (misskey: Misskey) => {
+    const fetchMisskey = (misskey: Misskey, misskeyBoard: Board) => {
         const { controller, promise } = fetchMisskeyTimeline(misskey.api);
         promise.then((timeline) => {
             if (!timeline.length) return;
@@ -171,6 +171,7 @@
                 title: misskey.title,
                 latestRes: note.text ?? "",
                 latestResAt: new Date(note.createdAt),
+                misskeyBoard,
             });
         });
         return () => controller.abort();
@@ -187,11 +188,13 @@
         title,
         latestRes,
         latestResAt,
+        misskeyBoard,
     }: {
         id: string;
         title: string;
         latestRes: string;
         latestResAt: Date;
+        misskeyBoard: Board;
     }) => {
         const new1: HeadlineThread = {
             ccUserId: "",
@@ -208,6 +211,7 @@
         };
         const f = () => {
             if (!threadList) return;
+            if (board !== misskeyBoard) return;
             if (threadList.find((v) => v.id === id)) return;
             const idx = threadList.findIndex((v) =>
                 isBefore(v.latestResAt, new1.latestResAt),
@@ -239,7 +243,9 @@
         socket.on("joinHeadline", handleJoinHeadline);
         socket.on("headline", handleHeadline);
         socket.on("newHeadline", handleNewHeadline);
-        const aborts = misskeyList.get(board.key)?.map(fetchMisskey);
+        const aborts = misskeyList
+            .get(board.key)
+            ?.map((v) => fetchMisskey(v, board));
         return () => {
             goodbye();
             socket.off("joinHeadline", handleJoinHeadline);
