@@ -107,7 +107,7 @@
   bind:value={contentText}
   input$rows={Math.max(contentText.split("\n").length, 2)}
   input$cols={32}
-  input$maxlength={256}
+  input$maxlength={1024}
   onkeyup={(e: KeyboardEvent) => {
     if (e.ctrlKey && e.key === "Enter") {
       tryRes();
@@ -157,7 +157,7 @@
     {disabled}
     label="URL欄"
     bind:value={contentUrl}
-    input$maxlength={256}
+    input$maxlength={1024}
   >
     {#snippet trailingIcon()}
       <IconButton

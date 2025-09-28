@@ -18,7 +18,7 @@ export const regexUrl = /https?:\/\/[A-Za-z0-9\-\._~:/?#[\]@!$&'()*+,;=%]+/gi;
 const SAFE_TEXT = v.pipe(
 	v.string(),
 	v.trim(),
-	v.maxLength(256),
+	v.maxLength(1024),
 	// 制御文字
 	v.check(
 		(input) =>
@@ -46,7 +46,7 @@ export const SAFE_TEXT_SINGLELINE = v.pipe(
 const SAFE_TEXT_MULTILINE = v.pipe(
 	SAFE_TEXT,
 	v.check((input) => !regexUrl.test(input)),
-	v.check((input) => input.split("\n").length < 32),
+	v.check((input) => input.split("\n").length < 64),
 );
 const SAFE_URL = v.pipe(
 	SAFE_TEXT,
