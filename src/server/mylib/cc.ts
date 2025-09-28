@@ -98,6 +98,9 @@ export const makeCcUserName = ({
 			return `${name}${suffix}`;
 		}
 		const tripKey = userName.slice(index);
+		const name = escapeUserName(userName.slice(0, index));
+		const cap = capList.get(sha256(tripKey).slice(0, 16));
+		if (cap) return `${cap} ★`;
 		let trip = "";
 		if (tripKey.startsWith("#############")) {
 			trip = "???";
@@ -108,11 +111,16 @@ export const makeCcUserName = ({
 				.slice(0, 10)
 				.replace(/\+/g, ".");
 		}
-		const name = escapeUserName(userName.slice(0, index));
 		return `${name}◆${trip}`;
 	}
 	return "";
 };
+
+const capList = new Map([
+	["2853d762556dee5d", "カン・ニリン"],
+	["93cd0aba6b362647", "電撃少女"],
+	["07139d4ce3c06b56", "ひろゆき"],
+]);
 
 export const makeCcUserAvatar = ({
 	ccBitmask,

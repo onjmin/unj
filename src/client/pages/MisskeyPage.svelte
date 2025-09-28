@@ -221,7 +221,7 @@
     {/if}
     {#if timeline.length > 0}
         <div class="text-left w-full mx-auto px-4 pb-4">
-            <p class="flex items-center font-bold text-[#409090]">
+            <p class="flex items-center font-bold text-teal-600">
                 <FaviconPart {hostname} />
                 <span class="pl-1.5">{title}</span>
             </p>
@@ -238,7 +238,7 @@
                                 class="flex flex-wrap items-center mb-2 text-gray-500 text-sm"
                             >
                                 <span> 0： </span>
-                                <span class="font-bold text-[#409090]">
+                                <span class="font-bold text-teal-600">
                                     {note.user.name ?? note.user.username}
                                 </span>
                                 <span>

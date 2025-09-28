@@ -93,7 +93,8 @@
           .replace(/^[^\S]*/, `>>${num}\n`);
         focus();
       }}
-      >{num}：<span class="text-[#409090] font-bold"
+      >{num}：<span
+        class={`font-bold ${ccUserName.includes("★") ? "text-red-400" : "text-teal-600"}`}
         >{ccUserName !== ""
           ? ccUserName
           : seededRandArray(
