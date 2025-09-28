@@ -43,7 +43,7 @@ export default ({ socket }: { socket: Socket }) => {
 					"res.created_at",
 					"threads.id AS thread_id",
 					"threads.title AS title",
-					"threads.board AS board",
+					"threads.board_id AS board_id",
 					"threads.res_count AS res_count",
 					"threads.deleted_at AS deleted_at",
 				].join(","),
@@ -63,7 +63,7 @@ export default ({ socket }: { socket: Socket }) => {
 					"created_at",
 					"id AS thread_id",
 					"title",
-					"board",
+					"board_id",
 					"res_count",
 					"deleted_at",
 				].join(","),
@@ -92,7 +92,7 @@ export default ({ socket }: { socket: Socket }) => {
 					createdAt: record.created_at,
 					threadId: encodeThreadId(record.thread_id) ?? "",
 					title: record.title,
-					boardId: record.board,
+					boardId: record.board_id,
 					resCount: record.res_count,
 				});
 			}
