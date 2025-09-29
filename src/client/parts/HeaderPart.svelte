@@ -27,8 +27,13 @@
   }
 
   $isEnabledRightMenu = children !== null;
-  const pathname1 = pathname().split("/")[1] ?? "";
-  const pathname2 = pathname().split("/")[2] ?? "";
+  let pathname1 = $state("");
+  let pathname2 = $state("");
+  $effect(() => {
+    if (!board) return;
+    pathname1 = pathname().split("/")[1] ?? "";
+    pathname2 = pathname().split("/")[2] ?? "";
+  });
 </script>
 
 <svelte:head>

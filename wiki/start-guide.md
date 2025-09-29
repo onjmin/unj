@@ -9,6 +9,13 @@
 | [Netlify](https://www.netlify.com/) | フロントエンドのデプロイ | Vercel, GitHub Pages等でも代替可 |
 | [Koyeb](https://www.koyeb.com/) | バックエンドのデプロイ | - |
 | [Neon](https://neon.com/) | 掲示板レスの保存 | - |
+| [Discord](https://discord.com/) | 通知用 | - |
+| [Imgur API](https://apidocs.imgur.com/) | お絵描き投稿用 | 新規発行停止中 |
+| [Blogger API](https://developers.google.com/blogger/docs/3.0/using) | ニュース記事用 | - |
+| [Firebase](https://firebase.google.com/) | kome機能 | - |
+| [Cloudflare Workers](https://www.cloudflare.com/ja-jp/developer-platform/products/workers/) | 画像アップローダー用 | - |
+
+※最低限、NetlifyとKoyebとNeonがあれば動きます。
 
 ## [GitHub]リポジトリのfork
 
@@ -37,5 +44,9 @@
 ## [Neon]
 
 1. プロジェクトを作る
-1. [SQL](./sql/init.sql)を流す
+1. [SQL](./init.sql)を流す
 1. [Koyeb]のNeon Databaseの環境変数を埋める
+
+## [Firebase]
+
+1. Realtime Databaseに[ルール](./firebase.json)を設定する

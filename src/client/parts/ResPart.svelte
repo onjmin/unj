@@ -81,7 +81,7 @@
 
 <div
   id={makeUnjResNumId(num)}
-  class="bg-transparent border-[2mm] border-solid border-white border-opacity-10 p-4 rounded-lg shadow-inner"
+  class="bg-transparent border-[2mm] border-solid border-white/10 p-4 rounded-lg shadow-inner"
 >
   <!-- 上段: 名前欄 -->
   <div class="w-full text-gray-500 text-sm">

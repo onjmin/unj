@@ -232,7 +232,7 @@
                     {#if !note.isHidden && note.text !== null && note.userId !== "9tjlknm0fl"}
                         {@const embeddable = findEmbeddable(note.text ?? "")}
                         <div
-                            class="bg-transparent border-[2mm] border-solid border-white border-opacity-10 p-4 rounded-lg shadow-inner"
+                            class="bg-transparent border-[2mm] border-solid border-white/10 p-4 rounded-lg shadow-inner"
                         >
                             <div
                                 class="flex flex-wrap items-center mb-2 text-gray-500 text-sm"
