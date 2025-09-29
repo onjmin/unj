@@ -2,7 +2,7 @@ import type { PoolClient } from "@neondatabase/serverless";
 import { addHours, addSeconds, isBefore } from "date-fns";
 import type { Socket } from "socket.io";
 import * as v from "valibot";
-import { boardIdMap } from "../../common/request/board.js";
+import { boardIdMap, noharaBoard } from "../../common/request/board.js";
 import {
 	contentSchemaMap,
 	oekakiSchema,
@@ -76,6 +76,10 @@ export default ({ socket }: { socket: Socket }) => {
 		let deletedAt: Date | null = null;
 		if (makeThread.output.timer) {
 			deletedAt = addHours(new Date(), makeThread.output.timer);
+		}
+		// 強制自動削除（板固有機能）
+		if (board.id === noharaBoard.id) {
+			deletedAt = addHours(new Date(), 3);
 		}
 
 		// Nonce値の完全一致チェック

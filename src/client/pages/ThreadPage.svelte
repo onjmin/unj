@@ -255,11 +255,11 @@
         if (!data.ok) return;
         ok();
         if (data.thread.boardId !== board.id) {
-            const board = boardIdMap.get(data.thread.boardId);
-            if (board) {
-                navigate(makePathname(`/${board.key}/thread/${threadId}/`));
+            const b = boardIdMap.get(data.thread.boardId);
+            if (b) {
+                navigate(makePathname(`/${b.key}/thread/${threadId}/`));
             } else {
-                navigate(makePathname("/"));
+                navigate(makePathname(`/${board.key}`));
             }
             return;
         }

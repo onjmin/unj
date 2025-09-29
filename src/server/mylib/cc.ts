@@ -5,6 +5,7 @@ import iconv from "iconv-lite";
 import { sha256 } from "js-sha256";
 import type { Socket } from "socket.io";
 import { pokemonMap } from "../../common/pokemon.js";
+import { kimchiBoard, noharaBoard } from "../../common/request/board.js";
 import { unjBeginDate } from "../../common/request/schema.js";
 import { encodeUserId } from "./anti-debug.js";
 import auth from "./auth.js";
@@ -35,8 +36,8 @@ export const makeCcUserId = ({
 	boardId: number;
 	socket: Socket;
 }): string => {
-	// IDが非表示になる板
-	if ([2, 3].includes(boardId)) {
+	// IDが非表示になる（板固有機能）
+	if (boardId === noharaBoard.id || boardId === kimchiBoard.id) {
 		return "";
 	}
 
