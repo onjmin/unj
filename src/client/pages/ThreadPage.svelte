@@ -802,12 +802,14 @@
                 board === touhouBoard}
         />
     </div>
-    {#key thread?.ageRes.num && board === touhouBoard}
-        <BackgroundEmbedPart
-            contentUrl={thread.ageRes.contentUrl}
-            contentType={thread.ageRes.contentType}
-        />
-    {/key}
+    {#if board === touhouBoard}
+        {#key thread?.ageRes.num}
+            <BackgroundEmbedPart
+                contentUrl={thread.ageRes.contentUrl}
+                contentType={thread.ageRes.contentType}
+            />
+        {/key}
+    {/if}
 {/if}
 
 <!-- {#if isRpgMode}
