@@ -44,8 +44,8 @@
                 <Text>スレ立て</Text>
             </Item>
             <Item
-                onclick={() => navigate(makePathname(`/${board.key}/headline`))}
-                activated={pathname2 === "headline"}
+                onclick={() => navigate(makePathname(`/${board.key}`))}
+                activated={pathname2 === ""}
             >
                 <Graphic class="material-icons" aria-hidden="true"
                     >article</Graphic
@@ -133,7 +133,7 @@
             {#each publicBoards as b}
                 <li>
                     <Link
-                        to={makePathname(`/${b.key}/headline`)}
+                        to={makePathname(`/${b.key}`)}
                         class="block px-3 py-1 rounded-md transition-colors"
                     >
                         {b.name}

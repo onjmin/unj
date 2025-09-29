@@ -135,6 +135,7 @@
             threadId: data.new.id,
             title: title,
             resCount: 1,
+            boardId: board.id,
         });
         resHistoryCache.set(resHistories);
         navigate(makePathname(`/${board.key}/thread/${data.new.id}`));

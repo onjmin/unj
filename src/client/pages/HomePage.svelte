@@ -47,7 +47,7 @@
   <div class="flex justify-center">
     <Button
       onclick={() => {
-        navigate(makePathname("/unj/headline"));
+        navigate(makePathname("/unj"));
       }}
       variant="raised">入る</Button
     >
@@ -81,7 +81,7 @@
       {#each publicBoards as b}
         <li>
           <Link
-            to={makePathname(`/${b.key}/headline`)}
+            to={makePathname(`/${b.key}`)}
             class="block px-3 py-1 rounded-md transition-colors"
           >
             {b.name}

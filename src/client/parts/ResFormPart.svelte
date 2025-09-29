@@ -77,27 +77,25 @@
 <AvatarPart {board} bind:open={openAvatar} bind:userAvatar />
 <UrlTemplatePart bind:open={openUrlTemplate} bind:contentUrl {contentType} />
 
-{#if isExpand}
-  <Textfield
-    {disabled}
-    label="名前"
-    bind:value={userName}
-    input$maxlength={32}
-    class="unj-username-textfield"
-    style={avatarSrc ? `background-image:url(${avatarSrc});` : ""}
-  >
-    {#snippet trailingIcon()}
-      <IconButton
-        {disabled}
-        class="material-icons"
-        onclick={() => (openAvatar = true)}>image</IconButton
-      >
-    {/snippet}
-    {#snippet helper()}
-      <CharacterCounter />
-    {/snippet}
-  </Textfield>
-{/if}
+<Textfield
+  {disabled}
+  label="名前"
+  bind:value={userName}
+  input$maxlength={32}
+  class="unj-username-textfield"
+  style={avatarSrc ? `background-image:url(${avatarSrc});` : ""}
+>
+  {#snippet trailingIcon()}
+    <IconButton
+      {disabled}
+      class="material-icons"
+      onclick={() => (openAvatar = true)}>image</IconButton
+    >
+  {/snippet}
+  {#snippet helper()}
+    <CharacterCounter />
+  {/snippet}
+</Textfield>
 
 <Textfield
   {disabled}

@@ -49,7 +49,7 @@
   </Route>
 
   <!-- スレ一覧 -->
-  <Route path={makePathname("/:board/headline")} let:params>
+  <Route path={makePathname("/:board")} let:params>
     <HeadlinePage board={b(params.board)} />
   </Route>
   <!-- スレ個別 -->

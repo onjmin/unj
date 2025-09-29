@@ -4,6 +4,7 @@
     import IconButton from "@smui/icon-button";
     // import { addHours, isBefore } from "date-fns";
     import { navigate } from "svelte-routing";
+    import { undefinedBoard } from "../../common/request/board.js";
     // import { randArray, randInt } from "../../common/util.js";
     import { makePathname } from "../mylib/env.js";
     import {
@@ -14,7 +15,7 @@
     } from "../mylib/store.js";
     // import { adsDeletedAt } from "../mylib/unj-storage.js";
 
-    let { board = null, children, menu = true } = $props();
+    let { board = undefinedBoard, children, menu = true } = $props();
 
     // let showAd = $state(true);
 

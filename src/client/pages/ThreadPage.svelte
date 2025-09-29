@@ -116,7 +116,7 @@
     let oekakiCollab = $state("");
     let isSage = $state(false);
     let isNinja = $state(false);
-    let isExpand = $state(resFormExpand.value !== "0");
+    let isExpand = $state(resFormExpand.value === "1");
     let isRpgMode = $state(rpgMode.value === "1");
     let openDressUp = $state(false);
     let nowSAnimsId = $state(Number(sAnimsId.value ?? 2086));
@@ -315,6 +315,7 @@
                 threadId: threadId,
                 title: title,
                 resCount: newResNum,
+                boardId: board.id,
             });
             resHistoryCache.set(resHistories);
 
@@ -399,7 +400,7 @@
         const now = new Date();
         const diffSeconds = differenceInSeconds(date, now);
         if (diffSeconds < 0) {
-            navigate(makePathname(`/${board.key}/headline`), { replace: true });
+            navigate(makePathname(`/${board.key}`), { replace: true });
             return "期限切れ";
         }
         if (diffSeconds <= 359999) {
@@ -1099,7 +1100,7 @@
         >
             <button
                 class="flex items-center space-x-2 px-4 py-2 rounded-lg bg-gray-600 hover:bg-gray-700 transition-colors duration-200"
-                onclick={() => navigate(makePathname(`/${board.key}/headline`))}
+                onclick={() => navigate(makePathname(`/${board.key}`))}
             >
                 <CircleArrowLeftIcon size={16} />
                 <span class="text-sm font-medium">板トップに戻る</span>

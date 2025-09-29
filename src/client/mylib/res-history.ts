@@ -5,4 +5,5 @@ export type ResHistory = {
 	threadId: string;
 	title: string;
 	resCount: number;
+	boardId: number;
 };

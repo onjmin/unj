@@ -2,8 +2,14 @@
   import { navigate } from "svelte-routing";
   import { DEV_MODE, STG_MODE, makePathname, pathname } from "../mylib/env.js";
 
-  let { board = null, children = null, title = "", menu = true } = $props();
+  let {
+    board = undefinedBoard,
+    children = null,
+    title = "",
+    menu = true,
+  } = $props();
   import { ArrowLeftIcon } from "@lucide/svelte";
+  import { undefinedBoard } from "../../common/request/board.js";
   import {
     isEnabledRightMenu,
     isMobile,
@@ -21,6 +27,7 @@
   }
 
   $isEnabledRightMenu = children !== null;
+  const pathname1 = pathname().split("/")[1] ?? "";
   const pathname2 = pathname().split("/")[2] ?? "";
 </script>
 
@@ -33,24 +40,26 @@
 <header class="unj-header-part w-full bg-gray-800 text-gray-200 shadow-md">
   <div class="max-w-6xl mx-auto px-4 flex items-center">
     <!-- ヘッダー左端：ボタン -->
-    {#if pathname2 === ""}
-      <!-- empty -->
-    {:else if pathname2 === "headline"}
-      <button
-        class="flex items-center space-x-1 px-3 py-2 rounded bg-gray-600 text-gray-200 hover:opacity-80"
-        onclick={() => navigate(makePathname("/"))}
-      >
-        <ArrowLeftIcon class="w-5 h-5" />
-        <span class="text-sm font-medium">板一覧</span>
-      </button>
+    {#if pathname1 === board.key}
+      {#if pathname2 !== ""}
+        <button
+          class="flex items-center space-x-1 px-3 py-2 rounded bg-gray-600 text-gray-200 hover:opacity-80"
+          onclick={() => navigate(makePathname(`/${board.key}`))}
+        >
+          <ArrowLeftIcon class="w-5 h-5" />
+          <span class="text-sm font-medium">板TOP</span>
+        </button>
+      {:else}
+        <button
+          class="flex items-center space-x-1 px-3 py-2 rounded bg-gray-600 text-gray-200 hover:opacity-80"
+          onclick={() => navigate(makePathname("/"))}
+        >
+          <ArrowLeftIcon class="w-5 h-5" />
+          <span class="text-sm font-medium">板一覧</span>
+        </button>
+      {/if}
     {:else}
-      <button
-        class="flex items-center space-x-1 px-3 py-2 rounded bg-gray-600 text-gray-200 hover:opacity-80"
-        onclick={() => navigate(makePathname(`/${board.key}/headline`))}
-      >
-        <ArrowLeftIcon class="w-5 h-5" />
-        <span class="text-sm font-medium">板TOP</span>
-      </button>
+      <!-- empty -->
     {/if}
 
     <!-- 中央＋右をぜいたくに使う -->

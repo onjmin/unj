@@ -411,7 +411,7 @@
         >
             <button
                 class="flex items-center space-x-2 px-4 py-2 rounded-lg bg-gray-600 hover:bg-gray-700 transition-colors duration-200"
-                onclick={() => navigate(makePathname(`/${board.key}/headline`))}
+                onclick={() => navigate(makePathname(`/${board.key}`))}
             >
                 <CircleArrowLeftIcon size={16} />
                 <span class="text-sm font-medium">板トップに戻る</span>
