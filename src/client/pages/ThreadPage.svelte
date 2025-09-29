@@ -28,7 +28,11 @@
     import { sha256 } from "js-sha256";
     import { navigate } from "svelte-routing";
     import * as v from "valibot";
-    import { type Board, boardIdMap } from "../../common/request/board.js";
+    import {
+        type Board,
+        boardIdMap,
+        touhouBoard,
+    } from "../../common/request/board.js";
     import {
         Enum,
         ankaRegex,
@@ -774,16 +778,12 @@
 
 {#if thread?.ageRes && !ignoreList?.has(thread?.ageRes.ccUserId)}
     <div class="ageRes">
-        <!-- backgroundEmbedControls={siteInfo?.id === 1601 ||
-                siteInfo?.id === 1602 ||
-                siteInfo?.id === 3201} -->
         <ResPart
             {board}
             bind:ignoreList
             bind:oekakiCollab
             bind:bindContentText={contentText}
             bind:bindContentType={contentType}
-            backgroundEmbedControls={false}
             {focus}
             ccUserId={thread?.ageRes.ccUserId}
             ccUserName={thread?.ageRes.ccUserName}
@@ -796,13 +796,17 @@
             sage={thread?.ageRes.sage}
             createdAt={thread?.ageRes.createdAt}
             threadId={thread.id}
+            backgroundEmbedControls={(siteInfo?.id === 1601 ||
+                siteInfo?.id === 1602 ||
+                siteInfo?.id === 3201) &&
+                board === touhouBoard}
         />
     </div>
-    {#key thread?.ageRes.num}
-        <!-- <BackgroundEmbedPart
+    {#key thread?.ageRes.num && board === touhouBoard}
+        <BackgroundEmbedPart
             contentUrl={thread.ageRes.contentUrl}
             contentType={thread.ageRes.contentType}
-        /> -->
+        />
     {/key}
 {/if}
 

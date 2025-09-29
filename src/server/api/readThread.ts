@@ -115,17 +115,34 @@ export default ({ socket }: { socket: Socket }) => {
 				subbedCache.set(threadId, new Set());
 
 				// !age
-				if (
-					threadRecord.age_res_num > 1 &&
-					threadRecord.age_res_num <= threadRecord.res_count
-				) {
+				let ageRes: Res | null;
+				const ageResNum = ageResNumCache.get(threadId) ?? 0;
+				if (ageResNum === 1) {
+					ageRes = {
+						yours: false,
+						// 書き込み内容
+						ccUserId: ccUserIdCache.get(threadId) ?? "",
+						ccUserName: ccUserNameCache.get(threadId) ?? "",
+						ccUserAvatar: ccUserAvatarCache.get(threadId) ?? 0,
+						contentText: contentTextCache.get(threadId) ?? "",
+						contentUrl: contentUrlCache.get(threadId) ?? "",
+						contentType: contentTypeCache.get(threadId) ?? 0,
+						commandResult: "",
+						// メタ情報
+						num: 1,
+						createdAt: createdAtCache.get(threadId) ?? new Date(0),
+						isOwner: true,
+						sage: false,
+					};
+					ageResCache.set(threadId, ageRes);
+				} else if (ageResNum > 1 && ageResNum <= threadRecord.res_count) {
 					const { rows, rowCount } = await pool.query(
 						"SELECT * FROM res WHERE thread_id = $1 AND num = $2",
-						[threadId, threadRecord.age_res_num],
+						[threadId, ageResNum],
 					);
 					if (rowCount) {
 						const record = rows[0];
-						const ageRes: Res = {
+						ageRes = {
 							yours: false,
 							// 書き込み内容
 							ccUserId: record.cc_user_id,

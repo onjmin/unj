@@ -35,7 +35,13 @@ import {
 	bannedIPCache,
 	boardIdCache,
 	ccBitmaskCache,
+	ccUserAvatarCache,
+	ccUserIdCache,
+	ccUserNameCache,
+	contentTextCache,
+	contentTypeCache,
 	contentTypesBitmaskCache,
+	contentUrlCache,
 	createdAtCache,
 	goodCountCache,
 	isDeleted,
@@ -366,30 +372,50 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 
 			if (parsedResult.shouldUpdateMeta) {
 				// !age
-				if (ageResNum > 1 && ageResNum < nextResNum) {
-					const { rows, rowCount } = await poolClient.query(
-						"SELECT * FROM res WHERE thread_id = $1 AND num = $2",
-						[threadId, ageResNum],
-					);
-					if (rowCount) {
-						const record = rows[0];
+				if (ageResNum !== nextResNum) {
+					if (ageResNum === 1) {
 						ageRes = {
 							yours: false,
 							// 書き込み内容
-							ccUserId: record.cc_user_id,
-							ccUserName: record.cc_user_name,
-							ccUserAvatar: record.cc_user_avatar,
-							contentText: record.content_text,
-							contentUrl: record.content_url,
-							contentType: record.content_type,
-							commandResult: record.command_result,
+							ccUserId: ccUserIdCache.get(threadId) ?? "",
+							ccUserName: ccUserNameCache.get(threadId) ?? "",
+							ccUserAvatar: ccUserAvatarCache.get(threadId) ?? 0,
+							contentText: contentTextCache.get(threadId) ?? "",
+							contentUrl: contentUrlCache.get(threadId) ?? "",
+							contentType: contentTypeCache.get(threadId) ?? 0,
+							commandResult: "",
 							// メタ情報
-							num: record.num,
-							createdAt: record.created_at,
-							isOwner: record.is_owner,
-							sage: record.sage,
+							num: 1,
+							createdAt: createdAtCache.get(threadId) ?? new Date(0),
+							isOwner: true,
+							sage: false,
 						};
 						ageResCache.set(threadId, ageRes);
+					} else if (ageResNum < nextResNum) {
+						const { rows, rowCount } = await poolClient.query(
+							"SELECT * FROM res WHERE thread_id = $1 AND num = $2",
+							[threadId, ageResNum],
+						);
+						if (rowCount) {
+							const record = rows[0];
+							ageRes = {
+								yours: false,
+								// 書き込み内容
+								ccUserId: record.cc_user_id,
+								ccUserName: record.cc_user_name,
+								ccUserAvatar: record.cc_user_avatar,
+								contentText: record.content_text,
+								contentUrl: record.content_url,
+								contentType: record.content_type,
+								commandResult: record.command_result,
+								// メタ情報
+								num: record.num,
+								createdAt: record.created_at,
+								isOwner: record.is_owner,
+								sage: record.sage,
+							};
+							ageResCache.set(threadId, ageRes);
+						}
 					}
 				}
 
