@@ -6,7 +6,7 @@
 					".read": "auth != null",
 					"$messageId": {
 						".write": "auth != null && !data.exists()",
-						".validate": "newData.hasChildren(['user', 'text', 'ts']) && newData.child('user').val() == auth.uid && newData.child('text').isString() && newData.child('text').val().length >= 1 && newData.child('text').val().length <= 64"
+						".validate": "newData.hasChildren(['user', 'text', 'ts']) && newData.child('user').val() == auth.uid && newData.child('text').isString() && newData.child('text').val().length >= 1 && newData.child('text').val().length <= 128"
 					}
 				}
 			}

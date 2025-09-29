@@ -234,7 +234,7 @@
       class="flex-1 border rounded-md px-1 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-green-600"
       placeholder="めっせーじ入力"
       bind:value={input}
-      maxlength={64}
+      maxlength={128}
       onkeydown={handleKey}
     />
     <button
