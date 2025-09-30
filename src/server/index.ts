@@ -16,6 +16,9 @@ import registerBlacklistIP from "./admin/blacklist/ip.js";
 import registerBlacklistTor from "./admin/blacklist/tor.js";
 import registerBlacklistVpngate from "./admin/blacklist/vpngate.js";
 import registerDebugZombie from "./admin/debug/zombie.js";
+import registerEmergencyDenyAll, {
+	isDenyAll,
+} from "./admin/emergency/deny-all.js";
 import registerLogGrep from "./admin/log/grep.js";
 import registerLogLevel from "./admin/log/level.js";
 import registerThreadOwner from "./admin/thread/owner.js";
@@ -113,6 +116,7 @@ registerBlacklistIP(router);
 registerBlacklistTor(router);
 registerBlacklistVpngate(router);
 registerDebugZombie(router, io, online);
+registerEmergencyDenyAll(router, io, online);
 registerThreadOwner(router);
 registerThreadRes(router, io);
 registerUserNinja(router);
@@ -137,6 +141,13 @@ if (DEV_MODE || STG_MODE) {
 		res.sendFile(path.resolve(ROOT_PATH, "src", "server", "index.html"));
 	});
 }
+
+const checkDenyAll = (socket: Socket) => {
+	if (isDenyAll()) {
+		auth.kick(socket, "denied");
+		socket.disconnect();
+	}
+};
 
 const verifyIP = (socket: Socket, ip: string) => {
 	if (isBannedIP(ip)) {
@@ -199,6 +210,7 @@ io.on("connection", async (socket) => {
 	nonce.init(socket);
 
 	socket.use((_, next) => {
+		checkDenyAll(socket);
 		verifyIP(socket, getIP(socket));
 		verifyUserId(socket, auth.getUserId(socket));
 		if (auth.isAuthExpired(socket)) {

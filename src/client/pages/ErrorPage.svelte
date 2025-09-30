@@ -13,7 +13,17 @@
 
 <MainPart menu={false}>
     <p>ここで何か起こっているようだ</p>
-    {#if errorReason === "multipleConnectionsLimit"}
+    {#if errorReason === "denied"}
+        <div
+            class="bg-yellow-50 border border-yellow-200 text-yellow-800 p-6 rounded-lg shadow-md"
+        >
+            <h2 class="text-xl font-semibold">アクセス制限中です</h2>
+            <h3 class="text-base mt-2">
+                現在、サーバーは攻撃遮断モードになっています。
+            </h3>
+            <p class="mt-4">少し時間を置いてから再度アクセスしてください。</p>
+        </div>
+    {:else if errorReason === "multipleConnectionsLimit"}
         <div
             class="bg-blue-50 border border-blue-200 text-blue-800 p-6 rounded-lg shadow-md"
         >

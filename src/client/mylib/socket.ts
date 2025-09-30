@@ -62,6 +62,9 @@ export const hello = (callback: (() => void) | null = null) => {
 			if (!data.ok || !data.reason) return;
 			errorReason = data.reason;
 			switch (data.reason) {
+				case "denied":
+					navigate(makePathname("/error"), { replace: true });
+					break;
 				case "banned":
 					banStatus.value = "ban";
 					navigate(makePathname("/akukin"), { replace: true });
