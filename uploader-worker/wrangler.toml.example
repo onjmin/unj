@@ -1,0 +1,28 @@
+name = "uploader-worker"
+main = "src/index.ts"
+compatibility_date = "2025-09-29" 
+
+account_id = "" # 埋める
+
+[vars]
+PUBLIC_URL_BASE = "" # 埋める
+CLIENT_ID = "" # 埋める
+
+# R2バケットのバインディング
+[[r2_buckets]]
+binding = "BUCKET"
+bucket_name = "" # 埋める
+
+# Durable Objects (レート制限) の設定
+[[durable_objects.bindings]]
+name = "RATE_LIMITER"
+class_name = "RateLimiter"
+script_name = "" 
+
+[durable_objects.rate_limiter]
+storage_backend = "sqlite"
+
+# Durable Objectsのマイグレーション設定 (初回デプロイとクラス変更時に必要)
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = [ "RateLimiter" ] 

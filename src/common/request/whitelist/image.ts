@@ -36,6 +36,7 @@ export default [
 		description: "よねっと経由でうｐ可能その2",
 		src: "https://i.ibb.co/Xxk61hsb/2025-06-25-212016.png",
 		href: "https://funakamome.com/imgurup",
+		favicon: "imgbb.com",
 	}),
 	new SiteInfo({
 		id: 402,
@@ -57,5 +58,13 @@ export default [
 		src: "https://www2.x-feeder.info/unjupiter/pictures/PIC_EqbZ2y.png",
 		hostnames: ["www1.x-feeder.info"],
 		href: "https://www2.x-feeder.info/gZYDuRRm",
+	}),
+	new SiteInfo({
+		id: 421,
+		name: "Cloudflare R2",
+		description: "10GBまで無料のストレージ",
+		src: "https://pub-d049c945dab44db6b75372fdf9cb8401.r2.dev/8f7e7ab1-aae4-4f78-ba52-5ee5785a142b.png",
+		href: "https://www.cloudflare.com/ja-jp/developer-platform/products/r2/",
+		favicon: "www.cloudflare.com",
 	}),
 ];

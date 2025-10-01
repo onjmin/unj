@@ -51,6 +51,10 @@
     import type { Meta, Res, Thread } from "../../common/response/schema.js";
     import { randInt, sleep } from "../../common/util.js";
     import { genAiWebhookHash, genNonce } from "../mylib/anti-debug.js";
+    import {
+        getResizedBase64Image,
+        uploadCloudflareR2,
+    } from "../mylib/cloudflare-r2.js";
     import { visible } from "../mylib/dom.js";
     import { makePathname } from "../mylib/env.js";
     import {
@@ -117,6 +121,7 @@
     let contentText = $state("");
     let contentUrl = $state("");
     let contentType = $state(0);
+    let previewUrl = $state("");
     let oekakiCollab = $state("");
     let isSage = $state(false);
     let isNinja = $state(false);
@@ -309,6 +314,14 @@
             contentTextUnjStorage.value = null;
             contentText = "";
             contentUrl = "";
+            previewUrl = "";
+            if (
+                contentType === Enum.Oekaki &&
+                (thread.contentTypesBitmask & Enum.Text) !== 0
+            ) {
+                contentType = Enum.Text;
+                checkedOekaki = false;
+            }
             uploadedImgur = null;
             await sleep(512);
             scrollToAnka(newResNum);
@@ -530,6 +543,22 @@
             }
         }
 
+        // 画像アップロード機能
+        if (contentType === Enum.Image) {
+            try {
+                const res = await uploadCloudflareR2(
+                    await getResizedBase64Image(previewUrl),
+                );
+                const json = await res.json();
+                const { link, id, deletehash } = json.data;
+                contentUrl = link;
+            } catch (error) {
+                alert("画像のうｐに失敗しました");
+                emitting = false;
+                return;
+            }
+        }
+
         if (!contentUrl) contentType = Enum.Text;
         const data = {
             nonce: genNonce(nonceKey.value ?? ""),
@@ -570,15 +599,6 @@
         await sleep(1024);
         emitting = false;
         ok();
-
-        // 投稿後、お絵描きモード解除
-        if (
-            contentType === Enum.Oekaki &&
-            (thread.contentTypesBitmask & Enum.Text) !== 0
-        ) {
-            contentType = Enum.Text;
-            checkedOekaki = false;
-        }
     };
 
     const tryLoL = () => {
@@ -661,6 +681,7 @@
         {tryRes}
         {isExpand}
         bind:oekakiCollab
+        bind:previewUrl
     />
     <div class="w-full max-w-xs">
         <Button disabled={emitting} onclick={tryRes} variant="raised"

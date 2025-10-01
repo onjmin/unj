@@ -1,5 +1,5 @@
-// simhashのキャッシュ
-const simhashCache: Map<number, number> = new Map();
+const simhashCache: Map<number, number[]> = new Map();
+const allowedSameCount = 3;
 
 /**
  * 「✋🥹大家都是Puyuyu」を弾くための実装
@@ -7,18 +7,21 @@ const simhashCache: Map<number, number> = new Map();
 export const isSameSimhash = (text: string, userId: number): boolean => {
 	if (text.length < 16) return false;
 	if (text.startsWith("!gen")) return false; // 画像生成コマンドの場合は免除
-	const simhash1 = calcSimhash(text);
-	if (!simhash1) return false;
-	if (simhashCache.has(userId)) {
-		const simhash2 = simhashCache.get(userId);
-		if (!simhash2) return false;
-		if (hammingDistance32(simhash1, simhash2) > 8) {
-			simhashCache.set(userId, simhash1);
-			return false;
+	const simhash = calcSimhash(text);
+	if (!simhash) return false;
+	const simhashLog = simhashCache.get(userId);
+	if (simhashLog) {
+		const isSame = simhashLog
+			.slice(0, allowedSameCount)
+			.every((v) => hammingDistance32(v, simhash) < 8);
+		if (isSame) {
+			return true;
 		}
-		return true;
+		simhashLog.unshift(simhash);
+		simhashCache.set(userId, simhashLog.slice(0, allowedSameCount));
+		return false;
 	}
-	simhashCache.set(userId, simhash1);
+	simhashCache.set(userId, [simhash]);
 	return false;
 };
 

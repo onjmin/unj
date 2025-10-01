@@ -37,5 +37,6 @@ export default [
 		description: "よねっと経由でうｐ可能その2",
 		src: "https://i.ibb.co/dwtkXsfg/Sticker-Cat-Meme-Sticker-by-Japan.gif",
 		href: "https://funakamome.com/imgurup",
+		favicon: "imgbb.com",
 	}),
 ];

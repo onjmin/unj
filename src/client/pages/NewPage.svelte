@@ -26,6 +26,10 @@
     import type { HeadlineThread } from "../../common/response/schema.js";
     import { randInt, sleep } from "../../common/util.js";
     import { genNonce } from "../mylib/anti-debug.js";
+    import {
+        getResizedBase64Image,
+        uploadCloudflareR2,
+    } from "../mylib/cloudflare-r2.js";
     import { makePathname } from "../mylib/env.js";
     import {
         type ImgurResponse,
@@ -55,6 +59,7 @@
     let contentText = $state("");
     let contentUrl = $state("");
     let contentType: EnumType = $state(Enum.Text);
+    let previewUrl = $state("");
     let activeLayer = $state(null);
 
     // UnjStorage
@@ -162,6 +167,8 @@
         if (emitting || !check1) return;
         emitting = true;
         let contentMeta = {};
+
+        // お絵描き機能
         if (contentType === Enum.Oekaki) {
             const result = await (async () => {
                 if (uploadedImgur) {
@@ -211,6 +218,23 @@
                 return;
             }
         }
+
+        // 画像アップロード機能
+        if (contentType === Enum.Image) {
+            try {
+                const res = await uploadCloudflareR2(
+                    await getResizedBase64Image(previewUrl),
+                );
+                const json = await res.json();
+                const { link, id, deletehash } = json.data;
+                contentUrl = link;
+            } catch (error) {
+                alert("画像のうｐに失敗しました");
+                emitting = false;
+                return;
+            }
+        }
+
         if (!contentUrl) contentType = Enum.Text;
         const data = {
             boardId: board.id,
@@ -467,6 +491,7 @@
             bind:toDataURL
             bind:activeLayer
             tryRes={tryMakeThread}
+            bind:previewUrl
         />
         <div class="flex items-center space-x-2 mt-4">
             <input

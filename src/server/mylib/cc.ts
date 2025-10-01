@@ -1,19 +1,14 @@
-import crypto from "node:crypto";
 import baseX from "base-x";
 import { differenceInDays } from "date-fns";
-import iconv from "iconv-lite";
 import { sha256 } from "js-sha256";
 import type { Socket } from "socket.io";
 import { pokemonMap } from "../../common/pokemon.js";
-import { kimchiBoard, noharaBoard } from "../../common/request/board.js";
+import { kimchiBoard } from "../../common/request/board.js";
 import { unjBeginDate } from "../../common/request/schema.js";
 import { encodeUserId } from "./anti-debug.js";
 import auth from "./auth.js";
 import { ninjaPokemonCache, ninjaScoreCache } from "./cache.js";
 import { getIP, sliceIPRange } from "./ip.js";
-
-// @ts-ignore
-import unixCrypt from "unix-crypt-td-js";
 
 const base62 = baseX(
 	"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
@@ -37,7 +32,7 @@ export const makeCcUserId = ({
 	socket: Socket;
 }): string => {
 	// IDが非表示になる（板固有機能）
-	if (boardId === noharaBoard.id || boardId === kimchiBoard.id) {
+	if (boardId === kimchiBoard.id) {
 		return "";
 	}
 
@@ -127,107 +122,12 @@ const capList = new Map([
 /**
  * 2ch非互換トリップの生成
  */
-const makeTrip = (tripKeyUtf8: string) => {
+const makeTrip = (tripKey: string) => {
 	return btoa(
-		String.fromCharCode(...new Uint8Array(sha256.arrayBuffer(tripKeyUtf8))),
+		String.fromCharCode(...new Uint8Array(sha256.arrayBuffer(tripKey))),
 	)
 		.slice(0, 10)
 		.replace(/\+/g, ".");
-};
-
-/**
- * 2ch互換トリップの生成（未完成）
- */
-const _makeTrip = (tripKeyUtf8: string): string => {
-	const tripKey = iconv.encode(tripKeyUtf8, "Shift_JIS");
-
-	let trip = "???";
-
-	if (tripKey.length >= 12) {
-		const firstChar = tripKey[0];
-		const tripKeyStr = tripKeyUtf8;
-
-		// 10桁トリップ2 (#16進数指定)
-		if (firstChar === 0x23) {
-			// '#'
-			const m = tripKeyStr.match(/^#([0-9a-fA-F]{16})([./0-9a-zA-Z]{0,2})$/);
-			if (m) {
-				const hex = m[1];
-				const salt = (m[2] || "..").padEnd(2, ".");
-				const key = Buffer.from(hex, "hex");
-				trip = unixCrypt(key.toString("latin1"), salt).slice(-10);
-			} else {
-				trip = "???";
-			}
-		} else if (firstChar === 0x24) {
-			// '$' 予約
-			trip = "???";
-		} else {
-			// 12桁トリップ SHA-1 + Base64
-			const hash = crypto.createHash("sha1").update(tripKey).digest();
-			trip = hash.toString("base64").slice(0, 12).replace(/\+/g, ".");
-		}
-	} else {
-		// 10桁トリップ旧プロトコル
-		trip = makeOldTrip(tripKeyUtf8);
-	}
-
-	return trip;
-};
-
-// toSaltChar関数は使用せず、Perlのtr///相当の処理をインラインで実現します。
-// Saltの特殊文字マッピングはそのまま利用します。
-const saltMap: Record<string, string> = {
-	":": "A",
-	";": "B",
-	"<": "C",
-	"=": "D",
-	">": "E",
-	"?": "F",
-	"@": "G",
-	"[": "a",
-	"\\": "b",
-	"]": "c",
-	"^": "d",
-	_: "e",
-	"`": "f",
-};
-
-const makeOldTrip = (tripKeyUtf8: string): string => {
-	// 1. トリップキーから'#'を除去（Perlの substr $tripkey, 1; に相当）
-	//    ※ makeTripで既に tripKeyUtf8.length < 12 の判定を経ているため、
-	//       ここでは # の有無に関わらず、旧プロトコルとして処理を継続。
-	const tripKeyWithoutSharp = tripKeyUtf8.startsWith("#")
-		? tripKeyUtf8.slice(1)
-		: tripKeyUtf8;
-
-	// 2. Saltの生成: キーに"H."を付加し、2文字目から2文字を抽出
-	//    Perl: $salt = substr $tripkey . "H.", 1, 2; に相当
-	//    slice(1, 3)でインデックス1と2の文字（2文字目と3文字目）を取得
-	const saltBase = `${tripKeyWithoutSharp}H.`.slice(1, 3);
-
-	// 3. Saltの文字変換（Perlのtr///の再現）
-	const salt = Array.from(saltBase)
-		.map((char) => {
-			// [^\.-z]/\./g の再現: '.' (0x2e) から 'z' (0x7a) までの範囲外を '.' に置換
-			const code = char.charCodeAt(0);
-			if (code < 0x2e || code > 0x7a) {
-				return ".";
-			}
-			// tr/:;<=>?@[\\]^_`/A-Ga-f/ の再現
-			return saltMap[char] ?? char;
-		})
-		.join("");
-
-	// 4. キーのエンコード: トリップキー（#なし）をShift_JISでエンコード
-	//    ※ Perlのcryptは、渡された文字列をShift_JIS相当のバイト列として処理する
-	const tripKeySJIS = iconv.encode(tripKeyWithoutSharp, "Shift_JIS");
-
-	// unix-crypt-td-js は Latin-1 文字列として渡す
-	const keyLatin1 = tripKeySJIS.toString("latin1");
-	const crypted = unixCrypt(keyLatin1, salt);
-
-	return crypted.slice(-10);
 };
 
 export const makeCcUserAvatar = ({

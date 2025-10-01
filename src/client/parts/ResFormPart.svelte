@@ -17,6 +17,7 @@
   import { UnjStorage } from "../mylib/unj-storage.js";
   import AvatarPart from "./AvatarPart.svelte";
   import ColorWheelPart from "./ColorWheelPart.svelte";
+  import ImageUploader from "./ImageUploader.svelte";
   import OekakiPart from "./OekakiPart.svelte";
   import UrlTemplatePart from "./UrlTemplatePart.svelte";
 
@@ -37,6 +38,7 @@
     tryRes,
     isExpand = true,
     oekakiCollab = $bindable(""),
+    previewUrl = $bindable(""),
   } = $props();
 
   let openUrlTemplate = $state(false);
@@ -89,7 +91,7 @@
     <IconButton
       {disabled}
       class="material-icons"
-      onclick={() => (openAvatar = true)}>image</IconButton
+      onclick={() => (openAvatar = true)}>person</IconButton
     >
   {/snippet}
   {#snippet helper()}
@@ -111,30 +113,62 @@
       tryRes();
     }
   }}
-  onpaste={(e: ClipboardEvent) => {
-    const pasteText = e.clipboardData?.getData("text");
-    const m = pasteText?.trim().match(regexUrl);
-    if (!m) return;
-    let url;
-    try {
-      url = new URL(m[0]);
-    } catch (err) {}
-    if (!url) return;
-    let _contentType = 0;
-    if (findIn(gif, url.hostname) && url.href.slice(-4) === ".gif") {
-      _contentType = Enum.Gif;
-    } else if (findIn(image, url.hostname)) _contentType = Enum.Image;
-    else if (findIn(video, url.hostname)) _contentType = Enum.Video;
-    else if (findIn(audio, url.hostname)) _contentType = Enum.Audio;
-    else if (findIn(game, url.hostname)) _contentType = Enum.Game;
-    else _contentType = Enum.Url;
-    if ((_contentType & contentTypesBitmask) !== 0) {
-      contentType = _contentType;
-      contentUrl = url.href;
+  onpaste={async (e: ClipboardEvent) => {
+    let imageItem: DataTransferItem | null = null;
+    let textItem: DataTransferItem | null = null;
+    for (const v of e.clipboardData?.items ?? []) {
+      if (v.kind === "file" && v.type.startsWith("image/")) imageItem = v;
+      if (v.kind === "string" && v.type === "text/plain") textItem = v;
     }
-    setTimeout(() => (contentText = contentText.replace(m[0], "").trim()));
+    if (imageItem) {
+      // 画像ペーストの場合
+      const _contentType = Enum.Image;
+      if ((_contentType & contentTypesBitmask) === 0) return;
+      const blob = imageItem.getAsFile();
+      if (!blob) return;
+      URL.revokeObjectURL(previewUrl);
+      previewUrl = URL.createObjectURL(blob);
+      contentUrl = previewUrl;
+      contentType = _contentType;
+    } else if (textItem) {
+      // 文字列ペーストの場合
+      const pasteText = await new Promise<string>((resolve) =>
+        textItem.getAsString(resolve),
+      );
+      const m = pasteText?.trim().match(regexUrl);
+      if (!m) return;
+      let url;
+      try {
+        url = new URL(m[0]);
+      } catch (err) {}
+      if (!url) return;
+      let _contentType = 0;
+      if (findIn(gif, url.hostname) && url.href.slice(-4) === ".gif") {
+        _contentType = Enum.Gif;
+      } else if (findIn(image, url.hostname)) _contentType = Enum.Image;
+      else if (findIn(video, url.hostname)) _contentType = Enum.Video;
+      else if (findIn(audio, url.hostname)) _contentType = Enum.Audio;
+      else if (findIn(game, url.hostname)) _contentType = Enum.Game;
+      else _contentType = Enum.Url;
+      if ((_contentType & contentTypesBitmask) !== 0) {
+        contentType = _contentType;
+        contentUrl = url.href;
+      }
+      setTimeout(() => (contentText = contentText.replace(m[0], "").trim()));
+    }
   }}
 >
+  {#snippet trailingIcon()}
+    <IconButton
+      {disabled}
+      class="material-icons ml-auto"
+      onclick={() => {
+        const _contentType = Enum.Image;
+        if ((_contentType & contentTypesBitmask) === 0) return;
+        contentType = _contentType;
+      }}>image</IconButton
+    >
+  {/snippet}
   {#snippet helper()}
     <CharacterCounter />
   {/snippet}
@@ -174,7 +208,9 @@
 {/if}
 
 {#key contentType}
-  {#if contentType === Enum.Oekaki}
+  {#if contentType === Enum.Image}
+    <ImageUploader bind:previewUrl bind:contentUrl />
+  {:else if contentType === Enum.Oekaki}
     {#if oekaki}
       <OekakiPart
         {threadId}

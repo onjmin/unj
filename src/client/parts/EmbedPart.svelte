@@ -13,6 +13,7 @@
     contentTemplateMap,
   } from "../../common/request/content-schema.js";
   import game from "../../common/request/whitelist/game.js";
+  import image from "../../common/request/whitelist/image.js";
   import oekaki from "../../common/request/whitelist/oekaki.js";
   import {
     SiteInfo,
@@ -121,6 +122,10 @@
           imageEmbed = true;
           embedUrl = parseImageEmbedImgBB(url) ?? "";
           break;
+        case 421:
+          imageEmbed = true;
+          embedUrl = url.href;
+          break;
         case 801:
           imageEmbed = true;
           embedUrl = parseGifEmbedImgur(url) ?? "";
@@ -209,7 +214,7 @@
       embeddable &&
       siteInfo &&
       (auto ||
-        [401, 402, 403, 405, 411].includes(siteInfo.id) ||
+        [401, 402, 403, 405, 411, 421].includes(siteInfo.id) ||
         temp === oekaki)
     ) {
       tryEmbed(siteInfo);
@@ -267,7 +272,7 @@
       <IconButton class="material-icons" onclick={() => (embedding = false)}
         >close</IconButton
       >
-      {#if temp === oekaki || (siteInfo.id === 405 && ccUserId === "AI")}
+      {#if temp === oekaki || (temp === image && ccUserId === "AI")}
         <button
           class="ml-4 text-blue-500 hover:text-blue-700 font-bold transition duration-300"
           onclick={() => {

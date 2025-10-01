@@ -13,6 +13,7 @@ export class SiteInfo {
 		src, // 実際に使われるURL
 		hostnames, // src以外の許容ホスト名
 		href, // 選択UIから飛べるリンク先
+		favicon,
 	}: {
 		id?: number;
 		name: string;
@@ -20,13 +21,14 @@ export class SiteInfo {
 		src: string;
 		hostnames?: string[];
 		href?: string;
+		favicon?: string;
 	}) {
 		this.id = id ?? 0;
 		this.name = name;
 		this.description = description;
 		this.src = src;
 		const hostname = new URL(src).hostname;
-		this.favicon = `https://www.google.com/s2/favicons?domain=${hostname}`;
+		this.favicon = `https://www.google.com/s2/favicons?domain=${favicon ?? hostname}`;
 		this.hostnames = new Set(hostnames ?? []);
 		this.hostnames.add(hostname);
 		this.href = href ?? src;
