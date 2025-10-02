@@ -544,13 +544,13 @@
         }
 
         // 画像アップロード機能
-        if (contentType === Enum.Image) {
+        if (contentType === Enum.Image && previewUrl) {
             try {
                 const res = await uploadCloudflareR2(
                     await getResizedBase64Image(previewUrl),
                 );
                 const json = await res.json();
-                const { link, id, deletehash } = json.data;
+                const { link, delete_id, delete_hash } = json.data;
                 contentUrl = link;
             } catch (error) {
                 alert("画像のうｐに失敗しました");
