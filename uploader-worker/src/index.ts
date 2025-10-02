@@ -1,4 +1,5 @@
 import type {
+	Ai,
 	DurableObjectNamespace,
 	ExecutionContext,
 	R2Bucket,
@@ -32,6 +33,7 @@ interface Env {
 	DELETE_SECRET_PEPPER: string;
 	RATE_LIMITER: DurableObjectNamespace;
 	REPLAY_PROTECTOR: DurableObjectNamespace; // リプレイ攻撃保護用
+	AI: Ai;
 }
 
 // 許可する最大ファイルサイズ (1MB)
@@ -231,10 +233,26 @@ export default {
 				}
 
 				// ArrayBufferの作成
-				const fileBuffer = new ArrayBuffer(len);
-				const view = new Uint8Array(fileBuffer);
-				for (let i = 0; i < len; i++) {
-					view[i] = binaryData.charCodeAt(i);
+				const imageBuffer: Uint8Array | null = (() => {
+					try {
+						const decoded = atob(base64Image);
+						const len = decoded.length;
+						const buffer = new Uint8Array(len);
+						for (let i = 0; i < len; i++) {
+							buffer[i] = decoded.charCodeAt(i);
+						}
+						return buffer;
+					} catch (e) {
+						console.error("Base64 decode failed:", e);
+						return null;
+					}
+				})();
+
+				if (!imageBuffer) {
+					return new Response("Invalid image data format.", {
+						status: 400,
+						headers: CORS_HEADERS,
+					});
 				}
 
 				// MIMEタイプを決定し、ファイル形式をチェック
@@ -242,29 +260,37 @@ export default {
 				let fileExtension = "dat";
 
 				// 簡易的なマジックバイトチェック（JPEG, PNG, GIF, WebPに対応）
-				if (view[0] === 0xff && view[1] === 0xd8 && view[2] === 0xff) {
+				if (
+					imageBuffer[0] === 0xff &&
+					imageBuffer[1] === 0xd8 &&
+					imageBuffer[2] === 0xff
+				) {
 					mimeType = "image/jpeg";
 					fileExtension = "jpg";
 				} else if (
-					view[0] === 0x89 &&
-					view[1] === 0x50 &&
-					view[2] === 0x4e &&
-					view[3] === 0x47
+					imageBuffer[0] === 0x89 &&
+					imageBuffer[1] === 0x50 &&
+					imageBuffer[2] === 0x4e &&
+					imageBuffer[3] === 0x47
 				) {
 					mimeType = "image/png";
 					fileExtension = "png";
-				} else if (view[0] === 0x47 && view[1] === 0x49 && view[2] === 0x46) {
+				} else if (
+					imageBuffer[0] === 0x47 &&
+					imageBuffer[1] === 0x49 &&
+					imageBuffer[2] === 0x46
+				) {
 					mimeType = "image/gif";
 					fileExtension = "gif";
 				} else if (
-					view[0] === 0x52 &&
-					view[1] === 0x49 &&
-					view[2] === 0x46 &&
-					view[3] === 0x46 &&
-					view[8] === 0x57 &&
-					view[9] === 0x45 &&
-					view[10] === 0x42 &&
-					view[11] === 0x50
+					imageBuffer[0] === 0x52 &&
+					imageBuffer[1] === 0x49 &&
+					imageBuffer[2] === 0x46 &&
+					imageBuffer[3] === 0x46 &&
+					imageBuffer[8] === 0x57 &&
+					imageBuffer[9] === 0x45 &&
+					imageBuffer[10] === 0x42 &&
+					imageBuffer[11] === 0x50
 				) {
 					mimeType = "image/webp";
 					fileExtension = "webp";
@@ -280,12 +306,67 @@ export default {
 					);
 				}
 
+				// AIによる画像チェック
+				const IMAGE_TO_TEXT_MODEL = "@cf/unum/uform-gen2-qwen-500m";
+				const MODERATION_THRESHOLD = 0.5; // スコアがこの値を超えたら拒否（モデルにより調整が必要）
+				const BANNED_KEYWORDS = [
+					"feces",
+					"gore",
+					"blood",
+					"vomit",
+					"body part",
+					"weapon",
+					"excrement",
+					"poop",
+					"dung",
+					"shit",
+					"graphic violence",
+					"self-harm",
+				];
+
+				try {
+					const captionResponse = await env.AI.run(IMAGE_TO_TEXT_MODEL, {
+						prompt:
+							"A detailed description of the image content, including objects, color, and context. If the image contains human or animal feces, excrement, or waste, describe it explicitly.",
+						image: Array.from(imageBuffer),
+					});
+
+					const captionText: string = captionResponse.description || "";
+
+					const isBanned = BANNED_KEYWORDS.some((keyword) =>
+						captionText.toLowerCase().includes(keyword),
+					);
+
+					if (isBanned) {
+						console.warn(
+							`Moderation rejected by Image-to-Text check. Caption: ${captionText}`,
+						);
+						return new Response(
+							"Content policy violation: Inappropriate image detected.",
+							{
+								status: 403,
+								headers: CORS_HEADERS,
+							},
+						);
+					}
+				} catch (e) {
+					// AIサービスの障害、またはモデル非対応の場合
+					console.error(
+						"Workers AI Moderation Failed. Continuing upload due to fallback.",
+						e,
+					);
+					return new Response(
+						"AI moderation service is temporarily unavailable.",
+						{ status: 503, headers: CORS_HEADERS },
+					);
+				}
+
 				// 6. R2への書き込み
 				const key = `${crypto.randomUUID().slice(0, 8)}.${fileExtension}`;
 				const deleteToken = await sha256(key + env.DELETE_SECRET_PEPPER);
 
 				// put の第二引数を file.stream() から fileBuffer に変更
-				await env.BUCKET.put(key, fileBuffer, {
+				await env.BUCKET.put(key, imageBuffer, {
 					httpMetadata: {
 						contentType: mimeType,
 						cacheControl: "public, max-age=31536000, immutable",
