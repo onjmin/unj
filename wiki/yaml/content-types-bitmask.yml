@@ -1,9 +1,9 @@
 1: text
 2: url
-4: url_of_image(Imgur||アル)
-8: url_of_gif(Imgur)
-16: url_of_video(YouTube||Nicovideo||Vimeo)
-32: url_of_audio(SoundCloud||Spotify)
+4: url_of_image
+8: url_of_gif
+16: url_of_video
+32: url_of_audio
 64: url_of_game
 128: 空き_url_of_sns(Twitter||Facebook||Instagram)
 256: 空き_url_of_gps(GoogleMap)
@@ -11,3 +11,5 @@
 1024: お絵描き
 2048: 空き_AA(ASCII_Art)_AAA(ASCII_Art_Animation)
 4096: 空き_tanzaku
+8192: 空き
+16384: 空き

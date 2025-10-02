@@ -85,14 +85,24 @@
   bind:value={userName}
   input$maxlength={32}
   class="unj-username-textfield"
-  style={avatarSrc ? `background-image:url(${avatarSrc});` : ""}
+  style={avatarSrc
+    ? `background-image:linear-gradient(rgba(255,255,255,0.8),rgba(255,255,255,0.8)),url(${avatarSrc});`
+    : ""}
 >
   {#snippet trailingIcon()}
-    <IconButton
-      {disabled}
-      class="material-icons"
-      onclick={() => (openAvatar = true)}>person</IconButton
-    >
+    {#if userAvatar}
+      <IconButton
+        {disabled}
+        class="material-icons"
+        onclick={() => (userAvatar = 0)}>person_off</IconButton
+      >
+    {:else}
+      <IconButton
+        {disabled}
+        class="material-icons"
+        onclick={() => (openAvatar = true)}>person</IconButton
+      >
+    {/if}
   {/snippet}
   {#snippet helper()}
     <CharacterCounter />
@@ -159,15 +169,27 @@
   }}
 >
   {#snippet trailingIcon()}
-    <IconButton
-      {disabled}
-      class="material-icons ml-auto"
-      onclick={() => {
-        const _contentType = Enum.Image;
-        if ((_contentType & contentTypesBitmask) === 0) return;
-        contentType = _contentType;
-      }}>image</IconButton
-    >
+    {#if contentType === Enum.Image}
+      <IconButton
+        {disabled}
+        class="material-icons ml-auto"
+        onclick={() => {
+          const _contentType = Enum.Text;
+          if ((_contentType & contentTypesBitmask) === 0) return;
+          contentType = _contentType;
+        }}>hide_image</IconButton
+      >
+    {:else}
+      <IconButton
+        {disabled}
+        class="material-icons ml-auto"
+        onclick={() => {
+          const _contentType = Enum.Image;
+          if ((_contentType & contentTypesBitmask) === 0) return;
+          contentType = _contentType;
+        }}>image</IconButton
+      >
+    {/if}
   {/snippet}
   {#snippet helper()}
     <CharacterCounter />
@@ -184,7 +206,7 @@
   </Select>
 {/if}
 
-{#if visibleUrlField(contentType)}
+{#if contentType === Enum.Url || contentType === Enum.Image || contentType === Enum.Gif || contentType === Enum.Video || contentType === Enum.Audio || contentType === Enum.Game}
   <Textfield
     {disabled}
     label="URL欄"
@@ -192,14 +214,29 @@
     input$maxlength={1024}
   >
     {#snippet trailingIcon()}
-      <IconButton
-        {disabled}
-        class="material-icons"
-        onclick={() => (openUrlTemplate = true)}
-        style="visibility:{visibleTemplate(contentType)
-          ? 'visible'
-          : 'hidden'};">add_link</IconButton
-      >
+      {#if contentUrl === ""}
+        <IconButton
+          {disabled}
+          class="material-icons"
+          onclick={() => {
+            openUrlTemplate = true;
+          }}
+        >
+          add_link
+        </IconButton>
+      {:else}
+        <IconButton
+          {disabled}
+          class="material-icons"
+          onclick={() => {
+            URL.revokeObjectURL(previewUrl);
+            previewUrl = "";
+            contentUrl = "";
+          }}
+        >
+          link_off
+        </IconButton>
+      {/if}
     {/snippet}
     {#snippet helper()}
       <CharacterCounter />
