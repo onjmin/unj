@@ -72,7 +72,7 @@ export default {
 				status: 204,
 				headers: {
 					...CORS_HEADERS,
-					"Access-Control-Allow-Methods": "POST, OPTIONS",
+					"Access-Control-Allow-Methods": "POST, DELETE, OPTIONS",
 					"Access-Control-Allow-Headers":
 						"Authorization, Content-Type, X-Request-Hash",
 					"Access-Control-Max-Age": "86400", // 24 hours

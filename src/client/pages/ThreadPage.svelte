@@ -54,6 +54,7 @@
     import {
         getResizedBase64Image,
         uploadCloudflareR2,
+        uploadHistory,
     } from "../mylib/cloudflare-r2.js";
     import { visible } from "../mylib/dom.js";
     import { makePathname } from "../mylib/env.js";
@@ -552,6 +553,11 @@
                 const json = await res.json();
                 const { link, delete_id, delete_hash } = json.data;
                 contentUrl = link;
+                uploadHistory.get().then((v) => {
+                    const arr = v ? v : [];
+                    arr.push({ link, delete_id, delete_hash });
+                    uploadHistory.set(arr);
+                });
             } catch (error) {
                 alert("画像のうｐに失敗しました");
                 emitting = false;

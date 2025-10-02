@@ -1,4 +1,5 @@
 import { decodeEnv } from "./env.js";
+import { ObjectStorage } from "./object-storage.js";
 
 const VITE_CLOUDFLARE_URL = decodeEnv(import.meta.env.VITE_CLOUDFLARE_URL);
 
@@ -122,3 +123,12 @@ export const deleteCloudflareR2 = (deleteId: string, deleteHash: string) => {
 		},
 	});
 };
+
+export type UploadResponse = {
+	link: string;
+	delete_id: string;
+	delete_hash: string;
+};
+export const uploadHistory = new ObjectStorage<UploadResponse[]>(
+	"cloudflareR2Response",
+);

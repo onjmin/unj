@@ -21,6 +21,11 @@
     import { pokemonMap } from "../../common/pokemon.js";
     import type { Board } from "../../common/request/board.js";
     import {
+        type UploadResponse,
+        deleteCloudflareR2,
+        uploadHistory,
+    } from "../mylib/cloudflare-r2.js";
+    import {
         type ImgurResponse,
         deleteImgur,
         imgurHistory,
@@ -93,6 +98,13 @@
         theme.value = selectedTheme;
     });
 
+    let uploadList: UploadResponse[] = $state([]);
+    $effect(() => {
+        uploadHistory.get().then((v) => {
+            uploadList = v ? v : [];
+        });
+    });
+
     let imgurList: ImgurResponse[] = $state([]);
     $effect(() => {
         imgurHistory.get().then((v) => {
@@ -120,7 +132,22 @@
         });
     });
 
-    // ページネーション用変数
+    // 画像履歴ページネーション用
+
+    let currentPageOfUploadList: number = $state(1); // 現在のページ
+    const itemsPerPageOfUploadList: number = 10; // 1ページあたりの表示枚数
+    const totalPagesOfUploadList = $derived(
+        Math.ceil(uploadList.length / itemsPerPageOfUploadList),
+    );
+    const reversedUploadList = $derived([...uploadList].reverse());
+    const paginatedUploadList = $derived(
+        reversedUploadList.slice(
+            (currentPageOfUploadList - 1) * itemsPerPageOfUploadList,
+            currentPageOfUploadList * itemsPerPageOfUploadList,
+        ),
+    );
+
+    // お絵描き履歴ページネーション用
 
     let currentPage: number = $state(1); // 現在のページ
     const itemsPerPage: number = 10; // 1ページあたりの表示枚数
@@ -452,6 +479,158 @@
                 role="button"
                 onkeydown={() => {}}
                 class="flex justify-between items-center p-4 cursor-pointer"
+                onclick={() => toggleAccordion("uploadHistory")}
+            >
+                <h3 class="font-bold text-lg">画像履歴</h3>
+                {#if openAccordion === "uploadHistory"}
+                    <ChevronDownIcon class="h-6 w-6" />
+                {:else}
+                    <ChevronRightIcon class="h-6 w-6" />
+                {/if}
+            </div>
+            {#if openAccordion === "uploadHistory"}
+                <div class="p-4 border-t border-gray-200">
+                    {#if !uploadList.length}
+                        <div class="text-gray-500 text-center space-y-2">
+                            <div>NO DATA...</div>
+                            <div>いまんとこ画像履歴は空っぽみたい。。</div>
+                            <div>画像うｐしてから出直してね。</div>
+                        </div>
+                    {:else}
+                        {#snippet paginationControls()}
+                            {#if totalPagesOfUploadList > 1}
+                                <div
+                                    class="flex justify-center items-center mt-4 space-x-2"
+                                >
+                                    <button
+                                        onclick={() =>
+                                            (currentPageOfUploadList = 1)}
+                                        disabled={currentPageOfUploadList === 1}
+                                        class="px-3 py-1 rounded-md bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+                                    >
+                                        最初へ
+                                    </button>
+                                    <button
+                                        onclick={() =>
+                                            currentPageOfUploadList--}
+                                        disabled={currentPageOfUploadList === 1}
+                                        class="px-3 py-1 rounded-md bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+                                    >
+                                        前へ
+                                    </button>
+                                    <span
+                                        >{currentPageOfUploadList} / {totalPagesOfUploadList}</span
+                                    >
+                                    <button
+                                        onclick={() =>
+                                            currentPageOfUploadList++}
+                                        disabled={currentPageOfUploadList ===
+                                            totalPagesOfUploadList}
+                                        class="px-3 py-1 rounded-md bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+                                    >
+                                        次へ
+                                    </button>
+                                    <button
+                                        onclick={() =>
+                                            (currentPageOfUploadList =
+                                                totalPagesOfUploadList)}
+                                        disabled={currentPageOfUploadList ===
+                                            totalPagesOfUploadList}
+                                        class="px-3 py-1 rounded-md bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+                                    >
+                                        最後へ
+                                    </button>
+                                </div>
+                            {/if}
+                        {/snippet}
+                        {@render paginationControls()}
+                        <div class="text-left space-y-4">
+                            {#each paginatedUploadList as uploadResponse}
+                                <div
+                                    class="flex items-center py-2 border-b border-gray-200 last:border-b-0"
+                                >
+                                    <div
+                                        tabindex="0"
+                                        role="button"
+                                        onkeydown={() => {}}
+                                        onclick={() => {
+                                            src = uploadResponse.link;
+                                            open = true;
+                                        }}
+                                        class="w-12 h-12 flex-shrink-0 rounded-full bg-no-repeat bg-cover bg-center"
+                                        style="background-image: url({uploadResponse.link});"
+                                    ></div>
+                                    <div class="flex-1 ml-4 overflow-hidden">
+                                        <div class="font-bold truncate">
+                                            {uploadResponse.delete_id}
+                                        </div>
+                                        <div
+                                            class="text-sm text-gray-500 truncate"
+                                        >
+                                            {uploadResponse.link}
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="flex flex-shrink-0 space-x-2 ml-4"
+                                    >
+                                        <button
+                                            class="p-2 rounded-full hover:bg-gray-200"
+                                            onclick={async () => {
+                                                await navigator.clipboard.writeText(
+                                                    uploadResponse.link,
+                                                );
+                                                toaster.create({
+                                                    title: "コピーしました",
+                                                });
+                                            }}
+                                        >
+                                            <CopyIcon class="h-6 w-6" />
+                                        </button>
+                                        <button
+                                            class="p-2 rounded-full hover:bg-gray-200"
+                                            onclick={async () => {
+                                                if (
+                                                    !confirm(
+                                                        `ID:${uploadResponse.delete_id}を削除しますか？`,
+                                                    )
+                                                )
+                                                    return;
+                                                try {
+                                                    await deleteCloudflareR2(
+                                                        uploadResponse.delete_id,
+                                                        uploadResponse.delete_hash,
+                                                    );
+                                                } catch (err) {
+                                                    alert(
+                                                        `ID:${uploadResponse.delete_id}の削除に失敗しました`,
+                                                    );
+                                                    return;
+                                                }
+                                                uploadList = uploadList.filter(
+                                                    (v) =>
+                                                        v.delete_id !==
+                                                        uploadResponse.delete_id,
+                                                );
+                                                uploadHistory.set(uploadList);
+                                            }}
+                                        >
+                                            <Trash2Icon class="h-6 w-6" />
+                                        </button>
+                                    </div>
+                                </div>
+                            {/each}
+                        </div>
+                        {@render paginationControls()}
+                    {/if}
+                </div>
+            {/if}
+        </div>
+        <div class="bg-white rounded-lg shadow">
+            <div
+                tabindex="0"
+                role="button"
+                onkeydown={() => {}}
+                class="flex justify-between items-center p-4 cursor-pointer"
                 onclick={() => toggleAccordion("imgurHistory")}
             >
                 <h3 class="font-bold text-lg">お絵描き履歴</h3>
@@ -467,7 +646,7 @@
                         <div class="text-gray-500 text-center space-y-2">
                             <div>NO DATA...</div>
                             <div>いまんとこお絵描き履歴は空っぽみたい。。</div>
-                            <div>お絵描きをうｐしてから出直してね。</div>
+                            <div>お絵描きうｐしてから出直してね。</div>
                         </div>
                     {:else}
                         {#snippet paginationControls()}
