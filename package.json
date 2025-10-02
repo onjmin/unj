@@ -69,6 +69,7 @@
 		"typescript": "^5.8.2"
 	},
 	"dependencies": {
+		"2ch-trip": "4.0.0",
 		"@erase2d/fabric": "1.1.7",
 		"@lucide/svelte": "0.541.0",
 		"@mdi/js": "7.4.47",

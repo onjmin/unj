@@ -1,3 +1,4 @@
+import { createTrip } from "2ch-trip";
 import baseX from "base-x";
 import { differenceInDays } from "date-fns";
 import { sha256 } from "js-sha256";
@@ -102,13 +103,8 @@ export const makeCcUserName = ({
 		const name = escapeUserName(userName.slice(0, index));
 		const cap = capList.get(sha256(tripKey).slice(0, 16));
 		if (cap) return `${cap} ★`;
-		let trip = "";
-		if (tripKey.startsWith("#############")) {
-			trip = "???";
-		} else {
-			trip = makeTrip(tripKey);
-		}
-		return `${name}◆${trip}`;
+		const trip = tripKey === "#" ? "fnkquv7jY2" : createTrip(tripKey);
+		return `${name}◆${trip.replace(/^.+◆/, "")}`;
 	}
 	return "";
 };

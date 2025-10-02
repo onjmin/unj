@@ -19,6 +19,9 @@ importers:
 
   .:
     dependencies:
+      2ch-trip:
+        specifier: 4.0.0
+        version: 4.0.0
       '@erase2d/fabric':
         specifier: 1.1.7
         version: 1.1.7(fabric@6.6.4)
@@ -262,6 +265,10 @@ importers:
         version: 5.8.2
 
 packages:
+
+  2ch-trip@4.0.0:
+    resolution: {integrity: sha512-4zM6DZR99aVNpZ0ACuQLcsEWoOr8MoeoJ64F/w2+Ipsi5kulr8VOHcAOAJWhqxr9+LhAM91Du27s8gF84DoEig==}
+    engines: {node: '>=14'}
 
   '@ampproject/remapping@2.3.0':
     resolution: {integrity: sha512-30iZtAPgz+LTIYoeivqYo853f02jBYSd5uGnGpkFV0M3xOt9aN73erkgYAmZU43x4VfqcnLxW9Kpg3R5LC4YYw==}
@@ -1999,6 +2006,10 @@ packages:
     resolution: {integrity: sha512-Q0n9HRi4m6JuGIV1eFlmvJB7ZEVxu93IrMyiMsGC0lrMJMWzRgx6WGquyfQgZVb31vhGgXnfmPNNXmxnOkRBrg==}
     engines: {node: '>= 0.8'}
 
+  encoding-japanese@2.0.0:
+    resolution: {integrity: sha512-++P0RhebUC8MJAwJOsT93dT+5oc5oPImp1HubZpAuCZ5kTLnhuuBhKHj2jJeO/Gj93idPBWmIuQ9QWMe5rX3pQ==}
+    engines: {node: '>=8.10.0'}
+
   engine.io-client@6.6.3:
     resolution: {integrity: sha512-T0iLjnyNWahNyv/lcjS2y4oE358tVS/SYQNxYXGAJ9/GLgH4VCvOQ/mhTjqU88mLZCQgiG8RIegFHYCdVC+j5w==}
 
@@ -3176,6 +3187,9 @@ packages:
     resolution: {integrity: sha512-CJ1QgKmNg3CwvAv/kOFmtnEN05f0D/cn9QntgNOQlQF9dgvVTHj3t+8JPdjqawCHk7V/KA+fbUqzZ9XWhcqPUg==}
     engines: {node: '>= 4.0.0'}
 
+  unix-crypt-td-js@1.1.4:
+    resolution: {integrity: sha512-8rMeVYWSIyccIJscb9NdCfZKSRBKYTeVnwmiRYT2ulE3qd1RaDQ0xQDP+rI3ccIWbhu/zuo5cgN8z73belNZgw==}
+
   unpipe@1.0.0:
     resolution: {integrity: sha512-pjy2bYhSsufwWlKwPc+l3cN7+wuJlK6uz0YdJEOlQDbl6jo/YlPi4mb8agUkVC8BF7V8NuzeyPNqRksA3hztKQ==}
     engines: {node: '>= 0.8'}
@@ -3415,6 +3429,11 @@ packages:
     resolution: {integrity: sha512-rAbqEGa8ovJy4pyBxZM70hg4pE6gDgaQ0Sl9M3enG3I0d6H4XSAM3GeNGLKnsBpuijUow064sf7ww1nutC5/3w==}
 
 snapshots:
+
+  2ch-trip@4.0.0:
+    dependencies:
+      encoding-japanese: 2.0.0
+      unix-crypt-td-js: 1.1.4
 
   '@ampproject/remapping@2.3.0':
     dependencies:
@@ -5792,6 +5811,8 @@ snapshots:
 
   encodeurl@2.0.0: {}
 
+  encoding-japanese@2.0.0: {}
+
   engine.io-client@6.6.3:
     dependencies:
       '@socket.io/component-emitter': 3.1.2
@@ -7230,6 +7251,8 @@ snapshots:
 
   universalify@0.2.0:
     optional: true
+
+  unix-crypt-td-js@1.1.4: {}
 
   unpipe@1.0.0: {}
 
