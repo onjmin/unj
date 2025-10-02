@@ -289,7 +289,7 @@ export default {
 				try {
 					const captionResponse = await env.AI.run(IMAGE_TO_TEXT_MODEL, {
 						prompt:
-							"A detailed description of the image content. If the image contains excrement, gore, or inappropriate material, describe it explicitly.",
+							"A detailed description of the image content, including objects, color, and context. If the image contains human or animal feces, excrement, or waste, describe it explicitly.",
 						image: Array.from(imageBuffer),
 					});
 					const captionText: string = captionResponse.description || "";

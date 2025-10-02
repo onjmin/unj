@@ -13,8 +13,8 @@ const VITE_CLOUDFLARE_UPLOAD_SECRET_PEPPER = decodeEnv(
 // 許可する最大ファイルサイズ (1MB)
 const MAX_FILE_SIZE = 1 * 1024 * 1024;
 
-// 画像の最大幅または高さ (512px)
-const MAX_DIMENSION = 512;
+// 画像の最大幅または高さ (1024px)
+const MAX_DIMENSION = 1024;
 
 export const getResizedBase64Image = async (
 	previewUrl: string,
