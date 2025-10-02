@@ -5,12 +5,15 @@ const VITE_CLOUDFLARE_URL = decodeEnv(import.meta.env.VITE_CLOUDFLARE_URL);
 const VITE_CLOUDFLARE_CLIENT_ID = decodeEnv(
 	import.meta.env.VITE_CLOUDFLARE_CLIENT_ID,
 );
+const VITE_CLOUDFLARE_UPLOAD_SECRET_PEPPER = decodeEnv(
+	import.meta.env.VITE_CLOUDFLARE_UPLOAD_SECRET_PEPPER,
+);
 
-// 許可する最大ファイルサイズ (2MB)
-const MAX_FILE_SIZE = 2 * 1024 * 1024;
+// 許可する最大ファイルサイズ (1MB)
+const MAX_FILE_SIZE = 1 * 1024 * 1024;
 
-// 画像の最大幅または高さ (1280px)
-const MAX_DIMENSION = 1280;
+// 画像の最大幅または高さ (512px)
+const MAX_DIMENSION = 512;
 
 export const getResizedBase64Image = async (
 	previewUrl: string,
@@ -79,13 +82,43 @@ export const getResizedBase64Image = async (
 	return base64Image;
 };
 
-export const uploadCloudflareR2 = (base64: string) => {
+export const uploadCloudflareR2 = async (base64: string) => {
 	const image = base64.replace(/^[^,]+;base64,/, "");
+	const combinedString = image + VITE_CLOUDFLARE_UPLOAD_SECRET_PEPPER;
+	const requestHash = await sha256(combinedString);
 	return fetch(VITE_CLOUDFLARE_URL, {
 		method: "POST",
 		headers: {
+			"Content-Type": "application/x-www-form-urlencoded",
 			Authorization: `Client-ID ${VITE_CLOUDFLARE_CLIENT_ID}`,
+			"X-Request-Hash": requestHash,
 		},
 		body: new URLSearchParams({ image }),
+	});
+};
+
+async function sha256(message: string): Promise<string> {
+	// UTF-8のバイト列に変換
+	const msgUint8 = new TextEncoder().encode(message);
+	// SHA-256でハッシュを計算
+	const hashBuffer = await crypto.subtle.digest("SHA-256", msgUint8);
+	// 16進数文字列に変換
+	const hashArray = Array.from(new Uint8Array(hashBuffer));
+	return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+export const deleteCloudflareR2 = (deleteId: string, deleteHash: string) => {
+	const params = new URLSearchParams({
+		delete_id: deleteId,
+		delete_hash: deleteHash,
+	});
+
+	const deleteUrl = `${VITE_CLOUDFLARE_URL}/delete?${params.toString()}`;
+
+	return fetch(deleteUrl, {
+		method: "DELETE",
+		headers: {
+			Authorization: `Client-ID ${VITE_CLOUDFLARE_CLIENT_ID}`,
+		},
 	});
 };

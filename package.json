@@ -13,7 +13,9 @@
 		"stg": "pnpm run clean && tsx workflow/copy.ts && cross-env STG_MODE=true vite build && pnpm run build && pnpm run obfuscate && tsx workflow/rename.ts && cross-env STG_MODE=true node dist/server.cjs",
 		"prod": "pnpm run clean && tsx workflow/copy.ts && vite build && pnpm run build && pnpm run obfuscate && tsx workflow/rename.ts",
 		"sync": "tsx workflow/sync.ts",
-		"start": "tsx src/server/index.ts"
+		"start": "tsx src/server/index.ts",
+		"cf": "cd ./uploader-worker && pnpm pnpx wrangler deploy",
+		"cft": "cd ./uploader-worker && pnpm pnpx wrangler tail uploader-worker"
 	},
 	"keywords": [],
 	"volta": {
