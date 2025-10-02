@@ -11,10 +11,9 @@ export { RateLimiter };
 import { ReplayProtector } from "./ReplayProtector";
 export { ReplayProtector };
 
-// ----------------------------------------------------------------------------
-// 1. 環境変数の型定義 (DOのバインドを追加)
-// ----------------------------------------------------------------------------
-
+// ============================================================================
+// 1. 環境変数の型定義
+// ============================================================================
 interface RateLimitResult {
 	allowed: boolean;
 	remaining: number;
@@ -28,17 +27,17 @@ interface ReplayCheckResult {
 interface Env {
 	BUCKET: R2Bucket;
 	PUBLIC_URL_BASE: string;
-	CLIENT_ID: string; // 申し訳程度の認証
-	UPLOAD_SECRET_PEPPER: string; // 正規のクライアントで発行されたハッシュの突合用
-	DELETE_SECRET_PEPPER: string;
-	RATE_LIMITER: DurableObjectNamespace;
-	REPLAY_PROTECTOR: DurableObjectNamespace; // リプレイ攻撃保護用
+	CLIENT_ID: string; // 簡易的なクライアント認証に使用
+	UPLOAD_SECRET_PEPPER: string; // アップロード用ハッシュ計算に追加する秘密文字列
+	DELETE_SECRET_PEPPER: string; // 削除トークン用ハッシュ計算に追加する秘密文字列
+	RATE_LIMITER: DurableObjectNamespace; // アップロード回数制限 (荒らし対策)
+	REPLAY_PROTECTOR: DurableObjectNamespace; // リプレイ攻撃対策 (同じリクエストの使い回し防止)
 	AI: Ai;
 }
 
-// 許可する最大ファイルサイズ (1MB)
+// 許可される最大ファイルサイズ (1MB)
 const MAX_FILE_SIZE = 1 * 1024 * 1024;
-// 許可するファイル形式
+// 許可されるファイル形式
 const ALLOWED_MIME_TYPES = [
 	"image/jpeg",
 	"image/png",
@@ -50,25 +49,28 @@ const CORS_HEADERS = {
 	"Access-Control-Allow-Origin": "*",
 };
 
-// (追加) SHA-256ハッシュ関数
-// Cloudflare Workers環境では SubtleCrypto が利用可能
+// ============================================================================
+// SHA-256ハッシュ関数
+// Cloudflare Workers では SubtleCrypto が利用可能
+// ============================================================================
 async function sha256(message: string): Promise<string> {
 	const msgUint8 = new TextEncoder().encode(message);
 	const hashBuffer = await crypto.subtle.digest("SHA-256", msgUint8);
 	const hashArray = Array.from(new Uint8Array(hashBuffer));
-	// ハッシュを16進数文字列に変換
+	// バイト列を16進文字列に変換
 	return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
-// ----------------------------------------------------------------------------
-// 2. Workerのメインロジック
-// ----------------------------------------------------------------------------
+// ============================================================================
+// 2. Workerのメイン処理
+// ============================================================================
 export default {
 	async fetch(
 		request: Request,
 		env: Env,
 		ctx: ExecutionContext,
 	): Promise<Response> {
+		// --- CORS プリフライトリクエスト ---
 		if (request.method === "OPTIONS") {
 			return new Response(null, {
 				status: 204,
@@ -77,15 +79,14 @@ export default {
 					"Access-Control-Allow-Methods": "POST, DELETE, OPTIONS",
 					"Access-Control-Allow-Headers":
 						"Authorization, Content-Type, X-Request-Hash",
-					"Access-Control-Max-Age": "86400", // 24 hours
+					"Access-Control-Max-Age": "86400", // 24時間キャッシュ
 				},
 			});
 		}
 
-		// 2. 認証チェック
+		// --- 共通: 認証チェック ---
 		const authHeader = request.headers.get("Authorization");
 		const expectedAuth = `Client-ID ${env.CLIENT_ID}`;
-
 		if (!authHeader || authHeader !== expectedAuth) {
 			return new Response("Unauthorized. Invalid Client-ID.", {
 				status: 401,
@@ -93,11 +94,9 @@ export default {
 			});
 		}
 
+		// Cloudflareを経由したことを確認 (CF-RAYヘッダー必須)
 		const cfRay = request.headers.get("CF-RAY");
-
-		// CF-RAY ヘッダーが存在しない場合は、リクエストがCloudflareを通過していない可能性が高い
 		if (!cfRay) {
-			// 偽装の可能性があるため、リクエストを拒否するか、不明なIPとして扱う
 			return new Response("Access Denied: Please use a proxied connection.", {
 				status: 403,
 				headers: CORS_HEADERS,
@@ -107,8 +106,11 @@ export default {
 		const url = new URL(request.url);
 		const path = url.pathname;
 
+		// ====================================================================
+		// アップロード処理 (POST)
+		// ====================================================================
 		if (request.method === "POST") {
-			// 2. 荒らし対策: Durable Objectsによるレート制限
+			// --- レート制限 (IP単位でDOによる制御) ---
 			const ip = request.headers.get("CF-Connecting-IP");
 			if (!ip) {
 				return new Response("IP address header not found.", {
@@ -117,19 +119,16 @@ export default {
 				});
 			}
 
-			// IPアドレスをIDとしてDOのStubを取得 (同じIPは同じDOインスタンスにルーティングされる)
 			const id = env.RATE_LIMITER.idFromName(ip);
 			const stub = env.RATE_LIMITER.get(id);
 
-			// DOの checkLimit メソッドを呼び出し、結果を取得
+			// DOの checkLimit 呼び出し
 			const response = await stub.fetch(request.url, {
 				method: "POST",
 				body: JSON.stringify({ action: "checkLimit" }),
 			});
 			const limitResult = (await response.json()) as RateLimitResult;
-
 			if (!limitResult.allowed) {
-				// 制限超過
 				return new Response(
 					"Too Many Requests. Please wait before uploading again.",
 					{
@@ -138,14 +137,13 @@ export default {
 					},
 				);
 			}
-			// 残り回数をログに表示 (開発用)
 			console.log(`IP: ${ip}, Remaining uploads: ${limitResult.remaining}`);
 
 			try {
+				// --- リクエストBody処理 ---
 				const bodyText = await request.text();
-				const formData = new URLSearchParams(bodyText); // FormDataではないが、このオブジェクト名で利用
+				const formData = new URLSearchParams(bodyText);
 				const base64Image = formData.get("image");
-
 				if (!base64Image) {
 					return new Response("Missing 'image' parameter in body.", {
 						status: 400,
@@ -153,19 +151,8 @@ export default {
 					});
 				}
 
-				// リプレイ攻撃対策はじまり
-
-				// フロント側で算出されたハッシュを取得
+				// --- リプレイ攻撃対策 ---
 				const requestHash = request.headers.get("X-Request-Hash");
-
-				if (!base64Image) {
-					return new Response("Missing 'image' parameter in body.", {
-						status: 400,
-						headers: CORS_HEADERS,
-					});
-				}
-
-				// 4. (追加) リプレイ攻撃対策ロジック
 				if (!requestHash) {
 					return new Response("Missing X-Request-Hash header.", {
 						status: 400,
@@ -173,11 +160,9 @@ export default {
 					});
 				}
 
-				// A. Worker側でのハッシュ計算 (入力 + SECRET_PEPPER)
+				// ハッシュの突合せ (フロント計算値 vs Worker計算値)
 				const combinedString = base64Image + env.UPLOAD_SECRET_PEPPER;
 				const calculatedHash = await sha256(combinedString);
-
-				// B. フロントからのハッシュと計算したハッシュの比較
 				if (calculatedHash !== requestHash) {
 					console.warn(
 						`Hash mismatch! Calculated: ${calculatedHash}, Received: ${requestHash}`,
@@ -191,10 +176,9 @@ export default {
 					);
 				}
 
-				// C. Durable Objectにハッシュを渡し、使用済みかチェック
+				// DOに登録し、ハッシュ再利用を防止
 				const protectorId = env.REPLAY_PROTECTOR.idFromName("global_protector");
 				const protectorStub = env.REPLAY_PROTECTOR.get(protectorId);
-
 				const checkResponse = await protectorStub.fetch(request.url, {
 					method: "POST",
 					body: JSON.stringify({
@@ -203,25 +187,20 @@ export default {
 					}),
 				});
 				const replayResult = (await checkResponse.json()) as ReplayCheckResult;
-
 				if (!replayResult.allowed) {
 					console.warn(`Replay detected! Hash: ${calculatedHash}`);
 					return new Response(
 						`Replay attack detected: ${replayResult.message}`,
 						{
-							status: 403, // Forbidden
+							status: 403,
 							headers: CORS_HEADERS,
 						},
 					);
 				}
 
-				// リプレイ攻撃対策おわり
-
-				// 5. Base64デコードとバイナリのバリデーション
+				// --- Base64デコード & バリデーション ---
 				const binaryData = atob(base64Image);
 				const len = binaryData.length;
-
-				// ファイルサイズのチェック
 				if (len > MAX_FILE_SIZE) {
 					return new Response(
 						`File size must be less than ${MAX_FILE_SIZE / 1024 / 1024}MB.`,
@@ -232,22 +211,19 @@ export default {
 					);
 				}
 
-				// ArrayBufferの作成
+				// バイナリへ変換
 				const imageBuffer: Uint8Array | null = (() => {
 					try {
 						const decoded = atob(base64Image);
-						const len = decoded.length;
-						const buffer = new Uint8Array(len);
-						for (let i = 0; i < len; i++) {
+						const buffer = new Uint8Array(decoded.length);
+						for (let i = 0; i < decoded.length; i++)
 							buffer[i] = decoded.charCodeAt(i);
-						}
 						return buffer;
 					} catch (e) {
 						console.error("Base64 decode failed:", e);
 						return null;
 					}
 				})();
-
 				if (!imageBuffer) {
 					return new Response("Invalid image data format.", {
 						status: 400,
@@ -255,11 +231,9 @@ export default {
 					});
 				}
 
-				// MIMEタイプを決定し、ファイル形式をチェック
+				// --- MIMEタイプ判定 (マジックバイト) ---
 				let mimeType = "application/octet-stream";
 				let fileExtension = "dat";
-
-				// 簡易的なマジックバイトチェック（JPEG, PNG, GIF, WebPに対応）
 				if (
 					imageBuffer[0] === 0xff &&
 					imageBuffer[1] === 0xd8 &&
@@ -270,8 +244,7 @@ export default {
 				} else if (
 					imageBuffer[0] === 0x89 &&
 					imageBuffer[1] === 0x50 &&
-					imageBuffer[2] === 0x4e &&
-					imageBuffer[3] === 0x47
+					imageBuffer[2] === 0x4e
 				) {
 					mimeType = "image/png";
 					fileExtension = "png";
@@ -295,52 +268,35 @@ export default {
 					mimeType = "image/webp";
 					fileExtension = "webp";
 				}
-
 				if (!ALLOWED_MIME_TYPES.includes(mimeType)) {
-					return new Response(
-						`Unsupported file type based on binary header: ${mimeType}.`,
-						{
-							status: 415,
-							headers: CORS_HEADERS,
-						},
-					);
+					return new Response(`Unsupported file type: ${mimeType}.`, {
+						status: 415,
+						headers: CORS_HEADERS,
+					});
 				}
 
-				// AIによる画像チェック
+				// --- AIによる画像モデレーション ---
 				const IMAGE_TO_TEXT_MODEL = "@cf/unum/uform-gen2-qwen-500m";
-				const MODERATION_THRESHOLD = 0.5; // スコアがこの値を超えたら拒否（モデルにより調整が必要）
 				const BANNED_KEYWORDS = [
 					"feces",
 					"gore",
 					"blood",
 					"vomit",
-					"body part",
 					"weapon",
-					"excrement",
-					"poop",
-					"dung",
 					"shit",
-					"graphic violence",
 					"self-harm",
 				];
-
 				try {
 					const captionResponse = await env.AI.run(IMAGE_TO_TEXT_MODEL, {
 						prompt:
-							"A detailed description of the image content, including objects, color, and context. If the image contains human or animal feces, excrement, or waste, describe it explicitly.",
+							"A detailed description of the image content. If the image contains excrement, gore, or inappropriate material, describe it explicitly.",
 						image: Array.from(imageBuffer),
 					});
-
 					const captionText: string = captionResponse.description || "";
-
-					const isBanned = BANNED_KEYWORDS.some((keyword) =>
-						captionText.toLowerCase().includes(keyword),
-					);
-
-					if (isBanned) {
-						console.warn(
-							`Moderation rejected by Image-to-Text check. Caption: ${captionText}`,
-						);
+					if (
+						BANNED_KEYWORDS.some((k) => captionText.toLowerCase().includes(k))
+					) {
+						console.warn(`Moderation rejected. Caption: ${captionText}`);
 						return new Response(
 							"Content policy violation: Inappropriate image detected.",
 							{
@@ -350,22 +306,19 @@ export default {
 						);
 					}
 				} catch (e) {
-					// AIサービスの障害、またはモデル非対応の場合
-					console.error(
-						"Workers AI Moderation Failed. Continuing upload due to fallback.",
-						e,
-					);
+					console.error("Workers AI Moderation Failed.", e);
 					return new Response(
 						"AI moderation service is temporarily unavailable.",
-						{ status: 503, headers: CORS_HEADERS },
+						{
+							status: 503,
+							headers: CORS_HEADERS,
+						},
 					);
 				}
 
-				// 6. R2への書き込み
+				// --- R2へ保存 ---
 				const key = `${crypto.randomUUID().slice(0, 8)}.${fileExtension}`;
 				const deleteToken = await sha256(key + env.DELETE_SECRET_PEPPER);
-
-				// put の第二引数を file.stream() から fileBuffer に変更
 				await env.BUCKET.put(key, imageBuffer, {
 					httpMetadata: {
 						contentType: mimeType,
@@ -373,24 +326,19 @@ export default {
 					},
 				});
 
-				// 7. 公開URLの返却
+				// --- 成功レスポンス返却 ---
 				const publicUrl = `${env.PUBLIC_URL_BASE}/${key}`;
-
 				return new Response(
 					JSON.stringify({
 						data: { link: publicUrl, delete_id: key, delete_hash: deleteToken },
 					}),
 					{
 						status: 200,
-						headers: {
-							"Content-Type": "application/json",
-							...CORS_HEADERS,
-						},
+						headers: { "Content-Type": "application/json", ...CORS_HEADERS },
 					},
 				);
 			} catch (e) {
 				console.error("Upload Error:", e);
-				// DOの呼び出しでエラーが発生した場合のリカバリは、Workersの実行環境の制約上難しいため、ここでは汎用エラーを返す
 				return new Response(
 					"An internal error occurred during file processing.",
 					{
@@ -399,21 +347,14 @@ export default {
 					},
 				);
 			}
-		} else if (request.method === "DELETE" && path === "/delete") {
-			// 1. 認証チェック (アップロード時と同様のClient-ID認証を使用)
-			const authHeader = request.headers.get("Authorization");
-			const expectedAuth = `Client-ID ${env.CLIENT_ID}`;
+		}
 
-			if (!authHeader || authHeader !== expectedAuth) {
-				return new Response("Unauthorized.", {
-					status: 401,
-					headers: CORS_HEADERS,
-				});
-			}
-
+		// ====================================================================
+		// 削除処理 (DELETE)
+		// ====================================================================
+		else if (request.method === "DELETE" && path === "/delete") {
 			const deleteId = url.searchParams.get("delete_id"); // ファイルID
 			const deleteHash = url.searchParams.get("delete_hash"); // 削除トークン
-
 			if (!deleteId || !deleteHash) {
 				return new Response("Missing 'id' or 'deletehash' parameter.", {
 					status: 400,
@@ -424,9 +365,7 @@ export default {
 			const calculatedDeleteHash = await sha256(
 				deleteId + env.DELETE_SECRET_PEPPER,
 			);
-
 			if (calculatedDeleteHash !== deleteHash) {
-				// ハッシュが一致しない場合、無効な削除リクエストとして拒否
 				return new Response("Forbidden. Invalid deletion token.", {
 					status: 403,
 					headers: CORS_HEADERS,
@@ -434,9 +373,7 @@ export default {
 			}
 
 			try {
-				// 4. R2からの削除実行
 				await env.BUCKET.delete(deleteId);
-
 				return new Response(
 					JSON.stringify({
 						message: `Object ${deleteId} deleted successfully.`,
@@ -455,7 +392,9 @@ export default {
 			}
 		}
 
-		// ... (POST 以外のリクエストに対するデフォルトの応答)
+		// ====================================================================
+		// その他のリクエスト
+		// ====================================================================
 		return new Response("Not Found", { status: 404, headers: CORS_HEADERS });
 	},
 };
