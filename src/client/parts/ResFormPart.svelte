@@ -17,7 +17,7 @@
   import { UnjStorage } from "../mylib/unj-storage.js";
   import AvatarPart from "./AvatarPart.svelte";
   import ColorWheelPart from "./ColorWheelPart.svelte";
-  import ImageUploader from "./ImageUploader.svelte";
+  import ImageUploaderPart from "./ImageUploaderPart.svelte";
   import OekakiPart from "./OekakiPart.svelte";
   import UrlTemplatePart from "./UrlTemplatePart.svelte";
 
@@ -246,7 +246,7 @@
 
 {#key contentType}
   {#if contentType === Enum.Image}
-    <ImageUploader bind:previewUrl bind:contentUrl />
+    <ImageUploaderPart bind:previewUrl bind:contentUrl />
   {:else if contentType === Enum.Oekaki}
     {#if oekaki}
       <OekakiPart
