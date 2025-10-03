@@ -38,16 +38,26 @@
     activeLayer = layers[index];
   };
 
-  // レイヤーロックのトグル
-  const toggleLock = (layer: oekaki.LayeredCanvas) => {
-    layer.locked = !layer.locked;
+  // レイヤー表示のトグル
+  const toggleVisibility = (layer: oekaki.LayeredCanvas) => {
+    layer.visible = !layer.visible;
     // UIを更新するため、layers配列を再代入
     layers = [...layers];
   };
 
-  // レイヤー表示のトグル
-  const toggleVisibility = (layer: oekaki.LayeredCanvas) => {
-    layer.visible = !layer.visible;
+  // レイヤーロックのトグル
+  const deleteLayer = (layer: oekaki.LayeredCanvas) => {
+    if (
+      layer.locked ||
+      !activeLayer ||
+      (activeLayer.used && !confirm(`${activeLayer.name}を削除しますか？`))
+    )
+      return;
+    activeLayer.delete();
+    const { prev, next } = activeLayer;
+    if (next) activeLayer = next;
+    else if (prev) activeLayer = prev;
+
     // UIを更新するため、layers配列を再代入
     layers = [...layers];
   };
@@ -130,18 +140,18 @@
                 role="button"
                 onkeydown={() => {}}
                 class="material-icons text-sm cursor-pointer"
-                onclick={() => toggleLock(layer)}
+                onclick={() => toggleVisibility(layer)}
               >
-                {layer.locked ? "lock" : "lock_open"}
+                {layer.visible ? "visibility" : "visibility_off"}
               </span>
               <span
                 tabindex="0"
                 role="button"
                 onkeydown={() => {}}
                 class="material-icons text-sm cursor-pointer"
-                onclick={() => toggleVisibility(layer)}
+                onclick={() => deleteLayer(layer)}
               >
-                {layer.visible ? "visibility" : "visibility_off"}
+                delete
               </span>
               <span>{layer.opacity}%</span>
             </div>

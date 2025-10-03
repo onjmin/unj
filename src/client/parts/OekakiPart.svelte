@@ -108,10 +108,21 @@
       case "c": // クリップボードにコピー
         {
           e.preventDefault();
+          let visible = false;
+          const bgLayer = oekaki
+            .getLayers()
+            .find((v) => v.name.includes("背景"));
+          if (bgLayer) {
+            visible = bgLayer.visible;
+            bgLayer.visible = false;
+          }
           const blob = await new Promise<Blob | null>((resolve) =>
-            activeLayer?.canvas.toBlob(resolve),
+            oekaki.render().toBlob(resolve),
           );
           if (!blob) return;
+          if (bgLayer) {
+            bgLayer.visible = visible;
+          }
           const item = new ClipboardItem({
             [blob.type]: blob,
             "text/plain": new Blob([MAGIC_STRING], { type: "text/plain" }),
@@ -617,239 +628,241 @@
   };
 </script>
 
-<div class="top-tools-wrapper">
-  <span class="size">{opacity}%</span>
-  <IconButton
-    class="material-icons"
-    onclick={() => {
-      layerVisible = !layerVisible;
-    }}>{layerVisible ? "visibility" : "visibility_off"}</IconButton
-  >
-  <Textfield
-    disabled={layerNameDisabled}
-    label="レイヤー名"
-    bind:value={layerName}
-    input$maxlength={32}
-  ></Textfield>
-  <IconButton
-    class="material-icons"
-    onclick={() => {
-      layerNameDisabled = !layerNameDisabled;
-    }}>{layerNameDisabled ? "edit" : "check"}</IconButton
-  >
-  <IconButton
-    class="material-icons"
-    onclick={() => {
-      layerLocked = !layerLocked;
-    }}
-  >
-    {layerLocked ? "lock" : "lock_open"}
-  </IconButton>
-  <IconButton
-    class="material-icons"
-    onclick={() => {
-      if (
-        layerLocked ||
-        !activeLayer ||
-        (activeLayer.used && !confirm(`${activeLayer.name}を削除しますか？`))
-      )
-        return;
-      activeLayer.delete();
-      const { prev, next } = activeLayer;
-      if (next) activeLayer = next;
-      else if (prev) activeLayer = prev;
-      else init();
-    }}>delete</IconButton
-  >
-  <IconButton
-    class="material-icons"
-    onclick={() => {
-      if (
-        layerLocked ||
-        !activeLayer ||
-        !confirm("全レイヤーを削除しますか？") ||
-        !confirm("一度消すと二度と復元できません。本当に消しますか？") ||
-        !confirm("後悔しませんね？")
-      )
-        return;
-      deleteSaveData().then(init);
-    }}>delete_forever</IconButton
-  >
-
-  <Slider
-    min={0}
-    max={100}
-    value={opacity}
-    onValueChange={(e) => (opacity = e.value)}
-    markers={[25, 50, 75]}
-  />
-  <br />
-</div>
-
-<div class={isGrid ? "unj-canvas-grid" : ""} bind:this={oekakiWrapper}></div>
-
-<div class="bottom-tools-wrapper">
-  <SegmentedButton
-    segments={choices}
-    singleSelect
-    bind:selected={choiced}
-    key={(segment: Tool) => segment.label}
-  >
-    {#snippet segment(segment: Tool)}
-      <Segment {segment} title={segment.label}>
-        <Icon
-          tag="svg"
-          style="width: 1em; height: auto; pointer-events: none;"
-          viewBox="0 0 24 24"
-        >
-          <path fill="currentColor" d={segment.icon} />
-        </Icon>
-      </Segment>
-    {/snippet}
-  </SegmentedButton>
-
-  <SegmentedButton
-    segments={toggles}
-    bind:selected={toggle}
-    key={(segment: Tool) => segment.label}
-  >
-    {#snippet segment(segment: Tool)}
-      <Segment {segment} title={segment.label}>
-        <Icon
-          tag="svg"
-          style="width: 1em; height: auto; pointer-events: none;"
-          viewBox="0 0 24 24"
-        >
-          <path fill="currentColor" d={segment.icon} />
-        </Icon>
-      </Segment>
-    {/snippet}
-  </SegmentedButton>
-
-  <SegmentedButton segments={actions} key={(segment: Tool) => segment.label}>
-    {#snippet segment(segment: Tool)}
-      <Segment
-        {segment}
-        title={segment.label}
-        onclick={preventDefault(() => doAction(segment))}
-      >
-        <Icon
-          tag="svg"
-          style="width: 1em; height: auto; pointer-events: none;"
-          viewBox="0 0 24 24"
-        >
-          <path fill="currentColor" d={segment.icon} />
-        </Icon>
-      </Segment>
-    {/snippet}
-  </SegmentedButton>
-</div>
-
-{#snippet palette()}
-  <span class="color-picker-wrapper">
-    <ColorPicker label="" bind:hex={$color} isAlpha={false} />
-  </span>
-  <input type="color" bind:value={$color} />
-  {#each recent as _color}
-    <button
-      aria-label="Select color"
-      class="palette"
-      style="background-color:{_color};"
+<div class="select-none">
+  <div class="top-tools-wrapper">
+    <span class="size">{opacity}%</span>
+    <IconButton
+      class="material-icons"
       onclick={() => {
-        $color = _color;
+        layerVisible = !layerVisible;
+      }}>{layerVisible ? "visibility" : "visibility_off"}</IconButton
+    >
+    <Textfield
+      disabled={layerNameDisabled}
+      label="レイヤー名"
+      bind:value={layerName}
+      input$maxlength={32}
+    ></Textfield>
+    <IconButton
+      class="material-icons"
+      onclick={() => {
+        layerNameDisabled = !layerNameDisabled;
+      }}>{layerNameDisabled ? "edit" : "check"}</IconButton
+    >
+    <IconButton
+      class="material-icons"
+      onclick={() => {
+        layerLocked = !layerLocked;
       }}
-    ></button>
-  {/each}
-{/snippet}
+    >
+      {layerLocked ? "lock" : "lock_open"}
+    </IconButton>
+    <IconButton
+      class="material-icons"
+      onclick={() => {
+        if (
+          layerLocked ||
+          !activeLayer ||
+          (activeLayer.used && !confirm(`${activeLayer.name}を削除しますか？`))
+        )
+          return;
+        activeLayer.delete();
+        const { prev, next } = activeLayer;
+        if (next) activeLayer = next;
+        else if (prev) activeLayer = prev;
+        else init();
+      }}>delete</IconButton
+    >
+    <IconButton
+      class="material-icons"
+      onclick={() => {
+        if (
+          layerLocked ||
+          !activeLayer ||
+          !confirm("全レイヤーを削除しますか？") ||
+          !confirm("一度消すと二度と復元できません。本当に消しますか？") ||
+          !confirm("後悔しませんね？")
+        )
+          return;
+        deleteSaveData().then(init);
+      }}>delete_forever</IconButton
+    >
 
-<div class="bottom-tools-wrapper-sub w-full">
-  {#if choiced.label === tool.brush.label}
-    <span class="size">{brushSize}px</span>
-    {@render palette()}
     <Slider
-      min={1}
-      max={64}
-      value={brushSize}
-      onValueChange={(e) => (brushSize = e.value)}
-      markers={[16, 32, 48]}
+      min={0}
+      max={100}
+      value={opacity}
+      onValueChange={(e) => (opacity = e.value)}
+      markers={[25, 50, 75]}
     />
-  {:else if isGrid}
-    <span class="size">{dotPenScale}倍</span>
-    {@render palette()}
-    <Slider
-      min={1}
-      max={8}
-      value={dotPenScale}
-      onValueChange={(e) => (dotPenScale = e.value)}
-      markers={[2, 4, 6]}
-    />
-  {:else if choiced.label === tool.pen.label}
-    <span class="size">{penSize}px</span>
-    {@render palette()}
-    <Slider
-      min={1}
-      max={64}
-      value={penSize}
-      onValueChange={(e) => (penSize = e.value)}
-      markers={[16, 32, 48]}
-    />
-  {:else if choiced.label === tool.eraser.label}
-    <span class="size">{eraserSize}px</span>
-    {@render palette()}
-    <Slider
-      min={1}
-      max={64}
-      value={eraserSize}
-      onValueChange={(e) => (eraserSize = e.value)}
-      markers={[16, 32, 48]}
-    />
-  {:else if choiced.label === tool.dropper.label || choiced.label === tool.fill.label}
-    <span class="size"></span>
-    {@render palette()}
-  {/if}
-</div>
+    <br />
+  </div>
 
-<div class="manual-wrapper">
-  <Wrapper rich>
-    <Button touch>
-      <Label>説明書</Label>
-    </Button>
-    <Tooltip persistent>
-      <Title>操作方法</Title>
-      <Content class="scrollable-manual-content">
-        <p>右クリック：カラーピッカー</p>
-        <p>Ctrl + 1：ブラシ</p>
-        <p>Ctrl + 2：ペン</p>
-        <p>Ctrl + 3：消しゴム</p>
-        <p>Ctrl + 4：カラーピッカー</p>
-        <p>Ctrl + 5：塗りつぶし</p>
-        <p>Ctrl + 6：ハンドツール</p>
-        <p>Ctrl + E：常に消しゴム</p>
-        <p>Ctrl + F：左右反転</p>
-        <p>Ctrl + G：グリッド表示</p>
-        <p>Ctrl + Z：戻す</p>
-        <p>Ctrl + Shift + Z ：やり直す</p>
-        <p>Ctrl + S：保存</p>
-        <p>Ctrl + C：コピー</p>
-        <p>Ctrl + V：貼り付け</p>
-      </Content>
-    </Tooltip>
-  </Wrapper>
-  <Wrapper rich>
-    <Button touch>
-      <Label>説明書2</Label>
-    </Button>
-    <Tooltip persistent>
-      <Title>上級者向けの裏技</Title>
-      <Content class="scrollable-manual-content">
-        <p>【グリッド表示 + ペン】</p>
-        <p>ドット絵が描ける</p>
-        <br />
-        <p>【常に消しゴム + 塗りつぶし】</p>
-        <p>透明に塗りつぶせる</p>
-      </Content>
-    </Tooltip>
-  </Wrapper>
+  <div class={isGrid ? "unj-canvas-grid" : ""} bind:this={oekakiWrapper}></div>
+
+  <div class="bottom-tools-wrapper">
+    <SegmentedButton
+      segments={choices}
+      singleSelect
+      bind:selected={choiced}
+      key={(segment: Tool) => segment.label}
+    >
+      {#snippet segment(segment: Tool)}
+        <Segment {segment} title={segment.label}>
+          <Icon
+            tag="svg"
+            style="width: 1em; height: auto; pointer-events: none;"
+            viewBox="0 0 24 24"
+          >
+            <path fill="currentColor" d={segment.icon} />
+          </Icon>
+        </Segment>
+      {/snippet}
+    </SegmentedButton>
+
+    <SegmentedButton
+      segments={toggles}
+      bind:selected={toggle}
+      key={(segment: Tool) => segment.label}
+    >
+      {#snippet segment(segment: Tool)}
+        <Segment {segment} title={segment.label}>
+          <Icon
+            tag="svg"
+            style="width: 1em; height: auto; pointer-events: none;"
+            viewBox="0 0 24 24"
+          >
+            <path fill="currentColor" d={segment.icon} />
+          </Icon>
+        </Segment>
+      {/snippet}
+    </SegmentedButton>
+
+    <SegmentedButton segments={actions} key={(segment: Tool) => segment.label}>
+      {#snippet segment(segment: Tool)}
+        <Segment
+          {segment}
+          title={segment.label}
+          onclick={preventDefault(() => doAction(segment))}
+        >
+          <Icon
+            tag="svg"
+            style="width: 1em; height: auto; pointer-events: none;"
+            viewBox="0 0 24 24"
+          >
+            <path fill="currentColor" d={segment.icon} />
+          </Icon>
+        </Segment>
+      {/snippet}
+    </SegmentedButton>
+  </div>
+
+  {#snippet palette()}
+    <span class="color-picker-wrapper">
+      <ColorPicker label="" bind:hex={$color} isAlpha={false} />
+    </span>
+    <input type="color" bind:value={$color} />
+    {#each recent as _color}
+      <button
+        aria-label="Select color"
+        class="palette"
+        style="background-color:{_color};"
+        onclick={() => {
+          $color = _color;
+        }}
+      ></button>
+    {/each}
+  {/snippet}
+
+  <div class="bottom-tools-wrapper-sub w-full">
+    {#if choiced.label === tool.brush.label}
+      <span class="size">{brushSize}px</span>
+      {@render palette()}
+      <Slider
+        min={1}
+        max={64}
+        value={brushSize}
+        onValueChange={(e) => (brushSize = e.value)}
+        markers={[16, 32, 48]}
+      />
+    {:else if isGrid}
+      <span class="size">{dotPenScale}倍</span>
+      {@render palette()}
+      <Slider
+        min={1}
+        max={8}
+        value={dotPenScale}
+        onValueChange={(e) => (dotPenScale = e.value)}
+        markers={[2, 4, 6]}
+      />
+    {:else if choiced.label === tool.pen.label}
+      <span class="size">{penSize}px</span>
+      {@render palette()}
+      <Slider
+        min={1}
+        max={64}
+        value={penSize}
+        onValueChange={(e) => (penSize = e.value)}
+        markers={[16, 32, 48]}
+      />
+    {:else if choiced.label === tool.eraser.label}
+      <span class="size">{eraserSize}px</span>
+      {@render palette()}
+      <Slider
+        min={1}
+        max={64}
+        value={eraserSize}
+        onValueChange={(e) => (eraserSize = e.value)}
+        markers={[16, 32, 48]}
+      />
+    {:else if choiced.label === tool.dropper.label || choiced.label === tool.fill.label}
+      <span class="size"></span>
+      {@render palette()}
+    {/if}
+  </div>
+
+  <div class="manual-wrapper">
+    <Wrapper rich>
+      <Button touch>
+        <Label>説明書</Label>
+      </Button>
+      <Tooltip persistent>
+        <Title>操作方法</Title>
+        <Content class="scrollable-manual-content">
+          <p>右クリック：カラーピッカー</p>
+          <p>Ctrl + 1：ブラシ</p>
+          <p>Ctrl + 2：ペン</p>
+          <p>Ctrl + 3：消しゴム</p>
+          <p>Ctrl + 4：カラーピッカー</p>
+          <p>Ctrl + 5：塗りつぶし</p>
+          <p>Ctrl + 6：ハンドツール</p>
+          <p>Ctrl + E：常に消しゴム</p>
+          <p>Ctrl + F：左右反転</p>
+          <p>Ctrl + G：グリッド表示</p>
+          <p>Ctrl + Z：戻す</p>
+          <p>Ctrl + Shift + Z ：やり直す</p>
+          <p>Ctrl + S：保存</p>
+          <p>Ctrl + C：コピー</p>
+          <p>Ctrl + V：貼り付け</p>
+        </Content>
+      </Tooltip>
+    </Wrapper>
+    <Wrapper rich>
+      <Button touch>
+        <Label>説明書2</Label>
+      </Button>
+      <Tooltip persistent>
+        <Title>上級者向けの裏技</Title>
+        <Content class="scrollable-manual-content">
+          <p>【グリッド表示 + ペン】</p>
+          <p>ドット絵が描ける</p>
+          <br />
+          <p>【常に消しゴム + 塗りつぶし】</p>
+          <p>透明に塗りつぶせる</p>
+        </Content>
+      </Tooltip>
+    </Wrapper>
+  </div>
 </div>
 
 <style>
