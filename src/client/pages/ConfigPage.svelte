@@ -20,7 +20,7 @@
     import { Howler } from "howler";
     import { pokemonMap } from "../../common/pokemon.js";
     import type { Board } from "../../common/request/board.js";
-    import oekaki from "../../common/request/whitelist/oekaki.js";
+    import oekakiWhitelist from "../../common/request/whitelist/oekaki.js";
     import { findIn } from "../../common/request/whitelist/site-info.js";
     import {
         type UploadResponse,
@@ -168,7 +168,7 @@
                 return new URL(obj.link);
             } catch (err) {}
         })();
-        const siteInfo = url ? findIn(oekaki, url.hostname) : null;
+        const siteInfo = url ? findIn(oekakiWhitelist, url.hostname) : null;
         switch (siteInfo?.id) {
             case 102401:
                 return deleteImgur(obj.deletehash);

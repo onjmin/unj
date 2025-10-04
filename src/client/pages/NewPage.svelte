@@ -257,7 +257,9 @@
                     uploadHistory.set(arr);
                 });
             } catch (error) {
-                alert("画像のうｐに失敗しました");
+                const errorMessage =
+                    error instanceof Error ? error.message : "不明なエラー";
+                alert(`画像のうｐに失敗しました。${errorMessage}`);
                 emitting = false;
                 return;
             }

@@ -15,6 +15,7 @@ import {
 	contentTypesBitmaskCache,
 	ninja,
 	ninjaScoreCache,
+	ownerIpCache,
 	psCache,
 	sageCache,
 	subbedCache,
@@ -59,6 +60,7 @@ type ParsedResult = {
 type Ref = {
 	userId: number;
 	num: number;
+	ip: string;
 	isOwner: boolean;
 	ccUserId: string;
 };
@@ -103,6 +105,7 @@ export const parseCommand = async ({
 				arr.push({
 					userId,
 					num: 1,
+					ip: ownerIpCache.get(threadId) ?? "0.0.0.0",
 					isOwner: true,
 					ccUserId: ccUserIdCache.get(threadId) ?? "",
 				});
@@ -110,7 +113,7 @@ export const parseCommand = async ({
 			const without1 = anka.filter((v) => v !== 1);
 			if (without1.length) {
 				const { rows } = await poolClient.query(
-					`SELECT num,is_owner,user_id,cc_user_id FROM res WHERE thread_id = $1 AND num IN (${without1.map((v, i) => `$${i + 2}`).join(",")})`,
+					`SELECT num,ip,is_owner,user_id,cc_user_id FROM res WHERE thread_id = $1 AND num IN (${without1.map((v, i) => `$${i + 2}`).join(",")})`,
 					[threadId, ...without1],
 				);
 				for (const record of rows) {
@@ -120,6 +123,7 @@ export const parseCommand = async ({
 					arr.push({
 						userId,
 						num: record.num,
+						ip: record.ip,
 						isOwner: record.is_owner,
 						ccUserId: record.cc_user_id,
 					});
@@ -367,11 +371,12 @@ export const parseCommand = async ({
 						if (!refArray || !refArray.length) break;
 						const ref = refArray[0];
 						let userIP1: string | null = userIPCache.get(ref.userId) ?? null;
+						if (!userIP1) userIP1 = ref.ip;
 						if (!userIP1) userIP1 = await fetchUserIP(ref.userId, poolClient);
-						if (!userIP1) break;
+						if (!userIP1 || userIP1 === "0.0.0.0") break;
 						let userIP2: string | null = userIPCache.get(userId) ?? null;
 						if (!userIP2) userIP2 = await fetchUserIP(userId, poolClient);
-						if (!userIP2) break;
+						if (!userIP2 || userIP2 === "0.0.0.0") break;
 						const tests = [];
 						tests.push(userIP1 === userIP2 ? "〇IP同一" : "×IP別人");
 						tests.push(ref.userId === userId ? "〇UID同一" : "×UID別人");

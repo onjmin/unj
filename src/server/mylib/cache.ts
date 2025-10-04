@@ -35,6 +35,7 @@ export const goodCountCache: Map<number, number> = new Map();
 export const badCountCache: Map<number, number> = new Map();
 // スレ主
 export const ownerIdCache: Map<number, number> = new Map();
+export const ownerIpCache: Map<number, string> = new Map();
 // アク禁＆副主
 export const bannedCache: Map<number, Set<number>> = new Map();
 export const bannedIPCache: Map<number, Set<string>> = new Map();

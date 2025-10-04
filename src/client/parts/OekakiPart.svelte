@@ -24,6 +24,8 @@
   import Textfield from "@smui/textfield";
   import Tooltip, { Wrapper, Title, Content } from "@smui/tooltip";
   import ColorPicker from "svelte-awesome-color-picker";
+  import oekakiWhitelist from "../../common/request/whitelist/oekaki.js";
+  import { findIn } from "../../common/request/whitelist/site-info.js";
   import { ObjectStorage } from "../mylib/object-storage.js";
   import { color } from "../mylib/store.js";
   import * as unjStorage from "../mylib/unj-storage.js";
@@ -267,7 +269,22 @@
     if (oekakiCollab === "") {
       init();
     } else {
-      const imgUrl = oekakiCollab;
+      let imgUrl = "";
+      const url = (() => {
+        try {
+          return new URL(oekakiCollab);
+        } catch (err) {}
+      })();
+      if (!url) return;
+      const siteInfo = findIn(oekakiWhitelist, url.hostname);
+      switch (siteInfo?.id) {
+        case 102402:
+          imgUrl = url.href;
+          break;
+        default:
+          imgUrl = corsKiller(url.href);
+          break;
+      }
       deleteSaveData().then(init);
       clearTimeout(conflictId);
       conflictId = setTimeout(async () => {
@@ -276,7 +293,7 @@
           const image = new Image();
           image.onload = () => resolve(image);
           image.crossOrigin = "anonymous";
-          image.src = corsKiller(imgUrl);
+          image.src = imgUrl;
         });
         if (_conflictId !== conflictId || !activeLayer) return;
         activeLayer.name = "コラボ";

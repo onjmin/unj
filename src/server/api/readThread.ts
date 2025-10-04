@@ -26,6 +26,7 @@ import {
 	isDeleted,
 	lolCountCache,
 	ownerIdCache,
+	ownerIpCache,
 	psCache,
 	resCountCache,
 	resLimitCache,
@@ -109,6 +110,7 @@ export default ({ socket }: { socket: Socket }) => {
 				badCountCache.set(threadId, threadRecord.bad_count);
 				// スレ主
 				ownerIdCache.set(threadId, threadRecord.user_id);
+				ownerIpCache.set(threadId, threadRecord.ip);
 				// アク禁＆副主
 				bannedCache.set(threadId, new Set());
 				bannedIPCache.set(threadId, new Set());

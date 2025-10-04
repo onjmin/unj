@@ -13,7 +13,7 @@
 | [Imgur API](https://apidocs.imgur.com/) | お絵描き投稿用 | 新規発行停止中 |
 | [Blogger API](https://developers.google.com/blogger/docs/3.0/using) | ニュース記事用 | - |
 | [Firebase](https://firebase.google.com/) | kome機能 | - |
-| [Cloudflare Workers](https://www.cloudflare.com/ja-jp/developer-platform/products/workers/) | 画像アップローダー用 | - |
+| [Cloudflare R2](https://www.cloudflare.com/ja-jp/developer-platform/products/r2/) | 画像アップローダー用 | - |
 
 ※最低限、NetlifyとKoyebとNeonがあれば動きます。
 
@@ -50,3 +50,23 @@
 ## [Firebase]
 
 1. Realtime Databaseに[ルール](./firebase.json)を設定する
+
+## [Cloudflare R2]
+
+1. バケットを作る
+1. CORS Policyを設定する
+
+```json
+[
+  {
+    "AllowedOrigins": ["*"],
+    "AllowedMethods": ["GET", "HEAD"]
+  }
+]
+```
+
+## [Cloudflare Workers]
+
+1. `wrangler.toml.example`を複製して`wrangler.toml`にリネーム
+1. 埋めるべき箇所を埋める
+1. `pnpm run cf`を実行する
