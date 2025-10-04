@@ -248,6 +248,7 @@
                 const res = await uploadCloudflareR2(
                     await getResizedBase64Image(previewUrl),
                 );
+                if (res.status !== 200) throw new Error(await res.text());
                 const json = await res.json();
                 const { link, delete_id, delete_hash } = json.data;
                 contentUrl = link;
