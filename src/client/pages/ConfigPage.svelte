@@ -132,25 +132,25 @@
         });
     });
 
+    const itemsPerPage: number = 8; // 1ページあたりの表示枚数
+
     // 画像履歴ページネーション用
 
     let currentPageOfUploadList: number = $state(1); // 現在のページ
-    const itemsPerPageOfUploadList: number = 10; // 1ページあたりの表示枚数
     const totalPagesOfUploadList = $derived(
-        Math.ceil(uploadList.length / itemsPerPageOfUploadList),
+        Math.ceil(uploadList.length / itemsPerPage),
     );
     const reversedUploadList = $derived([...uploadList].reverse());
     const paginatedUploadList = $derived(
         reversedUploadList.slice(
-            (currentPageOfUploadList - 1) * itemsPerPageOfUploadList,
-            currentPageOfUploadList * itemsPerPageOfUploadList,
+            (currentPageOfUploadList - 1) * itemsPerPage,
+            currentPageOfUploadList * itemsPerPage,
         ),
     );
 
     // お絵描き履歴ページネーション用
 
     let currentPage: number = $state(1); // 現在のページ
-    const itemsPerPage: number = 10; // 1ページあたりの表示枚数
     const totalPages = $derived(Math.ceil(imgurList.length / itemsPerPage));
     const reversedImgurList = $derived([...imgurList].reverse());
     const paginatedImgurList = $derived(

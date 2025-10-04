@@ -120,11 +120,6 @@ registerEmergencyDenyAll(router, io, online);
 registerThreadOwner(router);
 registerThreadRes(router, io);
 registerUserNinja(router);
-// TODO: 自動BANの基準を変更
-// TODO: 一律Socket新規発行停止
-// TODO: 一律スレ立て禁止
-// TODO: 一律低速レスモード
-// TODO: 一律content_types_bitmask規制
 app.use("/api/admin", router);
 
 if (DEV_MODE || STG_MODE) {

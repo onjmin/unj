@@ -1,4 +1,3 @@
-import { sha256 } from "js-sha256";
 import type { Socket } from "socket.io";
 import { genNonce } from "./anti-debug.js";
 import auth from "./auth.js";

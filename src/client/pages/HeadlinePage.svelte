@@ -293,7 +293,7 @@
 <MainPart {board}>
     <div class="p-4 sm:p-6 bg-white border-b border-gray-200">
         <div
-            class="w-[490px] h-[120px] max-w-full mx-auto mb-4 border border-gray-300 flex items-center justify-center overflow-hidden"
+            class="w-[490px] max-w-full mx-auto mb-4 border border-gray-300 flex items-center justify-center"
         >
             {#if board.banner}
                 <img

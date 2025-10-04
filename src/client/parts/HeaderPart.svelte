@@ -33,13 +33,17 @@
     if (!board) return;
     pathname1 = pathname().split("/")[1] ?? "";
     pathname2 = pathname().split("/")[2] ?? "";
+    document
+      .querySelector("head > link[rel='icon']")
+      ?.setAttribute(
+        "href",
+        board.favicon || makePathname("/static/favicons/loze.png"),
+      );
   });
 </script>
 
 <svelte:head>
   <title>{title}</title>
-  <!-- TODO:通知時にアイコンを切り替える -->
-  <!-- <link rel="icon" href="static/favicons/favicon.ico" /> -->
 </svelte:head>
 
 <header class="unj-header-part w-full bg-gray-800 text-gray-200 shadow-md">
@@ -72,7 +76,7 @@
       <h1 class="text-xl font-bold inline-flex items-center space-x-2">
         <span>{title}</span>
         <img
-          src={`${import.meta.env.BASE_URL}static/favicons/loze.png`}
+          src={board.favicon || makePathname("/static/favicons/loze.png")}
           alt="Logo"
           class="h-8"
         />
