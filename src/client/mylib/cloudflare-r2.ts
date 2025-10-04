@@ -15,9 +15,6 @@ export const isAvailableCloudflareR2 = VITE_CLOUDFLARE_URL !== "";
 // 許可する最大ファイルサイズ (1MB)
 const MAX_FILE_SIZE = 1 * 1024 * 1024;
 
-// 画像の最大幅または高さ (1024px)
-const MAX_DIMENSION = 1024;
-
 export const getResizedBase64Image = async (
 	previewUrl: string,
 ): Promise<string> => {
@@ -38,17 +35,26 @@ export const getResizedBase64Image = async (
 	let newHeight = originalHeight;
 	let doResize = false;
 
+	const blob = await fetch(previewUrl).then((r) => r.blob());
+	const isPngLike = [
+		"image/png", // PNG (透過、可逆圧縮)
+		"image/gif", // GIF (透過、可逆圧縮、色数限定)
+		"image/webp", // WebP (可逆/非可逆があるが、PNGライクに処理)
+	].includes(blob.type);
+
+	const max = isPngLike ? 1024 : 512;
+
 	// 2. リサイズが必要かどうかの判定と新しいサイズ計算
-	if (originalWidth > MAX_DIMENSION || originalHeight > MAX_DIMENSION) {
+	if (originalWidth > max || originalHeight > max) {
 		doResize = true;
 
 		// アスペクト比を維持しつつ、長い辺をMAX_DIMENSIONに合わせる
 		if (originalWidth > originalHeight) {
-			newHeight = Math.round(originalHeight * (MAX_DIMENSION / originalWidth));
-			newWidth = MAX_DIMENSION;
+			newHeight = Math.round(originalHeight * (max / originalWidth));
+			newWidth = max;
 		} else {
-			newWidth = Math.round(originalWidth * (MAX_DIMENSION / originalHeight));
-			newHeight = MAX_DIMENSION;
+			newWidth = Math.round(originalWidth * (max / originalHeight));
+			newHeight = max;
 		}
 	}
 
@@ -63,8 +69,9 @@ export const getResizedBase64Image = async (
 	ctx.drawImage(img, 0, 0, newWidth, newHeight);
 
 	// 4. Base64の取得とファイルサイズチェック
-	// PNG形式でBase64データURLを取得 (品質指定は不要)
-	const dataUrl = canvas.toDataURL("image/png"); // <-- PNGに変更
+	const dataUrl = isPngLike
+		? canvas.toDataURL("image/png")
+		: canvas.toDataURL("image/jpeg", 0.8);
 
 	// Base64プレフィックス 'data:image/png;base64,' を除去
 	const base64Image = dataUrl.replace(/^[^,]+;base64,/, "");
@@ -77,7 +84,7 @@ export const getResizedBase64Image = async (
 		const maxMB = (MAX_FILE_SIZE / 1024 / 1024).toFixed(1);
 		const actualMB = (binarySize / 1024 / 1024).toFixed(1);
 		throw new Error(
-			`画像のファイルサイズが大きすぎます。リサイズ後も ${actualMB}MB で、許容最大サイズ (${maxMB}MB) を超えています。`,
+			`画像のファイルサイズが大きすぎます。${actualMB}MB/上限${maxMB}MB`,
 		);
 	}
 
