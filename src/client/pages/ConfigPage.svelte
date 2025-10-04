@@ -20,6 +20,8 @@
     import { Howler } from "howler";
     import { pokemonMap } from "../../common/pokemon.js";
     import type { Board } from "../../common/request/board.js";
+    import oekaki from "../../common/request/whitelist/oekaki.js";
+    import { findIn } from "../../common/request/whitelist/site-info.js";
     import {
         type UploadResponse,
         deleteCloudflareR2,
@@ -159,6 +161,21 @@
             currentPage * itemsPerPage,
         ),
     );
+
+    const deleteOekaki = (obj: ImgurResponse) => {
+        const url = (() => {
+            try {
+                return new URL(obj.link);
+            } catch (err) {}
+        })();
+        const siteInfo = url ? findIn(oekaki, url.hostname) : null;
+        switch (siteInfo?.id) {
+            case 102401:
+                return deleteImgur(obj.deletehash);
+            case 102402:
+                return deleteCloudflareR2(obj.id, obj.deletehash);
+        }
+    };
 
     let isEditing = $state(false);
     let token = $state(authToken.value ?? "");
@@ -740,8 +757,8 @@
                                                 )
                                                     return;
                                                 try {
-                                                    await deleteImgur(
-                                                        imgurResponse.deletehash,
+                                                    await deleteOekaki(
+                                                        imgurResponse,
                                                     );
                                                 } catch (err) {
                                                     alert(

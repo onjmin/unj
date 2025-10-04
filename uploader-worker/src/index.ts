@@ -143,6 +143,7 @@ export default {
 				// --- リクエストBody処理 ---
 				const bodyText = await request.text();
 				const formData = new URLSearchParams(bodyText);
+				const nsfwCheck = formData.get("nsfwCheck");
 				const base64Image = formData.get("image");
 				if (!base64Image) {
 					return new Response("Missing 'image' parameter in body.", {
@@ -276,44 +277,46 @@ export default {
 				}
 
 				// --- AIによる画像モデレーション ---
-				const IMAGE_TO_TEXT_MODEL = "@cf/unum/uform-gen2-qwen-500m";
-				const BANNED_KEYWORDS = [
-					"feces",
-					"gore",
-					"blood",
-					"vomit",
-					"weapon",
-					"shit",
-					"self-harm",
-				];
-				try {
-					const captionResponse = await env.AI.run(IMAGE_TO_TEXT_MODEL, {
-						prompt:
-							"A detailed description of the image content, including objects, color, and context. If the image contains human or animal feces, excrement, or waste, describe it explicitly.",
-						image: Array.from(imageBuffer),
-					});
-					const captionText: string = captionResponse.description || "";
-					if (
-						BANNED_KEYWORDS.some((k) => captionText.toLowerCase().includes(k))
-					) {
-						console.warn(`Moderation rejected. Caption: ${captionText}`);
+				if (nsfwCheck === "1") {
+					const IMAGE_TO_TEXT_MODEL = "@cf/unum/uform-gen2-qwen-500m";
+					const BANNED_KEYWORDS = [
+						"feces",
+						"gore",
+						"blood",
+						"vomit",
+						"weapon",
+						"shit",
+						"self-harm",
+					];
+					try {
+						const captionResponse = await env.AI.run(IMAGE_TO_TEXT_MODEL, {
+							prompt:
+								"A detailed description of the image content, including objects, color, and context. If the image contains human or animal feces, excrement, or waste, describe it explicitly.",
+							image: Array.from(imageBuffer),
+						});
+						const captionText: string = captionResponse.description || "";
+						if (
+							BANNED_KEYWORDS.some((k) => captionText.toLowerCase().includes(k))
+						) {
+							console.warn(`Moderation rejected. Caption: ${captionText}`);
+							return new Response(
+								"Content policy violation: Inappropriate image detected.",
+								{
+									status: 403,
+									headers: CORS_HEADERS,
+								},
+							);
+						}
+					} catch (e) {
+						console.error("Workers AI Moderation Failed.", e);
 						return new Response(
-							"Content policy violation: Inappropriate image detected.",
+							"AI moderation service is temporarily unavailable.",
 							{
-								status: 403,
+								status: 503,
 								headers: CORS_HEADERS,
 							},
 						);
 					}
-				} catch (e) {
-					console.error("Workers AI Moderation Failed.", e);
-					return new Response(
-						"AI moderation service is temporarily unavailable.",
-						{
-							status: 503,
-							headers: CORS_HEADERS,
-						},
-					);
 				}
 
 				// --- R2へ保存 ---

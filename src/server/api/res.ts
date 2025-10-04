@@ -102,13 +102,6 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		if (!board) return;
 		if (!board.avatarMap.has(res.output.userAvatar)) return;
 
-		if (schema === oekakiSchema) {
-			const oekaki = v.safeParse(oekakiSchema, data, myConfig);
-			if (!oekaki.success) return;
-			const { link, id, deletehash } = oekaki.output.contentMeta;
-			logger.info(`🎨 ${link} ${id} ${deletehash}`);
-		}
-
 		if (isDeleted(threadId)) return;
 		if (balsResNumCache.get(threadId)) return;
 

@@ -155,7 +155,6 @@ export const MakeThreadSchema = v.strictObject({
 	userAvatar: SMALLINT,
 	contentText: v.string(), // この段階では簡易的にしか見ない
 	contentUrl: v.string(), // この段階では簡易的にしか見ない
-	contentMeta: v.object({}), // この段階では簡易的にしか見ない
 	contentType: v.pipe(
 		SMALLINT,
 		v.check<number>((n) => (n & (n - 1)) === 0),
@@ -173,7 +172,6 @@ export const ResSchema = v.strictObject({
 	userAvatar: SMALLINT,
 	contentText: v.string(), // この段階では簡易的にしか見ない
 	contentUrl: v.string(), // この段階では簡易的にしか見ない
-	contentMeta: v.object({}), // この段階では簡易的にしか見ない
 	contentType: v.pipe(
 		SMALLINT,
 		v.check<number>((n) => (n & (n - 1)) === 0),

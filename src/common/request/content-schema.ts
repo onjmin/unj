@@ -149,12 +149,6 @@ const UrlOfGameSchema = v.object({
 export const oekakiSchema = v.object({
 	contentType: v.pipe(v.number(), v.value(Enum.Oekaki)),
 	contentText: SAFE_TEXT_MULTILINE,
-	// 雑なバリデーション
-	contentMeta: v.strictObject({
-		link: v.pipe(v.string(), v.maxLength(64)),
-		id: v.pipe(v.string(), v.maxLength(64)),
-		deletehash: v.pipe(v.string(), v.maxLength(64)),
-	}),
 	contentUrl: v.pipe(
 		SAFE_URL,
 		v.check((input) => !!findIn(whitelistOekaki, new URL(input).hostname)),

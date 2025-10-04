@@ -43,6 +43,7 @@
 
   let openUrlTemplate = $state(false);
   let openAvatar = $state(false);
+  let fileName = $state("");
 
   // UnjStorage
   const userNameUnjStorage = new UnjStorage(`userName###${board.id}`);
@@ -137,6 +138,7 @@
       const blob = imageItem.getAsFile();
       if (!blob) return;
       URL.revokeObjectURL(previewUrl);
+      fileName = "クリップボードの画像";
       previewUrl = URL.createObjectURL(blob);
       contentUrl = previewUrl;
       contentType = _contentType;
@@ -173,7 +175,8 @@
       <IconButton
         {disabled}
         class="material-icons ml-auto"
-        onclick={() => {
+        onclick={(e: PointerEvent) => {
+          e.preventDefault();
           const _contentType = Enum.Text;
           if ((_contentType & contentTypesBitmask) === 0) return;
           contentType = _contentType;
@@ -183,7 +186,8 @@
       <IconButton
         {disabled}
         class="material-icons ml-auto"
-        onclick={() => {
+        onclick={(e: PointerEvent) => {
+          e.preventDefault();
           const _contentType = Enum.Image;
           if ((_contentType & contentTypesBitmask) === 0) return;
           contentType = _contentType;
@@ -246,7 +250,7 @@
 
 {#key contentType}
   {#if contentType === Enum.Image}
-    <ImageUploaderPart bind:previewUrl bind:contentUrl />
+    <ImageUploaderPart bind:fileName bind:previewUrl bind:contentUrl />
   {:else if contentType === Enum.Oekaki}
     {#if oekaki}
       <OekakiPart

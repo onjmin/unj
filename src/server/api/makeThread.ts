@@ -40,13 +40,6 @@ export default ({ socket }: { socket: Socket }) => {
 		if (!board) return;
 		if (!board.avatarMap.has(makeThread.output.userAvatar)) return;
 
-		if (schema === oekakiSchema) {
-			const oekaki = v.safeParse(oekakiSchema, data, myConfig);
-			if (!oekaki.success) return;
-			const { link, id, deletehash } = oekaki.output.contentMeta;
-			logger.info(`🎨 ${link} ${id} ${deletehash}`);
-		}
-
 		const userId = auth.getUserId(socket);
 
 		// cc

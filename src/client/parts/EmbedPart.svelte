@@ -178,6 +178,10 @@
           imageEmbed = true;
           embedUrl = parseImageEmbedImgur(url) ?? "";
           break;
+        case 102402:
+          imageEmbed = true;
+          embedUrl = url.href;
+          break;
       }
       if (!embedUrl) throw 114514;
     } catch (err) {

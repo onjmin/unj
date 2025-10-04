@@ -1,14 +1,13 @@
 <script lang="ts">
     import { RotateCwIcon, UploadIcon, XIcon } from "@lucide/svelte";
-    import { onDestroy } from "svelte";
 
-    let { previewUrl = $bindable(""), contentUrl = $bindable("") } = $props();
+    let {
+        fileName = $bindable(""),
+        previewUrl = $bindable(""),
+        contentUrl = $bindable(""),
+    } = $props();
 
-    // bind:thisで参照するinput要素
     let fileInput: HTMLInputElement;
-
-    // 選択された単一ファイルとプレビューURL
-    let selectedFile: File | null = $state(null);
 
     // 受け付けるMIMEタイプ
     const ACCEPTED_TYPES = [
@@ -31,57 +30,40 @@
                 console.error(
                     `拒否されたファイル: ${file.name} (不正なタイプ: ${file.type})`,
                 );
-                selectedFile = null;
+                fileName = "";
                 previewUrl = "";
-                contentUrl = previewUrl;
+                contentUrl = "";
                 if (fileInput) fileInput.value = "";
                 return;
             }
 
-            selectedFile = file;
-
-            // FileReaderでData URLを生成
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                if (e.target?.result) {
-                    URL.revokeObjectURL(previewUrl);
-                    previewUrl = e.target.result as string;
-                    contentUrl = previewUrl;
-                }
-            };
-            reader.readAsDataURL(file);
-        } else {
-            selectedFile = null;
-            previewUrl = "";
+            fileName = file.name;
+            previewUrl = URL.createObjectURL(file);
             contentUrl = previewUrl;
+        } else {
+            fileName = "";
+            previewUrl = "";
+            contentUrl = "";
         }
     }
 
     // ファイル入力ダイアログを開く関数
-    // この関数は、ファイル再選択の際に使用されます。
     function openFileDialog() {
         fileInput.click();
     }
 
     // ファイル削除（クリア）関数
     function clearSelectedFile(event: MouseEvent) {
-        // 重要な処理: クリックイベントが親要素に伝播するのを阻止
         event.stopPropagation();
-        selectedFile = null;
-        if (previewUrl) {
-            URL.revokeObjectURL(previewUrl);
-            previewUrl = "";
-            contentUrl = previewUrl;
-        }
-        // inputの値をクリア
-        if (fileInput) fileInput.value = "";
+        URL.revokeObjectURL(previewUrl);
+        fileName = "";
+        previewUrl = "";
+        contentUrl = "";
+        fileInput.value = "";
     }
 
-    // コンポーネントが破棄されるときにオブジェクトURLを解放
-    onDestroy(() => {
-        if (previewUrl) {
-            URL.revokeObjectURL(previewUrl);
-        }
+    $effect(() => {
+        return () => URL.revokeObjectURL(previewUrl);
     });
 </script>
 
@@ -121,7 +103,7 @@
                 <div class="flex justify-between items-start">
                     <span
                         class="text-sm font-medium truncate max-w-[80%] text-white bg-black/50 px-2 py-1 rounded"
-                        >{selectedFile?.name ?? "クリップボードの画像"}</span
+                        >{fileName}</span
                     >
 
                     <button

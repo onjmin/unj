@@ -53,6 +53,7 @@
     import { genAiWebhookHash, genNonce } from "../mylib/anti-debug.js";
     import {
         getResizedBase64Image,
+        isAvailableCloudflareR2,
         uploadCloudflareR2,
         uploadHistory,
     } from "../mylib/cloudflare-r2.js";
@@ -491,14 +492,12 @@
         // }
         if (emitting || !thread) return;
         emitting = true;
-        let contentMeta = {};
 
         // お絵描き機能
         if (contentType === Enum.Oekaki) {
             const result = await (async () => {
                 if (uploadedImgur) {
                     contentUrl = uploadedImgur.link;
-                    contentMeta = uploadedImgur;
                     return true;
                 }
                 const last = oekakiUploaded.value;
@@ -508,8 +507,32 @@
                         new Date(),
                     );
                     if (diffSeconds > 0) {
-                        alert(`${diffSeconds}秒後に再投稿できます`);
-                        return;
+                        if (!isAvailableCloudflareR2) {
+                            alert(`${diffSeconds}秒後に再投稿できます`);
+                            return;
+                        }
+                        // フォールバック
+                        const dataURL = toDataURL();
+                        if (!dataURL) return;
+                        try {
+                            const res = await uploadCloudflareR2(
+                                dataURL,
+                                false,
+                            );
+                            const json = await res.json();
+                            const { link, delete_id, delete_hash } = json.data;
+                            contentUrl = link;
+                            imgurHistory.get().then((v) => {
+                                const arr = v ? v : [];
+                                arr.push({
+                                    link,
+                                    id: delete_id,
+                                    deletehash: delete_hash,
+                                });
+                                imgurHistory.set(arr);
+                            });
+                            return true;
+                        } catch (err) {}
                     }
                 }
                 oekakiUploaded.value = addSeconds(
@@ -523,7 +546,6 @@
                     const json = await res.json();
                     const { link, id, deletehash } = json.data;
                     contentUrl = link;
-                    contentMeta = { link, id, deletehash };
                     uploadedImgur = { link, id, deletehash };
                     try {
                         oekakiLogger([link, deletehash]);
@@ -573,7 +595,6 @@
             userAvatar,
             contentText,
             contentUrl,
-            contentMeta,
             contentType,
             sage: isSage,
             ninja: isNinja,
@@ -601,7 +622,7 @@
             expectedResNum = thread.resCount + 1;
         }
 
-        socket.emit("res", { ...result, contentMeta });
+        socket.emit("res", result);
         await sleep(1024);
         emitting = false;
         ok();

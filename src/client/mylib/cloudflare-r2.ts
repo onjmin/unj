@@ -10,6 +10,8 @@ const VITE_CLOUDFLARE_UPLOAD_SECRET_PEPPER = decodeEnv(
 	import.meta.env.VITE_CLOUDFLARE_UPLOAD_SECRET_PEPPER,
 );
 
+export const isAvailableCloudflareR2 = VITE_CLOUDFLARE_URL !== "";
+
 // 許可する最大ファイルサイズ (1MB)
 const MAX_FILE_SIZE = 1 * 1024 * 1024;
 
@@ -83,7 +85,7 @@ export const getResizedBase64Image = async (
 	return base64Image;
 };
 
-export const uploadCloudflareR2 = async (base64: string) => {
+export const uploadCloudflareR2 = async (base64: string, nsfwCheck = true) => {
 	const image = base64.replace(/^[^,]+;base64,/, "");
 	const combinedString = image + VITE_CLOUDFLARE_UPLOAD_SECRET_PEPPER;
 	const requestHash = await sha256(combinedString);
@@ -94,7 +96,7 @@ export const uploadCloudflareR2 = async (base64: string) => {
 			Authorization: `Client-ID ${VITE_CLOUDFLARE_CLIENT_ID}`,
 			"X-Request-Hash": requestHash,
 		},
-		body: new URLSearchParams({ image }),
+		body: new URLSearchParams({ image, nsfwCheck: nsfwCheck ? "1" : "0" }),
 	});
 };
 
