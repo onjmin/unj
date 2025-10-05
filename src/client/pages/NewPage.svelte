@@ -48,7 +48,9 @@
         termsAgreement,
     } from "../mylib/unj-storage.js";
     import { oekakiLogger } from "../mylib/webhook.js";
+    import ColorWheelPart from "../parts/ColorWheelPart.svelte";
     import LayerPanelPart from "../parts/LayerPanelPart.svelte";
+    import OekakiPart from "../parts/OekakiPart.svelte";
     import ResFormPart from "../parts/ResFormPart.svelte";
     import TermsConfirmPart from "../parts/TermsConfirmPart.svelte";
 
@@ -489,6 +491,8 @@
         </div>
     {/if}
     {#if contentType === Enum.Oekaki}
+        <br />
+        <ColorWheelPart />
         <LayerPanelPart bind:activeLayer />
     {/if}
 </HeaderPart>
@@ -516,13 +520,18 @@
             bind:contentUrl
             bind:contentType
             contentTypesBitmask={bits2Int(contentTypesBitmask)}
-            threadId={sha256(Math.random().toString())}
-            oekaki
-            bind:toDataURL
             bind:activeLayer
             tryRes={tryMakeThread}
             bind:previewUrl
         />
+        {#if contentType === Enum.Oekaki}
+            <OekakiPart
+                threadId={sha256(Math.random().toString())}
+                oekakiCollab=""
+                bind:toDataURL
+                bind:activeLayer
+            />
+        {/if}
         <div class="flex items-center space-x-2 mt-4">
             <input
                 type="checkbox"

@@ -16,9 +16,7 @@
   import video from "../../common/request/whitelist/video.js";
   import { UnjStorage } from "../mylib/unj-storage.js";
   import AvatarPart from "./AvatarPart.svelte";
-  import ColorWheelPart from "./ColorWheelPart.svelte";
   import ImageUploaderPart from "./ImageUploaderPart.svelte";
-  import OekakiPart from "./OekakiPart.svelte";
   import UrlTemplatePart from "./UrlTemplatePart.svelte";
 
   let {
@@ -31,13 +29,9 @@
     contentUrl = $bindable(""),
     contentType = $bindable(0),
     contentTypesBitmask = 0,
-    threadId,
-    oekaki,
-    toDataURL = $bindable(),
     activeLayer = $bindable(null),
     tryRes,
     isExpand = true,
-    oekakiCollab = $bindable(""),
     previewUrl = $bindable(""),
   } = $props();
 
@@ -251,17 +245,6 @@
 {#key contentType}
   {#if contentType === Enum.Image}
     <ImageUploaderPart bind:fileName bind:previewUrl bind:contentUrl />
-  {:else if contentType === Enum.Oekaki}
-    {#if oekaki}
-      <OekakiPart
-        {threadId}
-        bind:oekakiCollab
-        bind:toDataURL
-        bind:activeLayer
-      />
-    {:else}
-      <ColorWheelPart />
-    {/if}
   {/if}
 {/key}
 

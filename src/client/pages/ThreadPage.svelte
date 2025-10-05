@@ -98,9 +98,11 @@
     import AccessCounterPart from "../parts/AccessCounterPart.svelte";
     import BackgroundEmbedPart from "../parts/BackgroundEmbedPart.svelte";
     import BalsPart from "../parts/BalsPart.svelte";
+    import ColorWheelPart from "../parts/ColorWheelPart.svelte";
     import DressUpPart from "../parts/DressUpPart.svelte";
     import KomePart from "../parts/KomePart.svelte";
     import LayerPanelPart from "../parts/LayerPanelPart.svelte";
+    import OekakiPart from "../parts/OekakiPart.svelte";
     import ResFormPart from "../parts/ResFormPart.svelte";
     import ResPart from "../parts/ResPart.svelte";
     import RpgPart from "../parts/RpgPart.svelte";
@@ -710,15 +712,19 @@
         bind:contentUrl
         bind:contentType
         contentTypesBitmask={thread?.contentTypesBitmask ?? 0}
-        {threadId}
-        oekaki={!menu}
-        bind:toDataURL
         bind:activeLayer
         {tryRes}
         {isExpand}
-        bind:oekakiCollab
         bind:previewUrl
     />
+    {#if contentType === Enum.Oekaki && !menu}
+        <OekakiPart
+            {threadId}
+            bind:oekakiCollab
+            bind:toDataURL
+            bind:activeLayer
+        />
+    {/if}
     <div class="w-full max-w-xs">
         <Button disabled={emitting} onclick={tryRes} variant="raised"
             >投稿する</Button
@@ -811,6 +817,7 @@
     <div>{@render form(true)}</div>
     {#if contentType === Enum.Oekaki}
         <br />
+        <ColorWheelPart />
         <LayerPanelPart bind:activeLayer />
     {/if}
     <br />
