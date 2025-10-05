@@ -279,7 +279,7 @@
       const siteInfo = findIn(oekakiWhitelist, url.hostname);
       switch (siteInfo?.id) {
         case 102402:
-          imgUrl = url.href;
+          imgUrl = `${url.href}?t`; // TODO
           break;
         default:
           imgUrl = corsKiller(url.href);
@@ -305,9 +305,6 @@
       }, 500);
       let _conflictId = conflictId;
     }
-    return () => {
-      oekakiCollab = "";
-    };
   });
   const deleteSaveData = () =>
     Promise.all([

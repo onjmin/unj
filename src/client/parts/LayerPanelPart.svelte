@@ -45,21 +45,17 @@
     layers = [...layers];
   };
 
-  // レイヤーロックのトグル
+  // レイヤー削除
   const deleteLayer = (layer: oekaki.LayeredCanvas) => {
     if (
       layer.locked ||
-      !activeLayer ||
-      (activeLayer.used && !confirm(`${activeLayer.name}を削除しますか？`))
+      (layer.used && !confirm(`${layer.name}を削除しますか？`))
     )
       return;
-    activeLayer.delete();
-    const { prev, next } = activeLayer;
+    layer.delete();
+    const { prev, next } = layer;
     if (next) activeLayer = next;
     else if (prev) activeLayer = prev;
-
-    // UIを更新するため、layers配列を再代入
-    layers = [...layers];
   };
 
   // レイヤーの移動
@@ -76,7 +72,6 @@
   const addLayer = () => {
     const newLayer = new oekaki.LayeredCanvas(`レイヤー #${layers.length + 1}`);
     activeLayer = newLayer;
-    layers = oekaki.getLayers();
   };
 
   // バナーレイヤー追加
@@ -124,11 +119,15 @@
           onclick={() => selectLayer(i)}
         >
           <div
-            class="w-10 h-10 border border-gray-300 dark:border-gray-600 mr-3 rounded-sm bg-cover bg-center"
-            style="background-image: url({layer.canvas.toDataURL(
-              'image/png',
-            )});"
-          ></div>
+            class="gimp-checkered-background relative w-8 h-8 rounded overflow-hidden"
+          >
+            <div
+              class="w-full h-full bg-center bg-cover"
+              style="background-image: url({layer.canvas.toDataURL(
+                'image/png',
+              )});"
+            ></div>
+          </div>
 
           <div class="flex-grow">
             <div class="font-semibold">{layer.name}</div>
