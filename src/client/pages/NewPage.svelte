@@ -526,7 +526,7 @@
         />
         {#if contentType === Enum.Oekaki}
             <OekakiPart
-                threadId={sha256(Math.random().toString())}
+                threadId="new"
                 oekakiCollab=""
                 bind:toDataURL
                 bind:activeLayer
