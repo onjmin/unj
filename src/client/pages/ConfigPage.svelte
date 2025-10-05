@@ -367,10 +367,12 @@
                     <div class="flex items-center space-x-4">
                         <div class="flex-1">
                             <Slider
+                                min={0}
+                                max={100}
                                 value={soundVolumeSlider}
                                 onValueChange={(e) =>
                                     (soundVolumeSlider = e.value)}
-                                markers={[25, 50, 75]}
+                                markers={[0, 25, 50, 75, 100]}
                             />
                         </div>
                         <div class="flex-shrink-0">

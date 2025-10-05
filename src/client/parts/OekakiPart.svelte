@@ -325,7 +325,7 @@
       const contentRatio = isPortrait ? 16 / 9 : 9 / 16;
 
       const main = document.querySelector(".unj-main-part") ?? document.body;
-      const targetWidth = main.clientWidth * 0.8;
+      const targetWidth = main.clientWidth * (isPortrait ? 0.8 : 0.96);
       const targetHeight = targetWidth * contentRatio;
 
       width = targetWidth | 0;
@@ -520,7 +520,7 @@
   });
   const setDotSize = () => {
     unjStorage.dotPenScale.value = String(dotPenScale);
-    oekaki.setDotSize(dotPenScale[0]);
+    oekaki.setDotSize(dotPenScale[0], 112); // 24インチ・フルHD・誤差込みで高さが128ドットになるのが112
     document.documentElement.style.setProperty(
       "--grid-cell-size",
       `${oekaki.getDotSize()}px`,
@@ -707,7 +707,7 @@
       max={100}
       value={opacity}
       onValueChange={(e) => (opacity = e.value)}
-      markers={[25, 50, 75]}
+      markers={[0, 25, 50, 75, 100]}
     />
     <br />
   </div>
@@ -797,17 +797,17 @@
         max={64}
         value={brushSize}
         onValueChange={(e) => (brushSize = e.value)}
-        markers={[16, 32, 48]}
+        markers={[1, 16, 32, 48, 64]}
       />
     {:else if isGrid}
       <span class="size">{dotPenScale}倍</span>
       {@render palette()}
       <Slider
         min={1}
-        max={8}
+        max={9}
         value={dotPenScale}
         onValueChange={(e) => (dotPenScale = e.value)}
-        markers={[2, 4, 6]}
+        markers={[1, 3, 5, 7, 9]}
       />
     {:else if choiced.label === tool.pen.label}
       <span class="size">{penSize}px</span>
@@ -817,7 +817,7 @@
         max={64}
         value={penSize}
         onValueChange={(e) => (penSize = e.value)}
-        markers={[16, 32, 48]}
+        markers={[1, 16, 32, 48, 64]}
       />
     {:else if choiced.label === tool.eraser.label}
       <span class="size">{eraserSize}px</span>
@@ -827,7 +827,7 @@
         max={64}
         value={eraserSize}
         onValueChange={(e) => (eraserSize = e.value)}
-        markers={[16, 32, 48]}
+        markers={[1, 16, 32, 48, 64]}
       />
     {:else if choiced.label === tool.dropper.label || choiced.label === tool.fill.label}
       <span class="size"></span>

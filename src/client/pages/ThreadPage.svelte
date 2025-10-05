@@ -5,7 +5,13 @@
     import MainPart from "../parts/MainPart.svelte";
     ///////////////
 
-    import { ArrowDownIcon, BrushIcon, ExpandIcon } from "@lucide/svelte";
+    import {
+        ArrowDownIcon,
+        BrushIcon,
+        ChevronDownIcon,
+        ChevronUpIcon,
+        ExpandIcon,
+    } from "@lucide/svelte";
     import {
         ChevronFirstIcon,
         ChevronLastIcon,
@@ -958,6 +964,23 @@
         </div>
     {/if}
     {#if thread}
+        <!-- 画面右端に上下スクロールボタンを固定配置 -->
+        <div
+            class="sticky top-1/2 -translate-y-1/2 ml-auto mr-2 flex flex-col items-center gap-8 w-fit z-8"
+        >
+            <button
+                class="bg-gray-800/40 hover:bg-gray-700/60 text-white p-2 rounded-full shadow-lg transition"
+                onclick={() => scrollToAnka(thread?.resList.at(0)?.num ?? 0)}
+            >
+                <ChevronUpIcon class="w-5 h-5" />
+            </button>
+            <button
+                class="bg-gray-800/40 hover:bg-gray-700/60 text-white p-2 rounded-full shadow-lg transition"
+                onclick={() => scrollToAnka(thread?.resList.at(-1)?.num ?? 0)}
+            >
+                <ChevronDownIcon class="w-5 h-5" />
+            </button>
+        </div>
         <div class="thread-header">
             <p class="thread-title flex items-center">
                 <TwemojiPart seed={thread.id} />
