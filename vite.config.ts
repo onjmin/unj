@@ -60,6 +60,8 @@ for (const i of Array(randInt(32, 64)).keys()) {
 	env.set(`DUMMY${i}`, genEnvKey());
 }
 
+console.log(1145141919810);
+
 export default defineConfig({
 	plugins: [svelte(), tailwindcss()],
 	base: VITE_BASE_URL,
