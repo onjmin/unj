@@ -10,46 +10,50 @@ import { levels } from "../../mylib/log.js";
 const api = "/log/grep";
 const tooManyThreshold = 65536;
 
-const logLevelSchema = v.pipe(
-	v.string("Log level is required."),
-	v.check(
-		(input) => levels.includes(input.toLocaleLowerCase()),
-		"Invalid log level.",
+const schema = v.strictObject({
+	fileName: v.pipe(v.string(), v.regex(/\d{2}-\d{2}-\d{4}.log/)),
+	level: v.pipe(
+		v.string(),
+		v.check((input) => levels.includes(input.toLocaleLowerCase())),
 	),
-);
+	max: v.pipe(
+		v.number(),
+		v.integer(),
+		v.minValue(1),
+		v.maxValue(tooManyThreshold),
+	),
+});
 
 export default (router: Router) => {
 	router.post(api, async (req: Request, res: Response) => {
-		const max: number = Math.min(req.body.max ?? 32, tooManyThreshold);
-		const level = v.safeParse(logLevelSchema, req.body.level);
-		if (!level.success) {
-			res.status(400).json({ error: v.flatten(level.issues) });
+		const result = v.safeParse(schema, req.body);
+		if (!result.success) {
+			res.status(400).json({ error: v.flatten(result.issues) });
 			return;
 		}
-		if (Number.isNaN(max)) {
+		if (Number.isNaN(result.output.max)) {
 			res.status(400).json({
 				error: `Invalid 'max'. Expected a number from 1 to ${tooManyThreshold}.`,
 			});
 			return;
 		}
-		const timestamp = format(new Date(), "yyyy-MM-dd");
-		const filePath = path.resolve(ROOT_PATH, "logs", `${timestamp}.log`);
+		const filePath = path.resolve(ROOT_PATH, "logs", result.output.fileName);
 
 		if (!fs.existsSync(filePath)) {
 			res.status(404).json({ error: "Log file not found." });
 			return;
 		}
 
-		const lines = (await readLastLines.read(filePath, max))
+		const lines = (await readLastLines.read(filePath, result.output.max))
 			.trim()
 			.split("\n")
 			.reverse();
 
 		res.status(200).json({
 			logs:
-				level.output === "*"
+				result.output.level === "*"
 					? lines
-					: lines.filter((v) => v.includes(level.output.toUpperCase())),
+					: lines.filter((v) => v.includes(result.output.level.toUpperCase())),
 		});
 		return;
 	});
