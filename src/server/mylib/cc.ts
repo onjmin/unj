@@ -115,17 +115,6 @@ const capList = new Map([
 	["07139d4ce3c06b56", "ひろゆき"],
 ]);
 
-/**
- * 2ch非互換トリップの生成
- */
-const makeTrip = (tripKey: string) => {
-	return btoa(
-		String.fromCharCode(...new Uint8Array(sha256.arrayBuffer(tripKey))),
-	)
-		.slice(0, 10)
-		.replace(/\+/g, ".");
-};
-
 export const makeCcUserAvatar = ({
 	ccBitmask,
 	userAvatar,

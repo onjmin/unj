@@ -5,7 +5,7 @@ const allowedSameCount = 3;
  * 「✋🥹大家都是Puyuyu」を弾くための実装
  */
 export const isSameSimhash = (text: string, userId: number): boolean => {
-	if (text.length < 16) return false;
+	if (text.length < 8) return false;
 	if (text.startsWith("!gen")) return false; // 画像生成コマンドの場合は免除
 	const simhash = calcSimhash(text);
 	if (!simhash) return false;

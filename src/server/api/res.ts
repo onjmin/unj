@@ -3,10 +3,7 @@ import { addSeconds, isBefore } from "date-fns";
 import type { Server, Socket } from "socket.io";
 import * as v from "valibot";
 import { boardIdMap } from "../../common/request/board.js";
-import {
-	contentSchemaMap,
-	oekakiSchema,
-} from "../../common/request/content-schema.js";
+import { contentSchemaMap } from "../../common/request/content-schema.js";
 import {
 	ResSchema,
 	myConfig,

@@ -3,10 +3,7 @@ import { addHours, addSeconds, isBefore } from "date-fns";
 import type { Socket } from "socket.io";
 import * as v from "valibot";
 import { boardIdMap, noharaBoard } from "../../common/request/board.js";
-import {
-	contentSchemaMap,
-	oekakiSchema,
-} from "../../common/request/content-schema.js";
+import { contentSchemaMap } from "../../common/request/content-schema.js";
 import { MakeThreadSchema, myConfig } from "../../common/request/schema.js";
 import type { HeadlineThread } from "../../common/response/schema.js";
 import { randInt } from "../../common/util.js";

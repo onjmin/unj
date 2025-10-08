@@ -2,11 +2,7 @@ import type { Socket } from "socket.io";
 import * as v from "valibot";
 import { SearchSchema } from "../../common/request/schema.js";
 import type { SearchResult } from "../../common/response/schema.js";
-import {
-	decodeResId,
-	encodeResId,
-	encodeThreadId,
-} from "../mylib/anti-debug.js";
+import { encodeThreadId } from "../mylib/anti-debug.js";
 import { logger } from "../mylib/log.js";
 import nonce from "../mylib/nonce.js";
 import { pool } from "../mylib/pool.js";

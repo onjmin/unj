@@ -520,7 +520,7 @@
   });
   const setDotSize = () => {
     unjStorage.dotPenScale.value = String(dotPenScale);
-    oekaki.setDotSize(dotPenScale[0], 112); // 24インチ・フルHD・誤差込みで高さが128ドットになるのが112
+    oekaki.setDotSize(dotPenScale[0], 112); // 24インチ・フルHD・誤差込みで高さが128ドットになるのが112, 幅は216になる
     document.documentElement.style.setProperty(
       "--grid-cell-size",
       `${oekaki.getDotSize()}px`,
