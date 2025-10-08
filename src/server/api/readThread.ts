@@ -48,17 +48,17 @@ export default ({ socket }: { socket: Socket }) => {
 		const readThread = v.safeParse(ReadThreadSchema, data);
 		if (!readThread.success) return;
 
-		// フロントエンド上のスレッドIDを復号する
-		const threadId = decodeThreadId(readThread.output.threadId);
-		if (threadId === null) return;
-
-		if (isDeleted(threadId)) return;
-
 		// Nonce値の完全一致チェック
 		if (!nonce.isValid(socket, readThread.output.nonce)) {
 			logger.verbose(`🔒 ${readThread.output.nonce}`);
 			return;
 		}
+
+		// フロントエンド上のスレッドIDを復号する
+		const threadId = decodeThreadId(readThread.output.threadId);
+		if (threadId === null) return;
+
+		if (isDeleted(threadId)) return;
 
 		// 危険な処理
 		try {

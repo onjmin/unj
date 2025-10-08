@@ -58,7 +58,6 @@ export default (router: Router, io: Server) => {
 		if (balsResNumCache.get(threadId)) return;
 		if (isMax(threadId, false)) return;
 
-		// 共通のバリデーション2
 		const contentTypesBitmask = contentTypesBitmaskCache.get(threadId) ?? 0;
 		if ((contentTypesBitmask & result.output.contentType) === 0) return;
 		const schema = contentSchemaMap.get(result.output.contentType);

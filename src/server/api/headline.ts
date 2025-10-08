@@ -17,14 +17,14 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		const headline = v.safeParse(HeadlineSchema, data);
 		if (!headline.success) return;
 
-		const board = boardIdMap.get(headline.output.boardId);
-		if (!board) return;
-
 		// Nonce値の完全一致チェック
 		if (!nonce.isValid(socket, headline.output.nonce)) {
 			logger.verbose(`🔒 ${headline.output.nonce}`);
 			return;
 		}
+
+		const board = boardIdMap.get(headline.output.boardId);
+		if (!board) return;
 
 		// 危険な処理
 		try {

@@ -73,23 +73,27 @@ import {
 import { TokenBucket } from "../mylib/token-bucket.js";
 
 const api = "res";
-const tokenBucket = new TokenBucket(
-	10, // capacitySeconds (最大遅延 10秒)
-	0.5, // refillRatePerSecond (2秒で1トークン回復)
-	1, // costPerAction (1レスで1トークン消費)
-);
+const tokenBucket = new TokenBucket({
+	capacity: 3, // burstあり（最大3回連投可能）
+	refillRate: 1 / 5, // 5秒で1トークン回復
+	costPerAction: 1,
+});
 
 export default ({ socket, io }: { socket: Socket; io: Server }) => {
 	socket.on(api, async (data) => {
-		// 共通のバリデーション
 		const res = v.safeParse(ResSchema, data, myConfig);
 		if (!res.success) return;
+
+		// Nonce値の完全一致チェック
+		if (!nonce.isValid(socket, res.output.nonce)) {
+			logger.verbose(`🔒 ${res.output.nonce}`);
+			return;
+		}
 
 		// フロントエンド上のスレッドIDを復号する
 		const threadId = decodeThreadId(res.output.threadId);
 		if (threadId === null) return;
 
-		// 共通のバリデーション2
 		const contentTypesBitmask = contentTypesBitmaskCache.get(threadId) ?? 0;
 		if ((contentTypesBitmask & res.output.contentType) === 0) return;
 		const schema = contentSchemaMap.get(res.output.contentType);
@@ -122,20 +126,14 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		)
 			return;
 
-		// レートリミット
-		if (!tokenBucket.attempt(userId)) {
-			logger.verbose(`⌛ ${tokenBucket.getCoolTime(userId)}`);
-			return;
-		}
-
-		// Nonce値の完全一致チェック
-		if (!nonce.isValid(socket, res.output.nonce)) {
-			logger.verbose(`🔒 ${res.output.nonce}`);
-			return;
-		}
-
 		// simhashチェック
 		if (isSameSimhash(content.output.contentText, userId)) return;
+
+		// レートリミット
+		if (!tokenBucket.attempt(userId)) {
+			logger.verbose(`⌛ ${tokenBucket.getCooldownSeconds(userId).toFixed(1)}`);
+			return;
+		}
 
 		// 危険な処理
 		let poolClient: PoolClient | null = null;

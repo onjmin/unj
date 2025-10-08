@@ -33,6 +33,12 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		const lol = v.safeParse(lolSchema, data);
 		if (!lol.success) return;
 
+		// Nonce値の完全一致チェック
+		if (!nonce.isValid(socket, lol.output.nonce)) {
+			logger.verbose(`🔒 ${lol.output.nonce}`);
+			return;
+		}
+
 		// フロントエンド上のスレッドIDを復号する
 		const threadId = decodeThreadId(lol.output.threadId);
 		if (threadId === null) return;
@@ -50,12 +56,6 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		const key = [auth.getUserId(socket), threadId].join(delimiter);
 		if (done.has(key)) return;
 		done.add(key);
-
-		// Nonce値の完全一致チェック
-		if (!nonce.isValid(socket, lol.output.nonce)) {
-			logger.verbose(`🔒 ${lol.output.nonce}`);
-			return;
-		}
 
 		// 危険な処理
 		try {

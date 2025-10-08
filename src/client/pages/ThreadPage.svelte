@@ -611,7 +611,6 @@
             ninja: isNinja,
         };
         const result = (() => {
-            // 共通のバリデーション
             const res = v.safeParse(ResSchema, data, myConfig);
             if (!res.success) return;
             const contentTypesBitmask = thread.contentTypesBitmask ?? 0;

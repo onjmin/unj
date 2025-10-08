@@ -3,11 +3,18 @@ import * as v from "valibot";
 import { SearchSchema } from "../../common/request/schema.js";
 import type { SearchResult } from "../../common/response/schema.js";
 import { encodeThreadId } from "../mylib/anti-debug.js";
+import auth from "../mylib/auth.js";
 import { logger } from "../mylib/log.js";
 import nonce from "../mylib/nonce.js";
 import { pool } from "../mylib/pool.js";
+import { TokenBucket } from "../mylib/token-bucket.js";
 
 const api = "search";
+const tokenBucket = new TokenBucket({
+	capacity: 5, // burstあり（初回5連続検索可能）
+	refillRate: 1 / 2, // 2秒で1トークン回復
+	costPerAction: 1,
+});
 
 export default ({ socket }: { socket: Socket }) => {
 	socket.on(api, async (data) => {
@@ -17,6 +24,14 @@ export default ({ socket }: { socket: Socket }) => {
 		// Nonce値の完全一致チェック
 		if (!nonce.isValid(socket, search.output.nonce)) {
 			logger.verbose(`🔒 ${search.output.nonce}`);
+			return;
+		}
+
+		const userId = auth.getUserId(socket);
+
+		// レートリミット
+		if (!tokenBucket.attempt(userId)) {
+			logger.verbose(`⌛ ${tokenBucket.getCooldownSeconds(userId).toFixed(1)}`);
 			return;
 		}
 

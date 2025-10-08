@@ -286,7 +286,6 @@
             timer,
         };
         const result = (() => {
-            // 共通のバリデーション
             const makeThread = v.safeParse(MakeThreadSchema, data, myConfig);
             if (!makeThread.success) return;
             const { contentTypesBitmask, contentType } = makeThread.output;

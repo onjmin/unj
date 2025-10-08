@@ -18,17 +18,23 @@ import { getHeadlineRoom } from "../mylib/socket.js";
 import { TokenBucket } from "../mylib/token-bucket.js";
 
 const api = "makeThread";
-export const tokenBucket = new TokenBucket(
-	300, // capacitySeconds (最大遅延 5分)
-	0.2, // refillRatePerSecond (1秒に0.2回復 = 1トークン/5秒)
-	60, // costPerAction (1スレ立てで60消費)
-);
+export const tokenBucket = new TokenBucket({
+	capacity: 1, // burstなし
+	refillRate: 1 / 120, // 120秒で1回復
+	costPerAction: 1,
+});
 
 export default ({ socket }: { socket: Socket }) => {
 	socket.on(api, async (data) => {
-		// 共通のバリデーション
 		const makeThread = v.safeParse(MakeThreadSchema, data, myConfig);
 		if (!makeThread.success) return;
+
+		// Nonce値の完全一致チェック
+		if (!nonce.isValid(socket, makeThread.output.nonce)) {
+			logger.verbose(`🔒 ${makeThread.output.nonce}`);
+			return;
+		}
+
 		const { ccBitmask, contentTypesBitmask, contentType } = makeThread.output;
 		if ((contentTypesBitmask & contentType) === 0) return;
 		const schema = contentSchemaMap.get(contentType);
@@ -60,9 +66,12 @@ export default ({ socket }: { socket: Socket }) => {
 			userAvatar: makeThread.output.userAvatar,
 		});
 
+		// simhashチェック
+		if (isSameSimhash(content.output.contentText, userId)) return;
+
 		// レートリミット
 		if (!tokenBucket.attempt(userId)) {
-			logger.verbose(`⌛ ${tokenBucket.getCoolTime(userId)}`);
+			logger.verbose(`⌛ ${tokenBucket.getCooldownSeconds(userId).toFixed(1)}`);
 			return;
 		}
 
@@ -74,15 +83,6 @@ export default ({ socket }: { socket: Socket }) => {
 		if (board.id === noharaBoard.id) {
 			deletedAt = addHours(new Date(), 3);
 		}
-
-		// Nonce値の完全一致チェック
-		if (!nonce.isValid(socket, makeThread.output.nonce)) {
-			logger.verbose(`🔒 ${makeThread.output.nonce}`);
-			return;
-		}
-
-		// simhashチェック
-		if (isSameSimhash(content.output.contentText, userId)) return;
 
 		// 危険な処理
 		let poolClient: PoolClient | null = null;
