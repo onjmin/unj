@@ -1,5 +1,4 @@
 import type { PoolClient } from "@neondatabase/serverless";
-import { addSeconds, isBefore } from "date-fns";
 import type { Server, Socket } from "socket.io";
 import * as v from "valibot";
 import { boardIdMap } from "../../common/request/board.js";
@@ -15,7 +14,6 @@ import type {
 	Player,
 	Res,
 } from "../../common/response/schema.js";
-import { randInt } from "../../common/util.js";
 import {
 	decodeThreadId,
 	encodeThreadId,
@@ -59,7 +57,6 @@ import {
 } from "../mylib/cache.js";
 import { makeCcUserAvatar, makeCcUserId, makeCcUserName } from "../mylib/cc.js";
 import { parseCommand } from "../mylib/command.js";
-import { PROD_MODE } from "../mylib/env.js";
 import { getIP } from "../mylib/ip.js";
 import { logger } from "../mylib/log.js";
 import nonce from "../mylib/nonce.js";
@@ -73,9 +70,14 @@ import {
 	joined,
 	sizeOf,
 } from "../mylib/socket.js";
+import { TokenBucket } from "../mylib/token-bucket.js";
 
 const api = "res";
-const coolTimes: Map<number, Date> = new Map();
+const tokenBucket = new TokenBucket(
+	10, // capacitySeconds (最大遅延 10秒)
+	0.5, // refillRatePerSecond (2秒で1トークン回復)
+	1, // costPerAction (1レスで1トークン消費)
+);
 
 export default ({ socket, io }: { socket: Socket; io: Server }) => {
 	socket.on(api, async (data) => {
@@ -121,8 +123,8 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			return;
 
 		// レートリミット
-		if (isBefore(new Date(), coolTimes.get(userId) ?? 0)) {
-			logger.verbose(`⌛ ${coolTimes.get(userId)}`);
+		if (!tokenBucket.attempt(userId)) {
+			logger.verbose(`⌛ ${tokenBucket.getCoolTime(userId)}`);
 			return;
 		}
 
@@ -142,9 +144,6 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			nonce.update(socket);
 
 			poolClient = await pool.connect();
-
-			if (PROD_MODE)
-				coolTimes.set(userId, addSeconds(new Date(), randInt(0, 2)));
 
 			// 忍法帖の読み込み
 			if (!userCached.has(userId)) {

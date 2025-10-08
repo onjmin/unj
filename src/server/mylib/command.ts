@@ -1,9 +1,7 @@
 import type { PoolClient } from "@neondatabase/serverless";
-import { addMinutes } from "date-fns";
 import type { Socket } from "socket.io";
 import { Enum, ankaRegex } from "../../common/request/content-schema.js";
-import { randInt } from "../../common/util.js";
-import { coolTimes as makeThreadCoolTimes } from "../api/makeThread.js";
+import { tokenBucket } from "../api/makeThread.js";
 import {
 	ageResCache,
 	ageResNumCache,
@@ -23,7 +21,6 @@ import {
 	userIdCache,
 	varsanCache,
 } from "../mylib/cache.js";
-import { PROD_MODE } from "../mylib/env.js";
 import { getIP, sliceIPRange } from "../mylib/ip.js";
 import { pool } from "../mylib/pool.js";
 import { flaky } from "./anti-debug.js";
@@ -199,12 +196,7 @@ export const parseCommand = async ({
 						ninjaLv -= 2;
 						results.push("！禁断呪文バルス発動！\nこのスレは崩壊しますた。。");
 						balsResNumCache.set(threadId, nextResNum);
-						if (PROD_MODE) {
-							makeThreadCoolTimes.set(
-								userId,
-								addMinutes(new Date(), randInt(120, 180)),
-							);
-						}
+						tokenBucket.applyLongRandomLimit(userId);
 						shouldUpdateMeta = true;
 						break;
 				}
