@@ -302,6 +302,7 @@
         saveData();
         activeLayer = new oekaki.LayeredCanvas("レイヤー #3");
         saveData();
+        saveMeta();
       }, 500);
       let _conflictId = conflictId;
     }
@@ -384,6 +385,7 @@
         saveData();
         activeLayer = new oekaki.LayeredCanvas("レイヤー #2");
         saveData();
+        saveMeta();
       }
     })();
   });
