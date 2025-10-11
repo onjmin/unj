@@ -69,6 +69,54 @@
     contentType === Enum.Video ||
     contentType === Enum.Audio ||
     contentType === Enum.Game;
+
+  const onpaste = async (e: ClipboardEvent) => {
+    let imageItem: DataTransferItem | null = null;
+    let textItem: DataTransferItem | null = null;
+    for (const v of e.clipboardData?.items ?? []) {
+      if (v.kind === "file" && v.type.startsWith("image/")) imageItem = v;
+      if (v.kind === "string" && v.type === "text/plain") textItem = v;
+    }
+    if (imageItem) {
+      // 画像ペーストの場合
+      const _contentType = Enum.Image;
+      if ((_contentType & contentTypesBitmask) === 0) return;
+      const blob = imageItem.getAsFile();
+      if (!blob) return;
+      URL.revokeObjectURL(previewUrl);
+      fileName = "クリップボードの画像";
+      previewUrl = URL.createObjectURL(blob);
+      contentUrl = previewUrl;
+      contentType = _contentType;
+    } else if (textItem) {
+      // 文字列ペーストの場合
+      const pasteText = await new Promise<string>((resolve) =>
+        textItem.getAsString(resolve),
+      );
+      const m = pasteText?.trim().match(regexUrl);
+      if (!m) return;
+      let url: URL | undefined;
+      try {
+        url = new URL(m[0]);
+      } catch (err) {}
+      if (!url) return;
+      let _contentType = 0;
+      if (findIn(gif, url.hostname) && url.href.slice(-4) === ".gif") {
+        _contentType = Enum.Gif;
+      } else if (findIn(image, url.hostname)) _contentType = Enum.Image;
+      else if (findIn(video, url.hostname)) _contentType = Enum.Video;
+      else if (findIn(audio, url.hostname)) _contentType = Enum.Audio;
+      else if (findIn(game, url.hostname)) _contentType = Enum.Game;
+      else _contentType = Enum.Url;
+      if ((_contentType & contentTypesBitmask) !== 0) {
+        contentType = _contentType;
+        contentUrl = url.href;
+      }
+      setTimeout(() => {
+        contentText = contentText.replace(m[0], "").trim();
+      });
+    }
+  };
 </script>
 
 <AvatarPart {board} bind:open={openAvatar} bind:userAvatar />
@@ -118,51 +166,7 @@
       tryRes();
     }
   }}
-  onpaste={async (e: ClipboardEvent) => {
-    let imageItem: DataTransferItem | null = null;
-    let textItem: DataTransferItem | null = null;
-    for (const v of e.clipboardData?.items ?? []) {
-      if (v.kind === "file" && v.type.startsWith("image/")) imageItem = v;
-      if (v.kind === "string" && v.type === "text/plain") textItem = v;
-    }
-    if (imageItem) {
-      // 画像ペーストの場合
-      const _contentType = Enum.Image;
-      if ((_contentType & contentTypesBitmask) === 0) return;
-      const blob = imageItem.getAsFile();
-      if (!blob) return;
-      URL.revokeObjectURL(previewUrl);
-      fileName = "クリップボードの画像";
-      previewUrl = URL.createObjectURL(blob);
-      contentUrl = previewUrl;
-      contentType = _contentType;
-    } else if (textItem) {
-      // 文字列ペーストの場合
-      const pasteText = await new Promise<string>((resolve) =>
-        textItem.getAsString(resolve),
-      );
-      const m = pasteText?.trim().match(regexUrl);
-      if (!m) return;
-      let url;
-      try {
-        url = new URL(m[0]);
-      } catch (err) {}
-      if (!url) return;
-      let _contentType = 0;
-      if (findIn(gif, url.hostname) && url.href.slice(-4) === ".gif") {
-        _contentType = Enum.Gif;
-      } else if (findIn(image, url.hostname)) _contentType = Enum.Image;
-      else if (findIn(video, url.hostname)) _contentType = Enum.Video;
-      else if (findIn(audio, url.hostname)) _contentType = Enum.Audio;
-      else if (findIn(game, url.hostname)) _contentType = Enum.Game;
-      else _contentType = Enum.Url;
-      if ((_contentType & contentTypesBitmask) !== 0) {
-        contentType = _contentType;
-        contentUrl = url.href;
-      }
-      setTimeout(() => (contentText = contentText.replace(m[0], "").trim()));
-    }
-  }}
+  {onpaste}
 >
   {#snippet trailingIcon()}
     {#if contentType === Enum.Image}
@@ -210,30 +214,33 @@
     label="URL欄"
     bind:value={contentUrl}
     input$maxlength={1024}
+    {onpaste}
   >
     {#snippet trailingIcon()}
-      {#if contentUrl === ""}
-        <IconButton
-          {disabled}
-          class="material-icons"
-          onclick={() => {
-            openUrlTemplate = true;
-          }}
-        >
-          add_link
-        </IconButton>
-      {:else}
-        <IconButton
-          {disabled}
-          class="material-icons"
-          onclick={() => {
-            URL.revokeObjectURL(previewUrl);
-            previewUrl = "";
-            contentUrl = "";
-          }}
-        >
-          link_off
-        </IconButton>
+      {#if contentType !== Enum.Url}
+        {#if contentUrl === ""}
+          <IconButton
+            {disabled}
+            class="material-icons"
+            onclick={() => {
+              openUrlTemplate = true;
+            }}
+          >
+            add_link
+          </IconButton>
+        {:else}
+          <IconButton
+            {disabled}
+            class="material-icons"
+            onclick={() => {
+              URL.revokeObjectURL(previewUrl);
+              previewUrl = "";
+              contentUrl = "";
+            }}
+          >
+            link_off
+          </IconButton>
+        {/if}
       {/if}
     {/snippet}
     {#snippet helper()}
