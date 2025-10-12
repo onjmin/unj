@@ -162,6 +162,7 @@ export default ({ socket }: { socket: Socket }) => {
 				resCount: 1,
 				// 基本的な情報
 				title: makeThread.output.title,
+				boardId: board.id,
 				// 動的なデータ
 				online: 1,
 				ikioi: 0,

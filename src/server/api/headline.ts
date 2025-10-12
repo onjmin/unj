@@ -66,6 +66,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 					resCount,
 					// 基本的な情報
 					title: record.title,
+					boardId: board.id,
 					// 動的なデータ
 					online: sizeOf(io, getThreadRoom(record.id)),
 					ikioi:

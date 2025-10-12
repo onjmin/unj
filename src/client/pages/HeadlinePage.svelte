@@ -73,10 +73,11 @@
     };
 
     let threadList: HeadlineThread[] | undefined = $state();
-    const cache = new ObjectStorage<HeadlineThread[]>(
-        `headlineCache###${board.id}`,
-    );
+    let cache: ObjectStorage<HeadlineThread[]>;
     $effect(() => {
+        cache = new ObjectStorage<HeadlineThread[]>(
+            `headlineCache###${board.id}`,
+        );
         cache.get().then((v) => {
             if (v && !threadList) threadList = v;
         });
@@ -203,6 +204,7 @@
             latestResAt,
             resCount: 0,
             title,
+            boardId: board.id,
             online: 0,
             ikioi: 0,
             lolCount: 0,

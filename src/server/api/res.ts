@@ -320,6 +320,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 					resCount: nextResNum,
 					// 基本的な情報
 					title: titleCache.get(threadId) ?? "",
+					boardId: board.id,
 					// 動的なデータ
 					online: sizeOf(io, getThreadRoom(threadId)),
 					ikioi:

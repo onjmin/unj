@@ -8,6 +8,7 @@ export type HeadlineThread = {
 	resCount: number;
 	// 基本的な情報
 	title: string;
+	boardId: number;
 	// 動的なデータ
 	online: number;
 	ikioi: number;
