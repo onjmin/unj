@@ -59,8 +59,9 @@ body {
 @media (min-width: 1024px) {
 	/* Tailwindのpcブレークポイント */
 	.unj-main-part.menu {
-		max-width: 60svw;
-		min-width: 60svw;
+		width: calc(100svw - 512px);
+		max-width: calc(100svw - 512px);
+		min-width: calc(100svw - 512px);
 		/* PCでコンテンツを中央寄せにするためにmx-autoを適用 */
 		margin-left: auto;
 		margin-right: auto;

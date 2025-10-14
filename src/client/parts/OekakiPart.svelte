@@ -326,7 +326,7 @@
       const contentRatio = isPortrait ? 16 / 9 : 9 / 16;
 
       const main = document.querySelector(".unj-main-part") ?? document.body;
-      const targetWidth = main.clientWidth * (isPortrait ? 0.8 : 0.96);
+      const targetWidth = main.clientWidth * 0.8;
       const targetHeight = targetWidth * contentRatio;
 
       width = targetWidth | 0;
@@ -522,7 +522,7 @@
   });
   const setDotSize = () => {
     unjStorage.dotPenScale.value = String(dotPenScale);
-    oekaki.setDotSize(dotPenScale[0], 112); // 24インチ・フルHD・誤差込みで高さが128ドットになるのが112, 幅は216になる
+    oekaki.setDotSize(dotPenScale[0], 124); // 24インチ/フルHD = 220.8 : 124
     document.documentElement.style.setProperty(
       "--grid-cell-size",
       `${oekaki.getDotSize()}px`,
