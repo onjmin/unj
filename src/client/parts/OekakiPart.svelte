@@ -161,7 +161,7 @@
    */
   const handlePaste = async (e: ClipboardEvent) => {
     if (notDrawing(e)) return;
-    if (!activeLayer || activeLayer?.locked) return;
+    if (!activeLayer?.editable) return;
     let imageItem: DataTransferItem | null = null;
     let textItem: DataTransferItem | null = null;
     for (const v of e.clipboardData?.items ?? []) {
@@ -402,41 +402,37 @@
         dropper(x, y);
         dropping = false;
       } else {
-        if (!activeLayer?.locked) {
-          if (choiced.label === tool.brush.label) {
-            activeLayer?.drawLine(x, y, prevX, prevY);
-          } else if (choiced.label === tool.translate.label) {
-            if (isGrid) {
-              activeLayer?.translateByDot(x - prevX, y - prevY);
-            } else {
-              activeLayer?.translate(x - prevX, y - prevY);
-            }
+        if (choiced.label === tool.brush.label) {
+          activeLayer?.drawLine(x, y, prevX, prevY);
+        } else if (choiced.label === tool.translate.label) {
+          if (isGrid) {
+            activeLayer?.translateByDot(x - prevX, y - prevY);
           } else {
-            const lerps = oekaki.lerp(x, y, prevX, prevY);
-            switch (choiced.label) {
-              case tool.pen.label:
-                for (const [x, y] of lerps) {
-                  if (isGrid) {
-                    erasable
-                      ? activeLayer?.eraseByDot(x, y)
-                      : activeLayer?.drawByDot(x, y);
-                  } else {
-                    erasable
-                      ? activeLayer?.erase(x, y)
-                      : activeLayer?.draw(x, y);
-                  }
+            activeLayer?.translate(x - prevX, y - prevY);
+          }
+        } else {
+          const lerps = oekaki.lerp(x, y, prevX, prevY);
+          switch (choiced.label) {
+            case tool.pen.label:
+              for (const [x, y] of lerps) {
+                if (isGrid) {
+                  erasable
+                    ? activeLayer?.eraseByDot(x, y)
+                    : activeLayer?.drawByDot(x, y);
+                } else {
+                  erasable ? activeLayer?.erase(x, y) : activeLayer?.draw(x, y);
                 }
-                break;
-              case tool.eraser.label:
-                for (const [x, y] of lerps) {
-                  if (isGrid) {
-                    activeLayer?.eraseByDot(x, y);
-                  } else {
-                    activeLayer?.erase(x, y);
-                  }
+              }
+              break;
+            case tool.eraser.label:
+              for (const [x, y] of lerps) {
+                if (isGrid) {
+                  activeLayer?.eraseByDot(x, y);
+                } else {
+                  activeLayer?.erase(x, y);
                 }
-                break;
-            }
+              }
+              break;
           }
         }
       }
@@ -454,7 +450,7 @@
     oekaki.onDrawn((x, y, buttons) => {
       prevX = null;
       prevY = null;
-      if (activeLayer?.locked) return;
+      if (!activeLayer?.editable) return;
       if (choiced.label === tool.fill.label && !dropping) fill(x, y);
       dropping = false;
       fin();
