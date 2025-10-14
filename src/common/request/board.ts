@@ -80,6 +80,12 @@ export const touhouBoard = new Board({
 	name: "東方なりきり",
 	description: "好きな東方キャラになりきって雑談しよう！オリキャラも参加OK！",
 });
+export const unchiBoard = new Board({
+	id: 5,
+	key: "unchi",
+	name: "うんち板",
+	description: "うんちについて話す板です。",
+});
 for (const v of touhouAvatars) touhouBoard.avatarMap.set(v.id, v);
 
 export const publicBoards = [...boardMap.values()].filter((v) => v.id);
