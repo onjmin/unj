@@ -28,7 +28,7 @@ export class TokenBucket {
 	 * @param userId ユーザーID
 	 * @returns 操作できる場合 true、制限中なら false
 	 */
-	public attempt(userId: number): boolean {
+	public attempt(userId = 0): boolean {
 		const now = new Date();
 		const bucket = this.buckets.get(userId) ?? {
 			tokens: this.capacity,
@@ -59,7 +59,7 @@ export class TokenBucket {
 	 * @param userId ユーザーID
 	 * @returns 残り秒数（投稿可能なら0）
 	 */
-	public getCooldownSeconds(userId: number): number {
+	public getCooldownSeconds(userId = 0): number {
 		const now = new Date();
 		const bucket = this.buckets.get(userId);
 
@@ -86,7 +86,7 @@ export class TokenBucket {
 	/**
 	 * スレ立てなどに長いクールタイムを追加（特別措置）
 	 */
-	public applyLongRandomLimit(userId: number): void {
+	public applyLongRandomLimit(userId = 0): void {
 		// トークンをゼロにして、回復を止める代わりに一時的にlastRefillを未来に飛ばす
 		const bucket = this.buckets.get(userId) ?? {
 			tokens: this.capacity,

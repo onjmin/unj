@@ -1,10 +1,4 @@
-import {
-	addDays,
-	addSeconds,
-	differenceInDays,
-	isAfter,
-	isBefore,
-} from "date-fns";
+import { addDays, differenceInDays, isAfter, isBefore } from "date-fns";
 import type { Socket } from "socket.io";
 import * as v from "valibot";
 import {
@@ -31,6 +25,7 @@ import {
 } from "./cache.js";
 import { getIP } from "./ip.js";
 import { logger } from "./log.js";
+import { TokenBucket } from "./token-bucket.js";
 
 /**
  * JWT風トークン
@@ -114,27 +109,24 @@ const updateAuthToken = (socket: Socket) => {
 	lazyUpdate(rawUserId, token, getIP(socket));
 };
 
-const initFIFO = [new Date()];
-const rateLimitCount = 11.4514;
-const rateLimitSec = 45.45;
+const tokenBucket = new TokenBucket({
+	capacity: 3,
+	refillRate: 1 / 60, // 60秒で1回復
+	costPerAction: 1,
+});
 
 /**
  * userの探索と新規発行
  */
 const init = async (socket: Socket): Promise<boolean> => {
 	// 実質誰でも叩けるので制限を設ける
-	if (initFIFO.length > rateLimitCount) {
-		if (isAfter(new Date(), addSeconds(initFIFO[0], rateLimitSec))) {
-			initFIFO.shift();
-			initFIFO.push(new Date());
-		} else {
-			kick(socket, "newUsersRateLimit");
-			socket.disconnect();
-			return false;
-		}
-	} else {
-		initFIFO.push(new Date());
+	if (!tokenBucket.attempt()) {
+		logger.verbose(`⌛ ${tokenBucket.getCooldownSeconds().toFixed(1)}`);
+		kick(socket, "newUsersRateLimit");
+		socket.disconnect();
+		return false;
 	}
+
 	const token = getTokenParam(socket);
 
 	// 危険な処理
