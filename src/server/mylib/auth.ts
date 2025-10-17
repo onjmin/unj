@@ -127,11 +127,10 @@ const init = async (socket: Socket): Promise<boolean> => {
 		return false;
 	}
 
-	const token = getTokenParam(socket);
-
 	// 危険な処理
 	try {
 		// 既存ユーザー照合
+		const token = getTokenParam(socket);
 		if (token) {
 			const { rows, rowCount } = await pool.query(
 				"SELECT id, ninja_pokemon, ninja_score FROM users WHERE auth = $1",
