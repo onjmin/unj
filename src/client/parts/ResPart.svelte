@@ -246,7 +246,12 @@
           </div>
         {/key}
       {/if}
+      {#if contentType === Enum.Dtm}
+        <div class="text-red-400">※DTM機能</div>
+        <DecryptPart bind:contentText bind:contentType />
+      {/if}
       {#if contentType === Enum.Encrypt}
+        <div class="text-red-400">※暗号レス</div>
         <DecryptPart bind:contentText bind:contentType />
       {/if}
     </div>

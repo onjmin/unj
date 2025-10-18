@@ -58,7 +58,6 @@
                 class="w-full border rounded-md py-2 pl-10 pr-3 text-sm focus:ring-indigo-500
                 focus:border-indigo-500 shadow-sm transition-colors"
                 placeholder="パスワード"
-                aria-label="パスワード"
                 disabled={isLoading}
             />
         </div>

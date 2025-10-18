@@ -24,7 +24,7 @@
             name="password"
             type={inputType}
             bind:value={password}
-            placeholder="パスワードを入力"
+            placeholder="暗号化に使うパスワードを入力"
             class="flex-1 min-w-0 py-2.5 px-3 text-sm text-gray-900 bg-white focus:outline-none border-none"
             autocomplete="off"
         />
