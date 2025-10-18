@@ -16,6 +16,7 @@
     import gif from "../../common/request/whitelist/gif.js";
     import image from "../../common/request/whitelist/image.js";
     import { findIn } from "../../common/request/whitelist/site-info.js";
+    import sns from "../../common/request/whitelist/sns.js";
     import video from "../../common/request/whitelist/video.js";
     import { makePathname } from "../mylib/env.js";
     import {
@@ -170,6 +171,7 @@
             else if (findIn(video, url.hostname)) _contentType = Enum.Video;
             else if (findIn(audio, url.hostname)) _contentType = Enum.Audio;
             else if (findIn(game, url.hostname)) _contentType = Enum.Game;
+            else if (findIn(sns, url.hostname)) _contentType = Enum.Sns;
             if (_contentType !== 0) return [url.href, _contentType];
         }
     };

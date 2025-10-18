@@ -13,9 +13,12 @@
   import gif from "../../common/request/whitelist/gif.js";
   import image from "../../common/request/whitelist/image.js";
   import { findIn } from "../../common/request/whitelist/site-info.js";
+  import sns from "../../common/request/whitelist/sns.js";
   import video from "../../common/request/whitelist/video.js";
   import { UnjStorage } from "../mylib/unj-storage.js";
   import AvatarPart from "./AvatarPart.svelte";
+  import DtmPart from "./DtmPart.svelte";
+  import EncryptPart from "./EncryptPart.svelte";
   import ImageUploaderPart from "./ImageUploaderPart.svelte";
   import UrlTemplatePart from "./UrlTemplatePart.svelte";
 
@@ -25,6 +28,7 @@
     textarea = $bindable(null),
     userName = $bindable(""),
     userAvatar = $bindable(0),
+    password = $bindable(""),
     contentText = $bindable(""),
     contentUrl = $bindable(""),
     contentType = $bindable(0),
@@ -55,6 +59,13 @@
     userAvatarUnjStorage.value = String(userAvatar);
   });
 
+  // UnjStorage
+  const passwordUnjStorage = new UnjStorage(`password###${board.id}`);
+  password = passwordUnjStorage.value ?? "";
+  $effect(() => {
+    passwordUnjStorage.value = password;
+  });
+
   let avatarSrc = $state("");
   $effect(() => {
     avatarSrc = board.avatarMap.get(userAvatar)?.src ?? "";
@@ -68,7 +79,8 @@
     contentType === Enum.Gif ||
     contentType === Enum.Video ||
     contentType === Enum.Audio ||
-    contentType === Enum.Game;
+    contentType === Enum.Game ||
+    contentType === Enum.Sns;
 
   const onpaste = async (e: ClipboardEvent) => {
     let imageItem: DataTransferItem | null = null;
@@ -107,6 +119,7 @@
       else if (findIn(video, url.hostname)) _contentType = Enum.Video;
       else if (findIn(audio, url.hostname)) _contentType = Enum.Audio;
       else if (findIn(game, url.hostname)) _contentType = Enum.Game;
+      else if (findIn(sns, url.hostname)) _contentType = Enum.Sns;
       else _contentType = Enum.Url;
       if ((_contentType & contentTypesBitmask) !== 0) {
         contentType = _contentType;
@@ -208,7 +221,7 @@
   </Select>
 {/if}
 
-{#if contentType === Enum.Url || contentType === Enum.Image || contentType === Enum.Gif || contentType === Enum.Video || contentType === Enum.Audio || contentType === Enum.Game}
+{#if visibleUrlField(contentType)}
   <Textfield
     {disabled}
     label="URL欄"
@@ -217,7 +230,7 @@
     {onpaste}
   >
     {#snippet trailingIcon()}
-      {#if contentType !== Enum.Url}
+      {#if visibleTemplate(contentType)}
         {#if contentUrl === ""}
           <IconButton
             {disabled}
@@ -252,6 +265,12 @@
 {#key contentType}
   {#if contentType === Enum.Image}
     <ImageUploaderPart bind:fileName bind:previewUrl bind:contentUrl />
+  {/if}
+  {#if contentType === Enum.Dtm}
+    <DtmPart />
+  {/if}
+  {#if contentType === Enum.Encrypt}
+    <EncryptPart bind:password />
   {/if}
 {/key}
 

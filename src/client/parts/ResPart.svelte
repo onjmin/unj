@@ -7,6 +7,7 @@
   import { ja } from "date-fns/locale";
   import { Link } from "svelte-routing";
   import {
+    Enum,
     ankaRegex,
     contentTemplateMap,
   } from "../../common/request/content-schema.js";
@@ -16,6 +17,7 @@
   import { makePathname } from "../mylib/env.js";
   import { ObjectStorage } from "../mylib/object-storage.js";
   import { jumpToAnka, makeUnjResNumId } from "../mylib/scroll.js";
+  import DecryptPart from "./DecryptPart.svelte";
   import EmbedPart from "./EmbedPart.svelte";
 
   let {
@@ -243,6 +245,9 @@
             />
           </div>
         {/key}
+      {/if}
+      {#if contentType === Enum.Encrypt}
+        <DecryptPart bind:contentText bind:contentType />
       {/if}
     </div>
   </div>

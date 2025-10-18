@@ -56,6 +56,7 @@
     } from "../../common/request/whitelist/site-info.js";
     import type { Meta, Res, Thread } from "../../common/response/schema.js";
     import { randInt, sleep } from "../../common/util.js";
+    import { encrypt } from "../mylib/aes-gcm.js";
     import { genAiWebhookHash, genNonce } from "../mylib/anti-debug.js";
     import {
         getResizedBase64Image,
@@ -128,6 +129,7 @@
 
     let userName = $state("");
     let userAvatar = $state(0);
+    let password = $state("");
     let contentText = $state("");
     let contentUrl = $state("");
     let contentType = $state(0);
@@ -598,7 +600,20 @@
             }
         }
 
-        if (!contentUrl) contentType = Enum.Text;
+        // 暗号レス
+        const _contentText = contentText;
+        if (contentType === Enum.Encrypt) {
+            contentText = await encrypt(contentText, password);
+        }
+
+        if (
+            !contentUrl &&
+            contentType !== Enum.Dtm &&
+            contentType !== Enum.Encrypt
+        ) {
+            contentType = Enum.Text;
+        }
+
         const data = {
             nonce: genNonce(nonceKey.value ?? ""),
             threadId,
@@ -622,6 +637,7 @@
             return res.output;
         })();
         if (!result) {
+            if (contentType === Enum.Encrypt) contentText = _contentText;
             await sleep(1024);
             emitting = false;
             return;
@@ -707,6 +723,7 @@
         bind:textarea
         bind:userName
         bind:userAvatar
+        bind:password
         bind:contentText
         bind:contentUrl
         bind:contentType

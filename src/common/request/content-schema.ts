@@ -10,6 +10,7 @@ import whitelistGif from "./whitelist/gif.js";
 import whitelistImage from "./whitelist/image.js";
 import whitelistOekaki from "./whitelist/oekaki.js";
 import { findIn } from "./whitelist/site-info.js";
+import whitelistSns from "./whitelist/sns.js";
 import whitelistVideo from "./whitelist/video.js";
 
 export const ankaRegex = />>(?:[1-9][0-9]{0,3})(?![0-9])/g; // >>1-9999
@@ -67,7 +68,10 @@ export const Enum = {
 	Video: 16,
 	Audio: 32,
 	Game: 64,
+	Sns: 128,
 	Oekaki: 1024,
+	Dtm: 2048,
+	Encrypt: 4096,
 } as const;
 export type EnumType = (typeof Enum)[keyof typeof Enum];
 
@@ -98,6 +102,7 @@ const UrlSchema = v.object({
 		v.check((input) => !findIn(whitelistGif, new URL(input).hostname)),
 		v.check((input) => !findIn(whitelistVideo, new URL(input).hostname)),
 		v.check((input) => !findIn(whitelistAudio, new URL(input).hostname)),
+		v.check((input) => !findIn(whitelistSns, new URL(input).hostname)),
 	),
 });
 
@@ -146,6 +151,15 @@ const UrlOfGameSchema = v.object({
 	),
 });
 
+export const UrlOfSnsSchema = v.object({
+	contentType: v.pipe(v.number(), v.value(Enum.Sns)),
+	contentText: SAFE_TEXT_MULTILINE,
+	contentUrl: v.pipe(
+		SAFE_URL,
+		v.check((input) => !!findIn(whitelistSns, new URL(input).hostname)),
+	),
+});
+
 export const oekakiSchema = v.object({
 	contentType: v.pipe(v.number(), v.value(Enum.Oekaki)),
 	contentText: SAFE_TEXT_MULTILINE,
@@ -153,6 +167,18 @@ export const oekakiSchema = v.object({
 		SAFE_URL,
 		v.check((input) => !!findIn(whitelistOekaki, new URL(input).hostname)),
 	),
+});
+
+export const DtmSchema = v.object({
+	contentType: v.pipe(v.number(), v.value(Enum.Dtm)),
+	contentText: SAFE_TEXT_SINGLELINE,
+	contentUrl: v.pipe(v.string(), v.length(0)),
+});
+
+export const EncryptSchema = v.object({
+	contentType: v.pipe(v.number(), v.value(Enum.Encrypt)),
+	contentText: SAFE_TEXT_SINGLELINE,
+	contentUrl: v.pipe(v.string(), v.length(0)),
 });
 
 /**
@@ -167,7 +193,10 @@ export const contentSchemaMap = new Map(
 		[Enum.Video]: UrlOfVideoSchema,
 		[Enum.Audio]: UrlOfAudioSchema,
 		[Enum.Game]: UrlOfGameSchema,
+		[Enum.Sns]: UrlOfSnsSchema,
 		[Enum.Oekaki]: oekakiSchema,
+		[Enum.Dtm]: DtmSchema,
+		[Enum.Encrypt]: EncryptSchema,
 	}).map(([k, v]) => [Number(k), v]),
 );
 
@@ -184,7 +213,10 @@ export const contentTemplateMap = new Map(
 		[Enum.Video]: whitelistVideo,
 		[Enum.Audio]: whitelistAudio,
 		[Enum.Game]: whitelistGame,
+		[Enum.Sns]: whitelistSns,
 		[Enum.Oekaki]: whitelistOekaki,
+		[Enum.Dtm]: [],
+		[Enum.Encrypt]: [],
 	}).map(([k, v]) => [Number(k), v]),
 );
 
@@ -193,7 +225,6 @@ export const contentTemplateMap = new Map(
  * プルダウンに表示する順番（入れ替え可能）
  */
 export const contentTypeOptions = [
-	{ bit: Enum.Oekaki, label: "お絵描き" },
 	{ bit: Enum.Text, label: "テキスト" },
 	{ bit: Enum.Url, label: "+URL" },
 	{ bit: Enum.Image, label: "+画像" },
@@ -201,6 +232,10 @@ export const contentTypeOptions = [
 	{ bit: Enum.Video, label: "+動画" },
 	{ bit: Enum.Audio, label: "+音楽" },
 	{ bit: Enum.Game, label: "+ゲーム" },
+	{ bit: Enum.Sns, label: "+SNS" },
+	{ bit: Enum.Oekaki, label: "+お絵描き" },
+	{ bit: Enum.Dtm, label: "DTM" },
+	{ bit: Enum.Encrypt, label: "暗号レス" },
 ];
 
 /**

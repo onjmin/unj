@@ -42,6 +42,7 @@
   } from "../mylib/embed.js";
   import { scrollToEnd } from "../mylib/scroll.js";
   import ImagePreviewModal from "../parts/ImagePreviewPart.svelte";
+  import EmbedXPart from "./EmbedXPart.svelte";
 
   let {
     ccUserId = "",
@@ -76,6 +77,7 @@
   let audioEmbedSpotify = $state(false);
   let audioEmbedSuno = $state(false);
   let gameEmbedRPGEN = $state(false);
+  let snsEmbedX = $state(false);
   const tryEmbed = (siteInfo: SiteInfo) => {
     if (!url) return;
     try {
@@ -173,6 +175,10 @@
         case 6401:
           gameEmbedRPGEN = true;
           embedUrl = parseGameEmbedRPGEN(url) ?? "";
+          break;
+        case 12801:
+          snsEmbedX = true;
+          embedUrl = url.href;
           break;
         case 102401:
           imageEmbed = true;
@@ -299,7 +305,6 @@
         </button>
       {/if}
     </div>
-    <br />
     {#if imageEmbed}
       {#if siteInfo.id === 404}
         <div class="flex justify-start">
@@ -412,6 +417,8 @@
           embedError = true;
         }}
       ></iframe>
+    {:else if snsEmbedX}
+      <EmbedXPart url={embedUrl} />
     {/if}
   {/if}
 {/if}

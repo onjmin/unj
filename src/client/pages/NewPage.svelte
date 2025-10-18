@@ -25,6 +25,7 @@
     import { MakeThreadSchema, myConfig } from "../../common/request/schema.js";
     import type { HeadlineThread } from "../../common/response/schema.js";
     import { randInt, sleep } from "../../common/util.js";
+    import { encrypt } from "../mylib/aes-gcm.js";
     import { genNonce } from "../mylib/anti-debug.js";
     import {
         getResizedBase64Image,
@@ -60,6 +61,7 @@
     let title = $state("");
     let userName = $state("");
     let userAvatar = $state(0);
+    let password = $state("");
     let contentText = $state("");
     let contentUrl = $state("");
     let contentType: EnumType = $state(Enum.Text);
@@ -87,7 +89,6 @@
 
     let ccBitmask = $state([1, 4, 8]);
     let contentTypesBitmask = $state([
-        Enum.Oekaki,
         Enum.Text,
         Enum.Url,
         Enum.Image,
@@ -95,6 +96,10 @@
         Enum.Video,
         Enum.Audio,
         Enum.Game,
+        Enum.Sns,
+        Enum.Oekaki,
+        Enum.Dtm,
+        Enum.Encrypt,
     ]);
     let max = $state(1000);
 
@@ -268,6 +273,20 @@
             }
         }
 
+        // 暗号レス
+        const _contentText = contentText;
+        if (contentType === Enum.Encrypt) {
+            contentText = await encrypt(contentText, password);
+        }
+
+        if (
+            !contentUrl &&
+            contentType !== Enum.Dtm &&
+            contentType !== Enum.Encrypt
+        ) {
+            contentType = Enum.Text;
+        }
+
         if (!contentUrl) contentType = Enum.Text;
         const data = {
             boardId: board.id,
@@ -297,6 +316,7 @@
             return makeThread.output;
         })();
         if (!result) {
+            if (contentType === Enum.Encrypt) contentText = _contentText;
             await sleep(1024);
             emitting = false;
             return;
@@ -515,6 +535,7 @@
             disabled={emitting || isRef}
             bind:userName
             bind:userAvatar
+            bind:password
             bind:contentText
             bind:contentUrl
             bind:contentType
