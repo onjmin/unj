@@ -128,6 +128,10 @@
           imageEmbed = true;
           embedUrl = url.href;
           break;
+        case 431:
+          imageEmbed = true;
+          embedUrl = url.href;
+          break;
         case 801:
           imageEmbed = true;
           embedUrl = parseGifEmbedImgur(url) ?? "";
@@ -224,7 +228,7 @@
       embeddable &&
       siteInfo &&
       (auto ||
-        [401, 402, 403, 405, 411, 421].includes(siteInfo.id) ||
+        [401, 402, 403, 405, 411, 421, 431].includes(siteInfo.id) ||
         temp === oekaki)
     ) {
       tryEmbed(siteInfo);

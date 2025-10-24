@@ -101,6 +101,7 @@
     import BalsPart from "../parts/BalsPart.svelte";
     import ColorWheelPart from "../parts/ColorWheelPart.svelte";
     import DressUpPart from "../parts/DressUpPart.svelte";
+    import DtmPart from "../parts/DtmPart.svelte";
     import KomePart from "../parts/KomePart.svelte";
     import LayerPanelPart from "../parts/LayerPanelPart.svelte";
     import OekakiPart from "../parts/OekakiPart.svelte";
@@ -740,6 +741,9 @@
             bind:toDataURL
             bind:activeLayer
         />
+    {/if}
+    {#if contentType === Enum.Dtm && !menu}
+        <DtmPart />
     {/if}
     <div class="w-full max-w-xs">
         <Button disabled={emitting} onclick={tryRes} variant="raised"

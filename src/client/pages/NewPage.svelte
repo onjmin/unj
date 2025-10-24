@@ -50,6 +50,7 @@
     } from "../mylib/unj-storage.js";
     import { oekakiLogger } from "../mylib/webhook.js";
     import ColorWheelPart from "../parts/ColorWheelPart.svelte";
+    import DtmPart from "../parts/DtmPart.svelte";
     import LayerPanelPart from "../parts/LayerPanelPart.svelte";
     import OekakiPart from "../parts/OekakiPart.svelte";
     import ResFormPart from "../parts/ResFormPart.svelte";
@@ -551,6 +552,9 @@
                 bind:toDataURL
                 bind:activeLayer
             />
+        {/if}
+        {#if contentType === Enum.Dtm}
+            <DtmPart />
         {/if}
         <div class="flex items-center space-x-2 mt-4">
             <input

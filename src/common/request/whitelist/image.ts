@@ -67,4 +67,11 @@ export default [
 		href: "https://www.cloudflare.com/ja-jp/developer-platform/products/r2/",
 		favicon: "www.cloudflare.com",
 	}),
+	new SiteInfo({
+		id: 431,
+		name: "画像うｐろだつくってみた",
+		description: "（注：消す機能まだ）",
+		src: "https://imgr.open2ch.net/i/d81a2.png",
+		favicon: "hayabusa.open2ch.net",
+	}),
 ];

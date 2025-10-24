@@ -17,7 +17,6 @@
   import video from "../../common/request/whitelist/video.js";
   import { UnjStorage } from "../mylib/unj-storage.js";
   import AvatarPart from "./AvatarPart.svelte";
-  import DtmPart from "./DtmPart.svelte";
   import EncryptPart from "./EncryptPart.svelte";
   import ImageUploaderPart from "./ImageUploaderPart.svelte";
   import UrlTemplatePart from "./UrlTemplatePart.svelte";
@@ -265,9 +264,6 @@
 {#key contentType}
   {#if contentType === Enum.Image}
     <ImageUploaderPart bind:fileName bind:previewUrl bind:contentUrl />
-  {/if}
-  {#if contentType === Enum.Dtm}
-    <DtmPart />
   {/if}
   {#if contentType === Enum.Encrypt}
     <EncryptPart bind:password />
