@@ -152,6 +152,10 @@
           imageEmbed = true;
           embedUrl = parseGifEmbedImgBB(url) ?? "";
           break;
+        case 831:
+          imageEmbed = true;
+          embedUrl = url.href;
+          break;
         case 1601:
           videoEmbedYouTube = true;
           embedUrl = parseVideoEmbedYouTube(url) ?? "";
