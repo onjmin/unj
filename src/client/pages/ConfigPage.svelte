@@ -513,13 +513,13 @@
                         {#snippet paginationControls()}
                             {#if totalPagesOfUploadList > 1}
                                 <div
-                                    class="flex justify-center items-center mt-4 space-x-2"
+                                    class="flex justify-center items-center mt-4 space-x-2 text-sm"
                                 >
                                     <button
                                         onclick={() =>
                                             (currentPageOfUploadList = 1)}
                                         disabled={currentPageOfUploadList === 1}
-                                        class="px-3 py-1 rounded-md bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+                                        class="px-3 py-1 rounded-md bg-gray-100/10 hover:bg-gray-100/20 disabled:opacity-50 transition-colors"
                                     >
                                         最初へ
                                     </button>
@@ -527,11 +527,11 @@
                                         onclick={() =>
                                             currentPageOfUploadList--}
                                         disabled={currentPageOfUploadList === 1}
-                                        class="px-3 py-1 rounded-md bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+                                        class="px-3 py-1 rounded-md bg-gray-100/10 hover:bg-gray-100/20 disabled:opacity-50 transition-colors"
                                     >
                                         前へ
                                     </button>
-                                    <span
+                                    <span class="text-gray-500"
                                         >{currentPageOfUploadList} / {totalPagesOfUploadList}</span
                                     >
                                     <button
@@ -539,7 +539,7 @@
                                             currentPageOfUploadList++}
                                         disabled={currentPageOfUploadList ===
                                             totalPagesOfUploadList}
-                                        class="px-3 py-1 rounded-md bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+                                        class="px-3 py-1 rounded-md bg-gray-100/10 hover:bg-gray-100/20 disabled:opacity-50 transition-colors"
                                     >
                                         次へ
                                     </button>
@@ -549,7 +549,7 @@
                                                 totalPagesOfUploadList)}
                                         disabled={currentPageOfUploadList ===
                                             totalPagesOfUploadList}
-                                        class="px-3 py-1 rounded-md bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+                                        class="px-3 py-1 rounded-md bg-gray-100/10 hover:bg-gray-100/20 disabled:opacity-50 transition-colors"
                                     >
                                         最後へ
                                     </button>
