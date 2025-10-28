@@ -665,27 +665,29 @@
                         {#snippet paginationControls()}
                             {#if totalPages > 1}
                                 <div
-                                    class="flex justify-center items-center mt-4 space-x-2"
+                                    class="flex justify-center items-center mt-4 space-x-2 text-sm"
                                 >
                                     <button
                                         onclick={() => (currentPage = 1)}
                                         disabled={currentPage === 1}
-                                        class="px-3 py-1 rounded-md bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+                                        class="px-3 py-1 rounded-md bg-gray-100/10 hover:bg-gray-100/20 disabled:opacity-50 transition-colors"
                                     >
                                         最初へ
                                     </button>
                                     <button
                                         onclick={() => currentPage--}
                                         disabled={currentPage === 1}
-                                        class="px-3 py-1 rounded-md bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+                                        class="px-3 py-1 rounded-md bg-gray-100/10 hover:bg-gray-100/20 disabled:opacity-50 transition-colors"
                                     >
                                         前へ
                                     </button>
-                                    <span>{currentPage} / {totalPages}</span>
+                                    <span class="text-gray-500"
+                                        >{currentPage} / {totalPages}</span
+                                    >
                                     <button
                                         onclick={() => currentPage++}
                                         disabled={currentPage === totalPages}
-                                        class="px-3 py-1 rounded-md bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+                                        class="px-3 py-1 rounded-md bg-gray-100/10 hover:bg-gray-100/20 disabled:opacity-50 transition-colors"
                                     >
                                         次へ
                                     </button>
@@ -693,7 +695,7 @@
                                         onclick={() =>
                                             (currentPage = totalPages)}
                                         disabled={currentPage === totalPages}
-                                        class="px-3 py-1 rounded-md bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+                                        class="px-3 py-1 rounded-md bg-gray-100/10 hover:bg-gray-100/20 disabled:opacity-50 transition-colors"
                                     >
                                         最後へ
                                     </button>
