@@ -44,6 +44,15 @@
 
 <svelte:head>
   <title>{title}</title>
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Yuji+Mai&display=swap"
+  />
+  <style>
+    .content-text {
+      font-family: "Yuji Mai", sans-serif !important;
+    }
+  </style>
 </svelte:head>
 
 <div class="absolute inset-0 z-0">
