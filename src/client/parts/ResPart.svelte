@@ -15,6 +15,7 @@
   import { seededRandArray } from "../../common/util.js";
   import { activeController } from "../mylib/background-embed.js";
   import { makePathname } from "../mylib/env.js";
+  import { makeSeededSuffix } from "../mylib/halloween.js";
   import { ObjectStorage } from "../mylib/object-storage.js";
   import { jumpToAnka, makeUnjResNumId } from "../mylib/scroll.js";
   import DecryptPart from "./DecryptPart.svelte";
@@ -206,7 +207,7 @@
                 >>{part.value}</button
               >
             {/if}
-          {/each}
+          {/each}{makeSeededSuffix(createdAt.toString())}
         </div>
       {/if}
       {#if commandResult !== ""}
