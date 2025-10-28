@@ -46,6 +46,15 @@
   <title>{title}</title>
 </svelte:head>
 
+<div class="absolute inset-0 z-0">
+  <img
+    src="https://images.unsplash.com/photo-1665582300475-d9b6f074495b"
+    alt="Background"
+    class="h-screen w-full object-cover opacity-20"
+    aria-hidden="true"
+  />
+</div>
+
 <header class="unj-header-part w-full bg-gray-800 text-gray-200 shadow-md">
   <div class="max-w-6xl mx-auto px-4 flex items-center">
     <!-- ヘッダー左端：ボタン -->
