@@ -5,7 +5,7 @@
     import MainPart from "../parts/MainPart.svelte";
     ///////////////
 
-    import { SearchIcon } from "@lucide/svelte";
+    import { SearchIcon, XIcon } from "@lucide/svelte";
     import { format } from "date-fns";
     import { ja } from "date-fns/locale";
     import { Link, navigate } from "svelte-routing";
@@ -145,11 +145,25 @@
                         id="contentText"
                         type="text"
                         bind:value={searchQuery}
-                        class="w-full p-2 pl-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        class="w-full p-2 pl-10 **pr-10** border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="全文検索"
                         onkeydown={(e) =>
                             e.key === "Enter" && isQueryValid && jumpToSearch()}
                     />
+                    {#if searchQuery.length > 0}
+                        <button
+                            type="button"
+                            class="absolute inset-y-0 right-0 flex items-center pr-3"
+                            title="検索内容をクリア"
+                            onclick={() => {
+                                searchQuery = "";
+                            }}
+                        >
+                            <XIcon
+                                class="w-5 h-5 text-gray-400 hover:text-gray-600 transition-colors"
+                            />
+                        </button>
+                    {/if}
                 </div>
                 <button
                     type="submit"
