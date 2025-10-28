@@ -15,7 +15,7 @@
     <div
         class="flex items-center border border-gray-300 rounded-lg shadow-sm focus-within:ring-2 focus-within:ring-indigo-500 focus-within:border-indigo-500"
     >
-        <div class="p-2.5 text-gray-400 bg-white rounded-l-lg">
+        <div class="p-2.5 bg-gray-100/10 rounded-l-lg">
             <Key size={ICON_SIZE} />
         </div>
 
@@ -25,7 +25,7 @@
             type={inputType}
             bind:value={password}
             placeholder="暗号化に使うパスワードを入力"
-            class="flex-1 min-w-0 py-2.5 px-3 text-sm text-gray-900 bg-white focus:outline-none border-none"
+            class="flex-1 min-w-0 py-2.5 px-3 text-sm bg-gray-100/10 focus:outline-none border-none"
             autocomplete="off"
         />
     </div>

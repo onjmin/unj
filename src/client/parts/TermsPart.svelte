@@ -83,16 +83,16 @@
   </div>
 {:else}
   <div>
-    <h1 class="text-3xl font-bold text-gray-900 mb-6 text-center">利用規約</h1>
+    <h1 class="text-3xl font-bold mb-6 text-center text-gray-500">利用規約</h1>
 
     {#each parsedElements as element}
       <div class="text-left">
         {#if element.type === "h2"}
-          <h2 class="text-xl font-semibold text-gray-900 mt-2 mb-1">
+          <h2 class="text-gray-500 text-xl font-semibold mt-2 mb-1">
             {element.content[0].text}
           </h2>
         {:else if element.type === "p"}
-          <p class="text-gray-700 leading-normal my-1">
+          <p class="leading-normal my-1">
             {#each element.content as part}
               {#if part.isBold}
                 <strong class="font-bold">{part.text}</strong>
@@ -102,17 +102,17 @@
             {/each}
           </p>
         {:else if element.type === "li"}
-          <li class="list-disc ml-6 text-gray-700 leading-normal my-1">
+          <li class="list-disc ml-6 leading-normal my-1">
             {element.content[0].text}
           </li>
         {:else if element.type === "hr"}
-          <hr class="my-4 border-t border-gray-200" />
+          <hr class="my-4 border-t border-gray-500" />
         {/if}
       </div>
     {/each}
 
     <hr class="my-6" />
-    <p class="text-sm text-gray-600 text-center">
+    <p class="text-sm text-gray-500 text-center">
       問い合わせ先: {@render mail()}
     </p>
   </div>

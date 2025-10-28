@@ -132,7 +132,9 @@
             </div>
         {:else}
             {#each groupedHistories as group (group.boardId)}
-                <div class="border rounded-lg shadow-sm p-3 bg-white space-y-2">
+                <div
+                    class="border rounded-lg shadow-sm p-3 bg-gray-100/10 space-y-2"
+                >
                     <h2
                         class="text-lg font-bold pb-1 border-b"
                         class:text-green-600={group.isCurrent}

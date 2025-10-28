@@ -132,7 +132,7 @@
 
 <MainPart {board}>
     <div class="container mx-auto p-4 max-w-2xl">
-        <div class="bg-white p-6 rounded-lg shadow-md">
+        <div class="bg-gray-100/10 p-6 rounded-lg shadow-md">
             <div class="flex items-center gap-2">
                 <label for="contentText" class="sr-only">全文検索</label>
                 <div class="relative flex-grow">
@@ -145,7 +145,7 @@
                         id="contentText"
                         type="text"
                         bind:value={searchQuery}
-                        class="w-full p-2 pl-10 **pr-10** border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        class="w-full p-2 pl-10 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="全文検索"
                         onkeydown={(e) =>
                             e.key === "Enter" && isQueryValid && jumpToSearch()}
@@ -222,7 +222,7 @@
                                 {/if}
                             {/each}
                         {/snippet}
-                        <li class="bg-white p-4 rounded-lg shadow-md">
+                        <li class="bg-gray-100/10 p-4 rounded-lg shadow-md">
                             <div>
                                 <div class="flex items-end">
                                     <Link

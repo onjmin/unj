@@ -200,7 +200,7 @@
 
         <select
             bind:value={deadline}
-            class="block w-full h-10 rounded-md border border-gray-300 bg-white px-3 text-gray-700 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 sm:text-sm"
+            class="block w-full h-10 rounded-md border border-gray-300 bg-gray-100/10 px-3 text-gray-700 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 sm:text-sm"
         >
             <option value="" disabled selected>納期</option>
             {#each deadlineOptions as str}

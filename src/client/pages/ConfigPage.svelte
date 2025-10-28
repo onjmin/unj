@@ -193,13 +193,11 @@
 
 <HeaderPart {board} title="個人設定">
     <p>高度な設定</p>
-    <section class="mb-8 p-6 bg-white rounded-lg shadow-md">
-        <h2 class="text-xl font-semibold mb-4 border-b pb-2 text-gray-700">
-            ポケモン忍法帖
-        </h2>
+    <section class="mb-8 p-6 bg-gray-100/10 rounded-lg shadow-md">
+        <h2 class="text-xl font-semibold mb-4 border-b pb-2">ポケモン忍法帖</h2>
 
         <div
-            class="flex flex-col space-y-4 p-4 border rounded-lg bg-indigo-50 shadow-inner items-center sm:items-stretch"
+            class="flex flex-col space-y-4 p-4 border rounded-lg bg-gray-100/10 shadow-inner items-center sm:items-stretch"
         >
             <div class="w-20 h-20 flex-shrink-0 mx-auto">
                 <img
@@ -211,10 +209,10 @@
                 />
             </div>
 
-            <div class="text-center pt-2 border-t border-indigo-200">
-                <p class="text-sm font-medium text-gray-500">No. {pokemonId}</p>
+            <div class="text-center pt-2 border-t bg-gray-100/10">
+                <p class="text-sm font-medium">No. {pokemonId}</p>
                 <div class="flex items-center justify-center space-x-2">
-                    <p class="text-xl font-bold text-indigo-800">
+                    <p class="text-xl font-bold">
                         <strong>{pokemonName}</strong>
                     </p>
                     <button
@@ -225,7 +223,7 @@
                             });
                             sound.play();
                         }}
-                        class="text-indigo-600 hover:text-indigo-800 transition duration-150 p-1 rounded-full hover:bg-indigo-100"
+                        class="transition duration-150 p-1 rounded-full"
                         aria-label="鳴き声を再生"
                     >
                         <Volume2Icon class="w-6 h-6" />
@@ -234,20 +232,16 @@
             </div>
 
             <div class="text-center pt-2 border-t border-indigo-200">
-                <p class="text-sm font-medium text-indigo-600">
-                    ポケモンのレベル
-                </p>
-                <p class="text-4xl font-extrabold text-gray-900">
+                <p class="text-sm font-medium">ポケモンのレベル</p>
+                <p class="text-4xl font-extrabold">
                     Lv.{ninjaLv}
                 </p>
             </div>
         </div>
     </section>
 
-    <section class="p-6 bg-white rounded-lg shadow-md">
-        <h2 class="text-xl font-semibold mb-4 border-b pb-2 text-gray-700">
-            移行用トークン
-        </h2>
+    <section class="p-6 bg-gray-100/10 rounded-lg shadow-md">
+        <h2 class="text-xl font-semibold mb-4 border-b pb-2">移行用トークン</h2>
 
         <div class="space-y-4">
             <div class="flex flex-col space-y-2">
@@ -256,7 +250,7 @@
                         bind:value={token}
                         placeholder="新しいトークンを入力してください"
                         rows="4"
-                        class="w-full p-2 border-2 border-indigo-500 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 resize-y"
+                        class="bg-gray-100/10 w-full p-2 border-2 border-indigo-500 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 resize-y"
                     ></textarea>
                     <button
                         onclick={() => {
@@ -272,7 +266,7 @@
                         value={token}
                         readonly
                         rows="4"
-                        class="w-full p-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-700 cursor-default resize-y"
+                        class="bg-gray-100/10 w-full p-2 border border-gray-300 rounded-lg cursor-default resize-y"
                     ></textarea>
                     <button
                         onclick={() => {
@@ -309,7 +303,7 @@
 <MainPart {board}>
     <p>ここで設定変更できます</p>
     <div class="space-y-4">
-        <div class="bg-white rounded-lg shadow">
+        <div class="bg-gray-100/10 rounded-lg shadow">
             <div
                 tabindex="0"
                 role="button"
@@ -347,7 +341,7 @@
                 </div>
             {/if}
         </div>
-        <div class="bg-white rounded-lg shadow">
+        <div class="bg-gray-100/10 rounded-lg shadow">
             <div
                 tabindex="0"
                 role="button"
@@ -388,7 +382,7 @@
                 </div>
             {/if}
         </div>
-        <div class="bg-white rounded-lg shadow">
+        <div class="bg-gray-100/10 rounded-lg shadow">
             <div
                 tabindex="0"
                 role="button"
@@ -440,7 +434,7 @@
                 </div>
             {/if}
         </div>
-        <div class="bg-white rounded-lg shadow">
+        <div class="bg-gray-100/10 rounded-lg shadow">
             <div
                 tabindex="0"
                 role="button"
@@ -492,7 +486,7 @@
                 </div>
             {/if}
         </div>
-        <div class="bg-white rounded-lg shadow">
+        <div class="bg-gray-100/10 rounded-lg shadow">
             <div
                 tabindex="0"
                 role="button"
@@ -644,7 +638,7 @@
                 </div>
             {/if}
         </div>
-        <div class="bg-white rounded-lg shadow">
+        <div class="bg-gray-100/10 rounded-lg shadow">
             <div
                 tabindex="0"
                 role="button"
@@ -787,7 +781,7 @@
                 </div>
             {/if}
         </div>
-        <div class="bg-white rounded-lg shadow">
+        <div class="bg-gray-100/10 rounded-lg shadow">
             <div
                 tabindex="0"
                 role="button"
