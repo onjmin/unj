@@ -228,7 +228,7 @@
     {/each}
   </ul>
 
-  <div class="flex px-1 py-1 border-t border-gray-300 bg-gray-200">
+  <div class="flex px-1 py-1 border-t border-gray-300 bg-gray-200 text-black">
     <input
       type="text"
       class="flex-1 border rounded-md px-1 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-green-600"

@@ -1160,10 +1160,12 @@
         </Paper>
 
         <div
-            class="mx-auto w-full max-w-sm flex flex-col space-y-2 p-4 bg-gray-200 text-gray-400 rounded-lg"
+            class="mx-auto w-full max-w-sm flex flex-col space-y-2 p-4 bg-gray-100/10 rounded-lg"
         >
             <div class="flex items-center space-x-2 justify-center">
-                <span class="text-sm font-medium">無視設定件数：</span>
+                <span class="text-sm font-medium text-gray-500"
+                    >無視設定件数：</span
+                >
                 <span class="text-lg font-bold">
                     {ignoreList?.size ?? 0}件
                 </span>

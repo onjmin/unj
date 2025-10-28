@@ -145,7 +145,7 @@
                         id="contentText"
                         type="text"
                         bind:value={searchQuery}
-                        class="w-full p-2 pl-10 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        class="w-full p-2 pl-10 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100/10"
                         placeholder="全文検索"
                         onkeydown={(e) =>
                             e.key === "Enter" && isQueryValid && jumpToSearch()}
@@ -167,9 +167,9 @@
                 </div>
                 <button
                     type="submit"
-                    class="min-w-[70px] py-2 px-4 bg-blue-600 text-white rounded-md font-semibold hover:bg-blue-700 transition-colors duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed"
-                    disabled={emitting || !isQueryValid}
                     onclick={jumpToSearch}
+                    disabled={emitting || !isQueryValid}
+                    class="min-w-[70px] py-2 px-4 rounded-md font-semibold transition-colors duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed bg-gray-100/10 hover:bg-gray-100/20"
                 >
                     {#if emitting}
                         <div class="flex items-center justify-center">
@@ -214,7 +214,8 @@
                         {#snippet highlight(text: string)}
                             {#each highlightSafe(text, currentQuery) as part}
                                 {#if part.type === "highlight"}
-                                    <span class="bg-yellow-200 font-semibold"
+                                    <span
+                                        class="text-gray-500 bg-yellow-200 font-semibold"
                                         >{part.value}</span
                                     >
                                 {:else}
@@ -244,7 +245,7 @@
                             </div>
                             {#each results as result}
                                 <div class="flex flex-col mt-2 text-left">
-                                    <div class="text-sm text-gray-800">
+                                    <div class="text-sm">
                                         <Link
                                             to={makePathname(
                                                 `/${board.key}/thread/${threadId}/${result.resNum}`,
@@ -257,7 +258,7 @@
                                                 result.ccUserId,
                                             )}
                                         </span>
-                                        <span class="text-gray-800">
+                                        <span>
                                             {@render highlight(
                                                 result.contentText,
                                             )}

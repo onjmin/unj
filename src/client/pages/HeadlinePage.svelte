@@ -295,7 +295,7 @@
 <MainPart {board}>
     <div class="p-4 sm:p-6 border-b border-gray-200">
         <div
-            class={`${board.banner ? "" : "aspect-[49/12]"} w-[490px] max-w-full mx-auto mb-4 border border-gray-100/10 flex items-center justify-center`}
+            class={`${board.banner ? "" : "aspect-[49/12]"} w-[490px] max-w-full mx-auto mb-4 border border-gray-200/10 flex items-center justify-center`}
         >
             {#if board.banner}
                 <img
@@ -311,7 +311,7 @@
         </div>
 
         <div class="text-left mb-4">
-            <h1 class="text-2xl sm:text-3xl font-bold text-gray-500 mb-1">
+            <h1 class="text-gray-500 text-2xl sm:text-3xl font-bold mb-1">
                 {board.name}
             </h1>
             <p class="text-sm">
@@ -319,6 +319,7 @@
             </p>
         </div>
     </div>
+
     {#if !threadList}
         <p>ヘッドライン取得中…</p>
         <div
@@ -336,27 +337,24 @@
     {:else}
         <div class="mb-3 flex items-center gap-2">
             <div class="relative w-full">
-                <!-- 検索入力ボックス -->
                 <input
                     type="text"
                     placeholder="スレタイ検索"
                     bind:value={searchQuery}
                     onkeydown={(e) => e.key === "Enter" && filterThreadList()}
-                    class="w-full rounded-md border border-gray-300 pl-8 pr-8 py-1 text-sm focus:border-blue-400 focus:ring focus:ring-blue-200 focus:outline-none"
+                    class="w-full rounded-md border border-gray-300 bg-gray-100/10 pl-8 pr-8 py-1 text-sm focus:border-blue-400 focus:ring focus:ring-blue-200 focus:outline-none"
                 />
-                <!-- 検索アイコン -->
                 <div
-                    class="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+                    class="absolute left-2 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
                 >
                     <SearchIcon class="w-4 h-4" />
                 </div>
-                <!-- クリアボタン -->
                 <button
                     onclick={() => {
                         searchQuery = "";
                         filteredThreadList = undefined;
                     }}
-                    class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none transition-opacity duration-200"
+                    class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-600 focus:outline-none transition-opacity duration-200"
                     class:opacity-0={!searchQuery}
                     class:pointer-events-none={!searchQuery}
                 >
@@ -370,6 +368,7 @@
                 検索
             </button>
         </div>
+
         {#if (filteredThreadList ?? threadList).length === 0}
             <div class="p-4 text-center text-gray-500">
                 <p>該当はありませんでした。</p>
@@ -390,7 +389,7 @@
                                     tabindex="0"
                                     role="button"
                                     onkeydown={() => {}}
-                                    class="block w-full text-left p-3 bg-gray-100 hover:bg-gray-200 transition-colors duration-150 ease-in-out cursor-pointer"
+                                    class="block w-full text-left p-3 bg-gray-100/10 hover:bg-gray-100/20 transition-colors duration-150 ease-in-out cursor-pointer"
                                     onclick={() =>
                                         navigate(
                                             makePathname(
@@ -425,10 +424,10 @@
                                                 class="flex flex-col sm:flex-row sm:items-baseline sm:justify-between"
                                             >
                                                 <div
-                                                    class="flex-grow overflow-hidden whitespace-nowrap text-base font-medium text-gray-800 leading-tight pr-2"
+                                                    class="flex-grow overflow-hidden whitespace-nowrap text-base font-medium leading-tight pr-2"
                                                 >
                                                     <div
-                                                        class="flex-grow overflow-hidden whitespace-nowrap text-base font-medium text-gray-800 leading-tight pr-2"
+                                                        class="flex-grow overflow-hidden whitespace-nowrap text-base font-medium leading-tight pr-2"
                                                     >
                                                         <div
                                                             class="inline-flex items-baseline max-w-full"
@@ -438,7 +437,7 @@
                                                                 >{thread.title}</span
                                                             >
                                                             <span
-                                                                class="inline-block flex-shrink-0"
+                                                                class="inline-block flex-shrink-0 text-gray-500"
                                                                 >({thread.resCount})</span
                                                             >
                                                         </div>
@@ -471,7 +470,7 @@
                                             </div>
                                             {#if thread.latestRes}
                                                 <div
-                                                    class="text-gray-600 text-sm mt-1 whitespace-pre-line break-words"
+                                                    class="text-gray-500 text-sm mt-1 whitespace-pre-line break-words"
                                                 >
                                                     <div class="truncate">
                                                         {thread.latestRes}
@@ -482,9 +481,9 @@
                                     </div>
                                 </div>
 
-                                {#if i % 4 === 3 && i !== (threadList ?? []).length - 1}
+                                {#if i % 4 === 3 && i !== (filteredThreadList ?? threadList).length - 1}
                                     <div
-                                        class="border-t border-gray-300 mt-6"
+                                        class="border-t border-gray-500 mt-6"
                                     ></div>
                                 {/if}
                             </li>

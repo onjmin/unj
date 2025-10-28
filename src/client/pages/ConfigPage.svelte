@@ -266,7 +266,7 @@
                         value={token}
                         readonly
                         rows="4"
-                        class="bg-gray-100/10 w-full p-2 border border-gray-300 rounded-lg cursor-default resize-y"
+                        class="bg-gray-100/10 text-gray-500 w-full p-2 border border-gray-300 rounded-lg cursor-default resize-y"
                     ></textarea>
                     <button
                         onclick={() => {

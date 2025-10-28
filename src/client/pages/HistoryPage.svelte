@@ -103,7 +103,7 @@
 
 <HeaderPart {board} title="レス履歴">
     <button
-        class="text-xs text-red-500 font-medium px-2 py-1 rounded-full border border-red-500 hover:bg-red-50"
+        class="text-xs text-red-500 font-medium px-2 py-1 rounded-full border border-red-500 bg-gray-100/10 hover:bg-gray-100/20"
         onclick={() => {
             if (confirm("本当に履歴を全て削除してもよろしいですか？")) {
                 resHistories = [];
@@ -119,27 +119,27 @@
 <MainPart {board}>
     <div class="max-w-2xl mx-auto p-4 space-y-4 text-left">
         {#if !resHistories || resHistories.length === 0}
-            <div class="text-center p-4">
-                <p class="text-lg text-gray-600 mb-2">
+            <div class="text-center p-4 bg-gray-100/10 rounded-lg">
+                <p class="text-lg mb-2">
                     データがありましぇん。ご新規さんかな？
                 </p>
                 <p class="text-sm text-gray-500">
                     なんかついでに<Link
                         to={makePathname(`/${board.key}/new`)}
-                        class="font-medium text-gray-900">投稿</Link
+                        class="font-medium text-blue-500 hover:underline"
+                        >投稿</Link
                     >したり「あとで読む」をしてみてね。
                 </p>
             </div>
         {:else}
             {#each groupedHistories as group (group.boardId)}
                 <div
-                    class="border rounded-lg shadow-sm p-3 bg-gray-100/10 space-y-2"
+                    class="border border-gray-300 rounded-lg shadow-sm p-3 bg-gray-100/10 space-y-2"
                 >
                     <h2
                         class="text-lg font-bold pb-1 border-b"
                         class:text-green-600={group.isCurrent}
                         class:border-green-600={group.isCurrent}
-                        class:text-gray-700={!group.isCurrent}
                         class:border-gray-200={!group.isCurrent}
                     >
                         {group.boardName}
@@ -158,7 +158,7 @@
                                 // board.keyの代わりに、resHistory.boardIdからboard.keyを取得する必要がある
                                 `/${boardIdMap.get(resHistory.boardId)?.key ?? board.key}/thread/${resHistory.threadId}/${resHistory.resNum}`,
                             )}
-                            class="block p-2 rounded hover:bg-gray-50 transition border-b last:border-b-0"
+                            class="block p-2 rounded hover:bg-gray-100/20 transition border-b border-gray-200 last:border-b-0"
                         >
                             <div class="flex items-center space-x-2">
                                 <div class="flex-shrink-0">
@@ -173,7 +173,7 @@
                                 <div class="flex-grow min-w-0">
                                     <div class="flex items-center space-x-1">
                                         <span
-                                            class="font-medium text-gray-900 text-sm truncate"
+                                            class="font-medium text-sm truncate"
                                             >{resHistory.title}</span
                                         >
                                         <span

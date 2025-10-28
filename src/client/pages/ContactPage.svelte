@@ -137,15 +137,13 @@
 <HeaderPart {board} title="お問い合わせ" />
 
 <MainPart {board}>
-    <p class="text-gray-700">
-        当ページからのお問い合わせには、迅速に対応いたします。
-    </p>
-    <p class="mt-2 text-gray-700">
+    <p>当ページからのお問い合わせには、迅速に対応いたします。</p>
+    <p class="mt-2">
         なお、誠に勝手ながら、お問い合わせの送信は1日1回までに制限させていただいております。
     </p>
     {#if isSuspend}
         <div
-            class="mt-4 rounded-lg border border-blue-200 bg-blue-50 p-6 text-blue-800 shadow-md"
+            class="mt-4 rounded-lg border border-blue-200 bg-gray-100/10 p-6 text-blue-800 shadow-md"
         >
             <h2 class="text-xl font-semibold">受付停止中です。</h2>
             {#if resumeDate}
@@ -154,16 +152,15 @@
         </div>
     {/if}
     <div class="mt-6">
-        <div class="flex rounded-lg bg-gray-200 p-1">
+        <div class="flex rounded-lg bg-gray-100/10 p-1">
             {#each contactTypes as tab}
                 <button
                     onclick={() => (active = tab)}
-                    class="flex-1 rounded-md px-4 py-2 text-center text-sm font-medium transition-colors duration-200 focus:outline-none"
-                    class:bg-white={active.label === tab.label}
+                    class={`${active.label === tab.label ? "bg-gray-100/20" : "bg-gray-100/10"} flex-1 rounded-md px-4 py-2 text-center text-sm font-medium transition-colors duration-200 focus:outline-none`}
                     class:shadow-md={active.label === tab.label}
                     class:font-bold={active.label === tab.label}
-                    class:text-blue-600={active.label === tab.label}
-                    class:text-gray-600={active.label !== tab.label}
+                    class:text-blue-500={active.label === tab.label}
+                    class:text-gray-500={active.label !== tab.label}
                 >
                     <tab.icon class="mx-auto mb-1 h-5 w-5" />
                     {tab.label}
@@ -176,13 +173,13 @@
             <input
                 type="email"
                 placeholder="連絡先メールアドレス"
-                class="peer h-10 w-full rounded-md border border-gray-300 px-3 pt-4 placeholder-transparent transition-colors duration-200 focus:border-blue-500 focus:outline-none"
+                class="peer h-10 w-full rounded-md border border-gray-300 px-3 pt-4 placeholder-transparent transition-colors duration-200 focus:border-blue-500 focus:outline-none bg-gray-100/10"
                 bind:value={replyEmail}
                 maxlength={254}
             />
             <label
                 for="replyEmail"
-                class="absolute left-3 top-2 text-xs text-gray-400 transition-all duration-200 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:-translate-y-0 peer-focus:text-xs"
+                class="absolute left-3 top-2 text-xs text-gray-500 transition-all duration-200 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:-translate-y-0 peer-focus:text-xs"
             >
                 連絡先メールアドレス
             </label>
@@ -200,7 +197,7 @@
 
         <select
             bind:value={deadline}
-            class="block w-full h-10 rounded-md border border-gray-300 bg-gray-100/10 px-3 text-gray-700 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 sm:text-sm"
+            class="block w-full h-10 rounded-md border border-gray-300 bg-gray-100/10 px-3 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 sm:text-sm"
         >
             <option value="" disabled selected>納期</option>
             {#each deadlineOptions as str}
