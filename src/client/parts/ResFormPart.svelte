@@ -142,7 +142,7 @@
   input$maxlength={32}
   class="unj-username-textfield"
   style={avatarSrc
-    ? `background-image:linear-gradient(rgba(255,255,255,0.8),rgba(255,255,255,0.8)),url(${avatarSrc});`
+    ? `background-image:linear-gradient(rgba(127,127,127,0.5),rgba(127,127,127,0.5)),url(${avatarSrc});`
     : ""}
 >
   {#snippet trailingIcon()}
