@@ -733,6 +733,7 @@
         {tryRes}
         {isExpand}
         bind:previewUrl
+        {menu}
     />
     {#if contentType === Enum.Oekaki && !menu}
         <OekakiPart

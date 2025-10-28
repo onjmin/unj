@@ -36,6 +36,7 @@
     tryRes,
     isExpand = true,
     previewUrl = $bindable(""),
+    menu = false,
   } = $props();
 
   let openUrlTemplate = $state(false);
@@ -263,7 +264,7 @@
 
 {#key contentType}
   {#if contentType === Enum.Image}
-    <ImageUploaderPart bind:fileName bind:previewUrl bind:contentUrl />
+    <ImageUploaderPart bind:fileName bind:previewUrl bind:contentUrl {menu} />
   {/if}
   {#if contentType === Enum.Encrypt}
     <EncryptPart bind:password />

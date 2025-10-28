@@ -5,6 +5,7 @@
         fileName = $bindable(""),
         previewUrl = $bindable(""),
         contentUrl = $bindable(""),
+        menu = false,
     } = $props();
 
     let fileInput: HTMLInputElement;
@@ -63,6 +64,7 @@
     }
 
     $effect(() => {
+        if (!menu) openFileDialog();
         return () => URL.revokeObjectURL(previewUrl);
     });
 </script>
