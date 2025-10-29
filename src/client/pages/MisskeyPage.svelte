@@ -30,6 +30,7 @@
     import FaviconPart from "../parts/FaviconPart.svelte";
     import ImagePreviewModal from "../parts/ImagePreviewPart.svelte";
     import KomePart from "../parts/KomePart.svelte";
+    import MessageBoxPart from "../parts/MessageBoxPart.svelte";
 
     const INITIAL_LIMIT = 16;
     const LOAD_MORE_LIMIT = 16;
@@ -212,14 +213,15 @@
 <MainPart {board}>
     {#if timeline.length === 0}
         <p>スレ取得中…</p>
-        <div
-            class="bg-yellow-50 border border-yellow-200 text-yellow-800 p-6 rounded-lg shadow-md"
-            class:invisible={!laaaaaaaag}
-        >
-            <h2 class="text-xl font-semibold">まだ終わらない？</h2>
-            <h3 class="text-base mt-2">サーバーが落ちてるかも。。</h3>
-            <p class="mt-4">ページ更新してみてね。</p>
-        </div>
+        {#if laaaaaaaag}
+            <MessageBoxPart
+                title="まだ終わらない？"
+                description={[
+                    "サーバーが落ちてるかも。。",
+                    "ページ更新してみてね。",
+                ]}
+            />
+        {/if}
     {/if}
     {#if timeline.length > 0}
         <div class="text-left w-full mx-auto px-4 pb-4">

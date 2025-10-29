@@ -23,6 +23,7 @@
     } from "../mylib/blogger.js";
     import { decodeEnv, makePathname } from "../mylib/env.js";
     import { ObjectStorage } from "../mylib/object-storage.js";
+    import MessageBoxPart from "../parts/MessageBoxPart.svelte";
 
     let { board, newsId }: { board: Board; newsId: string } = $props();
 
@@ -152,23 +153,24 @@
 
 <MainPart {board}>
     {#if error}
-        <div
-            class="bg-red-50 border border-red-200 text-red-800 p-6 rounded-lg shadow-md"
-        >
-            <h2 class="text-xl font-semibold">エラー発生</h2>
-            <h3 class="text-base mt-2">ニュース取得失敗。。</h3>
-            <p class="mt-4">管理人に言ったら直してくれるかも。</p>
-        </div>
+        <MessageBoxPart
+            title="エラー発生"
+            description={[
+                "ニュース取得失敗。。",
+                "管理人に言ったら直してくれるかも。",
+            ]}
+        />
     {:else if item === null}
         <p>ニュース取得中…</p>
-        <div
-            class="bg-yellow-50 border border-yellow-200 text-yellow-800 p-6 rounded-lg shadow-md"
-            class:invisible={!laaaaaaaag}
-        >
-            <h2 class="text-xl font-semibold">まだ終わらない？</h2>
-            <h3 class="text-base mt-2">サーバーが落ちてるかも。。</h3>
-            <p class="mt-4">ページ更新してみてね。</p>
-        </div>
+        {#if laaaaaaaag}
+            <MessageBoxPart
+                title="まだ終わらない？"
+                description={[
+                    "サーバーが落ちてるかも。。",
+                    "ページ更新してみてね。",
+                ]}
+            />
+        {/if}
     {:else if item}
         <h1
             class="text-left text-2xl text-gray-500 font-bold mb-2 mx-auto w-full max-w-3xl px-4 break-words whitespace-normal"

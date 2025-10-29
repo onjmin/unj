@@ -104,6 +104,7 @@
     import DtmPart from "../parts/DtmPart.svelte";
     import KomePart from "../parts/KomePart.svelte";
     import LayerPanelPart from "../parts/LayerPanelPart.svelte";
+    import MessageBoxPart from "../parts/MessageBoxPart.svelte";
     import OekakiPart from "../parts/OekakiPart.svelte";
     import ResFormPart from "../parts/ResFormPart.svelte";
     import ResPart from "../parts/ResPart.svelte";
@@ -982,14 +983,15 @@
 <MainPart {board}>
     {#if thread === null}
         <p>スレ取得中…</p>
-        <div
-            class="bg-yellow-50 border border-yellow-200 text-yellow-800 p-6 rounded-lg shadow-md"
-            class:invisible={!laaaaaaaag}
-        >
-            <h2 class="text-xl font-semibold">まだ終わらない？</h2>
-            <h3 class="text-base mt-2">サーバーが落ちてるかも。。</h3>
-            <p class="mt-4">ページ更新してみてね。</p>
-        </div>
+        {#if laaaaaaaag}
+            <MessageBoxPart
+                title="まだ終わらない？"
+                description={[
+                    "サーバーが落ちてるかも。。",
+                    "ページ更新してみてね。",
+                ]}
+            />
+        {/if}
     {/if}
     {#if thread}
         <!-- 画面右端に上下スクロールボタンを固定配置 -->

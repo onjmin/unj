@@ -143,11 +143,13 @@
     </p>
     {#if isSuspend}
         <div
-            class="mt-4 rounded-lg border border-blue-200 bg-gray-100/10 p-6 text-blue-800 shadow-md"
+            class="bg-gray-100/10 border border-gray-300 p-6 rounded-lg shadow-md"
         >
             <h2 class="text-xl font-semibold">受付停止中です。</h2>
             {#if resumeDate}
-                <p class="mt-4">{resumeDate}に受付を再開いたします。</p>
+                <p class="mt-4 text-gray-500">
+                    {resumeDate}に受付を再開いたします。
+                </p>
             {/if}
         </div>
     {/if}

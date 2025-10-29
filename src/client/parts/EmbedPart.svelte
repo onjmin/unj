@@ -43,6 +43,7 @@
   import { scrollToEnd } from "../mylib/scroll.js";
   import ImagePreviewModal from "../parts/ImagePreviewPart.svelte";
   import EmbedXPart from "./EmbedXPart.svelte";
+  import MessageBoxPart from "./MessageBoxPart.svelte";
 
   let {
     ccUserId = "",
@@ -248,15 +249,10 @@
     <div class="text-red-400">※お絵描き機能</div>
   {/if}
   {#if embedError}
-    <div
-      class="bg-blue-50 border border-blue-200 text-blue-800 p-6 rounded-lg shadow-md"
-    >
-      <h2 class="text-xl font-semibold">
-        埋め込みコンテンツの展開に失敗しました。
-      </h2>
-      <h3 class="text-base mt-2">不正なURL、またはバグです。。</h3>
-      <p class="mt-4">ごめんよぉ…</p>
-    </div>
+    <MessageBoxPart
+      title="埋め込みコンテンツの展開に失敗しました。"
+      description={["不正なURL、またはバグです。。", "ごめんよぉ…"]}
+    />
   {:else if !embedding}
     <List twoLine
       ><Item

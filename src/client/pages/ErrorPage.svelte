@@ -5,8 +5,8 @@
     import MainPart from "../parts/MainPart.svelte";
     ///////////////
 
-    import { makePathname } from "../mylib/env.js";
     import { errorReason } from "../mylib/socket.js";
+    import MessageBoxPart from "../parts/MessageBoxPart.svelte";
 </script>
 
 <HeaderPart menu={false} title="エラーデス！！" />
@@ -14,53 +14,37 @@
 <MainPart menu={false}>
     <p>ここで何か起こっているようだ</p>
     {#if errorReason === "denied"}
-        <div
-            class="bg-yellow-50 border border-yellow-200 text-yellow-800 p-6 rounded-lg shadow-md"
-        >
-            <h2 class="text-xl font-semibold">アクセス制限中です</h2>
-            <h3 class="text-base mt-2">
-                現在、サーバーは攻撃遮断モードになっています。
-            </h3>
-            <p class="mt-4">少し時間を置いてから再度アクセスしてください。</p>
-        </div>
+        <MessageBoxPart
+            title="アクセス制限中です"
+            description={[
+                "現在、サーバーは攻撃遮断モードになっています。",
+                "少し時間を置いてから再度アクセスしてください。",
+            ]}
+        />
     {:else if errorReason === "multipleConnectionsLimit"}
-        <div
-            class="bg-blue-50 border border-blue-200 text-blue-800 p-6 rounded-lg shadow-md"
-        >
-            <h2 class="text-xl font-semibold">複数タブの個数上限です。</h2>
-            <h3 class="text-base mt-2">
-                うんｊは同じIPからの複数タブを制限しています。。
-            </h3>
-            <p class="mt-4">まずはこのタブを閉じようね。</p>
-        </div>
+        <MessageBoxPart
+            title="複数タブの個数上限です。"
+            description={[
+                "うんｊは同じIPからの複数タブを制限しています。。",
+                "まずはこのタブを閉じようね。",
+            ]}
+        />
     {:else if errorReason === "newUsersRateLimit"}
-        <div
-            class="bg-blue-50 border border-blue-200 text-blue-800 p-6 rounded-lg shadow-md"
-        >
-            <h2 class="text-xl font-semibold">不自然な操作を感知しました。</h2>
-            <h3 class="text-base mt-2">新人さん接続規制中。。</h3>
-            <p class="mt-4">しばらくしてからリロードしてみてね。</p>
-            <button
-                class="mt-4 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
-                onclick={() => {
-                    location.href = makePathname("/");
-                }}
-            >
-                リロード
-            </button>
-        </div>
+        <MessageBoxPart
+            title="不自然な操作を感知しました。"
+            description={[
+                "新人さん接続規制中。。",
+                "しばらくしてからリロードしてみてね。",
+            ]}
+        />
     {:else if errorReason === "grantFailed"}
-        <div
-            class="bg-blue-50 border border-blue-200 text-blue-800 p-6 rounded-lg shadow-md"
-        >
-            <h2 class="text-xl font-semibold">
-                致命的なエラーが発生しました。
-            </h2>
-            <h3 class="text-base mt-2">認証情報に不整合が起きています。</h3>
-            <p class="mt-4">
-                リロードしても直らないので管理人に復旧依頼をお願いします。
-            </p>
-        </div>
+        <MessageBoxPart
+            title="致命的なエラーが発生しました。"
+            description={[
+                "認証情報に不整合が起きています。",
+                "リロードしても直らないので管理人に復旧依頼をお願いします。",
+            ]}
+        />
     {/if}
     <div class="iframe-container">
         <iframe title="error" src="https://dma-cmyk.github.io/BabyWhacker/"
