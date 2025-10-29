@@ -294,7 +294,7 @@
 </HeaderPart>
 
 <MainPart {board}>
-    <div class="p-4 sm:p-6 border-b border-gray-200">
+    <div class="p-4 sm:p-6">
         <div
             class={`${board.banner ? "" : "aspect-[49/12]"} w-[490px] max-w-full mx-auto mb-4 border border-gray-200/10 flex items-center justify-center`}
         >
