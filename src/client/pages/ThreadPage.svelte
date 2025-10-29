@@ -431,6 +431,11 @@
         const now = new Date();
         const diffSeconds = differenceInSeconds(date, now);
         if (diffSeconds < 0) {
+            cache.set(null);
+            const filtered = resHistories?.filter(
+                (v) => v.threadId !== threadId,
+            );
+            if (filtered) resHistoryCache.set(filtered);
             navigate(makePathname(`/${board.key}`), { replace: true });
             return "期限切れ";
         }

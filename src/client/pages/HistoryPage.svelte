@@ -103,7 +103,7 @@
 
 <HeaderPart {board} title="レス履歴">
     <button
-        class="text-xs text-red-500 font-medium px-2 py-1 rounded-full border border-red-500 bg-gray-100/10 hover:bg-gray-100/20"
+        class="text-xs text-red-500 font-medium px-2 py-1 rounded-full border border-red-500 hover:bg-gray-100/10"
         onclick={() => {
             if (confirm("本当に履歴を全て削除してもよろしいですか？")) {
                 resHistories = [];
@@ -119,7 +119,7 @@
 <MainPart {board}>
     <div class="max-w-2xl mx-auto p-4 space-y-4 text-left">
         {#if !resHistories || resHistories.length === 0}
-            <div class="text-center p-4 bg-gray-100/10 rounded-lg">
+            <div class="text-center p-4 rounded-lg">
                 <p class="text-lg mb-2">
                     データがありましぇん。ご新規さんかな？
                 </p>
@@ -134,7 +134,7 @@
         {:else}
             {#each groupedHistories as group (group.boardId)}
                 <div
-                    class="border border-gray-300 rounded-lg shadow-sm p-3 bg-gray-100/10 space-y-2"
+                    class="border border-gray-100/10 rounded-lg shadow-sm p-3 space-y-2"
                 >
                     <h2
                         class="text-lg font-bold pb-1 border-b"
@@ -158,7 +158,7 @@
                                 // board.keyの代わりに、resHistory.boardIdからboard.keyを取得する必要がある
                                 `/${boardIdMap.get(resHistory.boardId)?.key ?? board.key}/thread/${resHistory.threadId}/${resHistory.resNum}`,
                             )}
-                            class="block p-2 rounded hover:bg-gray-100/20 transition border-b border-gray-200 last:border-b-0"
+                            class="block p-2 rounded hover:bg-gray-100/20 transition border-b border-gray-100/10 last:border-b-0"
                         >
                             <div class="flex items-center space-x-2">
                                 <div class="flex-shrink-0">
@@ -167,7 +167,7 @@
                                             >+{newResponses}</span
                                         >
                                     {:else}
-                                        <span class="text-gray-400">+0</span>
+                                        <span class="text-gray-500">+0</span>
                                     {/if}
                                 </div>
                                 <div class="flex-grow min-w-0">

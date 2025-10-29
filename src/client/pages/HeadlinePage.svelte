@@ -296,7 +296,7 @@
 <MainPart {board}>
     <div class="p-4 sm:p-6">
         <div
-            class={`${board.banner ? "" : "aspect-[49/12]"} w-[490px] max-w-full mx-auto mb-4 border border-gray-200/10 flex items-center justify-center`}
+            class={`${board.banner ? "" : "aspect-[49/12]"} w-[490px] max-w-full mx-auto mb-4 border border-gray-100/10 flex items-center justify-center`}
         >
             {#if board.banner}
                 <img
@@ -344,7 +344,7 @@
                     placeholder="スレタイ検索"
                     bind:value={searchQuery}
                     onkeydown={(e) => e.key === "Enter" && filterThreadList()}
-                    class="w-full rounded-md border border-gray-300 bg-gray-100/10 pl-8 pr-8 py-1 text-sm focus:border-blue-400 focus:ring focus:ring-blue-200 focus:outline-none"
+                    class="bg-gray-100/0 w-full rounded-md border border-gray-300 pl-8 pr-8 py-1 text-sm focus:border-blue-400 focus:ring focus:ring-blue-200 focus:outline-none"
                 />
                 <div
                     class="absolute left-2 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
@@ -391,7 +391,7 @@
                                     tabindex="0"
                                     role="button"
                                     onkeydown={() => {}}
-                                    class="block w-full text-left p-3 bg-gray-100/10 hover:bg-gray-100/20 transition-colors duration-150 ease-in-out cursor-pointer"
+                                    class="border border-gray-100/10 hover:bg-gray-100/10 block w-full text-left p-3 transition-colors duration-150 ease-in-out cursor-pointer"
                                     onclick={() =>
                                         navigate(
                                             makePathname(
@@ -482,9 +482,7 @@
                                 </div>
 
                                 {#if i % 4 === 3 && i !== (filteredThreadList ?? threadList).length - 1}
-                                    <div
-                                        class="border-t border-gray-500 mt-6"
-                                    ></div>
+                                    <hr class="border-gray-100/10" />
                                 {/if}
                             </li>
                         {/if}

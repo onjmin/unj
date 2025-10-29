@@ -106,12 +106,10 @@
             {element.content[0].text}
           </li>
         {:else if element.type === "hr"}
-          <hr class="my-4 border-t border-gray-500" />
+          <hr class="border-gray-100/10 my-4" />
         {/if}
       </div>
     {/each}
-
-    <hr class="my-6" />
     <p class="text-sm text-gray-500 text-center">
       問い合わせ先: {@render mail()}
     </p>
