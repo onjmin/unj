@@ -1115,6 +1115,7 @@
                 </ResPart>
             {/if}
             {#each thread.resList as res}
+                <hr class="border-gray-100/10" />
                 {#if !ignoreList?.has(res.ccUserId)}
                     <ResPart
                         {board}
