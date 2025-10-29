@@ -43,7 +43,7 @@ export default [
 		id: 831,
 		name: "画像うｐろだつくってみた",
 		description: "（注：消す機能まだ）",
-		src: "https://imgr.open2ch.net/i/95750.gif",
+		src: "https://imgu.jp/i/6c614913Iq.gif",
 		favicon: "hayabusa.open2ch.net",
 	}),
 ];
