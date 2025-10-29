@@ -82,12 +82,12 @@
     {#if !previewUrl}
         <button
             onclick={openFileDialog}
-            class="flex flex-col items-center justify-center w-full h-full p-6 border-2 border-dashed border-gray-300 hover:border-blue-500 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors duration-200"
+            class="flex flex-col items-center justify-center w-full h-full p-6 border-2 border-dashed border-gray-300 hover:border-blue-500 rounded-lg bg-gray-100/10 hover:bg-gray-100/20 transition-colors duration-200"
             aria-label="画像を選択 (クリックしてファイルを選択)"
         >
             <UploadIcon class="w-8 h-8 text-gray-500 mb-2" />
-            <p class="text-sm font-semibold text-gray-700">画像を選択</p>
-            <p class="text-xs text-gray-400 mt-1">クリックして選択</p>
+            <p class="text-sm font-semibold">画像を選択</p>
+            <p class="text-xs text-gray-500 mt-1">クリックして選択</p>
         </button>
     {:else}
         <div
@@ -121,7 +121,7 @@
                 <div class="flex justify-center">
                     <button
                         onclick={openFileDialog}
-                        class="flex items-center space-x-2 px-3 py-1 bg-blue-600 rounded-lg shadow-lg text-white font-semibold transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-70"
+                        class="flex items-center space-x-2 px-3 py-1 rounded-lg shadow-lg font-semibold transition text-white bg-black/50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-70"
                         aria-label="別の画像を選択"
                         title="別の画像を選択"
                     >
