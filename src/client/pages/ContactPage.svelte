@@ -152,7 +152,7 @@
         </div>
     {/if}
     <div class="mt-6">
-        <div class="flex rounded-lg bg-gray-100/10 p-1">
+        <div class="flex rounded-lg p-1">
             {#each contactTypes as tab}
                 <button
                     onclick={() => (active = tab)}

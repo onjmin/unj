@@ -170,9 +170,19 @@
             <p class="mt-4">ページ更新してみてね。</p>
         </div>
     {:else if item}
-        <h1 class="left title">{item.title}</h1>
-        <p class="left date">公開日：{formatDate(item.published)}</p>
-        <h1 class="left labels">
+        <h1
+            class="text-left text-2xl text-gray-500 font-bold mb-2 mx-auto w-full max-w-3xl px-4 break-words whitespace-normal"
+        >
+            {item.title}
+        </h1>
+        <p
+            class="text-left text-sm mb-4 mx-auto w-full max-w-3xl px-4 break-words whitespace-normal"
+        >
+            公開日：{formatDate(item.published)}
+        </p>
+        <h1
+            class="text-left mx-auto w-full max-w-3xl px-4 break-words whitespace-normal"
+        >
             <ChipSet chips={item.labels} nonInteractive>
                 {#snippet chip(chip: string)}
                     <Chip {chip}>
@@ -186,19 +196,29 @@
                 {/snippet}
             </ChipSet>
         </h1>
-        <div class="bg-gray-800 rounded-lg">
+
+        <div
+            class="bg-gray-800 rounded-lg mx-auto w-full max-w-3xl px-4 mb-4 p-2"
+        >
             {@render paginationControls()}
         </div>
+
         <div class="flex justify-center">
-            <div class="left content">
+            <div
+                class="text-left w-full max-w-3xl px-4 break-words whitespace-normal"
+            >
                 {@html item.content}
             </div>
         </div>
-        <div class="bg-gray-800 rounded-lg">
+
+        <div
+            class="bg-gray-800 rounded-lg mx-auto w-full max-w-3xl px-4 mt-4 p-2"
+        >
             {@render paginationControls()}
         </div>
+
         <div
-            class="flex flex-col space-y-2 p-4 bg-gray-800 text-gray-200 rounded-lg"
+            class="flex flex-col space-y-2 p-4 bg-gray-800 text-gray-200 rounded-lg mx-auto w-full max-w-3xl px-4 mt-4"
         >
             <button
                 class="flex items-center space-x-2 px-4 py-2 rounded-lg bg-gray-600 hover:bg-gray-700 transition-colors duration-200"
@@ -210,26 +230,3 @@
         </div>
     {/if}
 </MainPart>
-
-<FooterPart />
-
-<style>
-    .left {
-        text-align: left;
-        inline-size: 768px;
-        max-width: 90svw;
-        word-break: break-word;
-        overflow-wrap: break-word;
-        white-space: normal;
-    }
-    .title {
-        font-size: 1.5rem;
-        font-weight: bold;
-        margin-bottom: 0.5rem;
-    }
-    .date {
-        font-size: 0.875rem;
-        color: gray;
-        margin-bottom: 1rem;
-    }
-</style>
