@@ -247,7 +247,7 @@
                             </div>
                             {#each results as result}
                                 <div class="flex flex-col mt-2 text-left">
-                                    <div class="text-sm">
+                                    <div class="text-sm break-words">
                                         <Link
                                             to={makePathname(
                                                 `/${board.key}/thread/${threadId}/${result.resNum}`,
