@@ -25,7 +25,7 @@
             type={inputType}
             bind:value={password}
             placeholder="暗号化に使うパスワードを入力"
-            class="flex-1 min-w-0 py-2.5 px-3 text-sm bg-gray-100/10 focus:outline-none border-none"
+            class="flex-1 min-w-0 py-2.5 px-3 text-sm bg-gray-100/0 focus:outline-none border-none"
             autocomplete="off"
         />
     </div>

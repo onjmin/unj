@@ -37,11 +37,11 @@
     };
 </script>
 
-<div class="p-2 w-full max-w-lg mr-auto bg-gray-50 rounded-lg shadow-inner">
+<div class="p-2 w-full max-w-lg mr-auto rounded-lg shadow-inner">
     <div class="flex items-center space-x-2">
         <div class="flex-1 relative">
             <div
-                class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400 pointer-events-none"
+                class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
             >
                 <Key size={ICON_SIZE} />
             </div>
@@ -55,8 +55,7 @@
                 class:bg-red-100={isError}
                 class:border-red-500={isError}
                 class:border-gray-300={!isError}
-                class="w-full border rounded-md py-2 pl-10 pr-3 text-sm focus:ring-indigo-500
-                focus:border-indigo-500 shadow-sm transition-colors"
+                class="w-full border rounded-md py-2 pl-10 pr-3 text-sm shadow-sm transition-colors bg-gray-100/0 focus:outline-none"
                 placeholder="パスワード"
                 disabled={isLoading}
             />
