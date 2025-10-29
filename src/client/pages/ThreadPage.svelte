@@ -997,13 +997,13 @@
             class="sticky top-1/2 -translate-y-1/2 ml-auto mr-2 flex flex-col items-center gap-8 w-fit z-8"
         >
             <button
-                class="bg-gray-800/40 hover:bg-gray-700/60 text-white p-2 rounded-full shadow-lg transition"
+                class="bg-gray-500/80 hover:bg-gray-500/40 text-white p-2 rounded-full shadow-lg transition"
                 onclick={() => scrollToAnka(thread?.resList.at(0)?.num ?? 0)}
             >
                 <ChevronUpIcon class="w-5 h-5" />
             </button>
             <button
-                class="bg-gray-800/40 hover:bg-gray-700/60 text-white p-2 rounded-full shadow-lg transition"
+                class="bg-gray-500/80 hover:bg-gray-500/40 text-white p-2 rounded-full shadow-lg transition"
                 onclick={() => scrollToAnka(thread?.resList.at(-1)?.num ?? 0)}
             >
                 <ChevronDownIcon class="w-5 h-5" />
@@ -1045,7 +1045,7 @@
             {/if}
             <div class="flex items-center space-x-2">
                 <button
-                    class="inline-flex items-center space-x-1 rounded-full bg-green-50 hover:bg-green-100 px-3 py-1 text-green-800"
+                    class="inline-flex items-center space-x-1 rounded-full bg-green-100/80 hover:bg-green-100/40 px-3 py-1 text-green-800"
                     onclick={tryLoL}
                 >
                     <span class="font-bold">草</span>
@@ -1054,7 +1054,7 @@
                     >
                 </button>
                 <div
-                    class="relative overflow-hidden whitespace-nowrap text-green-800"
+                    class="relative overflow-hidden whitespace-nowrap text-green-500"
                 >
                     <span
                         class="inline-block animate-wave text-base font-normal leading-none tracking-tight"

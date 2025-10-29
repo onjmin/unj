@@ -19,12 +19,12 @@ export const scrollToAnka = (resNum: number): boolean => {
 		main.scrollTo({ top: offset, behavior: "smooth" });
 		setTimeout(() => {
 			ankaRes.classList.add(
-				"bg-yellow-200",
+				"bg-yellow-200/40",
 				"transition-colors",
 				"duration-500",
 			);
 			setTimeout(() => {
-				ankaRes.classList.remove("bg-yellow-200");
+				ankaRes.classList.remove("bg-yellow-200/40");
 			}, 500);
 		}, 500);
 		return true;
