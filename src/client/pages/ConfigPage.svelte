@@ -193,11 +193,11 @@
 
 <HeaderPart {board} title="個人設定">
     <p>高度な設定</p>
-    <section class="mb-8 p-6 bg-gray-100/10 rounded-lg shadow-md">
+    <section class="border border-gray-100/10 mb-8 p-6 rounded-lg shadow-md">
         <h2 class="text-xl font-semibold mb-4 border-b pb-2">ポケモン忍法帖</h2>
 
         <div
-            class="flex flex-col space-y-4 p-4 border rounded-lg bg-gray-100/10 shadow-inner items-center sm:items-stretch"
+            class="flex flex-col space-y-4 p-4 border border-gray-100/10 rounded-lg shadow-inner items-center sm:items-stretch"
         >
             <div class="w-20 h-20 flex-shrink-0 mx-auto">
                 <img
@@ -209,7 +209,7 @@
                 />
             </div>
 
-            <div class="text-center pt-2 border-t bg-gray-100/10">
+            <div class="text-center pt-2 border-t border-gray-100/10">
                 <p class="text-sm font-medium">No. {pokemonId}</p>
                 <div class="flex items-center justify-center space-x-2">
                     <p class="text-xl font-bold">
@@ -231,7 +231,7 @@
                 </div>
             </div>
 
-            <div class="text-center pt-2 border-t border-indigo-200">
+            <div class="text-center pt-2 border-t border-gray-100/10">
                 <p class="text-sm font-medium">ポケモンのレベル</p>
                 <p class="text-4xl font-extrabold">
                     Lv.{ninjaLv}
@@ -240,7 +240,7 @@
         </div>
     </section>
 
-    <section class="p-6 bg-gray-100/10 rounded-lg shadow-md">
+    <section class="border border-gray-100/10 p-6 rounded-lg shadow-md">
         <h2 class="text-xl font-semibold mb-4 border-b pb-2">移行用トークン</h2>
 
         <div class="space-y-4">
@@ -250,7 +250,7 @@
                         bind:value={token}
                         placeholder="新しいトークンを入力してください"
                         rows="4"
-                        class="bg-gray-100/10 w-full p-2 border-2 border-indigo-500 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 resize-y"
+                        class="bg-gray-100/0 w-full p-2 border-2 border-indigo-500 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 resize-y"
                     ></textarea>
                     <button
                         onclick={() => {
