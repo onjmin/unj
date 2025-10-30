@@ -79,16 +79,16 @@
 
 {#if !terms}
   <div class="flex items-center justify-center h-48">
-    <p class="text-gray-500 text-lg">利用規約を読み込み中です...</p>
+    <p class="opacity-50 text-lg">利用規約を読み込み中です...</p>
   </div>
 {:else}
   <div>
-    <h1 class="text-3xl font-bold mb-6 text-center text-gray-500">利用規約</h1>
+    <h1 class="opacity-50 text-3xl font-bold mb-6 text-center">利用規約</h1>
 
     {#each parsedElements as element}
       <div class="text-left">
         {#if element.type === "h2"}
-          <h2 class="text-gray-500 text-xl font-semibold mt-2 mb-1">
+          <h2 class="opacity-50 text-xl font-semibold mt-2 mb-1">
             {element.content[0].text}
           </h2>
         {:else if element.type === "p"}
@@ -106,11 +106,11 @@
             {element.content[0].text}
           </li>
         {:else if element.type === "hr"}
-          <hr class="border-gray-100/10 my-4" />
+          <hr class="opacity-10 my-4" />
         {/if}
       </div>
     {/each}
-    <p class="text-sm text-gray-500 text-center">
+    <p class="opacity-50 text-sm text-center">
       問い合わせ先: {@render mail()}
     </p>
   </div>

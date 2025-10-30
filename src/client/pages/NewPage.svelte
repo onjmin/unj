@@ -385,7 +385,7 @@
                 </div>
                 {#if openAccordion === "ccLevel"}
                     <div class="p-4 border-t border-gray-200">
-                        <p class="text-gray-500 text-sm mb-2">!jien</p>
+                        <p class="opacity-50 text-sm mb-2">!jien</p>
                         <div class="space-y-2">
                             {#each ccOptions as v}
                                 <div class="flex items-center justify-between">
@@ -424,7 +424,7 @@
                 </div>
                 {#if openAccordion === "contentType"}
                     <div class="p-4 border-t border-gray-200">
-                        <p class="text-gray-500 text-sm mb-2">!nopic</p>
+                        <p class="opacity-50 text-sm mb-2">!nopic</p>
                         <div class="space-y-2">
                             {#each contentTypeOptions as v}
                                 <div class="flex items-center justify-between">

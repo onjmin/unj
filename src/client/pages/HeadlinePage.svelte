@@ -305,14 +305,14 @@
                     class="w-full h-full object-cover"
                 />
             {:else}
-                <span class="text-gray-500 text-lg font-semibold"
+                <span class="opacity-50 text-lg font-semibold"
                     >バナーはまだぬい</span
                 >
             {/if}
         </div>
 
         <div class="text-left mb-4">
-            <h1 class="text-gray-500 text-2xl sm:text-3xl font-bold mb-1">
+            <h1 class="opacity-50 text-2xl sm:text-3xl font-bold mb-1">
                 {board.name}
             </h1>
             <p class="text-sm">
@@ -333,7 +333,7 @@
             />
         {/if}
     {:else if threadList.length === 0}
-        <p class="text-center text-gray-500 py-10 text-lg">
+        <p class="opacity-50 text-center py-10 text-lg">
             この板にまだスレッドが建てられてないみたい。。。
         </p>
     {:else}
@@ -372,7 +372,7 @@
         </div>
 
         {#if (filteredThreadList ?? threadList).length === 0}
-            <div class="p-4 text-center text-gray-500">
+            <div class="text-gray-500 p-4 text-center">
                 <p>該当はありませんでした。</p>
                 <p>キーワードを変えてみてね。</p>
                 <p>
@@ -442,7 +442,7 @@
                                                     </div>
                                                 </div>
                                                 <div
-                                                    class="text-xs text-gray-500 flex-shrink-0 ml-2 mt-0"
+                                                    class="opacity-50 text-xs flex-shrink-0 ml-2 mt-0"
                                                 >
                                                     {formatTimeAgo(
                                                         thread.latestResAt,
@@ -455,7 +455,7 @@
                                             >
                                                 {#if thread.latestRes}
                                                     <div
-                                                        class="flex-grow text-gray-500 text-sm whitespace-nowrap overflow-hidden pr-2"
+                                                        class="opacity-50 flex-grow text-sm whitespace-nowrap overflow-hidden pr-2"
                                                     >
                                                         <span class="truncate"
                                                             >{thread.latestRes}</span
@@ -482,7 +482,7 @@
                                 </div>
 
                                 {#if i % 4 === 3 && i !== (filteredThreadList ?? threadList).length - 1}
-                                    <hr class="border-gray-100/10" />
+                                    <hr class="opacity-10" />
                                 {/if}
                             </li>
                         {/if}

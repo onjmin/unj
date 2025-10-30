@@ -123,7 +123,7 @@
                 <p class="text-lg mb-2">
                     データがありましぇん。ご新規さんかな？
                 </p>
-                <p class="text-sm text-gray-500">
+                <p class="text-sm">
                     なんかついでに<Link
                         to={makePathname(`/${board.key}/new`)}
                         class="font-medium text-blue-500 hover:underline"
@@ -144,7 +144,7 @@
                     >
                         {group.boardName}
                         {#if group.isCurrent}
-                            <span class="text-sm font-normal text-gray-500 ml-2"
+                            <span class="text-sm font-normal ml-2"
                                 >(現在の板)</span
                             >
                         {/if}
@@ -172,17 +172,15 @@
                                 </div>
                                 <div class="flex-grow min-w-0">
                                     <div class="flex items-center space-x-1">
-                                        <span
-                                            class="font-medium text-sm truncate"
+                                        <span class="truncate"
                                             >{resHistory.title}</span
                                         >
-                                        <span
-                                            class="text-xs text-gray-500 whitespace-nowrap"
+                                        <span class="whitespace-nowrap"
                                             >({resHistory.resCount})</span
                                         >
                                     </div>
                                     <p
-                                        class="text-xs text-gray-500 mt-1 truncate"
+                                        class="text-gray-500 text-sm mt-1 truncate"
                                     >
                                         {resHistory.latestRes}
                                     </p>

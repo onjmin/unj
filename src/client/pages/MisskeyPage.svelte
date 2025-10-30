@@ -233,7 +233,7 @@
         <div class="mx-auto my-0 w-full px-4">
             <div class="space-y-4">
                 {#each timeline as note (note.id)}
-                    <hr class="border-gray-100/10" />
+                    <hr class="opacity-10" />
                     {#if !note.isHidden && note.text !== null && note.userId !== "9tjlknm0fl"}
                         {@const embeddable = findEmbeddable(note.text ?? "")}
                         <div class="p-4 rounded-lg shadow-inner">

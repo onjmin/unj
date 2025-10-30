@@ -139,7 +139,7 @@
                     <div
                         class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
                     >
-                        <SearchIcon class="w-4 h-4 text-gray-500" />
+                        <SearchIcon class="w-4 h-4" />
                     </div>
                     <input
                         id="contentText"
@@ -203,11 +203,9 @@
         <div class="mt-8">
             <h3 class="text-xl font-bold mb-4">検索結果</h3>
             {#if emitting}
-                <p class="text-center text-gray-500">検索中...</p>
+                <p class="text-center">検索中...</p>
             {:else if searchResults.size === 0 && currentQuery !== ""}
-                <p class="text-center text-gray-500">
-                    該当する投稿は見つかりませんでした。
-                </p>
+                <p class="text-center">該当する投稿は見つかりませんでした。</p>
             {:else if searchResults.size > 0}
                 <ul class="space-y-4">
                     {#each searchResults as [threadId, results]}
@@ -240,7 +238,7 @@
                                             )}
                                         </span>
                                     </Link>
-                                    <span class="text-gray-500 ml-1"
+                                    <span class="opacity-50 ml-1"
                                         >({results[0].resCount})</span
                                     >
                                 </div>
@@ -274,7 +272,7 @@
                                 </div>
                             {/each}
                             <div
-                                class="mt-1 text-xs text-gray-500 flex justify-between"
+                                class="opacity-50 mt-1 text-xs flex justify-between"
                             >
                                 <span
                                     >{boardIdMap.get(results[0].boardId)

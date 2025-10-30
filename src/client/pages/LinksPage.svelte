@@ -32,7 +32,7 @@
                         >
                             {siteInfo.name}
                         </a>
-                        <p class="text-sm text-gray-500 truncate text-left">
+                        <p class="opacity-50 text-sm truncate text-left">
                             {siteInfo.description}
                         </p>
                     </div>
@@ -60,23 +60,25 @@
                 d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.456-1.636 1.54-2.903l-6.928-11.897c-.917-1.574-3.578-1.574-4.495 0L3.551 18.097c-.916 1.573-.001 3.208 1.54 3.208z"
             />
         </svg>
-        <h2 class="text-xl md:text-2xl font-bold mb-2">重要なお知らせ</h2>
+        <h2 class="opacity-50 text-xl md:text-2xl font-bold mb-2">
+            重要なお知らせ
+        </h2>
         <p class="text-sm md:text-base">
             この度は、リンク集が不正アクセスに悪用されたため、一時的に公開を停止しております。
         </p>
         <p class="text-sm md:text-base mt-2">
             ご不便をおかけして大変申し訳ございませんが、何卒ご理解いただけますようお願い申し上げます。
         </p>
-        <hr class="w-full border-t border-gray-200 my-4" />
-        <p class="text-sm md:text-base text-gray-500 font-bold mb-2">
+        <hr class="opacity-10 w-full border-t my-4" />
+        <p class="opacity-50 text-sm md:text-base font-bold mb-2">
             ぷゆゆ管理人様、なんI管理人様へ
         </p>
-        <p class="text-xs text-gray-500">
+        <p class="text-xs">
             当サイトのリンク集が不正アクセスに悪用され、
             ご迷惑をおかけしたことを深くお詫び申し上げます。
             この度は、大変申し訳ございませんでした。
         </p>
-        <p class="text-xs text-gray-500 mt-2">
+        <p class="text-xs mt-2">
             日頃より掲示板を運営していただき、心より感謝申し上げます。
         </p>
     </div>

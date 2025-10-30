@@ -38,7 +38,7 @@
                 >
                     <img class="unj-img" alt="TOP絵" src={topIllust.src} />
                 </button>
-                <div class="text-sm break-words">
+                <div class="break-words">
                     図{i + 1}
                     {topIllust.label}
                 </div>

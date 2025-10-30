@@ -266,7 +266,7 @@
                         value={token}
                         readonly
                         rows="4"
-                        class="bg-gray-100/10 text-gray-500 w-full p-2 border border-gray-300 rounded-lg cursor-default resize-y"
+                        class="opacity-50 bg-gray-100/10 w-full p-2 border rounded-lg cursor-default resize-y"
                     ></textarea>
                     <button
                         onclick={() => {
@@ -504,7 +504,7 @@
             {#if openAccordion === "uploadHistory"}
                 <div class="p-4 border-t border-gray-200">
                     {#if !uploadList.length}
-                        <div class="text-gray-500 text-center space-y-2">
+                        <div class="opacity-50 text-center space-y-2">
                             <div>NO DATA...</div>
                             <div>いまんとこ画像履歴は空っぽみたい。。</div>
                             <div>画像うｐしてから出直してね。</div>
@@ -531,7 +531,7 @@
                                     >
                                         前へ
                                     </button>
-                                    <span class="text-gray-500"
+                                    <span
                                         >{currentPageOfUploadList} / {totalPagesOfUploadList}</span
                                     >
                                     <button
@@ -578,7 +578,7 @@
                                             {uploadResponse.delete_id}
                                         </div>
                                         <div
-                                            class="text-sm text-gray-500 truncate"
+                                            class="opacity-50 text-sm truncate"
                                         >
                                             {uploadResponse.link}
                                         </div>
@@ -656,7 +656,7 @@
             {#if openAccordion === "imgurHistory"}
                 <div class="p-4 border-t border-gray-200">
                     {#if !imgurList.length}
-                        <div class="text-gray-500 text-center space-y-2">
+                        <div class="opacity-50 text-center space-y-2">
                             <div>NO DATA...</div>
                             <div>いまんとこお絵描き履歴は空っぽみたい。。</div>
                             <div>お絵描きうｐしてから出直してね。</div>
@@ -681,9 +681,7 @@
                                     >
                                         前へ
                                     </button>
-                                    <span class="text-gray-500"
-                                        >{currentPage} / {totalPages}</span
-                                    >
+                                    <span>{currentPage} / {totalPages}</span>
                                     <button
                                         onclick={() => currentPage++}
                                         disabled={currentPage === totalPages}
@@ -724,7 +722,7 @@
                                             {imgurResponse.id}
                                         </div>
                                         <div
-                                            class="text-sm text-gray-500 truncate"
+                                            class="opacity-50 text-sm truncate"
                                         >
                                             {imgurResponse.link}
                                         </div>
@@ -801,7 +799,7 @@
             {#if openAccordion === "ignoreList"}
                 <div class="p-4 border-t border-gray-200">
                     {#if !ignoreList || ignoreList.size === 0}
-                        <div class="text-gray-500 text-center space-y-2">
+                        <div class="opacity-50 text-center space-y-2">
                             <div>NO DATA...</div>
                             <div>無視リストは空っぽみたい。。</div>
                         </div>

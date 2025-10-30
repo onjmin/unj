@@ -1000,21 +1000,28 @@
     {/if}
     {#if thread}
         <!-- 画面右端に上下スクロールボタンを固定配置 -->
-        <div
-            class="sticky top-1/2 -translate-y-1/2 ml-auto mr-2 flex flex-col items-center gap-8 w-fit z-8"
-        >
-            <button
-                class="bg-gray-500/80 hover:bg-gray-500/40 text-white p-2 rounded-full shadow-lg transition"
-                onclick={() => scrollToAnka(thread?.resList.at(0)?.num ?? 0)}
-            >
-                <ChevronUpIcon class="w-5 h-5" />
-            </button>
-            <button
-                class="bg-gray-500/80 hover:bg-gray-500/40 text-white p-2 rounded-full shadow-lg transition"
-                onclick={() => scrollToAnka(thread?.resList.at(-1)?.num ?? 0)}
-            >
-                <ChevronDownIcon class="w-5 h-5" />
-            </button>
+        <div class="sticky top-1/2 -translate-y-1/2 ml-auto mr-2 w-fit z-8">
+            <div class="h-0 w-0 relative" style="pointer-events: none;">
+                <div
+                    class="absolute right-0 top-0 flex flex-col items-center gap-8"
+                    style="transform: translateY(-50%); pointer-events: auto;"
+                >
+                    <button
+                        class="bg-gray-500/80 hover:bg-gray-500/40 text-white p-2 rounded-full shadow-lg transition"
+                        onclick={() =>
+                            scrollToAnka(thread?.resList.at(0)?.num ?? 0)}
+                    >
+                        <ChevronUpIcon class="w-5 h-5" />
+                    </button>
+                    <button
+                        class="bg-gray-500/80 hover:bg-gray-500/40 text-white p-2 rounded-full shadow-lg transition"
+                        onclick={() =>
+                            scrollToAnka(thread?.resList.at(-1)?.num ?? 0)}
+                    >
+                        <ChevronDownIcon class="w-5 h-5" />
+                    </button>
+                </div>
+            </div>
         </div>
         <div class="thread-header">
             <p class="thread-title flex items-center">
@@ -1122,7 +1129,7 @@
                 </ResPart>
             {/if}
             {#each thread.resList as res}
-                <hr class="border-gray-100/10" />
+                <hr class="opacity-10" />
                 {#if !ignoreList?.has(res.ccUserId)}
                     <ResPart
                         {board}

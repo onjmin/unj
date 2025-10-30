@@ -147,7 +147,7 @@
         >
             <h2 class="text-xl font-semibold">受付停止中です。</h2>
             {#if resumeDate}
-                <p class="mt-4 text-gray-500">
+                <p class="opacity-50 mt-4">
                     {resumeDate}に受付を再開いたします。
                 </p>
             {/if}
@@ -158,11 +158,9 @@
             {#each contactTypes as tab}
                 <button
                     onclick={() => (active = tab)}
-                    class={`${active.label === tab.label ? "bg-gray-100/20" : "bg-gray-100/10"} flex-1 rounded-md px-4 py-2 text-center text-sm font-medium transition-colors duration-200 focus:outline-none`}
+                    class={`${active.label === tab.label ? "" : "opacity-30"} border flex-1 rounded-md px-4 py-2 text-center text-sm font-medium transition-colors duration-200 focus:outline-none`}
                     class:shadow-md={active.label === tab.label}
                     class:font-bold={active.label === tab.label}
-                    class:text-blue-500={active.label === tab.label}
-                    class:text-gray-500={active.label !== tab.label}
                 >
                     <tab.icon class="mx-auto mb-1 h-5 w-5" />
                     {tab.label}
@@ -175,13 +173,13 @@
             <input
                 type="email"
                 placeholder="連絡先メールアドレス"
-                class="peer h-10 w-full rounded-md border border-gray-300 px-3 pt-4 placeholder-transparent transition-colors duration-200 focus:border-blue-500 focus:outline-none bg-gray-100/10"
+                class="peer h-10 w-full rounded-md border border-gray-500 px-3 pt-4 placeholder-transparent transition-colors duration-200 focus:border-blue-500 focus:outline-none bg-gray-100/0"
                 bind:value={replyEmail}
                 maxlength={254}
             />
             <label
                 for="replyEmail"
-                class="absolute left-3 top-2 text-xs text-gray-500 transition-all duration-200 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:-translate-y-0 peer-focus:text-xs"
+                class="opacity-50 absolute left-3 top-2 text-xs transition-all duration-200 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:-translate-y-0 peer-focus:text-xs"
             >
                 連絡先メールアドレス
             </label>
@@ -199,7 +197,7 @@
 
         <select
             bind:value={deadline}
-            class="block w-full h-10 rounded-md border border-gray-300 bg-gray-100/10 px-3 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 sm:text-sm"
+            class="text-black bg-white block w-full h-10 rounded-md border border-gray-300 px-3 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 sm:text-sm"
         >
             <option value="" disabled selected>納期</option>
             {#each deadlineOptions as str}

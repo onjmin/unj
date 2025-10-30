@@ -173,7 +173,7 @@
         {/if}
     {:else if item}
         <h1
-            class="text-left text-2xl text-gray-500 font-bold mb-2 mx-auto w-full max-w-3xl px-4 break-words whitespace-normal"
+            class="opacity-50 text-left text-2xl font-bold mb-2 mx-auto w-full max-w-3xl px-4 break-words whitespace-normal"
         >
             {item.title}
         </h1>
