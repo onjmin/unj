@@ -160,7 +160,7 @@
     left: 50%;
     transform: translate(-50%, -50%);
     width: 100svw;
-    height: 100svh;
+    height: 100dvh;
     object-fit: cover;
     aspect-ratio: 16 / 9;
     pointer-events: none;

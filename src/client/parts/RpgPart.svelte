@@ -185,7 +185,7 @@
     left: 50%;
     top: 50%;
     max-width: 100svw;
-    max-height: 100svh;
+    max-height: 100dvh;
     transform: translate(-50%, -50%);
     opacity: 0.3;
   }

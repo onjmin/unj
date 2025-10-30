@@ -31,7 +31,7 @@
         position: fixed;
         z-index: 16;
         top: 0;
-        height: 100svh;
+        height: 100dvh;
         overflow-y: auto;
         transition: transform 0.3s ease;
         max-width: 100svw;
