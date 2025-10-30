@@ -1026,7 +1026,7 @@
         <div class="thread-header">
             <p class="thread-title flex items-center">
                 <TwemojiPart seed={thread.id} />
-                <span class="pl-1.5">{thread.title}</span>
+                <span class="unj-font pl-1.5">{thread.title}</span>
             </p>
             <ChipSet {chips} nonInteractive>
                 {#snippet chip(chip: string)}

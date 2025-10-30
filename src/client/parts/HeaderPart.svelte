@@ -50,7 +50,7 @@
     href="https://fonts.googleapis.com/css2?family=Yuji+Mai&display=swap"
   />
   <style>
-    .content-text {
+    .unj-font {
       font-family: "Yuji Mai", sans-serif !important;
     }
   </style>

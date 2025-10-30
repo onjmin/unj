@@ -227,7 +227,7 @@
         <div class="text-left w-full mx-auto px-4 pb-4">
             <p class="flex items-center font-bold text-teal-600">
                 <FaviconPart {hostname} />
-                <span class="pl-1.5">{title}</span>
+                <span class="unj-font pl-1.5">{title}</span>
             </p>
         </div>
         <div class="mx-auto my-0 w-full px-4">
@@ -238,7 +238,7 @@
                         {@const embeddable = findEmbeddable(note.text ?? "")}
                         <div class="p-4 rounded-lg shadow-inner">
                             <div
-                                class="flex flex-wrap items-center mb-2 text-gray-500 text-sm"
+                                class="unj-font flex flex-wrap items-center mb-2 text-gray-500 text-sm"
                             >
                                 <span> 0： </span>
                                 <span class="font-bold text-teal-600">
@@ -284,7 +284,7 @@
                                                 <br />
                                             {:else}
                                                 <span
-                                                    class="whitespace-pre-wrap"
+                                                    class="unj-font whitespace-pre-wrap"
                                                     >{segment.content}</span
                                                 >
                                             {/if}

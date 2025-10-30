@@ -87,7 +87,7 @@
   class="bg-transparent p-4 rounded-lg shadow-inner"
 >
   <!-- 上段: 名前欄 -->
-  <div class="w-full text-gray-500 text-sm">
+  <div class="unj-font w-full text-gray-500 text-sm">
     <button
       class="reply {sage ? 'sage' : ''}"
       onclick={() => {
@@ -194,7 +194,7 @@
     <!-- 右側のコンテンツ領域 -->
     <div class="content">
       {#if contentText !== ""}
-        <div class="content-text">
+        <div class="unj-font content-text">
           {#each parseContent(contentText) as part}
             {#if part.type === "text"}
               {part.value}
