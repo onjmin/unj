@@ -208,7 +208,7 @@
                             contentUrl = link;
                             imgurHistory.get().then((v) => {
                                 const arr = v ? v : [];
-                                arr.push({
+                                arr.unshift({
                                     link,
                                     id: delete_id,
                                     deletehash: delete_hash,
@@ -237,7 +237,7 @@
                     if (!id) return;
                     imgurHistory.get().then((v) => {
                         const arr = v ? v : [];
-                        arr.push({ link, id, deletehash });
+                        arr.unshift({ link, id, deletehash });
                         imgurHistory.set(arr);
                     });
                     return true;
@@ -262,7 +262,7 @@
                 contentUrl = link;
                 uploadHistory.get().then((v) => {
                     const arr = v ? v : [];
-                    arr.push({ link, delete_id, delete_hash });
+                    arr.unshift({ link, delete_id, delete_hash });
                     uploadHistory.set(arr);
                 });
             } catch (error) {

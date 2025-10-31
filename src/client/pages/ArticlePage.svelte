@@ -232,3 +232,5 @@
         </div>
     {/if}
 </MainPart>
+
+<FooterPart />

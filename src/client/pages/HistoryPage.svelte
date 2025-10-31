@@ -30,6 +30,7 @@
     import { ObjectStorage } from "../mylib/object-storage.js";
     import { type ResHistory } from "../mylib/res-history.js";
     import ImagePreviewModal from "../parts/ImagePreviewPart.svelte";
+    import PaginationControls from "../parts/PaginationControls.svelte";
 
     // boardに加えて、すべての板の情報であるboardsを受け取るように変更
     let { board }: { board: Board } = $props();
@@ -70,7 +71,6 @@
         boardName: string; // 板名を追加
     };
 
-    // 💡 修正点: 派生ロジックを外部関数として切り出し、型を明確にする
     const groupAndSortHistories = (
         histories: ResHistory[] | null,
         currentBoard: Board,
@@ -111,15 +111,11 @@
         return groupArray;
     };
 
-    // 💡 修正点: $derivedには外部関数の呼び出しを渡す
     const groupedHistories: GroupedHistory[] = $derived(
         groupAndSortHistories(resHistories, board, boardIdMap),
     );
 
-    // 画像履歴、お絵描き履歴
-
     const toaster = createToaster();
-
     let open = $state(false);
     let src = $state("");
 
@@ -136,34 +132,6 @@
             imgurList = v ? v : [];
         });
     });
-
-    const itemsPerPage: number = 8; // 1ページあたりの表示枚数
-
-    // 画像履歴ページネーション用
-
-    let currentPageOfUploadList: number = $state(1); // 現在のページ
-    const totalPagesOfUploadList = $derived(
-        Math.ceil(uploadList.length / itemsPerPage),
-    );
-    const reversedUploadList = $derived([...uploadList].reverse());
-    const paginatedUploadList = $derived(
-        reversedUploadList.slice(
-            (currentPageOfUploadList - 1) * itemsPerPage,
-            currentPageOfUploadList * itemsPerPage,
-        ),
-    );
-
-    // お絵描き履歴ページネーション用
-
-    let currentPage: number = $state(1); // 現在のページ
-    const totalPages = $derived(Math.ceil(imgurList.length / itemsPerPage));
-    const reversedImgurList = $derived([...imgurList].reverse());
-    const paginatedImgurList = $derived(
-        reversedImgurList.slice(
-            (currentPage - 1) * itemsPerPage,
-            currentPage * itemsPerPage,
-        ),
-    );
 
     const deleteOekaki = (obj: ImgurResponse) => {
         const url = (() => {
@@ -234,47 +202,51 @@
                             {/if}
                         </h3>
 
-                        {#each group.histories as resHistory (resHistory.threadId)}
-                            {@const newResponses =
-                                resHistory.resCount - resHistory.resNum}
-                            <Link
-                                to={makePathname(
-                                    // board.keyの代わりに、resHistory.boardIdからboard.keyを取得する必要がある
-                                    `/${boardIdMap.get(resHistory.boardId)?.key ?? board.key}/thread/${resHistory.threadId}/${resHistory.resNum}`,
-                                )}
-                                class="block p-2 rounded hover:bg-gray-100/20 transition border-b border-gray-100/10 last:border-b-0"
-                            >
-                                <div class="flex items-center space-x-2">
-                                    <div class="flex-shrink-0">
-                                        {#if newResponses > 0}
-                                            <span class="text-red-500 font-bold"
-                                                >+{newResponses}</span
-                                            >
-                                        {:else}
-                                            <span class="text-gray-500">+0</span
-                                            >
-                                        {/if}
-                                    </div>
-                                    <div class="flex-grow min-w-0">
-                                        <div
-                                            class="flex items-center space-x-1"
-                                        >
-                                            <span class="truncate"
-                                                >{resHistory.title}</span
-                                            >
-                                            <span class="whitespace-nowrap"
-                                                >({resHistory.resCount})</span
-                                            >
+                        <PaginationControls list={group.histories}>
+                            {#snippet children(resHistory: ResHistory)}
+                                {@const newResponses =
+                                    resHistory.resCount - resHistory.resNum}
+                                <Link
+                                    to={makePathname(
+                                        // board.keyの代わりに、resHistory.boardIdからboard.keyを取得する必要がある
+                                        `/${boardIdMap.get(resHistory.boardId)?.key ?? board.key}/thread/${resHistory.threadId}/${resHistory.resNum}`,
+                                    )}
+                                    class="block p-2 rounded hover:bg-gray-100/20 transition border-b border-gray-100/10 last:border-b-0"
+                                >
+                                    <div class="flex items-center space-x-2">
+                                        <div class="flex-shrink-0">
+                                            {#if newResponses > 0}
+                                                <span
+                                                    class="text-red-500 font-bold"
+                                                    >+{newResponses}</span
+                                                >
+                                            {:else}
+                                                <span class="text-gray-500"
+                                                    >+0</span
+                                                >
+                                            {/if}
                                         </div>
-                                        <p
-                                            class="text-gray-500 text-sm mt-1 truncate"
-                                        >
-                                            {resHistory.latestRes}
-                                        </p>
+                                        <div class="flex-grow min-w-0">
+                                            <div
+                                                class="flex items-center space-x-1"
+                                            >
+                                                <span class="truncate"
+                                                    >{resHistory.title}</span
+                                                >
+                                                <span class="whitespace-nowrap"
+                                                    >({resHistory.resCount})</span
+                                                >
+                                            </div>
+                                            <p
+                                                class="text-gray-500 text-sm mt-1 truncate"
+                                            >
+                                                {resHistory.latestRes}
+                                            </p>
+                                        </div>
                                     </div>
-                                </div>
-                            </Link>
-                        {/each}
+                                </Link>
+                            {/snippet}
+                        </PaginationControls>
                     </div>
                 {/each}
             {/if}
@@ -291,53 +263,8 @@
                         <div>画像うｐしてから出直してね。</div>
                     </div>
                 {:else}
-                    {#snippet paginationControls()}
-                        {#if totalPagesOfUploadList > 1}
-                            <div
-                                class="flex justify-center items-center mt-4 space-x-2 text-sm"
-                            >
-                                <button
-                                    onclick={() =>
-                                        (currentPageOfUploadList = 1)}
-                                    disabled={currentPageOfUploadList === 1}
-                                    class="px-3 py-1 rounded-md bg-gray-100/10 hover:bg-gray-100/20 disabled:opacity-50 transition-colors"
-                                >
-                                    最初へ
-                                </button>
-                                <button
-                                    onclick={() => currentPageOfUploadList--}
-                                    disabled={currentPageOfUploadList === 1}
-                                    class="px-3 py-1 rounded-md bg-gray-100/10 hover:bg-gray-100/20 disabled:opacity-50 transition-colors"
-                                >
-                                    前へ
-                                </button>
-                                <span
-                                    >{currentPageOfUploadList} / {totalPagesOfUploadList}</span
-                                >
-                                <button
-                                    onclick={() => currentPageOfUploadList++}
-                                    disabled={currentPageOfUploadList ===
-                                        totalPagesOfUploadList}
-                                    class="px-3 py-1 rounded-md bg-gray-100/10 hover:bg-gray-100/20 disabled:opacity-50 transition-colors"
-                                >
-                                    次へ
-                                </button>
-                                <button
-                                    onclick={() =>
-                                        (currentPageOfUploadList =
-                                            totalPagesOfUploadList)}
-                                    disabled={currentPageOfUploadList ===
-                                        totalPagesOfUploadList}
-                                    class="px-3 py-1 rounded-md bg-gray-100/10 hover:bg-gray-100/20 disabled:opacity-50 transition-colors"
-                                >
-                                    最後へ
-                                </button>
-                            </div>
-                        {/if}
-                    {/snippet}
-                    {@render paginationControls()}
-                    <div class="text-left space-y-4">
-                        {#each paginatedUploadList as uploadResponse}
+                    <PaginationControls list={uploadList}>
+                        {#snippet children(uploadResponse: UploadResponse)}
                             <div
                                 class="flex items-center py-2 border-b last:border-b-0 border-gray-100/10"
                             >
@@ -406,9 +333,8 @@
                                     </button>
                                 </div>
                             </div>
-                        {/each}
-                    </div>
-                    {@render paginationControls()}
+                        {/snippet}
+                    </PaginationControls>
                 {/if}
             </div>
         </div>
@@ -424,46 +350,8 @@
                         <div>お絵描きうｐしてから出直してね。</div>
                     </div>
                 {:else}
-                    {#snippet paginationControls()}
-                        {#if totalPages > 1}
-                            <div
-                                class="flex justify-center items-center mt-4 space-x-2 text-sm"
-                            >
-                                <button
-                                    onclick={() => (currentPage = 1)}
-                                    disabled={currentPage === 1}
-                                    class="px-3 py-1 rounded-md bg-gray-100/10 hover:bg-gray-100/20 disabled:opacity-50 transition-colors"
-                                >
-                                    最初へ
-                                </button>
-                                <button
-                                    onclick={() => currentPage--}
-                                    disabled={currentPage === 1}
-                                    class="px-3 py-1 rounded-md bg-gray-100/10 hover:bg-gray-100/20 disabled:opacity-50 transition-colors"
-                                >
-                                    前へ
-                                </button>
-                                <span>{currentPage} / {totalPages}</span>
-                                <button
-                                    onclick={() => currentPage++}
-                                    disabled={currentPage === totalPages}
-                                    class="px-3 py-1 rounded-md bg-gray-100/10 hover:bg-gray-100/20 disabled:opacity-50 transition-colors"
-                                >
-                                    次へ
-                                </button>
-                                <button
-                                    onclick={() => (currentPage = totalPages)}
-                                    disabled={currentPage === totalPages}
-                                    class="px-3 py-1 rounded-md bg-gray-100/10 hover:bg-gray-100/20 disabled:opacity-50 transition-colors"
-                                >
-                                    最後へ
-                                </button>
-                            </div>
-                        {/if}
-                    {/snippet}
-                    {@render paginationControls()}
-                    <div class="text-left space-y-4">
-                        {#each paginatedImgurList as imgurResponse}
+                    <PaginationControls list={imgurList}>
+                        {#snippet children(imgurResponse: ImgurResponse)}
                             <div
                                 class="flex items-center py-2 border-b last:border-b-0 border-gray-100/10"
                             >
@@ -530,9 +418,8 @@
                                     </button>
                                 </div>
                             </div>
-                        {/each}
-                    </div>
-                    {@render paginationControls()}
+                        {/snippet}
+                    </PaginationControls>
                 {/if}
             </div>
         </div>
