@@ -130,7 +130,7 @@
     {#if showBlockButtons}
       <div class="inline-flex flex-shrink-0 space-x-2 items-end">
         <button
-          class="p-1 rounded-full text-red-500 bg-gray-100 hover:bg-gray-200 self-end"
+          class="p-1 rounded-full text-red-500 bg-gray-100 hover:text-gray-500 self-end"
           onclick={() => {
             if (ccUserId && ignoreList) {
               toaster.success({
@@ -147,7 +147,7 @@
         </button>
 
         <button
-          class="p-1 rounded-full text-gray-500 bg-gray-100 hover:bg-gray-200 self-end"
+          class="p-1 rounded-full hover:text-gray-500 self-end"
           onclick={() => {
             showBlockButtons = false; // 元の状態に戻る
           }}
@@ -157,7 +157,7 @@
       </div>
     {:else}
       <button
-        class="text-gray-500 hover:text-gray-700 transition-colors duration-200 ease-in-out self-end"
+        class="hover:text-gray-500 transition-colors duration-200 ease-in-out self-end"
         onclick={() => {
           showBlockButtons = true; // クリックで2つのボタンを表示
         }}
