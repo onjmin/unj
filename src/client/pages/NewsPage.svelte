@@ -82,35 +82,41 @@
             />
         {/if}
     {:else if items}
-        <List class="demo-list" nonInteractive>
-            {#each items as item, i}
-                <Item disabled>
-                    <div class="date">{formatDate(item.published)}</div>
-                    <div class="hidden md:flex">
-                        <ChipSet chips={item.labels} nonInteractive>
-                            {#snippet chip(chip: string)}
-                                <Chip {chip}>
-                                    {#if label2icon.has(chip)}
-                                        <LeadingIcon class="material-icons"
-                                            >{label2icon.get(chip)}</LeadingIcon
-                                        >
-                                    {/if}
-                                    <Text tabindex={0}>{chip}</Text>
-                                </Chip>
-                            {/snippet}
-                        </ChipSet>
-                    </div>
-                    <div class="news-link text-left">
-                        <Link to={makePathname(`/${board.key}/news/${item.id}`)}
-                            >{item.title}</Link
-                        >
-                    </div>
-                </Item>
-                {#if i % 4 === 3 && i !== items.length - 1}
-                    <Separator />
-                {/if}
-            {/each}
-        </List>
+        <div class="w-full max-w-3xl mx-auto">
+            <List class="demo-list" nonInteractive>
+                {#each items as item, i}
+                    <Item disabled>
+                        <div class="date">{formatDate(item.published)}</div>
+                        <div class="hidden md:flex">
+                            <ChipSet chips={item.labels} nonInteractive>
+                                {#snippet chip(chip: string)}
+                                    <Chip {chip}>
+                                        {#if label2icon.has(chip)}
+                                            <LeadingIcon class="material-icons"
+                                                >{label2icon.get(
+                                                    chip,
+                                                )}</LeadingIcon
+                                            >
+                                        {/if}
+                                        <Text tabindex={0}>{chip}</Text>
+                                    </Chip>
+                                {/snippet}
+                            </ChipSet>
+                        </div>
+                        <div class="news-link text-left">
+                            <Link
+                                to={makePathname(
+                                    `/${board.key}/news/${item.id}`,
+                                )}>{item.title}</Link
+                            >
+                        </div>
+                    </Item>
+                    {#if i % 4 === 3 && i !== items.length - 1}
+                        <Separator />
+                    {/if}
+                {/each}
+            </List>
+        </div>
     {/if}
 </MainPart>
 

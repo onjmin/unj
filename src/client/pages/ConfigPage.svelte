@@ -224,8 +224,8 @@
 
 <MainPart {board}>
     <p>ここで設定変更できます</p>
-    <div class="space-y-4">
-        <div class="bg-gray-100/10 rounded-lg shadow">
+    <div class="w-full max-w-3xl mx-auto space-y-4">
+        <div class="border border-gray-100/10 rounded-lg shadow">
             <div
                 tabindex="0"
                 role="button"
@@ -263,7 +263,7 @@
                 </div>
             {/if}
         </div>
-        <div class="bg-gray-100/10 rounded-lg shadow">
+        <div class="border border-gray-100/10 rounded-lg shadow">
             <div
                 tabindex="0"
                 role="button"
@@ -304,7 +304,7 @@
                 </div>
             {/if}
         </div>
-        <div class="bg-gray-100/10 rounded-lg shadow">
+        <div class="border border-gray-100/10 rounded-lg shadow">
             <div
                 tabindex="0"
                 role="button"
@@ -356,7 +356,7 @@
                 </div>
             {/if}
         </div>
-        <div class="bg-gray-100/10 rounded-lg shadow">
+        <div class="border border-gray-100/10 rounded-lg shadow">
             <div
                 tabindex="0"
                 role="button"
@@ -408,7 +408,7 @@
                 </div>
             {/if}
         </div>
-        <div class="bg-gray-100/10 rounded-lg shadow">
+        <div class="border border-gray-100/10 rounded-lg shadow">
             <div
                 tabindex="0"
                 role="button"
