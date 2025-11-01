@@ -207,7 +207,8 @@
                 >>{part.value}</button
               >
             {/if}
-          {/each}{makeSeededSuffix(createdAt.toString())}
+          {/each}
+          <!-- {makeSeededSuffix(createdAt.toString())} -->
         </div>
       {/if}
       {#if commandResult !== ""}

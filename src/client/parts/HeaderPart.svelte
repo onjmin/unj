@@ -45,7 +45,7 @@
 
 <svelte:head>
   <title>{title}</title>
-  <link
+  <!-- <link
     rel="stylesheet"
     href="https://fonts.googleapis.com/css2?family=Yuji+Mai&display=swap"
   />
@@ -53,10 +53,10 @@
     .unj-font {
       font-family: "Yuji Mai", sans-serif !important;
     }
-  </style>
+  </style> -->
 </svelte:head>
 
-<div class="absolute inset-0 z-0">
+<!-- <div class="absolute inset-0 z-0">
   <img
     src={seededRandArray(
       [
@@ -74,7 +74,7 @@
     class="h-screen w-full object-cover opacity-20"
     aria-hidden="true"
   />
-</div>
+</div> -->
 
 <header class="unj-header-part w-full bg-gray-800 text-gray-200 shadow-md">
   <div class="max-w-6xl mx-auto px-4 flex items-center">
