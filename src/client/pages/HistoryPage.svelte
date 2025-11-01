@@ -151,7 +151,7 @@
 
 <HeaderPart {board} title="履歴">
     <button
-        class="text-xs text-red-500 font-medium px-2 py-1 rounded-full border border-red-500 hover:bg-gray-100/10"
+        class="text-xs text-red-500 font-medium px-2 py-1 rounded-full border border-red-500 hover:bg-gray-500/10"
         onclick={() => {
             if (confirm("本当にレス履歴を全て削除してもよろしいですか？")) {
                 resHistories = [];
@@ -166,7 +166,7 @@
 
 <MainPart {board}>
     <div class="max-w-2xl mx-auto p-4 space-y-4 text-left">
-        <div class="border border-gray-100/10 p-4 rounded-lg space-y-4">
+        <div class="border border-gray-500/10 p-4 rounded-lg space-y-4">
             <h2 class="text-gray-500 text-xl font-bold border-b pb-2">
                 レス履歴
             </h2>
@@ -186,7 +186,7 @@
             {:else}
                 {#each groupedHistories as group (group.boardId)}
                     <div
-                        class="border border-gray-100/10 rounded-lg shadow-sm p-3 space-y-2"
+                        class="border border-gray-500/10 rounded-lg shadow-sm p-3 space-y-2"
                     >
                         <h3
                             class="text-lg font-bold pb-1 border-b"
@@ -211,7 +211,7 @@
                                         // board.keyの代わりに、resHistory.boardIdからboard.keyを取得する必要がある
                                         `/${boardIdMap.get(resHistory.boardId)?.key ?? board.key}/thread/${resHistory.threadId}/${resHistory.resNum}`,
                                     )}
-                                    class="block p-2 rounded hover:bg-gray-100/20 transition border-b border-gray-100/10 last:border-b-0"
+                                    class="block p-2 rounded hover:bg-gray-500/20 transition border-b border-gray-500/10 last:border-b-0"
                                 >
                                     <div class="flex items-center space-x-2">
                                         <div class="flex-shrink-0">
@@ -251,7 +251,7 @@
                 {/each}
             {/if}
         </div>
-        <div class="border border-gray-100/10 p-4 rounded-lg space-y-4">
+        <div class="border border-gray-500/10 p-4 rounded-lg space-y-4">
             <h2 class="text-gray-500 text-xl font-bold border-b pb-2">
                 画像履歴
             </h2>
@@ -266,7 +266,7 @@
                     <PaginationControls list={uploadList}>
                         {#snippet children(uploadResponse: UploadResponse)}
                             <div
-                                class="flex items-center py-2 border-b last:border-b-0 border-gray-100/10"
+                                class="flex items-center py-2 border-b last:border-b-0 border-gray-500/10"
                             >
                                 <div
                                     tabindex="0"
@@ -338,7 +338,7 @@
                 {/if}
             </div>
         </div>
-        <div class="border border-gray-100/10 p-4 rounded-lg space-y-4">
+        <div class="border border-gray-500/10 p-4 rounded-lg space-y-4">
             <h2 class="text-gray-500 text-xl font-bold border-b pb-2">
                 お絵描き履歴
             </h2>
@@ -353,7 +353,7 @@
                     <PaginationControls list={imgurList}>
                         {#snippet children(imgurResponse: ImgurResponse)}
                             <div
-                                class="flex items-center py-2 border-b last:border-b-0 border-gray-100/10"
+                                class="flex items-center py-2 border-b last:border-b-0 border-gray-500/10"
                             >
                                 <div
                                     tabindex="0"

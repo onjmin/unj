@@ -16,7 +16,7 @@
 <!-- <MainPart {board}>
     <p class="mb-4">おんj発の掲示板群</p>
     <div class="w-full max-w-lg mx-auto">
-        <ul class="rounded-lg shadow-md divide-y divide-gray-200 bg-gray-100/10">
+        <ul class="rounded-lg shadow-md divide-y divide-gray-200 bg-gray-500/10">
             {#each links as siteInfo, i}
                 <li class="p-4 flex items-center space-x-4">
                     <div
@@ -44,7 +44,7 @@
 
 <MainPart {board}>
     <div
-        class="flex flex-col items-center justify-center text-left p-8 bg-gray-100/10 rounded-lg shadow-md max-w-lg mx-auto mt-10"
+        class="flex flex-col items-center justify-center text-left p-8 bg-gray-500/10 rounded-lg shadow-md max-w-lg mx-auto mt-10"
     >
         <svg
             xmlns="http://www.w3.org/2000/svg"

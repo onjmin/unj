@@ -15,7 +15,7 @@
     <div
         class="flex items-center border border-gray-300 rounded-lg shadow-sm focus-within:ring-2 focus-within:ring-indigo-500 focus-within:border-indigo-500"
     >
-        <div class="p-2.5 bg-gray-100/10 rounded-l-lg">
+        <div class="p-2.5 bg-gray-500/10 rounded-l-lg">
             <Key size={ICON_SIZE} />
         </div>
 

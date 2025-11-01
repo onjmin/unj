@@ -82,7 +82,7 @@
     {#if !previewUrl}
         <button
             onclick={openFileDialog}
-            class="flex flex-col items-center justify-center w-full h-full p-6 border-2 border-dashed border-gray-300 hover:border-blue-500 rounded-lg bg-gray-100/10 hover:bg-gray-100/20 transition-colors duration-200"
+            class="flex flex-col items-center justify-center w-full h-full p-6 border-2 border-dashed border-gray-300 hover:border-blue-500 rounded-lg bg-gray-500/10 hover:bg-gray-500/20 transition-colors duration-200"
             aria-label="画像を選択 (クリックしてファイルを選択)"
         >
             <UploadIcon class="w-8 h-8 text-gray-500 mb-2" />

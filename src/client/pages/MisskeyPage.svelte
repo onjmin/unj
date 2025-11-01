@@ -201,7 +201,7 @@
             href={`https://${hostname}`}
             target="_blank"
             rel="noopener noreferrer"
-            class="flex items-center space-x-2 px-4 py-2 rounded-lg bg-gray-100/10 hover:bg-gray-100/20 transition-colors duration-200"
+            class="flex items-center space-x-2 px-4 py-2 rounded-lg bg-gray-500/10 hover:bg-gray-500/20 transition-colors duration-200"
         >
             <span class="text-sm font-medium">Misskeyを開く</span>
         </a>
@@ -298,7 +298,7 @@
                                             {#each note.files as file (file.id)}
                                                 {#if file.type.startsWith("image/")}
                                                     <button
-                                                        class="w-full h-auto rounded-lg object-cover cursor-pointer bg-gray-100/10 hover:bg-gray-100/20"
+                                                        class="w-full h-auto rounded-lg object-cover cursor-pointer bg-gray-500/10 hover:bg-gray-500/20"
                                                         onclick={() => {
                                                             src = file.url;
                                                             open = true;
@@ -402,7 +402,7 @@
         <div class="flex justify-center my-4">
             <button
                 onclick={handleLoadMore}
-                class="bg-gray-100/10 hover:bg-gray-100/20 font-bold py-2 px-4 rounded"
+                class="bg-gray-500/10 hover:bg-gray-500/20 font-bold py-2 px-4 rounded"
                 disabled={isLoading}
             >
                 {isLoading ? "読み込み中..." : "続きを読む"}

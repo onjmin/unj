@@ -143,7 +143,7 @@
     </p>
     {#if isSuspend}
         <div
-            class="bg-gray-100/10 border border-gray-300 p-6 rounded-lg shadow-md"
+            class="bg-gray-500/10 border border-gray-300 p-6 rounded-lg shadow-md"
         >
             <h2 class="text-xl font-semibold">受付停止中です。</h2>
             {#if resumeDate}

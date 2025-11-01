@@ -169,7 +169,7 @@
                     type="submit"
                     onclick={jumpToSearch}
                     disabled={emitting || !isQueryValid}
-                    class="min-w-[70px] py-2 px-4 rounded-md font-semibold transition-colors duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed bg-gray-100/10 hover:bg-gray-100/20"
+                    class="min-w-[70px] py-2 px-4 rounded-md font-semibold transition-colors duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed bg-gray-500/10 hover:bg-gray-500/20"
                 >
                     {#if emitting}
                         <div class="flex items-center justify-center">
@@ -222,7 +222,7 @@
                             {/each}
                         {/snippet}
                         <li
-                            class="border border-gray-100/10 p-4 rounded-lg shadow-md"
+                            class="border border-gray-500/10 p-4 rounded-lg shadow-md"
                         >
                             <div>
                                 <div class="flex items-end">

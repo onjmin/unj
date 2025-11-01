@@ -115,11 +115,11 @@
 
 <HeaderPart {board} title="個人設定">
     <p>高度な設定</p>
-    <section class="border border-gray-100/10 mb-8 p-6 rounded-lg shadow-md">
+    <section class="border border-gray-500/10 mb-8 p-6 rounded-lg shadow-md">
         <h2 class="text-xl font-semibold mb-4 border-b pb-2">ポケモン忍法帖</h2>
 
         <div
-            class="flex flex-col space-y-4 p-4 border border-gray-100/10 rounded-lg shadow-inner items-center sm:items-stretch"
+            class="flex flex-col space-y-4 p-4 border border-gray-500/10 rounded-lg shadow-inner items-center sm:items-stretch"
         >
             <div class="w-20 h-20 flex-shrink-0 mx-auto">
                 <img
@@ -131,7 +131,7 @@
                 />
             </div>
 
-            <div class="text-center pt-2 border-t border-gray-100/10">
+            <div class="text-center pt-2 border-t border-gray-500/10">
                 <p class="text-sm font-medium">No. {pokemonId}</p>
                 <div class="flex items-center justify-center space-x-2">
                     <p class="text-xl font-bold">
@@ -153,7 +153,7 @@
                 </div>
             </div>
 
-            <div class="text-center pt-2 border-t border-gray-100/10">
+            <div class="text-center pt-2 border-t border-gray-500/10">
                 <p class="text-sm font-medium">ポケモンのレベル</p>
                 <p class="text-4xl font-extrabold">
                     Lv.{ninjaLv}
@@ -162,7 +162,7 @@
         </div>
     </section>
 
-    <section class="border border-gray-100/10 p-6 rounded-lg shadow-md">
+    <section class="border border-gray-500/10 p-6 rounded-lg shadow-md">
         <h2 class="text-xl font-semibold mb-4 border-b pb-2">移行用トークン</h2>
 
         <div class="space-y-4">
@@ -188,7 +188,7 @@
                         value={token}
                         readonly
                         rows="4"
-                        class="opacity-50 bg-gray-100/10 w-full p-2 border rounded-lg cursor-default resize-y"
+                        class="opacity-50 bg-gray-500/10 w-full p-2 border rounded-lg cursor-default resize-y"
                     ></textarea>
                     <button
                         onclick={() => {
@@ -225,7 +225,7 @@
 <MainPart {board}>
     <p>ここで設定変更できます</p>
     <div class="w-full max-w-3xl mx-auto space-y-4">
-        <div class="border border-gray-100/10 rounded-lg shadow">
+        <div class="border border-gray-500/10 rounded-lg shadow">
             <div
                 tabindex="0"
                 role="button"
@@ -263,7 +263,7 @@
                 </div>
             {/if}
         </div>
-        <div class="border border-gray-100/10 rounded-lg shadow">
+        <div class="border border-gray-500/10 rounded-lg shadow">
             <div
                 tabindex="0"
                 role="button"
@@ -304,7 +304,7 @@
                 </div>
             {/if}
         </div>
-        <div class="border border-gray-100/10 rounded-lg shadow">
+        <div class="border border-gray-500/10 rounded-lg shadow">
             <div
                 tabindex="0"
                 role="button"
@@ -356,7 +356,7 @@
                 </div>
             {/if}
         </div>
-        <div class="border border-gray-100/10 rounded-lg shadow">
+        <div class="border border-gray-500/10 rounded-lg shadow">
             <div
                 tabindex="0"
                 role="button"
@@ -408,7 +408,7 @@
                 </div>
             {/if}
         </div>
-        <div class="border border-gray-100/10 rounded-lg shadow">
+        <div class="border border-gray-500/10 rounded-lg shadow">
             <div
                 tabindex="0"
                 role="button"

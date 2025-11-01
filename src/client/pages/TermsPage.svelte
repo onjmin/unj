@@ -25,7 +25,7 @@
     <p>よくある質問</p>
     <div class="space-y-4">
         {#each faq as [q, a], i}
-            <div class="border border-gray-100/10 rounded-lg shadow">
+            <div class="border border-gray-500/10 rounded-lg shadow">
                 <div
                     tabindex="0"
                     role="button"
