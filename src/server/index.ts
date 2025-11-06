@@ -15,6 +15,7 @@ import registerBlacklistID, { blacklist } from "./admin/blacklist/id.js";
 import registerBlacklistIP from "./admin/blacklist/ip.js";
 import registerBlacklistTor from "./admin/blacklist/tor.js";
 import registerBlacklistVpngate from "./admin/blacklist/vpngate.js";
+import registerDebugProxy from "./admin/debug/proxy.js";
 import registerDebugZombie from "./admin/debug/zombie.js";
 import registerEmergencyDenyAll, {
 	isDenyAll,
@@ -115,6 +116,7 @@ registerBlacklistID(router);
 registerBlacklistIP(router);
 registerBlacklistTor(router);
 registerBlacklistVpngate(router);
+registerDebugProxy(router);
 registerDebugZombie(router, io, online);
 registerEmergencyDenyAll(router, io, online);
 registerThreadOwner(router);
