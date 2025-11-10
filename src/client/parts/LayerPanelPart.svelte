@@ -6,8 +6,6 @@
   let layers: oekaki.LayeredCanvas[] = $state([]);
   let reversedLayers = $derived([...layers].reverse());
 
-  let selectionIndex: number = $state(0);
-
   let pointerupTimestamp = $state(0);
   const updatePointerupTimestamp = () => {
     setTimeout(() => {
@@ -25,20 +23,6 @@
     if (!activeLayer && !pointerupTimestamp) return;
     layers = oekaki.getLayers();
   });
-
-  // activeLayerが変更されたら、selectionIndexを更新
-  $effect(() => {
-    const newIndex = layers.findIndex((v) => v === activeLayer);
-    if (newIndex !== -1) {
-      selectionIndex = newIndex;
-    }
-  });
-
-  // レイヤー選択
-  const selectLayer = (index: number) => {
-    selectionIndex = index;
-    activeLayer = layers[index];
-  };
 
   // レイヤー表示のトグル
   const toggleVisibility = (layer: oekaki.LayeredCanvas) => {
@@ -120,15 +104,16 @@
 
   <div class="space-y-2">
     {#key pointerupTimestamp}
-      {#each reversedLayers as layer, i (layer.index)}
+      {#each reversedLayers as layer}
         <div
           tabindex="0"
           role="button"
           onkeydown={() => {}}
           class="flex items-center p-2 rounded-lg cursor-pointer transition-colors duration-200 ease-in-out"
-          class:bg-blue-200={selectionIndex === i}
-          class:dark:bg-blue-700={selectionIndex === i}
-          onclick={() => selectLayer(i)}
+          class:bg-blue-200={activeLayer === layer}
+          onclick={() => {
+            activeLayer = layer;
+          }}
         >
           <div
             class="gimp-checkered-background relative w-8 h-8 rounded overflow-hidden"
@@ -175,7 +160,7 @@
               onkeydown={() => {}}
               class="material-icons text-sm cursor-pointer hover:text-gray-800 dark:hover:text-gray-100 transition-colors"
               onclick={() => moveLayer(layer, "up")}
-              class:opacity-50={!layer.below}
+              class:opacity-50={!layer.above}
             >
               arrow_upward
             </span>
@@ -185,7 +170,7 @@
               onkeydown={() => {}}
               class="material-icons text-sm cursor-pointer hover:text-gray-800 dark:hover:text-gray-100 transition-colors"
               onclick={() => moveLayer(layer, "down")}
-              class:opacity-50={!layer.above}
+              class:opacity-50={!layer.below}
             >
               arrow_downward
             </span>
