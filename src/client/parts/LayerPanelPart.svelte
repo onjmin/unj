@@ -53,14 +53,14 @@
     )
       return;
     layer.delete();
-    const { prev, next } = layer;
-    if (next) activeLayer = next;
-    else if (prev) activeLayer = prev;
+    const { above, below } = layer;
+    if (above) activeLayer = above;
+    else if (below) activeLayer = below;
   };
 
   // レイヤーの移動
   const moveLayer = (layer: oekaki.LayeredCanvas, direction: "up" | "down") => {
-    const targetLayer = direction === "up" ? layer.prev : layer.next;
+    const targetLayer = direction === "up" ? layer.below : layer.above;
     if (targetLayer) {
       layer.swap(targetLayer.index);
       // swap後にlayersを再取得してUIを更新
@@ -163,7 +163,7 @@
               onkeydown={() => {}}
               class="material-icons text-sm cursor-pointer hover:text-gray-800 dark:hover:text-gray-100 transition-colors"
               onclick={() => moveLayer(layer, "up")}
-              class:opacity-50={!layer.prev}
+              class:opacity-50={!layer.below}
             >
               arrow_upward
             </span>
@@ -173,7 +173,7 @@
               onkeydown={() => {}}
               class="material-icons text-sm cursor-pointer hover:text-gray-800 dark:hover:text-gray-100 transition-colors"
               onclick={() => moveLayer(layer, "down")}
-              class:opacity-50={!layer.next}
+              class:opacity-50={!layer.above}
             >
               arrow_downward
             </span>

@@ -679,9 +679,10 @@
         )
           return;
         activeLayer.delete();
-        const { prev, next } = activeLayer;
-        if (next) activeLayer = next;
-        else if (prev) activeLayer = prev;
+
+        const { above, below } = activeLayer;
+        if (above) activeLayer = above;
+        else if (below) activeLayer = below;
         else init();
       }}>delete</IconButton
     >
