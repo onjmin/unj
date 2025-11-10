@@ -4,6 +4,8 @@
   let { activeLayer = $bindable(null) } = $props();
 
   let layers: oekaki.LayeredCanvas[] = $state([]);
+  let reversedLayers = $derived([...layers].reverse());
+
   let selectionIndex: number = $state(0);
 
   let pointerupTimestamp = $state(0);
@@ -60,7 +62,7 @@
 
   // レイヤーの移動
   const moveLayer = (layer: oekaki.LayeredCanvas, direction: "up" | "down") => {
-    const targetLayer = direction === "up" ? layer.below : layer.above;
+    const targetLayer = direction === "up" ? layer.above : layer.below;
     if (targetLayer) {
       layer.swap(targetLayer.index);
       // swap後にlayersを再取得してUIを更新
@@ -70,13 +72,15 @@
 
   // レイヤー追加
   const addLayer = () => {
-    const newLayer = new oekaki.LayeredCanvas(`レイヤー #${layers.length + 1}`);
+    const newLayer = new oekaki.LayeredCanvas();
+    newLayer.name = `レイヤー #${newLayer.index + 1}`;
     activeLayer = newLayer;
   };
 
   // バナーレイヤー追加
   const addBannerLayer = () => {
-    const newLayer = new oekaki.LayeredCanvas(`バナー枠 #${layers.length + 1}`);
+    const newLayer = new oekaki.LayeredCanvas();
+    newLayer.name = `レイヤー #${newLayer.index + 1}`;
     newLayer.opacity = 50;
     const ctx = newLayer.ctx;
     const { width, height } = ctx.canvas;
@@ -101,14 +105,22 @@
 <div
   class="unj-panel font-['Lucida_Grande'] p-4 bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-lg shadow-lg max-w-sm mx-auto select-none"
 >
-  <div class="space-y-2">
-    <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
-      <span class="material-icons text-base">arrow_upward</span>
-      最背面
-    </div>
+  <button
+    class="mt-4 w-full px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors duration-200 ease-in-out"
+    onclick={addBannerLayer}
+  >
+    バナー枠追加
+  </button>
+  <button
+    class="mt-4 w-full px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-200 ease-in-out"
+    onclick={addLayer}
+  >
+    レイヤー追加
+  </button>
 
+  <div class="space-y-2">
     {#key pointerupTimestamp}
-      {#each layers as layer, i (layer.index)}
+      {#each reversedLayers as layer, i (layer.index)}
         <div
           tabindex="0"
           role="button"
@@ -181,24 +193,5 @@
         </div>
       {/each}
     {/key}
-
-    <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
-      <span class="material-icons text-base">arrow_downward</span>
-      最前面
-    </div>
   </div>
-
-  <button
-    class="mt-4 w-full px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-200 ease-in-out"
-    onclick={addLayer}
-  >
-    レイヤー追加
-  </button>
-
-  <button
-    class="mt-4 w-full px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors duration-200 ease-in-out"
-    onclick={addBannerLayer}
-  >
-    バナー枠追加
-  </button>
 </div>
