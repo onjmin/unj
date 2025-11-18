@@ -86,6 +86,12 @@ export const unchiBoard = new Board({
 	name: "うんち板",
 	description: "うんちについて話す板です。",
 });
+export const rozeBoard = new Board({
+	id: 6,
+	key: "roze",
+	name: "束音ロゼ板",
+	description: "ロゼにまつわるエトセトラ",
+});
 for (const v of touhouAvatars) touhouBoard.avatarMap.set(v.id, v);
 
 export const publicBoards = [...boardMap.values()].filter((v) => v.id);
