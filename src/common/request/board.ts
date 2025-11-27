@@ -92,6 +92,12 @@ export const rozeBoard = new Board({
 	name: "束音ロゼ板",
 	description: "ロゼにまつわるエトセトラ",
 });
+export const news4vipBoard = new Board({
+	id: 7,
+	key: "news4vip",
+	name: "ニュー速VIP",
+	description: "特別な板、ニュー速VIPへようこそ",
+});
 for (const v of touhouAvatars) touhouBoard.avatarMap.set(v.id, v);
 
 export const publicBoards = [...boardMap.values()].filter((v) => v.id);
