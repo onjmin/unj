@@ -39,6 +39,7 @@
     import FaviconPart from "../parts/FaviconPart.svelte";
     import KomePart from "../parts/KomePart.svelte";
     import MessageBoxPart from "../parts/MessageBoxPart.svelte";
+    import NewsPart from "../parts/NewsPart.svelte";
     import TwemojiPart from "../parts/TwemojiPart.svelte";
 
     let { board }: { board: Board } = $props();
@@ -319,6 +320,10 @@
                 {board.description}
             </p>
         </div>
+    </div>
+
+    <div class="p-4 sm:p-6 pt-0">
+        <NewsPart {board} />
     </div>
 
     {#if !threadList}

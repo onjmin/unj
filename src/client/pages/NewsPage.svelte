@@ -82,37 +82,51 @@
             />
         {/if}
     {:else if items}
-        <div class="w-full max-w-3xl mx-auto">
+        <div
+            class="w-full max-w-3xl mx-auto rounded-md overflow-hidden bg-gray-100/10"
+        >
             <List class="demo-list" nonInteractive>
                 {#each items as item, i}
-                    <Item disabled>
-                        <div class="date">{formatDate(item.published)}</div>
-                        <div class="hidden md:flex">
-                            <ChipSet chips={item.labels} nonInteractive>
-                                {#snippet chip(chip: string)}
-                                    <Chip {chip}>
-                                        {#if label2icon.has(chip)}
-                                            <LeadingIcon class="material-icons"
-                                                >{label2icon.get(
-                                                    chip,
-                                                )}</LeadingIcon
-                                            >
-                                        {/if}
-                                        <Text tabindex={0}>{chip}</Text>
-                                    </Chip>
-                                {/snippet}
-                            </ChipSet>
-                        </div>
-                        <div class="news-link text-left">
-                            <Link
-                                to={makePathname(
-                                    `/${board.key}/news/${item.id}`,
-                                )}>{item.title}</Link
+                    <Item disabled class="p-0">
+                        <div
+                            class="flex items-center p-3 sm:p-4 hover:bg-gray-100/20 transition-colors"
+                        >
+                            <div
+                                class="flex-shrink-0 text-xs sm:text-sm text-gray-500 mr-4 w-20 sm:w-24"
                             >
+                                {formatDate(item.published)}
+                            </div>
+                            <div class="hidden md:flex flex-shrink-0 mr-4">
+                                <ChipSet chips={item.labels} nonInteractive>
+                                    {#snippet chip(chip: string)}
+                                        <Chip {chip}>
+                                            {#if label2icon.has(chip)}
+                                                <LeadingIcon
+                                                    class="material-icons"
+                                                    >{label2icon.get(
+                                                        chip,
+                                                    )}</LeadingIcon
+                                                >
+                                            {/if}
+                                            <Text tabindex={0}>{chip}</Text>
+                                        </Chip>
+                                    {/snippet}
+                                </ChipSet>
+                            </div>
+                            <div
+                                class="flex-1 overflow-hidden whitespace-nowrap text-ellipsis text-left"
+                            >
+                                <Link
+                                    to={makePathname(
+                                        `/${board.key}/news/${item.id}`,
+                                    )}
+                                    class="block truncate">{item.title}</Link
+                                >
+                            </div>
                         </div>
                     </Item>
                     {#if i % 4 === 3 && i !== items.length - 1}
-                        <Separator />
+                        <Separator class="border-t border-gray-300 my-1" />
                     {/if}
                 {/each}
             </List>
@@ -121,18 +135,3 @@
 </MainPart>
 
 <FooterPart />
-
-<style>
-    .date {
-        flex: 0 0 auto; /* 幅固定（縮まない） */
-        font-size: 0.85rem;
-        color: #666;
-    }
-
-    .news-link {
-        flex: 1 1 auto;
-        overflow: hidden;
-        text-overflow: ellipsis; /* タイトルが長いとき「…」に */
-        white-space: nowrap;
-    }
-</style>
