@@ -68,7 +68,7 @@
 </script>
 
 <div
-  class="h-[25vh] overflow-y-auto border border-gray-500/10 rounded-md bg-gray-100/10 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100"
+  class="h-[25vh] overflow-y-auto border border-gray-500/10 rounded-md scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100"
 >
   <div class="p-4">
     <h2 class="text-xl font-bold mb-3 flex items-center">
@@ -97,7 +97,7 @@
           {#each items as item, i}
             <li class="last:mb-0">
               <div
-                class="flex items-center px-3 py-2 sm:px-2 sm:py-1 hover:bg-gray-100/20 transition-colors"
+                class="flex items-center px-3 py-2 sm:px-2 sm:py-1 hover:bg-gray-500/10 transition-colors"
               >
                 <div
                   class="flex-shrink-0 text-xs sm:text-sm text-gray-500 mr-4 w-16 sm:w-20"
