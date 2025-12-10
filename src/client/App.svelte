@@ -15,7 +15,6 @@
   import LinksPage from "./pages/LinksPage.svelte";
   import MisskeyPage from "./pages/MisskeyPage.svelte";
   import NewPage from "./pages/NewPage.svelte";
-  import NewsPage from "./pages/NewsPage.svelte";
   import NotFoundPage from "./pages/NotFoundPage.svelte";
   import SearchPage from "./pages/SearchPage.svelte";
   import TermsPage from "./pages/TermsPage.svelte";
@@ -96,11 +95,7 @@
   <Route path={makePathname("/:board/contact")} let:params>
     <ContactPage board={b(params.board)} />
   </Route>
-  <!-- ブログ一覧 -->
-  <Route path={makePathname("/:board/news")} let:params>
-    <NewsPage board={b(params.board)} />
-  </Route>
-  <!-- ブログ個別 -->
+  <!-- ニュース -->
   <Route path="{makePathname('/:board/news')}/:newsId" let:params>
     <ArticlePage board={b(params.board)} newsId={params.newsId} />
   </Route>

@@ -67,9 +67,7 @@
     let error = $state(false);
     $effect(() => {
         const _newsId = newsId;
-        const cache = new ObjectStorage<BloggerItem>(
-            `articleCache###${newsId}`,
-        );
+        const cache = new ObjectStorage<BloggerItem>(`newsCache###${newsId}`);
         cache.get().then((v) => {
             if (v) {
                 if (_newsId !== newsId) return;
