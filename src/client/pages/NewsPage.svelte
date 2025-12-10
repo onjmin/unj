@@ -18,7 +18,7 @@
     import {
         type BloggerItem,
         formatDate,
-        label2icon,
+        getLabelIconComponent,
     } from "../mylib/blogger.js";
     import { decodeEnv, makePathname } from "../mylib/env.js";
     import { ObjectStorage } from "../mylib/object-storage.js";
@@ -181,20 +181,27 @@
             公開日：{formatDate(item.published)}
         </p>
         <h1
-            class="text-left mx-auto w-full max-w-3xl px-4 break-words whitespace-normal"
+            class="text-left my-2 mx-auto w-full max-w-3xl px-4 break-words whitespace-normal"
         >
-            <ChipSet chips={item.labels} nonInteractive>
-                {#snippet chip(chip: string)}
-                    <Chip {chip}>
-                        {#if label2icon.has(chip)}
-                            <LeadingIcon class="material-icons"
-                                >{label2icon.get(chip)}</LeadingIcon
-                            >
-                        {/if}
-                        <Text tabindex={0}>{chip}</Text>
-                    </Chip>
-                {/snippet}
-            </ChipSet>
+            {#if item.labels?.length}
+                {@const chip = item.labels.at(0) ?? ""}
+                {@const IconComponent = getLabelIconComponent(chip)}
+
+                <span
+                    class="inline-flex items-center h-5 text-xs font-medium px-2 py-0.5 rounded-full border border-gray-500/10 bg-gray-100/10 whitespace-nowrap"
+                    title={chip}
+                >
+                    {#if IconComponent}
+                        <IconComponent
+                            size={12}
+                            class="mr-1 text-gray-500 flex-shrink-0"
+                        />
+                    {/if}
+                    <span class="text-sm">
+                        {chip}
+                    </span>
+                </span>
+            {/if}
         </h1>
 
         <div

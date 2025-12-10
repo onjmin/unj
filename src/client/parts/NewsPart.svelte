@@ -1,14 +1,12 @@
 <script lang="ts">
-  import {
-    BugIcon,
-    CodeIcon,
-    RssIcon,
-    ShieldHalfIcon,
-    ZapIcon,
-  } from "@lucide/svelte";
+  import { RssIcon } from "@lucide/svelte";
   import { Link } from "svelte-routing";
   import type { Board } from "../../common/request/board.js";
-  import { type BloggerItem, formatDate } from "../mylib/blogger.js";
+  import {
+    type BloggerItem,
+    formatDate,
+    getLabelIconComponent,
+  } from "../mylib/blogger.js";
   import { decodeEnv, makePathname } from "../mylib/env.js";
   import { ObjectStorage } from "../mylib/object-storage.js";
   import MessageBoxPart from "./MessageBoxPart.svelte";
@@ -48,23 +46,6 @@
     }, 4096);
     return () => clearTimeout(id);
   });
-
-  const getLabelIconComponent = (label: string) => {
-    console.log(label);
-    if (label === "新機能") {
-      return ZapIcon;
-    }
-    if (label === "脆弱性") {
-      return ShieldHalfIcon;
-    }
-    if (label === "技術") {
-      return CodeIcon;
-    }
-    if (label === "バグ") {
-      return BugIcon;
-    }
-    return null;
-  };
 </script>
 
 <div
@@ -105,27 +86,22 @@
                   {formatDate(item.published)}
                 </div>
                 <div class="hidden md:flex flex-shrink-0 mr-4 space-x-2">
-                  {#if item.labels}
-                    {#each item.labels.slice(0, 2) as chip}
-                      {@const IconComponent = getLabelIconComponent(chip)}
+                  {#if item.labels?.length}
+                    {@const chip = item.labels.at(0) ?? ""}
+                    {@const IconComponent = getLabelIconComponent(chip)}
+                    <span
+                      class="inline-flex items-center h-5 text-xs font-medium px-2 py-0.5 rounded-full border border-gray-500/10 bg-gray-100/10 text-gray-700 whitespace-nowrap"
+                    >
                       {#if IconComponent}
-                        <span
-                          class="inline-flex items-center h-5 text-xs font-medium px-2 py-0.5 rounded-full border border-gray-500/10 bg-gray-100/10 text-gray-700 whitespace-nowrap"
-                        >
-                          <IconComponent
-                            size={12}
-                            class="mr-1 text-gray-500 flex-shrink-0"
-                          />
-                          {chip}
-                        </span>
-                      {:else}
-                        <span
-                          class="inline-flex items-center h-5 text-xs font-medium px-2 py-0.5 rounded-full border border-gray-500/10 bg-gray-100/10 text-gray-700 whitespace-nowrap"
-                        >
-                          {chip}
-                        </span>
+                        <IconComponent
+                          size={12}
+                          class="mr-1 text-gray-500 flex-shrink-0"
+                        />
                       {/if}
-                    {/each}
+                      <span class="text-sm">
+                        {chip}
+                      </span>
+                    </span>
                   {/if}
                 </div>
                 <div

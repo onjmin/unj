@@ -1,3 +1,4 @@
+import { BugIcon, CodeIcon, ShieldHalfIcon, ZapIcon } from "@lucide/svelte";
 import { format } from "date-fns";
 import { ja } from "date-fns/locale";
 
@@ -12,9 +13,19 @@ export type BloggerItem = {
 export const formatDate = (date: string): string =>
 	format(new Date(date), "MM月dd日", { locale: ja });
 
-export const label2icon = new Map([
-	["新機能", "update"],
-	["脆弱性", "security"],
-	["技術", "code"],
-	["バグ", "bug_report"],
-]);
+export const getLabelIconComponent = (label: string) => {
+	console.log(label);
+	if (label === "新機能") {
+		return ZapIcon;
+	}
+	if (label === "脆弱性") {
+		return ShieldHalfIcon;
+	}
+	if (label === "技術") {
+		return CodeIcon;
+	}
+	if (label === "バグ") {
+		return BugIcon;
+	}
+	return null;
+};
