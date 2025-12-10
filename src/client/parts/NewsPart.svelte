@@ -68,7 +68,7 @@
 </script>
 
 <div
-  class="h-[25vh] overflow-y-auto border border-gray-500/10 rounded-md scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100"
+  class="h-[20vh] overflow-y-auto border border-gray-500/10 rounded-md scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100"
 >
   <div class="p-4">
     <h2 class="text-xl font-bold mb-3 flex items-center">
