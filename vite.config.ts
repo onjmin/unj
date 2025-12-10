@@ -61,7 +61,10 @@ for (const i of Array(randInt(32, 64)).keys()) {
 }
 
 export default defineConfig({
-	plugins: [svelte(), tailwindcss()],
+	plugins: [
+		tailwindcss(),
+		svelte(), // <-- Must come after Tailwind
+	],
 	base: VITE_BASE_URL,
 	root: "src/client",
 	define: Object.fromEntries(

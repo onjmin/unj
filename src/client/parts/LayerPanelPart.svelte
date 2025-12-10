@@ -126,7 +126,7 @@
             ></div>
           </div>
 
-          <div class="flex-grow">
+          <div class="grow">
             <div class="font-semibold">{layer.name}</div>
             <div
               class="text-xs text-gray-600 dark:text-gray-400 flex items-center gap-1"

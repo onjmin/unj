@@ -256,7 +256,7 @@
                                 </span>
                             </div>
                             <div class="flex items-start">
-                                <div class="mr-2 flex-shrink-0">
+                                <div class="mr-2 shrink-0">
                                     <img
                                         src={note.user.avatarUrl}
                                         alt={`${note.user.username}'s avatar`}

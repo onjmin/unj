@@ -127,7 +127,7 @@
       <span class="text-xs text-red-400">主</span>
     {/if}
     {#if showBlockButtons}
-      <div class="inline-flex flex-shrink-0 space-x-2 items-end">
+      <div class="inline-flex shrink-0 space-x-2 items-end">
         <button
           class="p-1 rounded-full text-red-500 bg-gray-100 hover:text-gray-500 self-end"
           onclick={() => {

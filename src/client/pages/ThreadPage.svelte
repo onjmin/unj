@@ -757,41 +757,62 @@
             >投稿する</Button
         >
         <Switch
-            controlActive="bg-secondary-500"
             checked={isSage}
             onCheckedChange={(e) => {
                 isSage = e.checked;
             }}
-        >
-            {#snippet inactiveChild()}
-                <ArrowDownIcon size="14" />
-            {/snippet}
-            {#snippet activeChild()}
-                <ArrowDownIcon size="14" />
-            {/snippet}
+            ><Switch.Control>
+                <Switch.Thumb>
+                    <Switch.Context>
+                        {#snippet children(switch_)}
+                            {#if switch_().checked}
+                                <ArrowDownIcon size="14" />
+                            {:else}
+                                <ArrowDownIcon size="14" />
+                            {/if}
+                        {/snippet}
+                    </Switch.Context>
+                </Switch.Thumb>
+            </Switch.Control>
+            <Switch.HiddenInput />
         </Switch>
+
         <Switch
-            controlActive="bg-secondary-500"
             checked={isNinja}
             onCheckedChange={(e) => {
                 isNinja = e.checked;
             }}
-        >
-            {#snippet inactiveChild()}
-                忍
-            {/snippet}
-            {#snippet activeChild()}
-                忍
-            {/snippet}
+            ><Switch.Control>
+                <Switch.Thumb>
+                    <Switch.Context>
+                        {#snippet children(switch_)}
+                            {#if switch_().checked}
+                                忍
+                            {:else}
+                                忍
+                            {/if}
+                        {/snippet}
+                    </Switch.Context>
+                </Switch.Thumb>
+            </Switch.Control>
+            <Switch.HiddenInput />
         </Switch>
         {#if thread?.yours}
-            <Switch controlActive="bg-secondary-500" disabled checked={true}>
-                {#snippet inactiveChild()}
-                    主
-                {/snippet}
-                {#snippet activeChild()}
-                    主
-                {/snippet}
+            <Switch disabled checked={true}>
+                <Switch.Control>
+                    <Switch.Thumb>
+                        <Switch.Context>
+                            {#snippet children(switch_)}
+                                {#if switch_().checked}
+                                    主
+                                {:else}
+                                    主
+                                {/if}
+                            {/snippet}
+                        </Switch.Context>
+                    </Switch.Thumb>
+                </Switch.Control>
+                <Switch.HiddenInput />
             </Switch>
         {/if}
         <!-- <FormField align="end">
@@ -808,33 +829,47 @@
     {/if} -->
         {#if !menu}
             <Switch
-                controlActive="bg-secondary-500"
                 checked={checkedOekaki}
                 onCheckedChange={(e) => {
                     checkedOekaki = e.checked;
                 }}
             >
-                {#snippet inactiveChild()}
-                    <BrushIcon size="14" />
-                {/snippet}
-                {#snippet activeChild()}
-                    <BrushIcon size="14" />
-                {/snippet}
+                <Switch.Control>
+                    <Switch.Thumb>
+                        <Switch.Context>
+                            {#snippet children(switch_)}
+                                {#if switch_().checked}
+                                    <BrushIcon size="14" />
+                                {:else}
+                                    <BrushIcon size="14" />
+                                {/if}
+                            {/snippet}
+                        </Switch.Context>
+                    </Switch.Thumb>
+                </Switch.Control>
+                <Switch.HiddenInput />
             </Switch>
         {/if}
         <Switch
-            controlActive="bg-secondary-500"
             checked={isExpand}
             onCheckedChange={(e) => {
                 isExpand = e.checked;
             }}
         >
-            {#snippet inactiveChild()}
-                <ExpandIcon size="14" />
-            {/snippet}
-            {#snippet activeChild()}
-                <ExpandIcon size="14" />
-            {/snippet}
+            <Switch.Control>
+                <Switch.Thumb>
+                    <Switch.Context>
+                        {#snippet children(switch_)}
+                            {#if switch_().checked}
+                                <ExpandIcon size="14" />
+                            {:else}
+                                <ExpandIcon size="14" />
+                            {/if}
+                        {/snippet}
+                    </Switch.Context>
+                </Switch.Thumb>
+            </Switch.Control>
+            <Switch.HiddenInput />
         </Switch>
     </div>
 {/snippet}

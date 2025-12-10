@@ -213,7 +213,7 @@
                                     class="block p-2 rounded hover:bg-gray-500/20 transition border-b border-gray-500/10 last:border-b-0"
                                 >
                                     <div class="flex items-center space-x-2">
-                                        <div class="flex-shrink-0">
+                                        <div class="shrink-0">
                                             {#if newResponses > 0}
                                                 <span
                                                     class="text-red-500 font-bold"
@@ -225,7 +225,7 @@
                                                 >
                                             {/if}
                                         </div>
-                                        <div class="flex-grow min-w-0">
+                                        <div class="grow min-w-0">
                                             <div
                                                 class="flex items-center space-x-1"
                                             >
@@ -275,7 +275,7 @@
                                         src = uploadResponse.link;
                                         open = true;
                                     }}
-                                    class="w-12 h-12 flex-shrink-0 rounded-full bg-no-repeat bg-cover bg-center"
+                                    class="w-12 h-12 shrink-0 rounded-full bg-no-repeat bg-cover bg-center"
                                     style="background-image: url({uploadResponse.link});"
                                 ></div>
                                 <div class="flex-1 ml-4 overflow-hidden">
@@ -286,7 +286,7 @@
                                         {uploadResponse.link}
                                     </div>
                                 </div>
-                                <div class="flex flex-shrink-0 space-x-2 ml-4">
+                                <div class="flex shrink-0 space-x-2 ml-4">
                                     <button
                                         class="p-2 rounded-full hover:text-gray-500"
                                         onclick={async () => {
@@ -362,7 +362,7 @@
                                         src = imgurResponse.link;
                                         open = true;
                                     }}
-                                    class="w-12 h-12 flex-shrink-0 rounded-full bg-no-repeat bg-cover bg-center"
+                                    class="w-12 h-12 shrink-0 rounded-full bg-no-repeat bg-cover bg-center"
                                     style="background-image: url({imgurResponse.link});"
                                 ></div>
                                 <div class="flex-1 ml-4 overflow-hidden">
@@ -373,7 +373,7 @@
                                         {imgurResponse.link}
                                     </div>
                                 </div>
-                                <div class="flex flex-shrink-0 space-x-2 ml-4">
+                                <div class="flex shrink-0 space-x-2 ml-4">
                                     <button
                                         class="p-2 rounded-full hover:text-gray-500"
                                         onclick={async () => {

@@ -121,7 +121,7 @@
         <div
             class="flex flex-col space-y-4 p-4 border border-gray-500/10 rounded-lg shadow-inner items-center sm:items-stretch"
         >
-            <div class="w-20 h-20 flex-shrink-0 mx-auto">
+            <div class="w-20 h-20 shrink-0 mx-auto">
                 <img
                     src={pokemonId === 0
                         ? "https://archives.bulbagarden.net/media/upload/9/9e/Ghost_I.png"
@@ -206,7 +206,7 @@
             >
                 <div class="flex items-center">
                     <LightbulbIcon
-                        class="w-5 h-5 flex-shrink-0 text-green-600 mr-2"
+                        class="w-5 h-5 shrink-0 text-green-600 mr-2"
                     />
                     <p class="font-bold text-sm">ヒント</p>
                 </div>
@@ -285,13 +285,41 @@
                             <Slider
                                 min={0}
                                 max={100}
-                                value={soundVolumeSlider}
-                                onValueChange={(e) =>
-                                    (soundVolumeSlider = e.value)}
-                                markers={[0, 25, 50, 75, 100]}
-                            />
+                                step={1}
+                                defaultValue={soundVolumeSlider}
+                                onValueChange={(details) =>
+                                    (soundVolumeSlider = details.value)}
+                                dir="ltr"
+                            >
+                                <Slider.Label>音量</Slider.Label>
+
+                                <Slider.Control class="relative flex-1 h-4">
+                                    <Slider.Track
+                                        class="bg-gray-300 relative flex-1 h-2 rounded-full"
+                                    >
+                                        <Slider.Range
+                                            class="absolute bg-blue-500 h-full rounded-full"
+                                        />
+                                    </Slider.Track>
+
+                                    <Slider.Thumb
+                                        index={0}
+                                        class="block w-4 h-4 bg-white border border-gray-400 rounded-full"
+                                    >
+                                        <Slider.HiddenInput />
+                                    </Slider.Thumb>
+                                </Slider.Control>
+
+                                <Slider.MarkerGroup>
+                                    <Slider.Marker value={0} />
+                                    <Slider.Marker value={25} />
+                                    <Slider.Marker value={50} />
+                                    <Slider.Marker value={75} />
+                                    <Slider.Marker value={100} />
+                                </Slider.MarkerGroup>
+                            </Slider>
                         </div>
-                        <div class="flex-shrink-0">
+                        <div class="shrink-0">
                             音量：{soundVolumeSlider[0] | 0}%
                         </div>
                         <button
@@ -441,9 +469,7 @@
                                             ID:{id}
                                         </div>
                                     </div>
-                                    <div
-                                        class="flex flex-shrink-0 space-x-2 ml-4"
-                                    >
+                                    <div class="flex shrink-0 space-x-2 ml-4">
                                         <button
                                             class="p-2 rounded-full hover:text-gray-500"
                                             onclick={() => {

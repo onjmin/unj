@@ -170,7 +170,7 @@
            border-b border-gray-300/50 cursor-move"
   >
     <MessageCircleIcon size={16} class="mr-1" />
-    <span class="flex-grow text-xs font-bold">kome</span>
+    <span class="grow text-xs font-bold">kome</span>
     <div class="flex items-center space-x-1 text-xs">
       <UserRoundIcon size={16} />
       <span>{online}人</span>

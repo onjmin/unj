@@ -20,7 +20,7 @@
             {#each links as siteInfo, i}
                 <li class="p-4 flex items-center space-x-4">
                     <div
-                        class="w-10 h-10 rounded-full bg-cover bg-center flex-shrink-0"
+                        class="w-10 h-10 rounded-full bg-cover bg-center shrink-0"
                         style="background-image: url({siteInfo.favicon});"
                     ></div>
                     <div class="flex-1 min-w-0 text-left">

@@ -410,7 +410,7 @@
                                         )}
                                 >
                                     <div class="flex items-start">
-                                        <div class="mr-2 flex-shrink-0">
+                                        <div class="mr-2 shrink-0">
                                             {#key thread.id}
                                                 {#if findMisskey(board.key, thread.id)}
                                                     <FaviconPart
@@ -426,12 +426,12 @@
                                                 {/if}
                                             {/key}
                                         </div>
-                                        <div class="flex-grow min-w-0">
+                                        <div class="grow min-w-0">
                                             <div
                                                 class="flex items-start justify-between"
                                             >
                                                 <div
-                                                    class="flex-grow text-base font-medium leading-tight pr-2 break-words"
+                                                    class="grow text-base font-medium leading-tight pr-2 wrap-break-words"
                                                 >
                                                     <div
                                                         class="inline-flex items-baseline"
@@ -441,13 +441,13 @@
                                                         >
 
                                                         <span
-                                                            class="inline-block flex-shrink-0 ml-1"
+                                                            class="inline-block shrink-0 ml-1"
                                                             >({thread.resCount})</span
                                                         >
                                                     </div>
                                                 </div>
                                                 <div
-                                                    class="opacity-50 text-xs flex-shrink-0 ml-2 mt-0"
+                                                    class="opacity-50 text-xs shrink-0 ml-2 mt-0"
                                                 >
                                                     {formatTimeAgo(
                                                         thread.latestResAt,
@@ -460,7 +460,7 @@
                                             >
                                                 {#if thread.latestRes}
                                                     <div
-                                                        class="opacity-50 flex-grow text-sm whitespace-nowrap overflow-hidden pr-2"
+                                                        class="opacity-50 grow text-sm whitespace-nowrap overflow-hidden pr-2"
                                                     >
                                                         <span class="truncate"
                                                             >{thread.latestRes}</span
@@ -469,7 +469,7 @@
                                                 {/if}
 
                                                 <div
-                                                    class="transition-all duration-200 ease-in font-medium flex-shrink-0"
+                                                    class="transition-all duration-200 ease-in font-medium shrink-0"
                                                     class:text-gray-500={thread.online ===
                                                         0}
                                                     class:text-blue-600={thread.online ===

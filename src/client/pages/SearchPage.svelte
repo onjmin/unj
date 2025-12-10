@@ -135,7 +135,7 @@
         <div class="p-6 rounded-lg shadow-md">
             <div class="flex items-center gap-2">
                 <label for="contentText" class="sr-only">全文検索</label>
-                <div class="relative flex-grow">
+                <div class="relative grow">
                     <div
                         class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
                     >
@@ -245,7 +245,7 @@
                             </div>
                             {#each results as result}
                                 <div class="flex flex-col mt-2 text-left">
-                                    <div class="text-sm break-words">
+                                    <div class="text-sm wrap-break-words">
                                         <Link
                                             to={makePathname(
                                                 `/${board.key}/thread/${threadId}/${result.resNum}`,

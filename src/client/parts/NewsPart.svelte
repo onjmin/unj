@@ -81,11 +81,11 @@
                 class="flex items-center px-3 py-2 sm:px-2 sm:py-1 hover:bg-gray-500/10 transition-colors"
               >
                 <div
-                  class="flex-shrink-0 text-xs sm:text-sm text-gray-500 mr-4 w-16 sm:w-20"
+                  class="shrink-0 text-xs sm:text-sm text-gray-500 mr-4 w-16 sm:w-20"
                 >
                   {formatDate(item.published)}
                 </div>
-                <div class="hidden md:flex flex-shrink-0 mr-4 space-x-2">
+                <div class="hidden md:flex shrink-0 mr-4 space-x-2">
                   {#if item.labels?.length}
                     {@const chip = item.labels.at(0) ?? ""}
                     {@const IconComponent = getLabelIconComponent(chip)}
@@ -95,7 +95,7 @@
                       {#if IconComponent}
                         <IconComponent
                           size={12}
-                          class="mr-1 text-gray-500 flex-shrink-0"
+                          class="mr-1 text-gray-500 shrink-0"
                         />
                       {/if}
                       <span class="text-sm">

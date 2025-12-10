@@ -110,7 +110,7 @@
 
                     <button
                         onclick={clearSelectedFile}
-                        class="p-0.5 bg-red-600 rounded-full shadow-lg text-white transform transition hover:scale-110 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-70 flex-shrink-0"
+                        class="p-0.5 bg-red-600 rounded-full shadow-lg text-white transform transition hover:scale-110 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-70 shrink-0"
                         aria-label="画像を削除"
                         title="画像を削除"
                     >

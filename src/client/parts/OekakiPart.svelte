@@ -704,10 +704,34 @@
     <Slider
       min={0}
       max={100}
-      value={opacity}
-      onValueChange={(e) => (opacity = e.value)}
-      markers={[0, 25, 50, 75, 100]}
-    />
+      step={1}
+      defaultValue={opacity}
+      onValueChange={(details) => (opacity = details.value)}
+      dir="ltr"
+    >
+      <Slider.Label>不透明度</Slider.Label>
+
+      <Slider.Control class="relative flex-1 h-4">
+        <Slider.Track class="bg-gray-300 relative flex-1 h-2 rounded-full">
+          <Slider.Range class="absolute bg-blue-500 h-full rounded-full" />
+        </Slider.Track>
+
+        <Slider.Thumb
+          index={0}
+          class="block w-4 h-4 bg-white border border-gray-400 rounded-full"
+        >
+          <Slider.HiddenInput />
+        </Slider.Thumb>
+      </Slider.Control>
+
+      <Slider.MarkerGroup>
+        <Slider.Marker value={0} />
+        <Slider.Marker value={25} />
+        <Slider.Marker value={50} />
+        <Slider.Marker value={75} />
+        <Slider.Marker value={100} />
+      </Slider.MarkerGroup>
+    </Slider>
     <br />
   </div>
 
@@ -794,40 +818,136 @@
       <Slider
         min={1}
         max={64}
-        value={brushSize}
-        onValueChange={(e) => (brushSize = e.value)}
-        markers={[1, 16, 32, 48, 64]}
-      />
+        step={1}
+        defaultValue={brushSize}
+        onValueChange={(details) => (brushSize = details.value)}
+        dir="ltr"
+      >
+        <Slider.Label>ブラシの太さ</Slider.Label>
+
+        <Slider.Control class="relative flex-1 h-4">
+          <Slider.Track class="bg-gray-300 relative flex-1 h-2 rounded-full">
+            <Slider.Range class="absolute bg-blue-500 h-full rounded-full" />
+          </Slider.Track>
+
+          <Slider.Thumb
+            index={0}
+            class="block w-4 h-4 bg-white border border-gray-400 rounded-full"
+          >
+            <Slider.HiddenInput />
+          </Slider.Thumb>
+        </Slider.Control>
+
+        <Slider.MarkerGroup>
+          <Slider.Marker value={1} />
+          <Slider.Marker value={16} />
+          <Slider.Marker value={32} />
+          <Slider.Marker value={48} />
+          <Slider.Marker value={64} />
+        </Slider.MarkerGroup>
+      </Slider>
     {:else if isGrid}
       <span class="size">{dotPenScale}倍</span>
       {@render palette()}
       <Slider
         min={1}
         max={9}
-        value={dotPenScale}
-        onValueChange={(e) => (dotPenScale = e.value)}
-        markers={[1, 3, 5, 7, 9]}
-      />
+        step={1}
+        defaultValue={dotPenScale}
+        onValueChange={(details) => (dotPenScale = details.value)}
+        dir="ltr"
+      >
+        <Slider.Label>ドットサイズ</Slider.Label>
+
+        <Slider.Control class="relative flex-1 h-4">
+          <Slider.Track class="bg-gray-300 relative flex-1 h-2 rounded-full">
+            <Slider.Range class="absolute bg-blue-500 h-full rounded-full" />
+          </Slider.Track>
+
+          <Slider.Thumb
+            index={0}
+            class="block w-4 h-4 bg-white border border-gray-400 rounded-full"
+          >
+            <Slider.HiddenInput />
+          </Slider.Thumb>
+        </Slider.Control>
+
+        <Slider.MarkerGroup>
+          <Slider.Marker value={1} />
+          <Slider.Marker value={3} />
+          <Slider.Marker value={5} />
+          <Slider.Marker value={7} />
+          <Slider.Marker value={9} />
+        </Slider.MarkerGroup>
+      </Slider>
     {:else if choiced.label === tool.pen.label}
       <span class="size">{penSize}px</span>
       {@render palette()}
       <Slider
         min={1}
         max={64}
-        value={penSize}
-        onValueChange={(e) => (penSize = e.value)}
-        markers={[1, 16, 32, 48, 64]}
-      />
+        step={1}
+        defaultValue={penSize}
+        onValueChange={(details) => (penSize = details.value)}
+        dir="ltr"
+      >
+        <Slider.Label>ペンの太さ</Slider.Label>
+
+        <Slider.Control class="relative flex-1 h-4">
+          <Slider.Track class="bg-gray-300 relative flex-1 h-2 rounded-full">
+            <Slider.Range class="absolute bg-blue-500 h-full rounded-full" />
+          </Slider.Track>
+
+          <Slider.Thumb
+            index={0}
+            class="block w-4 h-4 bg-white border border-gray-400 rounded-full"
+          >
+            <Slider.HiddenInput />
+          </Slider.Thumb>
+        </Slider.Control>
+
+        <Slider.MarkerGroup>
+          <Slider.Marker value={1} />
+          <Slider.Marker value={16} />
+          <Slider.Marker value={32} />
+          <Slider.Marker value={48} />
+          <Slider.Marker value={64} />
+        </Slider.MarkerGroup>
+      </Slider>
     {:else if choiced.label === tool.eraser.label}
       <span class="size">{eraserSize}px</span>
       {@render palette()}
       <Slider
         min={1}
         max={64}
-        value={eraserSize}
-        onValueChange={(e) => (eraserSize = e.value)}
-        markers={[1, 16, 32, 48, 64]}
-      />
+        step={1}
+        defaultValue={eraserSize}
+        onValueChange={(details) => (eraserSize = details.value)}
+        dir="ltr"
+      >
+        <Slider.Label>消しゴムの太さ</Slider.Label>
+
+        <Slider.Control class="relative flex-1 h-4">
+          <Slider.Track class="bg-gray-300 relative flex-1 h-2 rounded-full">
+            <Slider.Range class="absolute bg-blue-500 h-full rounded-full" />
+          </Slider.Track>
+
+          <Slider.Thumb
+            index={0}
+            class="block w-4 h-4 bg-white border border-gray-400 rounded-full"
+          >
+            <Slider.HiddenInput />
+          </Slider.Thumb>
+        </Slider.Control>
+
+        <Slider.MarkerGroup>
+          <Slider.Marker value={1} />
+          <Slider.Marker value={16} />
+          <Slider.Marker value={32} />
+          <Slider.Marker value={48} />
+          <Slider.Marker value={64} />
+        </Slider.MarkerGroup>
+      </Slider>
     {:else if choiced.label === tool.dropper.label || choiced.label === tool.fill.label}
       <span class="size"></span>
       {@render palette()}

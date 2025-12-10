@@ -38,12 +38,12 @@
                 >
                     <img class="unj-img" alt="TOP絵" src={topIllust.src} />
                 </button>
-                <div class="break-words">
+                <div class="wrap-break-words">
                     図{i + 1}
                     {topIllust.label}
                 </div>
                 <a
-                    class="text-sm text-blue-600 hover:underline break-words block"
+                    class="text-sm text-blue-600 hover:underline wrap-break-words block"
                     href={topIllust.href}
                     target="_blank"
                     rel="noopener noreferrer"
