@@ -7,7 +7,6 @@
 
     import { Mail, Search, Wrench } from "@lucide/svelte";
     import { createToaster } from "@skeletonlabs/skeleton-svelte";
-    import { Toaster } from "@skeletonlabs/skeleton-svelte";
     import { addHours, differenceInHours, format } from "date-fns";
     import { ja } from "date-fns/locale";
     import * as v from "valibot";
@@ -216,5 +215,3 @@
 </MainPart>
 
 <FooterPart />
-
-<Toaster {toaster}></Toaster>

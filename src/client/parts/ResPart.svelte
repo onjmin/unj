@@ -1,7 +1,6 @@
 <script lang="ts">
   import { BanIcon, XIcon } from "@lucide/svelte";
   import { createToaster } from "@skeletonlabs/skeleton-svelte";
-  import { Toaster } from "@skeletonlabs/skeleton-svelte";
   import IconButton from "@smui/icon-button";
   import { format } from "date-fns";
   import { ja } from "date-fns/locale";
@@ -260,8 +259,6 @@
   </div>
   {@render children?.()}
 </div>
-
-<Toaster {toaster}></Toaster>
 
 <style>
   .sage {

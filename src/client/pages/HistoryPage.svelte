@@ -7,7 +7,6 @@
 
     import { CopyIcon, Trash2Icon } from "@lucide/svelte";
     import { createToaster } from "@skeletonlabs/skeleton-svelte";
-    import { Toaster } from "@skeletonlabs/skeleton-svelte";
     import { Link } from "svelte-routing";
     import {
         type Board,
@@ -425,8 +424,6 @@
         </div>
     </div>
 </MainPart>
-
-<Toaster {toaster}></Toaster>
 
 <FooterPart />
 
