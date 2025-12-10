@@ -1,0 +1,6 @@
+minimumReleaseAge: 2880
+minimumReleaseAgeExclude:
+  - "@onjmin/oekaki"
+  - "@onjmin/dtm"
+  - "@onjmin/cors-killer"
+  - "@rpgja/rpgen-map"

@@ -8,6 +8,10 @@
 		"editor.formatOnSave": true,
 		"editor.defaultFormatter": null
 	},
+	"[yaml]": {
+		"editor.formatOnSave": true,
+		"editor.defaultFormatter": "redhat.vscode-yaml"
+	},
 	"editor.codeActionsOnSave": {
 		"quickfix.biome": "explicit",
 		"source.organizeImports.biome": "explicit"

@@ -4,6 +4,7 @@
 		"usernamehw.errorlens",
 		"mhutchie.git-graph",
 		"svelte.svelte-vscode",
-		"bierner.markdown-mermaid"
+		"bierner.markdown-mermaid",
+		"redhat.vscode-yaml"
 	]
 }
