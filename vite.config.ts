@@ -9,10 +9,10 @@ import {
 import { resolve } from "node:path";
 import { svelte } from "@sveltejs/vite-plugin-svelte";
 import tailwindcss from "@tailwindcss/vite";
-import chalk from "chalk";
 import { defineConfig } from "vite";
 import { encode } from "./src/common/anti-debug.js";
 import { randInt } from "./src/common/util.js";
+import { chalk } from "./src/server/mylib/chalk.js";
 
 // ビルド時の出力
 console.log("⚡", `VITE_BASE_URL: "${VITE_BASE_URL}"`);
@@ -30,12 +30,12 @@ console.log(
 
 // ビルド時の警告
 if (DEV_MODE && STG_MODE) {
-	console.error(chalk.bgRed.white("環境変数がおかしい。"));
+	console.error(chalk.bgRedWhite("環境変数がおかしい。"));
 	console.log(JSON.stringify(process.env, null, 2));
 	throw 114514;
 }
 if (VITE_BASE_URL === "/" && PROD_MODE) {
-	console.warn(chalk.bgYellow.black("本番ビルド用のVITE_BASE_URLじゃなさそう"));
+	console.warn(chalk.bgYellowBlack("本番ビルド用のVITE_BASE_URLじゃなさそう"));
 }
 
 const ENV_KEY = genEnvKey();

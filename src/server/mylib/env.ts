@@ -1,10 +1,10 @@
 import "dotenv/config";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import chalk from "chalk";
 import { sha256 } from "js-sha256";
 import { isSecureValue } from "../../common/anti-debug.js";
 import { randInt } from "../../common/util.js";
+import { chalk } from "./chalk.js";
 
 export const DEV_MODE = process.env.DEV_MODE === "true";
 export const STG_MODE = process.env.STG_MODE === "true";
@@ -28,7 +28,7 @@ export const genEnvKey = (): string => {
 		)
 		.slice(0, 15 + 5 * randInt(0, 5) + 4); // 5の倍数+4;
 	if (!key || !isSecureValue(key)) {
-		console.error(chalk.bgRed.white("複号鍵の生成に失敗"));
+		console.error(chalk.bgRedWhite("複号鍵の生成に失敗"));
 		throw 114514;
 	}
 	return key;
