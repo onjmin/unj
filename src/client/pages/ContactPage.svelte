@@ -6,7 +6,7 @@
     ///////////////
 
     import { Mail, Search, Wrench } from "@lucide/svelte";
-    import { createToaster } from "@skeletonlabs/skeleton-svelte";
+    import { Toast, createToaster } from "@skeletonlabs/skeleton-svelte";
     import { addHours, differenceInHours, format } from "date-fns";
     import { ja } from "date-fns/locale";
     import * as v from "valibot";
@@ -215,3 +215,15 @@
 </MainPart>
 
 <FooterPart />
+
+<Toast.Group {toaster}>
+    {#snippet children(toast)}
+        <Toast {toast}>
+            <Toast.Message>
+                <Toast.Title>{toast.title}</Toast.Title>
+                <Toast.Description>{toast.description}</Toast.Description>
+            </Toast.Message>
+            <Toast.CloseTrigger />
+        </Toast>
+    {/snippet}
+</Toast.Group>

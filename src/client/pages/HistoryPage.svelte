@@ -6,7 +6,7 @@
     ///////////////
 
     import { CopyIcon, Trash2Icon } from "@lucide/svelte";
-    import { createToaster } from "@skeletonlabs/skeleton-svelte";
+    import { Toast, createToaster } from "@skeletonlabs/skeleton-svelte";
     import { Link } from "svelte-routing";
     import {
         type Board,
@@ -428,3 +428,15 @@
 <FooterPart />
 
 <ImagePreviewModal bind:open bind:src />
+
+<Toast.Group {toaster}>
+    {#snippet children(toast)}
+        <Toast {toast}>
+            <Toast.Message>
+                <Toast.Title>{toast.title}</Toast.Title>
+                <Toast.Description>{toast.description}</Toast.Description>
+            </Toast.Message>
+            <Toast.CloseTrigger />
+        </Toast>
+    {/snippet}
+</Toast.Group>
