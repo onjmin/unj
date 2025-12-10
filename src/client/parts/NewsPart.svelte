@@ -68,11 +68,11 @@
 </script>
 
 <div
-  class="h-[20vh] overflow-y-auto border border-gray-500/10 rounded-md scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100"
+  class="h-[16svh] overflow-y-auto border border-gray-500/10 rounded-md scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100"
 >
   <div class="p-4">
-    <h2 class="text-xl font-bold mb-3 flex items-center">
-      <RssIcon size={24} class="mr-2" />
+    <h2 class="text-sm font-bold mb-3 flex items-center">
+      <RssIcon size={16} class="mr-2" />
       ニュース
     </h2>
     {#if error}
