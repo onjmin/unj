@@ -4,7 +4,6 @@
   import { boardMap, undefinedBoard } from "../common/request/board.js";
   import { makePathname } from "./mylib/env.js";
   import ArtPage from "./pages/ArtPage.svelte";
-  import ArticlePage from "./pages/ArticlePage.svelte";
   import BannedPage from "./pages/BannedPage.svelte";
   import ConfigPage from "./pages/ConfigPage.svelte";
   import ContactPage from "./pages/ContactPage.svelte";
@@ -15,6 +14,7 @@
   import LinksPage from "./pages/LinksPage.svelte";
   import MisskeyPage from "./pages/MisskeyPage.svelte";
   import NewPage from "./pages/NewPage.svelte";
+  import NewsPage from "./pages/NewsPage.svelte";
   import NotFoundPage from "./pages/NotFoundPage.svelte";
   import SearchPage from "./pages/SearchPage.svelte";
   import TermsPage from "./pages/TermsPage.svelte";
@@ -97,7 +97,7 @@
   </Route>
   <!-- ニュース -->
   <Route path="{makePathname('/:board/news')}/:newsId" let:params>
-    <ArticlePage board={b(params.board)} newsId={params.newsId} />
+    <NewsPage board={b(params.board)} newsId={params.newsId} />
   </Route>
   <!-- TOP絵集 -->
   <Route path={makePathname("/:board/art")} let:params>

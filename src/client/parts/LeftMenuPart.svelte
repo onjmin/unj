@@ -100,15 +100,6 @@
                 <Text>お問い合わせ</Text>
             </Item>
             <Item
-                onclick={() => navigate(makePathname(`/${board.key}/news`))}
-                activated={pathname2 === "news"}
-            >
-                <Graphic class="material-icons" aria-hidden="true"
-                    >newspaper</Graphic
-                >
-                <Text>ニュース</Text>
-            </Item>
-            <Item
                 onclick={() => navigate(makePathname(`/${board.key}/art`))}
                 activated={pathname2 === "art"}
             >
