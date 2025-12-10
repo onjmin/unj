@@ -14,7 +14,6 @@ export const formatDate = (date: string): string =>
 	format(new Date(date), "MM月dd日", { locale: ja });
 
 export const getLabelIconComponent = (label: string) => {
-	console.log(label);
 	if (label === "新機能") {
 		return ZapIcon;
 	}

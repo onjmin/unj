@@ -29,6 +29,12 @@ misskeyList.set("unj", [
 		title: "ぬくもりすきー（Nukumori-Sky）",
 		api: "https://misskey.nukumori-sky.net/api/notes/local-timeline",
 	},
+	{
+		misskeyId: "design",
+		hostname: "misskey.design",
+		title: "一次創作 misskey.design",
+		api: "https://misskey.design/api/notes/local-timeline",
+	},
 ]);
 
 /**
