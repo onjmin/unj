@@ -8,7 +8,7 @@ ENV VOLTA_HOME=/root/.volta
 ENV PATH=$VOLTA_HOME/bin:$PATH
 
 # Corepackまわりを使わず、pnpmを直接インストール
-RUN npm install -g pnpm@9.15.5
+RUN npm install -g pnpm@10.17.1
 
 # package.json と lockfile をコピー
 COPY package.json pnpm-lock.yaml ./
