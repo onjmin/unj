@@ -12,8 +12,13 @@
 		"editor.formatOnSave": true,
 		"editor.defaultFormatter": "redhat.vscode-yaml"
 	},
+	"[json]": {
+		"editor.formatOnSave": true,
+		"editor.defaultFormatter": "vscode.json-language-features"
+	},
 	"editor.codeActionsOnSave": {
-		"quickfix.biome": "explicit",
+		"source.organizeImports": "explicit",
+		"source.fixAll": "explicit",
 		"source.organizeImports.biome": "explicit"
 	},
 	"svelte.enable-ts-plugin": true,
