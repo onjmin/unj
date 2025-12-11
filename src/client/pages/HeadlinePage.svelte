@@ -17,8 +17,7 @@
         differenceInYears,
         isBefore,
     } from "date-fns";
-    import { navigate } from "svelte-routing";
-    import { Link } from "svelte-routing";
+    import { Link, navigate } from "svelte-routing";
     import type { Board } from "../../common/request/board.js";
     import { queryResultLimit } from "../../common/request/schema.js";
     import type { HeadlineThread } from "../../common/response/schema.js";
@@ -297,7 +296,7 @@
 <MainPart {board}>
     <div class="p-4 sm:p-6">
         <div
-            class={`${board.banner ? "" : "aspect-[49/12]"} w-[490px] max-w-full mx-auto mb-4 border border-gray-500/10 flex items-center justify-center`}
+            class={`${board.banner ? "" : "aspect-49/12"} w-[490px] max-w-full mx-auto mb-4 border border-gray-500/10 flex items-center justify-center`}
         >
             {#if board.banner}
                 <img
@@ -370,7 +369,7 @@
             </div>
             <button
                 onclick={filterThreadList}
-                class="min-w-[64px] rounded-md bg-blue-500 px-3 py-1 text-sm font-medium text-white hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-200"
+                class="min-w-16 rounded-md bg-blue-500 px-3 py-1 text-sm font-medium text-white hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-200"
             >
                 検索
             </button>

@@ -178,7 +178,7 @@
             />
             <label
                 for="replyEmail"
-                class="opacity-50 absolute left-3 top-2 text-xs transition-all duration-200 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:-translate-y-0 peer-focus:text-xs"
+                class="opacity-50 absolute left-3 top-2 text-xs transition-all duration-200 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:translate-y-0 peer-focus:text-xs"
             >
                 連絡先メールアドレス
             </label>
