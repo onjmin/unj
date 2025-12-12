@@ -66,7 +66,7 @@
   const ankaRegex2 = new RegExp(ankaRegex.source); // 分類チェック用に g なしで生成
   const discordEmojiRegex = /:[A-Za-z0-9_]{1,32}:/;
   const combinedRegex = new RegExp(
-    `${ankaRegex.source}|${discordEmojiRegex.source}`,
+    `\n|${ankaRegex.source}|${discordEmojiRegex.source}`,
     "g",
   );
 
@@ -84,9 +84,16 @@
 
       const token = match[0];
 
+      if (token === "\n") {
+        yield {
+          type: "br" as const,
+          value: null,
+        };
+      }
+
       if (ankaRegex2.test(token)) {
         yield {
-          type: "link" as const,
+          type: "anka" as const,
           value: token.slice(2), // >>1234 → "1234"
         };
       }
@@ -239,12 +246,14 @@
         <div class="unj-font content-text">
           {#each parseContent(contentText) as part}
             {#if part.type === "text"}
-              {part.value}
-            {:else if part.type === "link"}
+              <span>{part.value}</span>
+            {:else if part.type === "br"}
+              <br />
+            {:else if part.type === "anka"}
               <button
                 onclick={() =>
                   jumpToAnka(board.key, Number(part.value), threadId)}
-                class="bg-transparent border-none p-0 cursor-pointer hover:underline text-blue-500"
+                class="bg-transparent border-none p-0 cursor-pointer hover:underline text-blue-500 text-base"
               >
                 >>{part.value}</button
               >
@@ -369,16 +378,17 @@
     inline-size: 768px;
     max-inline-size: 100%;
   }
-  /* content-text は改行を含むテキストを自動折り返し */
-  .content-text {
-    display: block;
-    white-space: pre-wrap; /* 改行も反映、必要に応じて折り返す */
-    overflow-wrap: break-word; /* 長い単語も折り返し */
-    margin-bottom: 2px;
+  :global(.content-text) {
+    font-size: 0; /* inline-block 間の空白を消す */
+    line-height: 1.2; /* 好みに合わせる */
+    white-space: pre-wrap; /* 改行も反映 */
   }
-  :global(.content-text img) {
-    vertical-align: middle;
+  :global(.content-text img),
+  :global(.content-text span) {
     display: inline-block;
+    vertical-align: middle;
+    font-size: 16px; /* 元の文字サイズに戻す */
+    margin: 0;
   }
   .content-url,
   .content-embed {
