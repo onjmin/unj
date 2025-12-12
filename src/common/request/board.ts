@@ -77,7 +77,7 @@ export const kimchiBoard = new Board({
 export const touhouBoard = new Board({
 	id: 4,
 	key: "touhou",
-	name: "東方なりきり",
+	name: "東方なりきり板",
 	description: "好きな東方キャラになりきって雑談しよう！オリキャラも参加OK！",
 });
 export const unchiBoard = new Board({
