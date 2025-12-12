@@ -378,7 +378,7 @@
     inline-size: 768px;
     max-inline-size: 100%;
   }
-  :global(.content-text) {
+  .content-text {
     font-size: 0; /* inline-block 間の空白を消す */
     line-height: 1.2; /* 好みに合わせる */
     white-space: pre-wrap; /* 改行も反映 */
