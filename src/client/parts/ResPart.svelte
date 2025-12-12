@@ -250,12 +250,14 @@
             {:else if part.type === "br"}
               <br />
             {:else if part.type === "anka"}
-              <button
+              <span
+                tabindex="0"
+                role="button"
+                onkeydown={() => {}}
+                class="cursor-pointer hover:underline text-blue-500 text-base align-baseline"
                 onclick={() =>
                   jumpToAnka(board.key, Number(part.value), threadId)}
-                class="bg-transparent border-none p-0 cursor-pointer hover:underline text-blue-500 text-base"
-              >
-                >>{part.value}</button
+                >>>{part.value}</span
               >
             {:else if part.type === "customEmoji"}
               <CustomEmojiPart size="22" emoji={part.value} alt={part.alt} />
