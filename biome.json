@@ -8,13 +8,15 @@
 		}
 	},
 	"vcs": {
-		"enabled": false,
-		"clientKind": "git",
-		"useIgnoreFile": false
+		"enabled": false
 	},
 	"files": {
-		"ignoreUnknown": false,
+		"ignoreUnknown": true,
 		"includes": [
+			"**/*.ts",
+			"**/*.tsx",
+			"**/*.js",
+			"**/*.jsx",
 			"_force-ignore:node_modules",
 			"_force-ignore:dist"
 		]
@@ -37,15 +39,13 @@
 	"overrides": [
 		{
 			"includes": [
-				"*.svelte"
+				"**/*.svelte"
 			],
+			"formatter": {
+				"enabled": false
+			},
 			"linter": {
-				"rules": {
-					"style": {
-						"useConst": "off",
-						"useImportType": "off"
-					}
-				}
+				"enabled": false
 			}
 		}
 	]

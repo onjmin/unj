@@ -23,23 +23,24 @@
     import type { HeadlineThread } from "../../common/response/schema.js";
     import { sleep } from "../../common/util.js";
     import { genNonce } from "../mylib/anti-debug.js";
+    import { makeEmojiByThreadId } from "../mylib/emoji/thread-id.js";
     import { makePathname } from "../mylib/env.js";
     import {
-        type Misskey,
         fetchMisskeyTimeline,
         findMisskey,
+        type Misskey,
         misskeyList,
     } from "../mylib/misskey.js";
     import { ObjectStorage } from "../mylib/object-storage.js";
-    import { type ResHistory } from "../mylib/res-history.js";
+    import type { ResHistory } from "../mylib/res-history.js";
     import { goodbye, hello, ok, socket } from "../mylib/socket.js";
     import { nonceKey } from "../mylib/unj-storage.js";
     import AccessCounterPart from "../parts/AccessCounterPart.svelte";
+    import TwemojiPart from "../parts/emoji/TwemojiPart.svelte";
     import FaviconPart from "../parts/FaviconPart.svelte";
     import KomePart from "../parts/KomePart.svelte";
     import MessageBoxPart from "../parts/MessageBoxPart.svelte";
     import NewsPart from "../parts/NewsPart.svelte";
-    import TwemojiPart from "../parts/TwemojiPart.svelte";
 
     let { board }: { board: Board } = $props();
 
@@ -420,7 +421,9 @@
                                                     />
                                                 {:else}
                                                     <TwemojiPart
-                                                        seed={thread.id}
+                                                        emoji={makeEmojiByThreadId(
+                                                            thread.id,
+                                                        )}
                                                     />
                                                 {/if}
                                             {/key}

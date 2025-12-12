@@ -1,11 +1,11 @@
-import { seededRandArray } from "../../common/util.js";
+import { seededRandArray } from "../../../common/util.js";
 
 export const makeSeededSuffix = (seed: string) =>
 	[...Array(3).keys()]
-		.map((v) => seededRandArray(emoji, `${v}###${seed}`))
+		.map((v) => seededRandArray(emojiArray, `${v}###${seed}`))
 		.join("");
 
-const emoji = [
+const emojiArray = [
 	"🎃",
 	"👻",
 	"🕷️",

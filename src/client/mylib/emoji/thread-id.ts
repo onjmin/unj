@@ -1,4 +1,9 @@
-export default [
+import { seededRandArray } from "../../../common/util.js";
+
+export const makeEmojiByThreadId = (threadId: string) =>
+	seededRandArray(emojiArray, threadId) ?? "🪬";
+
+const emojiArray = [
 	"😀",
 	"😃",
 	"😄",

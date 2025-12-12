@@ -9,15 +9,13 @@
         ArrowDownIcon,
         BrushIcon,
         ChevronDownIcon,
-        ChevronUpIcon,
-        ExpandIcon,
-    } from "@lucide/svelte";
-    import {
         ChevronFirstIcon,
         ChevronLastIcon,
         ChevronLeftIcon,
         ChevronRightIcon,
         ChevronsLeftRightEllipsisIcon,
+        ChevronUpIcon,
+        ExpandIcon,
     } from "@lucide/svelte";
     import { Switch } from "@skeletonlabs/skeleton-svelte";
     import Banner, { Icon, Label } from "@smui/banner";
@@ -39,19 +37,19 @@
         touhouBoard,
     } from "../../common/request/board.js";
     import {
-        Enum,
         ankaRegex,
         contentSchemaMap,
         contentTemplateMap,
+        Enum,
     } from "../../common/request/content-schema.js";
     import {
-        ResSchema,
         myConfig,
         queryResultLimit,
+        ResSchema,
     } from "../../common/request/schema.js";
     import {
-        SiteInfo,
         findIn,
+        type SiteInfo,
     } from "../../common/request/whitelist/site-info.js";
     import type { Meta, Res, Thread } from "../../common/response/schema.js";
     import { randInt, sleep } from "../../common/util.js";
@@ -64,6 +62,7 @@
         uploadHistory,
     } from "../mylib/cloudflare-r2.js";
     import { visible } from "../mylib/dom.js";
+    import { makeEmojiByThreadId } from "../mylib/emoji/thread-id.js";
     import { makePathname } from "../mylib/env.js";
     import {
         type ImgurResponse,
@@ -71,7 +70,7 @@
         uploadImgur,
     } from "../mylib/imgur.js";
     import { ObjectStorage } from "../mylib/object-storage.js";
-    import { type ResHistory } from "../mylib/res-history.js";
+    import type { ResHistory } from "../mylib/res-history.js";
     import { scrollToAnka } from "../mylib/scroll.js";
     import { goodbye, hello, ok, socket } from "../mylib/socket.js";
     import {
@@ -83,16 +82,13 @@
     } from "../mylib/sound.js";
     import { openRight } from "../mylib/store.js";
     import {
-        UnjStorage,
+        latestReadThreadId,
+        nonceKey,
         oekakiUploaded,
         resFormExpand,
         rpgMode,
-    } from "../mylib/unj-storage.js";
-    import {
-        latestReadThreadId,
-        nonceKey,
         sAnimsId,
-        termsAgreement,
+        UnjStorage,
     } from "../mylib/unj-storage.js";
     import { aiWebhook, oekakiLogger } from "../mylib/webhook.js";
     import AccessCounterPart from "../parts/AccessCounterPart.svelte";
@@ -101,6 +97,7 @@
     import ColorWheelPart from "../parts/ColorWheelPart.svelte";
     import DressUpPart from "../parts/DressUpPart.svelte";
     import DtmPart from "../parts/DtmPart.svelte";
+    import TwemojiPart from "../parts/emoji/TwemojiPart.svelte";
     import FooterLinkPart from "../parts/FooterLinkPart.svelte";
     import KomePart from "../parts/KomePart.svelte";
     import LayerPanelPart from "../parts/LayerPanelPart.svelte";
@@ -108,9 +105,7 @@
     import OekakiPart from "../parts/OekakiPart.svelte";
     import ResFormPart from "../parts/ResFormPart.svelte";
     import ResPart from "../parts/ResPart.svelte";
-    import RpgPart from "../parts/RpgPart.svelte";
     import TermsConfirmPart from "../parts/TermsConfirmPart.svelte";
-    import TwemojiPart from "../parts/TwemojiPart.svelte";
 
     changeVolume();
     changeNewResSound();
@@ -1060,7 +1055,7 @@
         </div>
         <div class="thread-header">
             <p class="thread-title flex items-center">
-                <TwemojiPart seed={thread.id} />
+                <TwemojiPart emoji={makeEmojiByThreadId(thread.id)} />
                 <span class="unj-font pl-1.5">{thread.title}</span>
             </p>
             <ChipSet {chips} nonInteractive>

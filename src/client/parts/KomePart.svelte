@@ -19,7 +19,7 @@
   } from "firebase/database";
   import { tick } from "svelte";
   import { fade } from "svelte/transition";
-  import { regexUrl } from "../../common/request/content-schema.js";
+  import { urlRegex } from "../../common/request/content-schema.js";
   import { queryResultLimit } from "../../common/request/schema.js";
   import { decodeEnv } from "../mylib/env.js";
 
@@ -124,7 +124,7 @@
     let lastIndex = 0;
 
     // matchAllのイテレータを for...of で直接処理
-    const matches = text.matchAll(regexUrl);
+    const matches = text.matchAll(urlRegex);
 
     for (const match of matches) {
       const url = match[0];

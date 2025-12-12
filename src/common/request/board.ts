@@ -98,6 +98,12 @@ export const news4vipBoard = new Board({
 	name: "ニュー速VIP",
 	description: "特別な板、ニュー速VIPへようこそ",
 });
+export const discordBoard = new Board({
+	id: 8,
+	key: "discord",
+	name: "Discord板",
+	description: "Discordについて語る板です。",
+});
 for (const v of touhouAvatars) touhouBoard.avatarMap.set(v.id, v);
 
 export const publicBoards = [...boardMap.values()].filter((v) => v.id);

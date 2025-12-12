@@ -6,7 +6,7 @@
   import {
     Enum,
     contentTypeOptions,
-    regexUrl,
+    urlRegex,
   } from "../../common/request/content-schema.js";
   import audio from "../../common/request/whitelist/audio.js";
   import game from "../../common/request/whitelist/game.js";
@@ -105,7 +105,7 @@
       const pasteText = await new Promise<string>((resolve) =>
         textItem.getAsString(resolve),
       );
-      const m = pasteText?.trim().match(regexUrl);
+      const m = pasteText?.trim().match(urlRegex);
       if (!m) return;
       let url: URL | undefined;
       try {

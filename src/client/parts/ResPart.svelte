@@ -14,11 +14,15 @@
   import { seededRandArray } from "../../common/util.js";
   import { activeController } from "../mylib/background-embed.js";
   import { makePathname } from "../mylib/env.js";
-  import { makeSeededSuffix } from "../mylib/halloween.js";
   import { ObjectStorage } from "../mylib/object-storage.js";
   import { jumpToAnka, makeUnjResNumId } from "../mylib/scroll.js";
   import DecryptPart from "./DecryptPart.svelte";
   import EmbedPart from "./EmbedPart.svelte";
+  import {
+    customAnimeEmojiMap,
+    customEmojiMap,
+  } from "../mylib/emoji/custom.js";
+  import CustomEmojiPart from "./emoji/CustomEmojiPart.svelte";
 
   let {
     board,
@@ -59,9 +63,16 @@
   const ignoreListCache = new ObjectStorage<string[]>("ignoreListCache");
   let showBlockButtons: boolean = $state(false);
 
+  const ankaRegex2 = new RegExp(ankaRegex.source); // 分類チェック用に g なしで生成
+  const discordEmojiRegex = /:[A-Za-z0-9_]{1,32}:/;
+  const combinedRegex = new RegExp(
+    `${ankaRegex.source}|${discordEmojiRegex.source}`,
+    "g",
+  );
+
   const parseContent = function* (text: string) {
     let lastIndex = 0;
-    let match: RegExpExecArray | null = ankaRegex.exec(text);
+    let match: RegExpExecArray | null = combinedRegex.exec(text);
 
     while (match !== null) {
       if (match.index > lastIndex) {
@@ -70,13 +81,45 @@
           value: text.slice(lastIndex, match.index),
         };
       }
-      yield { type: "link" as const, value: match[0].slice(2) }; // 数字だけ
-      lastIndex = ankaRegex.lastIndex;
-      match = ankaRegex.exec(text);
+
+      const token = match[0];
+
+      if (ankaRegex2.test(token)) {
+        yield {
+          type: "link" as const,
+          value: token.slice(2), // >>1234 → "1234"
+        };
+      }
+
+      if (discordEmojiRegex.test(token)) {
+        const key = token.slice(1, -1); // :name: → "name"
+
+        if (customEmojiMap.has(key)) {
+          yield {
+            type: "customEmoji" as const,
+            value: customEmojiMap.get(key),
+            alt: token,
+          };
+        }
+
+        if (customAnimeEmojiMap.has(key)) {
+          yield {
+            type: "customAnimeEmoji" as const,
+            value: customAnimeEmojiMap.get(key),
+            alt: token,
+          };
+        }
+      }
+
+      lastIndex = combinedRegex.lastIndex;
+      match = combinedRegex.exec(text);
     }
 
     if (lastIndex < text.length) {
-      yield { type: "text" as const, value: text.slice(lastIndex) };
+      yield {
+        type: "text" as const,
+        value: text.slice(lastIndex),
+      };
     }
   };
 </script>
@@ -205,6 +248,15 @@
               >
                 >>{part.value}</button
               >
+            {:else if part.type === "customEmoji"}
+              <CustomEmojiPart size="22" emoji={part.value} alt={part.alt} />
+            {:else if part.type === "customAnimeEmoji"}
+              <CustomEmojiPart
+                size="22"
+                emoji={part.value}
+                alt={part.alt}
+                anime
+              />
             {/if}
           {/each}
           <!-- {makeSeededSuffix(createdAt.toString())} -->
@@ -323,6 +375,10 @@
     white-space: pre-wrap; /* 改行も反映、必要に応じて折り返す */
     overflow-wrap: break-word; /* 長い単語も折り返し */
     margin-bottom: 2px;
+  }
+  :global(.content-text img) {
+    vertical-align: middle;
+    display: inline-block;
   }
   .content-url,
   .content-embed {

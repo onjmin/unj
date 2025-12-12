@@ -14,7 +14,7 @@ import whitelistSns from "./whitelist/sns.js";
 import whitelistVideo from "./whitelist/video.js";
 
 export const ankaRegex = />>(?:[1-9][0-9]{0,3})(?![0-9])/g; // >>1-9999
-export const regexUrl = /https?:\/\/[A-Za-z0-9\-\._~:/?#[\]@!$&'()*+,;=%]+/gi;
+export const urlRegex = /https?:\/\/[A-Za-z0-9\-._~:/?#[\]@!$&'()*+,;=%]+/gi;
 
 const SAFE_TEXT = v.pipe(
 	v.string(),
@@ -42,11 +42,11 @@ const regexLf = /\n/;
 export const SAFE_TEXT_SINGLELINE = v.pipe(
 	SAFE_TEXT,
 	v.check((input) => !regexLf.test(input)),
-	v.check((input) => !regexUrl.test(input)),
+	v.check((input) => !urlRegex.test(input)),
 );
 const SAFE_TEXT_MULTILINE = v.pipe(
 	SAFE_TEXT,
-	v.check((input) => !regexUrl.test(input)),
+	v.check((input) => !urlRegex.test(input)),
 	v.check((input) => input.split("\n").length < 64),
 );
 const SAFE_URL = v.pipe(

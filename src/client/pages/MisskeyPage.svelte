@@ -8,7 +8,7 @@
     import { format } from "date-fns";
     import { ja } from "date-fns/locale";
     import type { Board } from "../../common/request/board.js";
-    import { Enum, regexUrl } from "../../common/request/content-schema.js";
+    import { Enum, urlRegex } from "../../common/request/content-schema.js";
     import audio from "../../common/request/whitelist/audio.js";
     import game from "../../common/request/whitelist/game.js";
     import gif from "../../common/request/whitelist/gif.js";
@@ -115,8 +115,8 @@
             let lastIndex = 0;
 
             // 2. 各行をさらにURLで分割
-            // Array.from(line.matchAll(regexUrl)) を for...of文で使用
-            const matches = line.matchAll(regexUrl);
+            // Array.from(line.matchAll(urlRegex)) を for...of文で使用
+            const matches = line.matchAll(urlRegex);
 
             for (const match of matches) {
                 const url = match[0];
@@ -157,7 +157,7 @@
     };
 
     const findEmbeddable = (text: string): [string, number] | undefined => {
-        for (const str of text.match(regexUrl) ?? []) {
+        for (const str of text.match(urlRegex) ?? []) {
             let url: URL | undefined;
             try {
                 url = new URL(str);

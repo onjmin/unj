@@ -1,28 +1,48 @@
 {
-	"editor.formatOnSave": true,
-	"editor.defaultFormatter": "biomejs.biome",
-	"[svelte]": {
-		"editor.defaultFormatter": "svelte.svelte-vscode"
-	},
-	"[html]": {
-		"editor.formatOnSave": true,
-		"editor.defaultFormatter": null
-	},
-	"[yaml]": {
-		"editor.formatOnSave": true,
-		"editor.defaultFormatter": "redhat.vscode-yaml"
-	},
-	"[json]": {
-		"editor.formatOnSave": true,
-		"editor.defaultFormatter": "vscode.json-language-features"
-	},
-	"editor.codeActionsOnSave": {
-		"source.organizeImports": "explicit",
-		"source.fixAll": "explicit",
-		"source.organizeImports.biome": "explicit"
-	},
-	"svelte.enable-ts-plugin": true,
-	"files.associations": {
+  // 強制: 保存時に整形（ワークスペースで最優先）
+  "editor.formatOnSave": true,
+
+  // 明示的に TS/JS は Biome をデフォルトformatterにする（ワークスペース優先）
+  "[typescript]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+
+  // Svelte は専用formatterに任せる
+  "[svelte]": {
+    "editor.defaultFormatter": "svelte.svelte-vscode",
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "never",
+      "source.fixAll": "never"
+    }
+  },
+
+  // JSON/YAMLは別フォーマッタ
+  "[json]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
+  },
+  "[yaml]": {
+    "editor.defaultFormatter": "redhat.vscode-yaml"
+  },
+
+  // 一律で code actions on save を無効（Formatter のみ動かす）
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "never",
+    "source.fixAll": "never"
+  },
+
+  // Biome 言語機能を確実に使わせたい場合は false を試す（後述）
+  "svelte.enable-ts-plugin": true,
+
+  "files.associations": {
 		"*.css": "tailwindcss",
 		"*.scss": "tailwindcss"
 	}
