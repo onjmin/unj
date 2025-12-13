@@ -29,7 +29,6 @@
           <button
             class="flex h-8 w-8 items-center justify-center rounded hover:bg-gray-500/10"
             onclick={() => insertEmoji(name)}
-            title={`:${name}:`}
           >
             <CustomEmojiPart size="22" emoji={id} alt={`:${name}:`} />
           </button>
@@ -39,7 +38,6 @@
           <button
             class="flex h-8 w-8 items-center justify-center rounded hover:bg-gray-500/10"
             onclick={() => insertEmoji(name)}
-            title={`:${name}:`}
           >
             <CustomEmojiPart size="22" emoji={id} alt={`:${name}:`} anime />
           </button>
