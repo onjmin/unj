@@ -100,24 +100,30 @@
       }
 
       if (discordEmojiRegex.test(token)) {
-        const key = token.slice(1, -1); // :name: → "name"
-
-        if (emojiCount > 0 && customEmojiMap.has(key)) {
-          emojiCount--;
+        if (emojiCount <= 0) {
           yield {
-            type: "customEmoji" as const,
-            value: customEmojiMap.get(key),
-            alt: token,
+            type: "text" as const,
+            value: token,
           };
-        }
-
-        if (emojiCount > 0 && customAnimeEmojiMap.has(key)) {
+        } else {
           emojiCount--;
-          yield {
-            type: "customAnimeEmoji" as const,
-            value: customAnimeEmojiMap.get(key),
-            alt: token,
-          };
+          const key = token.slice(1, -1); // :name: → "name"
+
+          if (customEmojiMap.has(key)) {
+            yield {
+              type: "customEmoji" as const,
+              value: customEmojiMap.get(key),
+              alt: token,
+            };
+          }
+
+          if (customAnimeEmojiMap.has(key)) {
+            yield {
+              type: "customAnimeEmoji" as const,
+              value: customAnimeEmojiMap.get(key),
+              alt: token,
+            };
+          }
         }
       }
 

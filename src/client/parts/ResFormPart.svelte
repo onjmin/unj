@@ -20,6 +20,7 @@
   import EncryptPart from "./EncryptPart.svelte";
   import ImageUploaderPart from "./ImageUploaderPart.svelte";
   import UrlTemplatePart from "./UrlTemplatePart.svelte";
+  import EmojiPickerPart from "./EmojiPickerPart.svelte";
 
   let {
     board,
@@ -42,6 +43,7 @@
   let openUrlTemplate = $state(false);
   let openAvatar = $state(false);
   let fileName = $state("");
+  let openEmoji = $state(false);
 
   // UnjStorage
   const userNameUnjStorage = new UnjStorage(`userName###${board.id}`);
@@ -183,15 +185,29 @@
 >
   {#snippet trailingIcon()}
     <div class="flex gap-1 ml-auto">
-      <IconButton
-        {disabled}
-        class="material-icons"
-        onclick={(e: PointerEvent) => {
-          e.preventDefault();
-        }}
-      >
-        emoji_emotions
-      </IconButton>
+      {#if openEmoji}
+        <IconButton
+          {disabled}
+          class="material-icons"
+          onclick={(e: PointerEvent) => {
+            e.preventDefault();
+            openEmoji = false;
+          }}
+        >
+          face_retouching_off
+        </IconButton>
+      {:else}
+        <IconButton
+          {disabled}
+          class="material-icons"
+          onclick={(e: PointerEvent) => {
+            e.preventDefault();
+            openEmoji = true;
+          }}
+        >
+          face_retouching
+        </IconButton>
+      {/if}
       {#if contentType === Enum.Image}
         <IconButton
           {disabled}
@@ -225,6 +241,10 @@
     <CharacterCounter />
   {/snippet}
 </Textfield>
+
+{#if openEmoji}
+  <EmojiPickerPart bind:contentText />
+{/if}
 
 {#if isExpand}
   <Select {disabled} key={String} bind:value={contentType} label="本文の形式">

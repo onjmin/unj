@@ -11,7 +11,6 @@
     import Textfield from "@smui/textfield";
     import CharacterCounter from "@smui/textfield/character-counter";
     import { addSeconds, differenceInSeconds } from "date-fns";
-    import { sha256 } from "js-sha256";
     import { navigate } from "svelte-routing";
     import * as v from "valibot";
     import type { Board } from "../../common/request/board.js";
