@@ -52,7 +52,7 @@
         </div>
 
         <Tooltip.Arrow
-          class="[--arrow-size:--spacing(2)] [--arrow-background:var(--color-surface-950-50)]"
+          class="[--arrow-size:--spacing(2)] [--arrow-background:var(--color-gray-700)]"
         >
           <Tooltip.ArrowTip />
         </Tooltip.Arrow>

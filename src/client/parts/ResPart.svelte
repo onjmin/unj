@@ -73,6 +73,7 @@
   const parseContent = function* (text: string) {
     let lastIndex = 0;
     let match: RegExpExecArray | null = combinedRegex.exec(text);
+    let emojiCount = 32;
 
     while (match !== null) {
       if (match.index > lastIndex) {
@@ -101,7 +102,8 @@
       if (discordEmojiRegex.test(token)) {
         const key = token.slice(1, -1); // :name: → "name"
 
-        if (customEmojiMap.has(key)) {
+        if (emojiCount > 0 && customEmojiMap.has(key)) {
+          emojiCount--;
           yield {
             type: "customEmoji" as const,
             value: customEmojiMap.get(key),
@@ -109,7 +111,8 @@
           };
         }
 
-        if (customAnimeEmojiMap.has(key)) {
+        if (emojiCount > 0 && customAnimeEmojiMap.has(key)) {
+          emojiCount--;
           yield {
             type: "customAnimeEmoji" as const,
             value: customAnimeEmojiMap.get(key),
@@ -243,8 +246,15 @@
     <!-- 右側のコンテンツ領域 -->
     <div class="content">
       {#if contentText !== ""}
+        {@const parts = [...parseContent(contentText)]}
+        {@const isAllEmoji = parts.every(
+          (v) =>
+            v.type === "br" ||
+            v.type === "customEmoji" ||
+            v.type === "customAnimeEmoji",
+        )}
         <div class="unj-font content-text">
-          {#each parseContent(contentText) as part}
+          {#each parts as part}
             {#if part.type === "text"}
               <span>{part.value}</span>
             {:else if part.type === "br"}
@@ -260,10 +270,14 @@
                 >>>{part.value}</span
               >
             {:else if part.type === "customEmoji"}
-              <CustomEmojiPart size="22" emoji={part.value} alt={part.alt} />
+              <CustomEmojiPart
+                size={isAllEmoji ? "48" : "22"}
+                emoji={part.value}
+                alt={part.alt}
+              />
             {:else if part.type === "customAnimeEmoji"}
               <CustomEmojiPart
-                size="22"
+                size={isAllEmoji ? "48" : "22"}
                 emoji={part.value}
                 alt={part.alt}
                 anime

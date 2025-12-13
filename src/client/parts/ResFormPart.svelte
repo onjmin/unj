@@ -182,29 +182,44 @@
   {onpaste}
 >
   {#snippet trailingIcon()}
-    {#if contentType === Enum.Image}
+    <div class="flex gap-1 ml-auto">
       <IconButton
         {disabled}
-        class="material-icons ml-auto"
+        class="material-icons"
         onclick={(e: PointerEvent) => {
           e.preventDefault();
-          const _contentType = Enum.Text;
-          if ((_contentType & contentTypesBitmask) === 0) return;
-          contentType = _contentType;
-        }}>hide_image</IconButton
+        }}
       >
-    {:else}
-      <IconButton
-        {disabled}
-        class="material-icons ml-auto"
-        onclick={(e: PointerEvent) => {
-          e.preventDefault();
-          const _contentType = Enum.Image;
-          if ((_contentType & contentTypesBitmask) === 0) return;
-          contentType = _contentType;
-        }}>image</IconButton
-      >
-    {/if}
+        emoji_emotions
+      </IconButton>
+      {#if contentType === Enum.Image}
+        <IconButton
+          {disabled}
+          class="material-icons"
+          onclick={(e: PointerEvent) => {
+            e.preventDefault();
+            const _contentType = Enum.Text;
+            if ((_contentType & contentTypesBitmask) === 0) return;
+            contentType = _contentType;
+          }}
+        >
+          hide_image
+        </IconButton>
+      {:else}
+        <IconButton
+          {disabled}
+          class="material-icons"
+          onclick={(e: PointerEvent) => {
+            e.preventDefault();
+            const _contentType = Enum.Image;
+            if ((_contentType & contentTypesBitmask) === 0) return;
+            contentType = _contentType;
+          }}
+        >
+          image
+        </IconButton>
+      {/if}
+    </div>
   {/snippet}
   {#snippet helper()}
     <CharacterCounter />
