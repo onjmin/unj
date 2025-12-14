@@ -4,7 +4,7 @@
   <url>
     <loc>https://unj.netlify.app/</loc>
     <priority>1.0</priority>
-    <changefreq>daily</changefreq>
+    <changefreq>monthly</changefreq>
   </url>
 
   <!-- スレ一覧 -->
@@ -18,40 +18,40 @@
   <url>
     <loc>https://unj.netlify.app/unj/new</loc>
     <priority>0.8</priority>
-    <changefreq>weekly</changefreq>
+    <changefreq>yearly</changefreq>
   </url>
   <url>
     <loc>https://unj.netlify.app/unj/new/next</loc>
     <priority>0.7</priority>
-    <changefreq>weekly</changefreq>
+    <changefreq>yearly</changefreq>
   </url>
 
   <!-- 検索 -->
   <url>
     <loc>https://unj.netlify.app/unj/search</loc>
     <priority>0.6</priority>
-    <changefreq>weekly</changefreq>
+    <changefreq>yearly</changefreq>
   </url>
 
   <!-- 履歴 -->
   <url>
     <loc>https://unj.netlify.app/unj/history</loc>
     <priority>0.6</priority>
-    <changefreq>weekly</changefreq>
+    <changefreq>yearly</changefreq>
   </url>
 
   <!-- 設定 -->
   <url>
     <loc>https://unj.netlify.app/unj/config</loc>
     <priority>0.5</priority>
-    <changefreq>monthly</changefreq>
+    <changefreq>yearly</changefreq>
   </url>
 
   <!-- 利用規約 -->
   <url>
     <loc>https://unj.netlify.app/unj/terms</loc>
     <priority>0.3</priority>
-    <changefreq>yearly</changefreq>
+    <changefreq>monthly</changefreq>
   </url>
 
   <!-- お問い合わせ -->
@@ -61,18 +61,11 @@
     <changefreq>yearly</changefreq>
   </url>
 
-  <!-- ブログ一覧 -->
-  <url>
-    <loc>https://unj.netlify.app/unj/news</loc>
-    <priority>0.6</priority>
-    <changefreq>monthly</changefreq>
-  </url>
-
   <!-- TOP絵集 -->
   <url>
     <loc>https://unj.netlify.app/unj/art</loc>
     <priority>0.4</priority>
-    <changefreq>monthly</changefreq>
+    <changefreq>yearly</changefreq>
   </url>
 
   <!-- リンク集 -->
