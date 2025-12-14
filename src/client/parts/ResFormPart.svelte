@@ -21,6 +21,7 @@
   import ImageUploaderPart from "./ImageUploaderPart.svelte";
   import UrlTemplatePart from "./UrlTemplatePart.svelte";
   import EmojiPickerPart from "./EmojiPickerPart.svelte";
+  import { XIcon } from "@lucide/svelte";
 
   let {
     board,
@@ -43,7 +44,8 @@
   let openUrlTemplate = $state(false);
   let openAvatar = $state(false);
   let fileName = $state("");
-  let openEmoji = $state(false);
+  let openEmojiPicker = $state(false);
+  let openImageUploader = $derived(contentType === Enum.Image);
 
   // UnjStorage
   const userNameUnjStorage = new UnjStorage(`userName###${board.id}`);
@@ -185,56 +187,33 @@
 >
   {#snippet trailingIcon()}
     <div class="flex gap-1 ml-auto">
-      {#if openEmoji}
-        <IconButton
-          {disabled}
-          class="material-icons"
-          onclick={(e: PointerEvent) => {
-            e.preventDefault();
-            openEmoji = false;
-          }}
-        >
-          face_retouching_off
-        </IconButton>
-      {:else}
-        <IconButton
-          {disabled}
-          class="material-icons"
-          onclick={(e: PointerEvent) => {
-            e.preventDefault();
-            openEmoji = true;
-          }}
-        >
-          face_retouching
-        </IconButton>
-      {/if}
-      {#if contentType === Enum.Image}
-        <IconButton
-          {disabled}
-          class="material-icons"
-          onclick={(e: PointerEvent) => {
-            e.preventDefault();
-            const _contentType = Enum.Text;
-            if ((_contentType & contentTypesBitmask) === 0) return;
-            contentType = _contentType;
-          }}
-        >
-          hide_image
-        </IconButton>
-      {:else}
-        <IconButton
-          {disabled}
-          class="material-icons"
-          onclick={(e: PointerEvent) => {
-            e.preventDefault();
-            const _contentType = Enum.Image;
-            if ((_contentType & contentTypesBitmask) === 0) return;
-            contentType = _contentType;
-          }}
-        >
-          image
-        </IconButton>
-      {/if}
+      <IconButton
+        {disabled}
+        class="material-icons relative"
+        onclick={(e: PointerEvent) => {
+          e.preventDefault();
+          openEmojiPicker = !openEmojiPicker;
+        }}
+      >
+        mood
+        {#if openEmojiPicker}
+          <XIcon
+            class="pointer-events-none absolute inset-0 m-auto text-red-500 opacity-80"
+          />
+        {/if}
+      </IconButton>
+      <IconButton
+        {disabled}
+        class="material-icons"
+        onclick={(e: PointerEvent) => {
+          e.preventDefault();
+          const _contentType = openImageUploader ? Enum.Text : Enum.Image;
+          if ((_contentType & contentTypesBitmask) === 0) return;
+          contentType = _contentType;
+        }}
+      >
+        {openImageUploader ? "hide_image" : "image"}
+      </IconButton>
     </div>
   {/snippet}
   {#snippet helper()}
@@ -242,7 +221,7 @@
   {/snippet}
 </Textfield>
 
-{#if openEmoji}
+{#if openEmojiPicker}
   <EmojiPickerPart bind:contentText />
 {/if}
 
@@ -298,7 +277,7 @@
 {/if}
 
 {#key contentType}
-  {#if contentType === Enum.Image}
+  {#if openImageUploader}
     <ImageUploaderPart bind:fileName bind:previewUrl bind:contentUrl {menu} />
   {/if}
   {#if contentType === Enum.Encrypt}
