@@ -8,7 +8,7 @@
     title = "",
     menu = true,
   } = $props();
-  import { ArrowLeftIcon, FileQuestionMarkIcon } from "@lucide/svelte";
+  import { ArrowLeftIcon, InfoIcon } from "@lucide/svelte";
   import { undefinedBoard } from "../../common/request/board.js";
   import { seededRandArray } from "../../common/util.js";
   import {
@@ -110,7 +110,7 @@
       rel="noopener noreferrer"
       class="flex items-center space-x-1 px-3 py-2 rounded bg-gray-600 text-gray-200 hover:opacity-80 ml-4"
     >
-      <FileQuestionMarkIcon class="w-5 h-5 text-gray-200" />
+      <InfoIcon class="w-5 h-5 text-gray-200" />
     </a>
   </div>
 </header>
