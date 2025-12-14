@@ -18,22 +18,23 @@
 
 <Tooltip {positioning}>
   <Tooltip.Trigger>
-    <img
-      src={`${url}?size=${size}`}
-      {alt}
-      width={size}
-      height={size}
-      loading="lazy"
-      class="inline-block align-text-bottom object-contain"
-    />
+    <span class="inline-flex h-full w-full items-center justify-center">
+      <img
+        src={`${url}?size=${size}`}
+        {alt}
+        width={size}
+        height={size}
+        loading="lazy"
+        class="inline-block align-text-bottom object-contain"
+      />
+    </span>
   </Tooltip.Trigger>
 
   <Portal>
     <Tooltip.Positioner>
       <Tooltip.Content
-        class="card p-3 bg-gray-700 text-white rounded-xl shadow-xl flex items-center space-x-3"
+        class="card p-3 bg-gray-700 text-white rounded-xl shadow-xl flex items-center space-x-3 z-30"
       >
-        <!-- 絵文字本体 -->
         <img
           src={`${url}?size=48`}
           width="48"
@@ -42,7 +43,6 @@
           class="rounded-md object-contain"
         />
 
-        <!-- テキスト -->
         <div class="flex flex-col leading-tight">
           <span class="font-semibold text-base">{alt}</span>
           <span class="text-sm text-gray-300 max-w-xs">

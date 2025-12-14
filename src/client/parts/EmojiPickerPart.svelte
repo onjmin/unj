@@ -17,7 +17,7 @@
   <div class="mt-2 w-full rounded-lg border border-gray-500/10 p-3 shadow">
     <div class="mb-3">
       <div
-        class="mb-1 flex items-center gap-1 text-xs font-semibold text-gray-500/50"
+        class="mb-1 flex items-center gap-1 text-xs font-semibold text-gray-500"
       >
         <SmileIcon size={14} />
         <span>絵文字</span>
