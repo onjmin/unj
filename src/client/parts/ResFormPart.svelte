@@ -198,7 +198,7 @@
         mood
         {#if openEmojiPicker}
           <XIcon
-            class="pointer-events-none absolute inset-0 m-auto text-red-500 opacity-80"
+            class="pointer-events-none absolute inset-0 m-auto text-red-500/50"
           />
         {/if}
       </IconButton>
