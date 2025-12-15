@@ -9,9 +9,9 @@
         Subheader,
     } from "@smui/list";
     import TopAppBar, { Row } from "@smui/top-app-bar";
-    import { Link, navigate } from "svelte-routing";
-    import { publicBoards } from "../../common/request/board.js";
+    import { navigate } from "svelte-routing";
     import { makePathname, pathname } from "../mylib/env.js";
+    import BoardListPart from "./BoardListPart.svelte";
 
     let { board, open = false } = $props();
 
@@ -118,21 +118,9 @@
             </Item>
         </List>
     </div>
-    <div class="text-left">
-        <ul class="p-2 space-y-1">
-            <li>板一覧</li>
-            {#each publicBoards as b}
-                <li>
-                    <Link
-                        to={makePathname(`/${b.key}`)}
-                        class="block px-3 py-1 rounded-md transition-colors"
-                    >
-                        {b.name}
-                    </Link>
-                </li>
-            {/each}
-        </ul>
-    </div>
+
+    <BoardListPart />
+
     {@render margin()}
 </Card>
 

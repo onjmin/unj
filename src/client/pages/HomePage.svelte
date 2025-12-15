@@ -7,12 +7,12 @@
 
   import Button from "@smui/button";
   import { Link, navigate } from "svelte-routing";
-  import { publicBoards } from "../../common/request/board.js";
   import { Enum } from "../../common/request/content-schema.js";
   import { randArray } from "../../common/util.js";
   import { makePathname } from "../mylib/env.js";
   import { topIllusts } from "../mylib/top-illusts.js";
   import EmbedPart from "../parts/EmbedPart.svelte";
+  import BoardListPart from "../parts/BoardListPart.svelte";
 
   const catchphrase = [
     "運営と運命を共にする、うんち実況（セーラージュピター）",
@@ -75,21 +75,8 @@
       />
     {/if}
   </div>
-  <div class="text-center">
-    <ul class="p-2 space-y-1">
-      <li>板一覧</li>
-      {#each publicBoards as b}
-        <li>
-          <Link
-            to={makePathname(`/${b.key}`)}
-            class="block px-3 py-1 rounded-md transition-colors"
-          >
-            {b.name}
-          </Link>
-        </li>
-      {/each}
-    </ul>
-  </div>
+
+  <BoardListPart />
 </MainPart>
 
 <FooterPart menu={false} />
