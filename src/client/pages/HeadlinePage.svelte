@@ -5,7 +5,6 @@
     import MainPart from "../parts/MainPart.svelte";
     ///////////////
 
-    import { SearchIcon, XIcon } from "@lucide/svelte";
     import Button from "@smui/button";
     import {
         differenceInDays,
@@ -17,7 +16,7 @@
         differenceInYears,
         isBefore,
     } from "date-fns";
-    import { Link, navigate } from "svelte-routing";
+    import { navigate } from "svelte-routing";
     import type { Board } from "../../common/request/board.js";
     import { queryResultLimit } from "../../common/request/schema.js";
     import type { HeadlineThread } from "../../common/response/schema.js";
@@ -108,13 +107,6 @@
             }
         });
     });
-
-    let filteredThreadList: HeadlineThread[] | undefined = $state();
-    const filterThreadList = () => {
-        filteredThreadList = threadList?.filter((v) =>
-            v.title.includes(searchQuery),
-        );
-    };
 
     /**
      * 初回ロード or ページネーション
@@ -295,7 +287,7 @@
 </HeaderPart>
 
 <MainPart {board}>
-    <div class="p-4 sm:p-6">
+    <div class="p-3 sm:p-4">
         <div
             class={`${board.banner ? "" : "aspect-49/12"} w-[490px] max-w-full mx-auto mb-4 border border-gray-500/10 flex items-center justify-center`}
         >
@@ -312,17 +304,19 @@
             {/if}
         </div>
 
-        <div class="text-left mb-4">
-            <h1 class="opacity-50 text-2xl sm:text-3xl font-bold mb-1">
+        <div class="text-left mb-3">
+            <h1
+                class="opacity-50 text-base sm:text-2xl font-semibold leading-tight mb-0.5"
+            >
                 {board.name}
             </h1>
-            <p class="text-sm">
+            <p class="text-xs leading-snug">
                 {board.description}
             </p>
         </div>
     </div>
 
-    <div class="p-4 sm:p-6 pt-0">
+    <div class="p-3 sm:p-4 pt-0">
         <NewsPart {board} />
     </div>
 
@@ -342,170 +336,121 @@
             この板にまだスレッドが建てられてないみたい。。。
         </p>
     {:else}
-        <div class="mb-3 flex items-center gap-2">
-            <div class="relative w-full">
-                <input
-                    type="text"
-                    placeholder="スレタイ検索"
-                    bind:value={searchQuery}
-                    onkeydown={(e) => e.key === "Enter" && filterThreadList()}
-                    class="bg-gray-100/0 w-full rounded-md border border-gray-300 pl-8 pr-8 py-1 text-sm focus:border-blue-400 focus:ring focus:ring-blue-200 focus:outline-none"
-                />
-                <div
-                    class="absolute left-2 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
-                >
-                    <SearchIcon class="w-4 h-4" />
-                </div>
-                <button
-                    onclick={() => {
-                        searchQuery = "";
-                        filteredThreadList = undefined;
-                    }}
-                    class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-600 focus:outline-none transition-opacity duration-200"
-                    class:opacity-0={!searchQuery}
-                    class:pointer-events-none={!searchQuery}
-                >
-                    <XIcon class="w-4 h-4" />
-                </button>
-            </div>
-            <button
-                onclick={filterThreadList}
-                class="min-w-16 rounded-md bg-blue-500 px-3 py-1 text-sm font-medium text-white hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-200"
-            >
-                検索
-            </button>
-        </div>
-
-        {#if (filteredThreadList ?? threadList).length === 0}
-            <div class="text-gray-500 p-4 text-center">
-                <p>該当はありませんでした。</p>
-                <p>キーワードを変えてみてね。</p>
-                <p>
-                    <Link to={makePathname(`/${board.key}/search`)}
-                        >全文検索</Link
-                    >でも試してちょ
-                </p>
-            </div>
-        {:else}
-            <div class="text-left w-full mx-auto">
-                <ul class="list-none p-0 m-0">
-                    {#each filteredThreadList ?? threadList as thread, i}
-                        {#if !ignoreList?.has(thread.ccUserId)}
-                            <li class="mb-2 last:mb-0">
-                                <div
-                                    tabindex="0"
-                                    role="button"
-                                    onkeydown={() => {}}
-                                    class="border border-gray-500/10 hover:bg-gray-500/10 block w-full text-left p-3 transition-colors duration-150 ease-in-out cursor-pointer"
-                                    onclick={() =>
-                                        navigate(
-                                            makePathname(
-                                                findMisskey(
-                                                    board.key,
-                                                    thread.id,
-                                                )
-                                                    ? `/${board.key}/misskey/${findMisskey(board.key, thread.id)?.misskeyId}`
-                                                    : `/${board.key}/thread/${thread.id}/${thread.resCount > queryResultLimit ? thread.resCount - 8 : ""}?top`,
-                                            ),
-                                        )}
-                                >
-                                    <div class="flex items-start">
-                                        <div class="mr-2 shrink-0">
-                                            {#key thread.id}
-                                                {#if findMisskey(board.key, thread.id)}
-                                                    <FaviconPart
-                                                        hostname={findMisskey(
-                                                            board.key,
-                                                            thread.id,
-                                                        )?.hostname}
-                                                    />
-                                                {:else}
-                                                    <TwemojiPart
-                                                        emoji={makeEmojiByThreadId(
-                                                            thread.id,
-                                                        )}
-                                                    />
-                                                {/if}
-                                            {/key}
-                                        </div>
-                                        <div class="grow min-w-0">
+        <div class="text-left w-full mx-auto">
+            <ul class="list-none p-0 m-0">
+                {#each threadList as thread, i}
+                    {#if !ignoreList?.has(thread.ccUserId)}
+                        <li class="mb-2 last:mb-0">
+                            <div
+                                tabindex="0"
+                                role="button"
+                                onkeydown={() => {}}
+                                class="border border-gray-500/10 hover:bg-gray-500/10 block w-full text-left p-3 transition-colors duration-150 ease-in-out cursor-pointer"
+                                onclick={() =>
+                                    navigate(
+                                        makePathname(
+                                            findMisskey(board.key, thread.id)
+                                                ? `/${board.key}/misskey/${findMisskey(board.key, thread.id)?.misskeyId}`
+                                                : `/${board.key}/thread/${thread.id}/${thread.resCount > queryResultLimit ? thread.resCount - 8 : ""}?top`,
+                                        ),
+                                    )}
+                            >
+                                <div class="flex items-start">
+                                    <div class="mr-2 shrink-0">
+                                        {#key thread.id}
+                                            {#if findMisskey(board.key, thread.id)}
+                                                <FaviconPart
+                                                    hostname={findMisskey(
+                                                        board.key,
+                                                        thread.id,
+                                                    )?.hostname}
+                                                />
+                                            {:else}
+                                                <TwemojiPart
+                                                    emoji={makeEmojiByThreadId(
+                                                        thread.id,
+                                                    )}
+                                                />
+                                            {/if}
+                                        {/key}
+                                    </div>
+                                    <div class="grow min-w-0">
+                                        <div
+                                            class="flex items-start justify-between"
+                                        >
                                             <div
-                                                class="flex items-start justify-between"
+                                                class="grow text-base font-medium leading-tight pr-2 wrap-break-words"
                                             >
                                                 <div
-                                                    class="grow text-base font-medium leading-tight pr-2 wrap-break-words"
+                                                    class="inline-flex items-baseline"
                                                 >
-                                                    <div
-                                                        class="inline-flex items-baseline"
+                                                    <span class="max-w-full"
+                                                        >{thread.title}</span
                                                     >
-                                                        <span class="max-w-full"
-                                                            >{thread.title}</span
-                                                        >
 
-                                                        <span
-                                                            class="inline-block shrink-0 ml-1"
-                                                            >({thread.resCount})</span
-                                                        >
-                                                    </div>
-                                                </div>
-                                                <div
-                                                    class="opacity-50 text-xs shrink-0 ml-2 mt-0"
-                                                >
-                                                    {formatTimeAgo(
-                                                        thread.latestResAt,
-                                                    )}
+                                                    <span
+                                                        class="inline-block shrink-0 ml-1"
+                                                        >({thread.resCount})</span
+                                                    >
                                                 </div>
                                             </div>
+                                            <div
+                                                class="opacity-50 text-xs shrink-0 ml-2 mt-0"
+                                            >
+                                                {formatTimeAgo(
+                                                    thread.latestResAt,
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        <div
+                                            class="flex items-center text-xs mt-1"
+                                        >
+                                            {#if thread.latestRes}
+                                                <div
+                                                    class="opacity-50 grow text-sm whitespace-nowrap overflow-hidden pr-2"
+                                                >
+                                                    <span class="truncate"
+                                                        >{thread.latestRes}</span
+                                                    >
+                                                </div>
+                                            {/if}
 
                                             <div
-                                                class="flex items-center text-xs mt-1"
+                                                class="transition-all duration-200 ease-in font-medium shrink-0"
+                                                class:text-gray-500={thread.online ===
+                                                    0}
+                                                class:text-blue-600={thread.online ===
+                                                    1}
+                                                class:text-orange-600={thread.online ===
+                                                    2}
+                                                class:text-red-600={thread.online >=
+                                                    3}
                                             >
-                                                {#if thread.latestRes}
-                                                    <div
-                                                        class="opacity-50 grow text-sm whitespace-nowrap overflow-hidden pr-2"
-                                                    >
-                                                        <span class="truncate"
-                                                            >{thread.latestRes}</span
-                                                        >
-                                                    </div>
-                                                {/if}
-
-                                                <div
-                                                    class="transition-all duration-200 ease-in font-medium shrink-0"
-                                                    class:text-gray-500={thread.online ===
-                                                        0}
-                                                    class:text-blue-600={thread.online ===
-                                                        1}
-                                                    class:text-orange-600={thread.online ===
-                                                        2}
-                                                    class:text-red-600={thread.online >=
-                                                        3}
-                                                >
-                                                    {thread.online}人閲覧中
-                                                </div>
+                                                {thread.online}人閲覧中
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+                            </div>
 
-                                {#if i % 4 === 3 && i !== (filteredThreadList ?? threadList).length - 1}
-                                    <hr class="opacity-10" />
-                                {/if}
-                            </li>
-                        {/if}
-                    {/each}
-                </ul>
-                <center class="mt-8">
-                    <Button
-                        onclick={cursorBasedPagination}
-                        variant="raised"
-                        disabled={emitting}
-                        class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-md shadow-sm"
-                        >続きを読む</Button
-                    >
-                </center>
-            </div>
-        {/if}
+                            {#if i % 4 === 3 && i !== threadList.length - 1}
+                                <hr class="opacity-10" />
+                            {/if}
+                        </li>
+                    {/if}
+                {/each}
+            </ul>
+            <center class="mt-8">
+                <Button
+                    onclick={cursorBasedPagination}
+                    variant="raised"
+                    disabled={emitting}
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-md shadow-sm"
+                    >続きを読む</Button
+                >
+            </center>
+        </div>
     {/if}
 </MainPart>
 

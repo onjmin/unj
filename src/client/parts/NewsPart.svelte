@@ -49,11 +49,11 @@
 </script>
 
 <div
-  class="h-[16svh] overflow-y-auto border border-gray-500/10 rounded-md scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100"
+  class="h-[8svh] overflow-y-auto border border-gray-500/20 rounded-md scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100"
 >
-  <div class="p-4">
-    <h2 class="text-sm font-bold mb-3 flex items-center">
-      <RssIcon size={16} class="mr-2" />
+  <div class="px-2 py-1">
+    <h2 class="text-[11px] leading-none font-semibold mb-1 flex items-center">
+      <RssIcon size={12} class="mr-1 shrink-0" />
       ニュース
     </h2>
     {#if error}
@@ -75,14 +75,10 @@
     {:else if items}
       <div class="w-full">
         <ul class="list-none p-0 m-0">
-          {#each items as item, i}
-            <li class="last:mb-0">
-              <div
-                class="flex items-center px-3 py-2 sm:px-2 sm:py-1 hover:bg-gray-500/10 transition-colors"
-              >
-                <div
-                  class="shrink-0 text-xs sm:text-sm text-gray-500 mr-4 w-16 sm:w-20"
-                >
+          {#each items as item}
+            <li class="odd:bg-gray-500/10">
+              <div class="flex items-center px-2 py-1">
+                <div class="shrink-0 text-xs text-gray-500 mr-3 w-16">
                   {formatDate(item.published)}
                 </div>
                 <div class="hidden md:flex shrink-0 mr-4 space-x-2">
@@ -109,14 +105,13 @@
                 >
                   <Link
                     to={makePathname(`/${board.key}/news/${item.id}`)}
-                    class="block truncate">{item.title}</Link
+                    class="block truncate"
                   >
+                    {item.title}
+                  </Link>
                 </div>
               </div>
             </li>
-            {#if i !== items.length - 1}
-              <hr class="border-t border-gray-500/10 my-1 mx-0" />
-            {/if}
           {/each}
         </ul>
       </div>
