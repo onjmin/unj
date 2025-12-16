@@ -66,7 +66,7 @@ src/
 詳細は [スタートガイド](./wiki/start-guide.md) をご覧ください。
 
 ## 未完成の機能 / ToDo
-なし
+- [専ブラ対応](https://github.com/onjmin/unj/issues/26)
 
 ## ライセンス / License
 
