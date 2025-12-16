@@ -63,10 +63,12 @@
         fileInput.value = "";
     }
 
-    $effect(() => {
-        if (!menu) openFileDialog();
-        return () => URL.revokeObjectURL(previewUrl);
-    });
+    if (!previewUrl) {
+        $effect(() => {
+            if (!menu) openFileDialog();
+            return () => URL.revokeObjectURL(previewUrl);
+        });
+    }
 </script>
 
 <input
