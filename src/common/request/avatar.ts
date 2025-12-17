@@ -51,21 +51,14 @@ export const unjAvatars = [
 		id: 103,
 		name: "革命シヨ",
 		description: "息くせーぞジジイ",
-		src: "https://i.imgur.com/YTmeV0y.png",
+		src: "https://i.imgur.com/kx2FuN5.png",
 		href: "https://kakumeisiyo.1my.jp",
-	}),
-	new Avatar({
-		id: 104,
-		name: "親音ハハ",
-		description: "お母さんの声でボカロ作った",
-		src: "https://i.imgur.com/x7wj28Q.png",
-		href: "https://pickledplumswithlemon.web.fc2.com",
 	}),
 	new Avatar({
 		id: 201,
 		name: "フェリス",
 		description: "くしゃみ出そう…ふぇ…ふぇ……ﾌｪﾆｯｸｽ！",
-		src: "https://i.imgur.com/GLTROiZ.png",
+		src: "https://i.imgur.com/YD41nIN.png",
 		href: "https://w.atwiki.jp/openj3/pages/36.html",
 	}),
 	new Avatar({
@@ -107,8 +100,22 @@ export const unjAvatars = [
 		id: 207,
 		name: "ミニワイ",
 		description: "ミニワイ(9cm)「もきゅっ！」←お前らに飼われにきた",
-		src: "https://i.imgur.com/VNBJIbD.png",
+		src: "https://i.imgur.com/Sb9a15t.png",
 		href: "https://hayabusa.open2ch.net/test/read.cgi/livejupiter/1747923319/l50",
+	}),
+	new Avatar({
+		id: 208,
+		name: "ミャウミャウ",
+		description: "おんJを侵略するぷ！",
+		src: "https://i.imgur.com/RysAWyK.png",
+		href: "https://w.atwiki.jp/openj3/pages/667.html",
+	}),
+	new Avatar({
+		id: 209,
+		name: "にぃちぇ",
+		description: "あ！今日日曜日だニィ！",
+		src: "https://i.imgur.com/84csWAs.png",
+		href: "https://w.atwiki.jp/openj3/pages/46.html",
 	}),
 ];
 
