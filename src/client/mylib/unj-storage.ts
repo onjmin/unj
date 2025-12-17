@@ -1,6 +1,7 @@
 import { sha256 } from "js-sha256";
 import { decode, encode } from "../../common/anti-debug.js";
 import { DEV_MODE, decodeEnv } from "./env.js";
+import { Anniversary, ifAnniversary } from "./anniversary.js";
 
 const delimiter = "###";
 const VITE_UNJ_HASHIDS_SECRET_PEPPER = decodeEnv(
@@ -72,8 +73,15 @@ export const openRight = new UnjStorage("openRight");
 // theme-color
 export const theme = new UnjStorage("theme", () => {
 	const v = (theme.value ?? "").replace("-dark", "");
-	const href = `https://cdn.jsdelivr.net/npm/svelte-material-ui@8.0.0-beta.3/themes/${v}.min.css`;
-	// const href = `https://cdn.jsdelivr.net/npm/svelte-material-ui@8.0.0-beta.3/themes/${v}-dark.min.css`;
+	const href = ifAnniversary(
+		[Anniversary.HALLOWEEN, Anniversary.CHRISTMAS],
+		() => {
+			return `https://cdn.jsdelivr.net/npm/svelte-material-ui@8.0.0-beta.3/themes/${v}-dark.min.css`;
+		},
+		() => {
+			return `https://cdn.jsdelivr.net/npm/svelte-material-ui@8.0.0-beta.3/themes/${v}.min.css`;
+		},
+	);
 	document.getElementById("unj-theme")?.setAttribute("href", href);
 });
 theme.value = theme.value ?? "unity";

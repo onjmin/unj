@@ -23,6 +23,8 @@
     customEmojiMap,
   } from "../mylib/emoji/custom.js";
   import CustomEmojiPart from "./emoji/CustomEmojiPart.svelte";
+  import { makeSeededSuffix } from "../mylib/emoji/halloween.js";
+  import { Anniversary, isAnniversary } from "../mylib/anniversary.js";
 
   let {
     board,
@@ -242,10 +244,21 @@
   <div class="content-row">
     <!-- 固定幅・高さのアイコン -->
     {#if ccUserAvatar && board.avatarMap.get(ccUserAvatar)}
-      <div
-        class="avatar"
-        style="background-image:url({board.avatarMap.get(ccUserAvatar)?.src});"
-      ></div>
+      <div class="relative w-16 h-16">
+        <div
+          class="avatar"
+          style="background-image:url({board.avatarMap.get(ccUserAvatar)
+            ?.src});"
+        ></div>
+        {#if isAnniversary([Anniversary.CHRISTMAS])}
+          <img
+            src="https://cdn-icons-png.flaticon.com/32/17010/17010575.png"
+            alt=""
+            aria-hidden="true"
+            class="absolute -top-4 -left-5 w-12 pointer-events-none select-none -rotate-36"
+          />
+        {/if}
+      </div>
     {:else}
       <div class="empty-avatar"></div>
     {/if}
@@ -290,7 +303,9 @@
               />
             {/if}
           {/each}
-          <!-- {makeSeededSuffix(createdAt.toString())} -->
+          {#if isAnniversary([Anniversary.HALLOWEEN])}
+            {makeSeededSuffix(createdAt.toString())}
+          {/if}
         </div>
       {/if}
       {#if commandResult !== ""}
