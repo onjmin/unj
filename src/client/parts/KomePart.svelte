@@ -238,7 +238,7 @@
       onkeydown={handleKey}
     />
     <button
-      class="ml-1 bg-gray-300 hover:bg-gray-400 text-xs px-2 rounded-md transition-colors"
+      class="ml-1 bg-gray-300 hover:bg-gray-400 text-xs px-3 rounded-md transition-colors"
       onclick={sendMessage}
     >
       送信
