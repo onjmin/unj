@@ -167,8 +167,8 @@ export function ifAnniversary<T>(
 	onTrue: () => T,
 	onFalse: () => T,
 ): T {
-	// const now = new Date();
-	const now = new Date(2025, 2 - 1, 14);
+	const now = new Date();
+	// const now = new Date(2025, 2 - 1, 14); // テスト用
 	const key = `${todayKey(now)}:${ranges.map(rangeKey).join("|")}`;
 
 	let matched = cache.get(key);
