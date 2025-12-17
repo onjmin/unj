@@ -23,8 +23,9 @@
     customEmojiMap,
   } from "../mylib/emoji/custom.js";
   import CustomEmojiPart from "./emoji/CustomEmojiPart.svelte";
-  import { makeSeededSuffix } from "../mylib/emoji/halloween.js";
+  import { makeHalloweenEmojiSuffix } from "../mylib/emoji/halloween.js";
   import { Anniversary, isAnniversary } from "../mylib/anniversary.js";
+  import { makeValentineEmojiSuffix } from "../mylib/emoji/valentine.js";
 
   let {
     board,
@@ -303,8 +304,11 @@
               />
             {/if}
           {/each}
+          {#if isAnniversary([Anniversary.VALENTINE])}
+            <span>{makeValentineEmojiSuffix(createdAt.toString())}</span>
+          {/if}
           {#if isAnniversary([Anniversary.HALLOWEEN])}
-            {makeSeededSuffix(createdAt.toString())}
+            <span>{makeHalloweenEmojiSuffix(createdAt.toString())}</span>
           {/if}
         </div>
       {/if}

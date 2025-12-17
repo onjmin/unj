@@ -1,6 +1,6 @@
 import { seededRandArray } from "../../../common/util.js";
 
-export const makeSeededSuffix = (seed: string) =>
+export const makeHalloweenEmojiSuffix = (seed: string) =>
 	[...Array(3).keys()]
 		.map((v) => seededRandArray(emojiArray, `${v}###${seed}`))
 		.join("");
