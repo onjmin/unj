@@ -62,7 +62,7 @@ export const Anniversary = {
 	 * 当日単体ではなく、直前数日を含める
 	 */
 	HALLOWEEN: {
-		from: { month: 10, day: 25 },
+		from: { month: 10, day: 31 },
 		to: { month: 10, day: 31 },
 	},
 
