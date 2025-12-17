@@ -59,6 +59,17 @@
   {/if}
 </svelte:head>
 
+{#if isAnniversary([Anniversary.NEW_YEAR])}
+  <div class="absolute inset-0 z-0">
+    <img
+      src="https://plus.unsplash.com/premium_photo-1661964177687-57387c2cbd14"
+      alt="Background"
+      class="h-screen w-full object-cover opacity-10"
+      aria-hidden="true"
+    />
+  </div>
+{/if}
+
 {#if isAnniversary([Anniversary.HALLOWEEN])}
   <div class="absolute inset-0 z-0">
     <img
@@ -75,7 +86,7 @@
         new Date().getHours().toString(),
       )}
       alt="Background"
-      class="h-screen w-full object-cover opacity-20"
+      class="h-screen w-full object-cover opacity-10"
       aria-hidden="true"
     />
   </div>
