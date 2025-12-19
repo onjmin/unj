@@ -136,7 +136,10 @@
                 role="button"
                 onkeydown={() => {}}
                 class="material-icons text-sm cursor-pointer"
-                onclick={() => toggleVisibility(layer)}
+                onclick={(e) => {
+                  e.stopPropagation();
+                  toggleVisibility(layer);
+                }}
               >
                 {layer.visible ? "visibility" : "visibility_off"}
               </span>
@@ -145,7 +148,10 @@
                 role="button"
                 onkeydown={() => {}}
                 class="material-icons text-sm cursor-pointer"
-                onclick={() => deleteLayer(layer)}
+                onclick={(e) => {
+                  e.stopPropagation();
+                  deleteLayer(layer);
+                }}
               >
                 delete
               </span>
@@ -159,7 +165,10 @@
               role="button"
               onkeydown={() => {}}
               class="material-icons text-sm cursor-pointer hover:text-gray-800 dark:hover:text-gray-100 transition-colors"
-              onclick={() => moveLayer(layer, "up")}
+              onclick={(e) => {
+                e.stopPropagation();
+                moveLayer(layer, "up");
+              }}
               class:opacity-50={!layer.above}
             >
               arrow_upward
@@ -169,7 +178,10 @@
               role="button"
               onkeydown={() => {}}
               class="material-icons text-sm cursor-pointer hover:text-gray-800 dark:hover:text-gray-100 transition-colors"
-              onclick={() => moveLayer(layer, "down")}
+              onclick={(e) => {
+                e.stopPropagation();
+                moveLayer(layer, "down");
+              }}
               class:opacity-50={!layer.below}
             >
               arrow_downward

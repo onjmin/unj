@@ -705,7 +705,7 @@
       min={0}
       max={100}
       step={1}
-      defaultValue={opacity}
+      value={opacity}
       onValueChange={(details) => (opacity = details.value)}
       dir="ltr"
     >
