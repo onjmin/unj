@@ -27,6 +27,8 @@ https://unj.netlify.app
 - **バックエンド**: Express / Socket.IO
 - **その他**: Valibot / JavaScript obfuscator
 
+[採用技術の解説はこちら](https://github.com/onjmin/unj/wiki/%E3%81%86%E3%82%93%EF%BD%8A%E3%81%AE%E6%8A%80%E8%A1%93%E3%82%B9%E3%82%BF%E3%83%83%E3%82%AF)
+
 ## ディレクトリの歩き方 / Directory Structure
 
 ```
