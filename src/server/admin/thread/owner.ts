@@ -1,6 +1,6 @@
 import type { Request, Response, Router } from "express";
 import * as v from "valibot";
-import { SERIAL, SMALLINT } from "../../../common/request/schema.js";
+import { SERIAL } from "../../../common/request/schema.js";
 import { ownerIdCache } from "../../mylib/cache.js";
 
 const api = "/thread/owner";
