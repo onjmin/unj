@@ -3,8 +3,8 @@
 
   const height = "16";
 
-  const src = `https://www.google.com/s2/favicons?domain=${hostname}`;
-  const alt = `Favicon for ${hostname}`;
+  const src = $derived(`https://www.google.com/s2/favicons?domain=${hostname}`);
+  const alt = $derived(`Favicon for ${hostname}`);
 </script>
 
 <img class="img" {src} {alt} {height} width={height} loading="lazy" />
