@@ -70,7 +70,6 @@
 	},
 	"dependencies": {
 		"2ch-trip": "4.0.0",
-		"@erase2d/fabric": "1.1.8",
 		"@lucide/svelte": "0.556.0",
 		"@mdi/js": "7.4.47",
 		"@neondatabase/serverless": "^1.0.2",
@@ -88,7 +87,6 @@
 		"date-fns-tz": "3.2.0",
 		"esbuild": "^0.27.1",
 		"express": "^5.2.1",
-		"fabric": "6.9.0",
 		"firebase": "12.6.0",
 		"hashids": "^2.3.0",
 		"howler": "^2.2.4",
