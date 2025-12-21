@@ -1,13 +1,6 @@
 <script lang="ts">
   import { navigate } from "svelte-routing";
   import { DEV_MODE, STG_MODE, makePathname, pathname } from "../mylib/env.js";
-
-  let {
-    board = undefinedBoard,
-    children = null,
-    title = "",
-    menu = true,
-  } = $props();
   import { ArrowLeftIcon, MessageCircleQuestionMarkIcon } from "@lucide/svelte";
   import { undefinedBoard } from "../../common/request/board.js";
   import { seededRandArray } from "../../common/util.js";
@@ -21,14 +14,24 @@
   import RightMenuPart from "./RightMenuPart.svelte";
   import { Anniversary, isAnniversary } from "../mylib/anniversary.js";
 
-  if (DEV_MODE) {
-    title = `DEV - ${title}`;
-  }
-  if (STG_MODE) {
-    title = `STG - ${title}`;
-  }
+  let {
+    board = undefinedBoard,
+    children = null,
+    title = "",
+    menu = true,
+  } = $props();
 
-  $isEnabledRightMenu = children !== null;
+  let displayTitle = $state("");
+  $effect(() => {
+    if (DEV_MODE) displayTitle = `DEV - ${title}`;
+    if (STG_MODE) displayTitle = `STG - ${title}`;
+    displayTitle = title;
+  });
+
+  $effect.root(() => {
+    $isEnabledRightMenu = children !== null;
+  });
+
   let pathname1 = $state("");
   let pathname2 = $state("");
   $effect(() => {
@@ -45,7 +48,7 @@
 </script>
 
 <svelte:head>
-  <title>{title}</title>
+  <title>{displayTitle}</title>
   {#if isAnniversary([Anniversary.HALLOWEEN])}
     <link
       rel="stylesheet"
@@ -124,7 +127,7 @@
     {/if}
     <div class="flex-1 text-center">
       <h1 class="text-xl font-bold inline-flex items-center space-x-2">
-        <span>{title}</span>
+        <span>{displayTitle}</span>
       </h1>
     </div>
     <a

@@ -333,12 +333,6 @@
         ok();
     };
 
-    if (isRef) {
-        // $effect(() => {
-        //     // 次スレの場合はkeyvalから次スレ情報を取ってくる
-        // });
-    }
-
     // アコーディオンの状態を管理するSvelteの状態
     let openAccordion: string | null = $state(null);
     const toggleAccordion = (panelName: string) => {
