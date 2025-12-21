@@ -150,16 +150,23 @@
   <!-- 上段: 名前欄 -->
   <div class="unj-font w-full text-gray-500 text-sm">
     <button
-      class="reply {sage ? 'sage' : ''}"
+      class="bg-transparent border-0 text-inherit cursor-pointer pr-0 hover:opacity-80 {sage
+        ? 'underline sage'
+        : ''}"
       onclick={() => {
         bindContentText = bindContentText
           .replace(ankaRegex, "")
           .replace(/^[^\S]*/, `>>${num}\n`);
         focus();
       }}
-      >{num}：<span
-        class={`font-bold ${ccUserName.includes("★") ? "text-red-400" : "text-teal-600"}`}
-        >{ccUserName !== ""
+    >
+      {num}：
+      <span
+        class={`font-bold ${
+          ccUserName.includes("★") ? "text-red-400" : "text-teal-600"
+        }`}
+      >
+        {ccUserName !== ""
           ? ccUserName
           : seededRandArray(
               [
@@ -169,38 +176,37 @@
                 "月沈めば名無し",
               ],
               threadId,
-            )}</span
-      >
-    </button>：{format(createdAt, "yy/MM/dd(EEE) HH:mm:ss", {
-      locale: ja,
-    })}
+            )}
+      </span>
+    </button>
+    ：{format(createdAt, "yy/MM/dd(EEE) HH:mm:ss", { locale: ja })}
 
     {#if ccUserId === ""}
       ID:???
     {:else if ccUserId === "AI"}
       ID:{ccUserId}
     {:else}
-      ID:<Link to={makePathname(`/${board.key}/search?q=${ccUserId}`)}
-        >{ccUserId}</Link
-      >
+      ID:
+      <Link to={makePathname(`/${board.key}/search?q=${ccUserId}`)}>
+        {ccUserId}
+      </Link>
     {/if}
 
     {#if isOwner}
       <span class="text-xs text-red-400">主</span>
     {/if}
+
     {#if showBlockButtons}
       <div class="inline-flex shrink-0 space-x-2 items-end">
         <button
           class="p-1 rounded-full text-red-500 bg-gray-100 hover:text-gray-500 self-end"
           onclick={() => {
             if (ccUserId && ignoreList) {
-              toaster.success({
-                title: `ID:${ccUserId}をバツポチしました`,
-              });
+              toaster.success({ title: `ID:${ccUserId}をバツポチしました` });
               ignoreList.add(ccUserId);
               ignoreList = new Set(ignoreList);
               ignoreListCache.set([...ignoreList]);
-              showBlockButtons = false; // 処理後に元の状態に戻す
+              showBlockButtons = false;
             }
           }}
         >
@@ -209,9 +215,7 @@
 
         <button
           class="p-1 rounded-full hover:text-gray-500 self-end"
-          onclick={() => {
-            showBlockButtons = false; // 元の状態に戻る
-          }}
+          onclick={() => (showBlockButtons = false)}
         >
           <XIcon class="h-4 w-4" />
         </button>
@@ -219,35 +223,34 @@
     {:else}
       <button
         class="hover:text-gray-500 transition-colors duration-200 ease-in-out self-end"
-        onclick={() => {
-          showBlockButtons = true; // クリックで2つのボタンを表示
-        }}
+        onclick={() => (showBlockButtons = true)}
       >
         <XIcon class="h-4 w-4" />
       </button>
     {/if}
+
     {#if backgroundEmbedControls}
       <IconButton
         class="material-icons"
-        onclick={() => {
-          activeController?.play();
-        }}>play_arrow</IconButton
+        onclick={() => activeController?.play()}
       >
+        play_arrow
+      </IconButton>
       <IconButton
         class="material-icons"
-        onclick={() => {
-          activeController?.pause();
-        }}>pause</IconButton
+        onclick={() => activeController?.pause()}
       >
+        pause
+      </IconButton>
     {/if}
   </div>
+
   <!-- 下段: アイコンと内容 -->
-  <div class="content-row">
-    <!-- 固定幅・高さのアイコン -->
+  <div class="flex items-start w-full">
     {#if ccUserAvatar && board.avatarMap.get(ccUserAvatar)}
       <div class="relative w-16 h-16">
         <div
-          class="avatar"
+          class="w-16 h-16 rounded-full mr-2 bg-cover bg-center"
           style="background-image:url({board.avatarMap.get(ccUserAvatar)
             ?.src});"
         ></div>
@@ -261,10 +264,11 @@
         {/if}
       </div>
     {:else}
-      <div class="empty-avatar"></div>
+      <div class="w-8"></div>
     {/if}
+
     <!-- 右側のコンテンツ領域 -->
-    <div class="content">
+    <div class="flex flex-col flex-1 min-w-0 w-3xl max-w-full">
       {#if contentText !== ""}
         {@const parts = [...parseContent(contentText)]}
         {@const isAllEmoji = parts.every(
@@ -273,10 +277,14 @@
             v.type === "customEmoji" ||
             v.type === "customAnimeEmoji",
         )}
-        <div class="unj-font content-text">
+        <div class="unj-font text-[0px] leading-[1.2]">
           {#each parts as part}
             {#if part.type === "text"}
-              <span>{part.value}</span>
+              <span
+                class="inline-block align-middle text-base m-0 wrap-anywhere max-w-full"
+              >
+                {part.value}
+              </span>
             {:else if part.type === "br"}
               <br />
             {:else if part.type === "anka"}
@@ -287,8 +295,9 @@
                 class="cursor-pointer hover:underline text-blue-500 text-base align-baseline"
                 onclick={() =>
                   jumpToAnka(board.key, Number(part.value), threadId)}
-                >>>{part.value}</span
               >
+                >>{part.value}
+              </span>
             {:else if part.type === "customEmoji"}
               <CustomEmojiPart
                 size={isAllEmoji ? "48" : "22"}
@@ -304,6 +313,7 @@
               />
             {/if}
           {/each}
+
           {#if isAnniversary([Anniversary.VALENTINE])}
             <span>{makeValentineEmojiSuffix(createdAt.toString())}</span>
           {/if}
@@ -312,20 +322,29 @@
           {/if}
         </div>
       {/if}
+
       {#if commandResult !== ""}
-        <div class="content-text text-red-400">
+        <div class="text-red-400 text-[0px] leading-[1.2]">
           {commandResult}
         </div>
       {/if}
+
       {#if ps !== ""}
-        <div class="ps">
+        <div>
           <br />
           <div class="text-red-400">※追記</div>
-          <div class="content-text">{ps}</div>
+          <div class="text-[0px] leading-[1.2] wrap-anywhere max-w-full">
+            <span
+              class="inline-block align-middle text-base m-0 wrap-anywhere max-w-full"
+            >
+              {ps}
+            </span>
+          </div>
         </div>
       {/if}
+
       {#if contentUrl !== ""}
-        <div class="content-url">
+        <div class="mb-0.5 wrap-anywhere">
           <a
             href={siteInfo?.id === 1616 ? siteInfo.href : contentUrl}
             target="_blank"
@@ -335,8 +354,9 @@
             {contentUrl}
           </a>
         </div>
+
         {#key num}
-          <div class="content-embed">
+          <div class="mb-0.5">
             <EmbedPart
               {ccUserId}
               {contentUrl}
@@ -349,16 +369,19 @@
           </div>
         {/key}
       {/if}
+
       {#if contentType === Enum.Dtm}
         <div class="text-red-400">※DTM機能</div>
         <DecryptPart bind:contentText bind:contentType />
       {/if}
+
       {#if contentType === Enum.Encrypt}
         <div class="text-red-400">※暗号レス</div>
         <DecryptPart bind:contentText bind:contentType />
       {/if}
     </div>
   </div>
+
   {@render children?.()}
 </div>
 
@@ -375,70 +398,7 @@
 </Toast.Group>
 
 <style>
-  .sage {
-    text-decoration: underline;
-  }
   .sage:before {
     content: "↓";
-  }
-  .reply {
-    background-color: transparent; /* 背景を透明に */
-    border: none; /* 枠線をなくす（必要に応じて） */
-    color: inherit; /* 親要素の文字色を継承 */
-    font-size: inherit; /* 親要素のフォントサイズを継承 */
-    cursor: pointer;
-    padding-right: 0;
-  }
-  .reply:hover {
-    opacity: 0.8; /* ホバー時の透明度を変更（任意） */
-  }
-  /* content-row はアイコンと内容を横並びに */
-  .content-row {
-    display: flex;
-    align-items: flex-start;
-    width: 100%;
-  }
-  /* avatar は固定サイズ、左側に配置 */
-  .empty-avatar {
-    width: 32px;
-  }
-  .avatar {
-    width: 64px;
-    height: 64px;
-    border-radius: 50%;
-    margin-right: 8px;
-    background-size: cover;
-    background-position: center center;
-  }
-  /* content は縦並びに、右側の残りスペースを使用 */
-  .content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-    inline-size: 768px;
-    max-inline-size: 100%;
-  }
-  .content-text {
-    font-size: 0; /* inline-block 間の空白を消す */
-    line-height: 1.2; /* 好みに合わせる */
-    white-space: pre-wrap; /* 改行も反映 */
-  }
-  :global(.content-text img),
-  :global(.content-text span) {
-    display: inline-block;
-    vertical-align: middle;
-    font-size: 16px; /* 元の文字サイズに戻す */
-    margin: 0;
-  }
-  .content-url,
-  .content-embed {
-    margin-bottom: 2px;
-  }
-  .content-url a {
-    display: inline-block;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 100%;
   }
 </style>
