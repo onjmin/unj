@@ -381,18 +381,14 @@
                                             <div
                                                 class="grow text-base font-medium leading-tight pr-2 wrap-break-words"
                                             >
-                                                <div
-                                                    class="inline-flex items-baseline"
+                                                <span class="inline">
+                                                    {thread.title}
+                                                </span>
+                                                <span
+                                                    class="inline-block shrink-0 ml-1 whitespace-nowrap"
                                                 >
-                                                    <span class="max-w-full"
-                                                        >{thread.title}</span
-                                                    >
-
-                                                    <span
-                                                        class="inline-block shrink-0 ml-1"
-                                                        >({thread.resCount})</span
-                                                    >
-                                                </div>
+                                                    ({thread.resCount})
+                                                </span>
                                             </div>
                                             <div
                                                 class="opacity-50 text-xs shrink-0 ml-2 mt-0"
@@ -406,25 +402,25 @@
                                         <div
                                             class="flex items-center text-xs mt-1"
                                         >
-                                            {#if thread.latestRes}
-                                                <div
-                                                    class="opacity-50 grow text-sm whitespace-nowrap overflow-hidden pr-2"
-                                                >
+                                            <div
+                                                class="opacity-50 grow text-sm whitespace-nowrap overflow-hidden pr-2"
+                                            >
+                                                {#if thread.latestRes}
                                                     <span class="truncate"
                                                         >{thread.latestRes}</span
                                                     >
-                                                </div>
-                                            {/if}
+                                                {/if}
+                                            </div>
 
                                             <div
                                                 class="transition-all duration-200 ease-in font-medium shrink-0"
                                                 class:text-gray-500={thread.online ===
                                                     0}
-                                                class:text-blue-600={thread.online ===
+                                                class:text-blue-500={thread.online ===
                                                     1}
-                                                class:text-orange-600={thread.online ===
+                                                class:text-orange-500={thread.online ===
                                                     2}
-                                                class:text-red-600={thread.online >=
+                                                class:text-red-500={thread.online >=
                                                     3}
                                             >
                                                 {thread.online}人閲覧中
