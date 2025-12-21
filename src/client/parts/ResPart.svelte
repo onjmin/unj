@@ -10,7 +10,10 @@
     ankaRegex,
     contentTemplateMap,
   } from "../../common/request/content-schema.js";
-  import { findIn } from "../../common/request/whitelist/site-info.js";
+  import {
+    findIn,
+    SiteInfo,
+  } from "../../common/request/whitelist/site-info.js";
   import { seededRandArray } from "../../common/util.js";
   import { activeController } from "../mylib/background-embed.js";
   import { makePathname } from "../mylib/env.js";
@@ -54,13 +57,16 @@
     threadId = "",
   } = $props();
 
-  const url = (() => {
+  let siteInfo: SiteInfo | null = $state(null);
+
+  $effect.root(() => {
+    let url: URL | undefined;
     try {
-      return new URL(contentUrl);
+      url = new URL(contentUrl);
     } catch (err) {}
-  })();
-  const temp = contentTemplateMap.get(contentType) ?? [];
-  const siteInfo = url ? findIn(temp, url.hostname) : null;
+    const temp = contentTemplateMap.get(contentType) ?? [];
+    siteInfo = url ? findIn(temp, url.hostname) : null;
+  });
 
   const toaster = createToaster();
   const ignoreListCache = new ObjectStorage<string[]>("ignoreListCache");

@@ -12,9 +12,6 @@
     ankaRegex,
     contentTemplateMap,
   } from "../../common/request/content-schema.js";
-  import game from "../../common/request/whitelist/game.js";
-  import image from "../../common/request/whitelist/image.js";
-  import oekaki from "../../common/request/whitelist/oekaki.js";
   import {
     SiteInfo,
     findIn,
@@ -57,15 +54,35 @@
     bindContentType = $bindable(0),
   } = $props();
 
-  const url = (() => {
+  let url: URL | undefined;
+  let siteInfo = $state<SiteInfo | null>(null);
+  let embeddable: boolean = $state(false);
+
+  $effect.root(() => {
     try {
-      return new URL(contentUrl);
+      url = new URL(contentUrl);
     } catch (err) {}
-  })();
-  const temp = contentTemplateMap.get(contentType) ?? [];
-  const siteInfo = url ? findIn(temp, url.hostname) : null;
-  const embeddable =
-    temp !== game || (siteInfo?.id === 6401 && url?.searchParams.has("map"));
+    const temp = contentTemplateMap.get(contentType) ?? [];
+    siteInfo = url ? findIn(temp, url.hostname) : null;
+    embeddable =
+      (contentType !== Enum.Game ||
+        (siteInfo?.id === 6401 && url?.searchParams.has("map"))) ??
+      false;
+  });
+
+  $effect(() => {
+    // 埋め込みの自動展開
+    // 負荷が少ないものだけを自動展開する
+    if (
+      embeddable &&
+      siteInfo &&
+      (auto ||
+        [401, 402, 403, 405, 411, 421, 431].includes(siteInfo.id) ||
+        contentType === Enum.Oekaki)
+    ) {
+      tryEmbed(siteInfo);
+    }
+  });
 
   let embedError = $state(false);
   let embedding = $state(false);
@@ -228,24 +245,12 @@
     return () => window.removeEventListener("resize", onResize);
   });
 
-  $effect(() => {
-    if (
-      embeddable &&
-      siteInfo &&
-      (auto ||
-        [401, 402, 403, 405, 411, 421, 431].includes(siteInfo.id) ||
-        temp === oekaki)
-    ) {
-      tryEmbed(siteInfo);
-    }
-  });
-
   let open = $state(false);
   let src = $state("");
 </script>
 
 {#if siteInfo}
-  {#if temp === oekaki}
+  {#if contentType === Enum.Oekaki}
     <div class="text-red-400">※お絵描き機能</div>
   {/if}
   {#if embedError}
@@ -257,7 +262,7 @@
     <List twoLine
       ><Item
         onclick={() => {
-          if (embeddable) {
+          if (embeddable && siteInfo) {
             tryEmbed(siteInfo);
           } else {
             window.open(contentUrl, "_blank");
@@ -286,7 +291,7 @@
       <IconButton class="material-icons" onclick={() => (embedding = false)}
         >close</IconButton
       >
-      {#if temp === oekaki || (temp === image && ccUserId === "AI")}
+      {#if contentType === Enum.Oekaki || (contentType === Enum.Image && ccUserId === "AI")}
         <button
           class="ml-4 text-blue-500 hover:text-blue-700 font-bold transition duration-300"
           onclick={() => {
