@@ -8,9 +8,8 @@
   } = $props();
 
   // x.com URL を twitter.com に正規化
-  const normalizedUrl = url.replace(
-    /^https:\/\/x\.com\//,
-    "https://twitter.com/",
+  const normalizedUrl = $derived(
+    url.replace(/^https:\/\/x\.com\//, "https://twitter.com/"),
   );
 
   let containerEl: HTMLDivElement | undefined = $state();
@@ -25,7 +24,7 @@
 {#key normalizedUrl}
   <div
     bind:this={containerEl}
-    class="[&_.twitter-tweet]:!my-0 [&_.twitter-tweet]:!mt-0 [&_.twitter-tweet]:!mb-0"
+    class="[&_.twitter-tweet]:my-0! [&_.twitter-tweet]:mt-0! [&_.twitter-tweet]:mb-0!"
   >
     <blockquote
       class="twitter-tweet"

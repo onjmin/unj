@@ -13,8 +13,13 @@
 
   let { board, open = $bindable(false), userAvatar = $bindable(0) } = $props();
 
-  const index2key = [...board.avatarMap.keys()];
-  let selectionIndex = $state(index2key.indexOf(userAvatar));
+  const index2key = $derived([...board.avatarMap.keys()]);
+
+  let selectionIndex = $state(-1);
+  $effect(() => {
+    selectionIndex = index2key.indexOf(userAvatar);
+  });
+
   const closeHandler = (e: CustomEvent<{ action: string }>) => {
     switch (e.detail.action) {
       case "accept":

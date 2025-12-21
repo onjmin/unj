@@ -224,11 +224,19 @@
     if (data) activeLayer.data = data;
   };
 
-  const prefix = `paintCache###${threadId}`;
-  const widthCache = new ObjectStorage<number>(`${prefix}###width`);
-  const heightCache = new ObjectStorage<number>(`${prefix}###height`);
-  const uuidsCache = new ObjectStorage<string[]>(`${prefix}###uuids`);
-  const activeUuidCache = new ObjectStorage<string>(`${prefix}###activeUuid`);
+  const prefix = $derived(`paintCache###${threadId}`);
+
+  let widthCache: ObjectStorage<number>;
+  let heightCache: ObjectStorage<number>;
+  let uuidsCache: ObjectStorage<string[]>;
+  let activeUuidCache: ObjectStorage<string>;
+
+  $effect.root(() => {
+    widthCache = new ObjectStorage<number>(`${prefix}###width`);
+    heightCache = new ObjectStorage<number>(`${prefix}###height`);
+    uuidsCache = new ObjectStorage<string[]>(`${prefix}###uuids`);
+    activeUuidCache = new ObjectStorage<string>(`${prefix}###activeUuid`);
+  });
 
   const factory = <T,>(tag: string) => {
     const map = new Map<string, ObjectStorage<T>>();

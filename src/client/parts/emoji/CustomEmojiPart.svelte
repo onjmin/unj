@@ -3,7 +3,9 @@
 
   let { size = "16", emoji = "", anime = false, alt = "" } = $props();
 
-  const url = `https://cdn.discordapp.com/emojis/${emoji}${anime ? ".gif" : ".webp"}`;
+  const url = $derived(
+    `https://cdn.discordapp.com/emojis/${emoji}${anime ? ".gif" : ".webp"}`,
+  );
 
   const positioning = {
     placement: "right-start" as any, // カーソル右上基準に表示
