@@ -151,23 +151,32 @@
         resFormExpand.value = isExpand ? "1" : "0";
     });
 
-    // UnjStorage
-    const contentTextUnjStorage = new UnjStorage(`contentText###${threadId}`);
-    contentText = contentTextUnjStorage.value ?? "";
+    // 入力中の本文の保存
+    let contentTextUnjStorage: UnjStorage;
+    $effect.root(() => {
+        contentTextUnjStorage = new UnjStorage(`contentText###${threadId}`);
+        contentText = contentTextUnjStorage.value ?? "";
+    });
     $effect(() => {
         contentTextUnjStorage.value = contentText === "" ? null : contentText;
     });
 
-    // UnjStorage
-    const sageUnjStorage = new UnjStorage(`sage###${threadId}`);
-    isSage = sageUnjStorage.value === "sage";
+    // sageチェック状態の保存
+    let sageUnjStorage: UnjStorage;
+    $effect.root(() => {
+        sageUnjStorage = new UnjStorage(`sage###${threadId}`);
+        isSage = sageUnjStorage.value === "sage";
+    });
     $effect(() => {
         sageUnjStorage.value = isSage ? "sage" : null;
     });
 
-    // UnjStorage
-    const ninjaUnjStorage = new UnjStorage(`ninja###${threadId}`);
-    isNinja = ninjaUnjStorage.value === "ninja";
+    // 忍法帖チェック状態の保存
+    let ninjaUnjStorage: UnjStorage;
+    $effect.root(() => {
+        ninjaUnjStorage = new UnjStorage(`ninja###${threadId}`);
+        isNinja = ninjaUnjStorage.value === "ninja";
+    });
     $effect(() => {
         ninjaUnjStorage.value = isNinja ? "ninja" : null;
     });
@@ -217,13 +226,19 @@
     });
 
     let thread: Thread | null = $state(null);
-    const cache = new ObjectStorage<Thread>(`threadCache###${threadId}`);
+
+    // 過去ログの保存
+    let cache: ObjectStorage<Thread>;
+    $effect.root(() => {
+        cache = new ObjectStorage<Thread>(`threadCache###${threadId}`);
+    });
     $effect(() => {
         cache.get().then((v) => {
             if (v && !thread) loadThread(v);
         });
     });
 
+    // レス履歴の保存
     let resHistories: ResHistory[] | null = $state(null);
     const resHistoryCache = new ObjectStorage<ResHistory[]>("resHistoryCache");
     $effect(() => {
@@ -236,6 +251,7 @@
         });
     });
 
+    // 無視リストの保存
     let ignoreList: Set<string> | null = $state(null);
     const ignoreListCache = new ObjectStorage<string[]>("ignoreListCache");
     $effect(() => {

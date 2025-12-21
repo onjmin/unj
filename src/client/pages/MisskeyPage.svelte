@@ -35,10 +35,14 @@
 
     let { board, misskeyId }: { board: Board; misskeyId: string } = $props();
 
-    const misskey: Misskey | undefined = findMisskey(board.key, misskeyId);
-    const hostname = misskey?.hostname ?? "";
-    const title = misskey?.title ?? "";
-    const api = misskey?.api ?? "";
+    let misskey: Misskey | undefined;
+    $effect.root(() => {
+        misskey = findMisskey(board.key, misskeyId);
+    });
+
+    const hostname = $derived(misskey?.hostname ?? "");
+    const title = $derived(misskey?.title ?? "");
+    const api = $derived(misskey?.api ?? "");
 
     let timeline = $state<Note[]>([]);
     let isLoading = $state(false);
@@ -86,10 +90,13 @@
         }
     }
 
-    // ObjectStorageを初期化
-    const misskeyTimelineCache = new ObjectStorage<Note[]>(
-        `misskeyTimelineCache###${misskeyId}`,
-    );
+    // Misskeyの過去ログの保存
+    let misskeyTimelineCache: ObjectStorage<Note[]>;
+    $effect.root(() => {
+        misskeyTimelineCache = new ObjectStorage<Note[]>(
+            `misskeyTimelineCache###${misskeyId}`,
+        );
+    });
 
     $effect.root(() => {
         loadTimeline(INITIAL_LIMIT);

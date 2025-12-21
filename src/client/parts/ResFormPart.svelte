@@ -47,25 +47,34 @@
   let openEmojiPicker = $state(false);
   let openImageUploader = $derived(contentType === Enum.Image);
 
-  // UnjStorage
-  const userNameUnjStorage = new UnjStorage(`userName###${board.id}`);
-  userName = userNameUnjStorage.value ?? "";
+  // 名前欄の保存
+  let userNameUnjStorage: UnjStorage;
+  $effect.root(() => {
+    userNameUnjStorage = new UnjStorage(`userName###${board.id}`);
+    userName = userNameUnjStorage.value ?? "";
+  });
   $effect(() => {
     userNameUnjStorage.value = userName;
   });
 
-  // UnjStorage
-  const userAvatarUnjStorage = new UnjStorage(`userAvatar###${board.id}`);
-  userAvatar = userAvatarUnjStorage.value
-    ? Number(userAvatarUnjStorage.value)
-    : 0;
+  // 選択中のアイコンの保存
+  let userAvatarUnjStorage: UnjStorage;
+  $effect.root(() => {
+    userAvatarUnjStorage = new UnjStorage(`userAvatar###${board.id}`);
+    userAvatar = userAvatarUnjStorage.value
+      ? Number(userAvatarUnjStorage.value)
+      : 0;
+  });
   $effect(() => {
     userAvatarUnjStorage.value = String(userAvatar);
   });
 
-  // UnjStorage
-  const passwordUnjStorage = new UnjStorage(`password###${board.id}`);
-  password = passwordUnjStorage.value ?? "";
+  // 暗号レスのパスワードの保存
+  let passwordUnjStorage: UnjStorage;
+  $effect.root(() => {
+    passwordUnjStorage = new UnjStorage(`password###${board.id}`);
+    password = passwordUnjStorage.value ?? "";
+  });
   $effect(() => {
     passwordUnjStorage.value = password;
   });

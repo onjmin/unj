@@ -68,16 +68,22 @@
     let previewUrl = $state("");
     let activeLayer = $state(null);
 
-    // UnjStorage
-    const titleUnjStorage = new UnjStorage(`title###${board.id}`);
-    title = titleUnjStorage.value ?? "";
+    // 入力中のスレタイの保存
+    let titleUnjStorage: UnjStorage;
+    $effect.root(() => {
+        titleUnjStorage = new UnjStorage(`title###${board.id}`);
+        title = titleUnjStorage.value ?? "";
+    });
     $effect(() => {
         titleUnjStorage.value = title;
     });
 
-    // UnjStorage
-    const contentTextUnjStorage = new UnjStorage(`contentText###${board.id}`);
-    contentText = contentTextUnjStorage.value ?? "";
+    // 入力中の本文の保存
+    let contentTextUnjStorage: UnjStorage;
+    $effect.root(() => {
+        contentTextUnjStorage = new UnjStorage(`contentText###${board.id}`);
+        contentText = contentTextUnjStorage.value ?? "";
+    });
     $effect(() => {
         contentTextUnjStorage.value = contentText;
     });
