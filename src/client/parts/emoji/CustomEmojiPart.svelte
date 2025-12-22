@@ -21,7 +21,7 @@
 <Tooltip {positioning}>
   <Tooltip.Trigger>
     <span
-      class="inline-block -mr-[0.24rem] align-baseline leading-none relative top-[0.08rem]"
+      class="inline-block -mr-[0.24rem] align-baseline leading-none relative"
     >
       <img
         src={`${url}?size=${size}`}
