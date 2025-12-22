@@ -20,14 +20,16 @@
 
 <Tooltip {positioning}>
   <Tooltip.Trigger>
-    <span class="inline-flex h-full w-full items-center justify-center">
+    <span
+      class="inline-block -mr-[0.24rem] align-baseline leading-none relative top-[0.08rem]"
+    >
       <img
         src={`${url}?size=${size}`}
         {alt}
         width={size}
         height={size}
         loading="lazy"
-        class="inline-block align-text-bottom object-contain"
+        class="inline-block object-contain"
       />
     </span>
   </Tooltip.Trigger>

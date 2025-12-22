@@ -283,11 +283,11 @@
             v.type === "customEmoji" ||
             v.type === "customAnimeEmoji",
         )}
-        <div class="unj-font text-[0px] leading-[1.2]">
+        <div class="unj-font text-base leading-[1.2]">
           {#each parts as part}
             {#if part.type === "text"}
               <span
-                class="inline-block align-middle text-base m-0 wrap-anywhere max-w-full"
+                class="inline-block align-middle m-0 wrap-anywhere max-w-full"
               >
                 {part.value}
               </span>
