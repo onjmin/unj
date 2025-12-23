@@ -1153,28 +1153,46 @@
                     createdAt={thread.createdAt}
                     threadId={thread.id}
                 >
-                    <div class="unj-like-vote-container">
-                        <div class="vote-buttons">
-                            <Button
-                                class="good-vote"
-                                onclick={() => tryLike(true)}>ｲｲ!</Button
+                    <div
+                        class="unj-like-vote-container flex justify-end gap-2 p-2"
+                    >
+                        <div class="flex items-center gap-1">
+                            <button
+                                type="button"
+                                onclick={() => tryLike(true)}
+                                class="text-blue-500/80 font-bold px-1"
                             >
-                            <span class="good-count">+{goodVotes}</span>
-                            <div class="bar">
+                                ｲｲ!
+                            </button>
+
+                            <span class="min-w-12 text-right text-gray-500"
+                                >+{goodVotes}</span
+                            >
+
+                            <div
+                                class="relative w-16 h-5 mx-2 rounded-full bg-gray-500/20 overflow-hidden"
+                            >
                                 <div
-                                    class="good"
+                                    class="absolute left-0 top-0 bottom-0 bg-sky-500/40"
                                     style="width:{goodRatio}%;"
                                 ></div>
                                 <div
-                                    class="bad"
+                                    class="absolute right-0 top-0 bottom-0 bg-red-500/40"
                                     style="width:{badRatio}%;"
                                 ></div>
                             </div>
-                            <span class="bad-count">-{badVotes}</span>
-                            <Button
-                                class="bad-vote"
-                                onclick={() => tryLike(false)}>ｲｸﾅｲ!</Button
+
+                            <span class="min-w-12 text-gray-500"
+                                >-{badVotes}</span
                             >
+
+                            <button
+                                type="button"
+                                onclick={() => tryLike(false)}
+                                class="text-red-500/80 font-bold px-1"
+                            >
+                                ｲｸﾅｲ!
+                            </button>
                         </div>
                     </div>
                 </ResPart>
@@ -1306,61 +1324,12 @@
     }
 
     /* ｲｲ!(・∀・) (・Ａ・)ｲｸﾅｲ!  */
-    .unj-like-vote-container {
-        display: flex;
-        align-items: right;
-        justify-content: right;
-        gap: 8px;
-        padding: 8px;
-    }
-    .vote-buttons {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-    }
-    :global(.unj-like-vote-container .good-vote) {
-        color: #66f;
-    }
-
-    :global(.unj-like-vote-container .bad-vote) {
-        color: #f66;
-    }
     @media screen and (min-width: 768px) {
-        :global(.unj-like-vote-container .good-vote)::after {
+        :global(.unj-like-vote-container button:first-child)::after {
             content: "(・∀・)";
         }
-        :global(.unj-like-vote-container .bad-vote)::before {
+        :global(.unj-like-vote-container button:last-child)::before {
             content: "(・Ａ・)";
         }
-    }
-    .bar {
-        position: relative;
-        width: 64px; /* 固定幅 */
-        height: 20px;
-        background-color: #eee;
-        border-radius: 10px; /* 角丸 */
-        margin: 0 8px; /* 左右に少し余白 */
-        overflow: hidden; /* はみ出すバーが隠れるように */
-    }
-    .good {
-        position: absolute;
-        left: 0;
-        top: 0;
-        bottom: 0;
-        background-color: skyblue;
-    }
-    .bad {
-        position: absolute;
-        right: 0;
-        top: 0;
-        bottom: 0;
-        background-color: #f99;
-    }
-    .good-count {
-        min-width: 3rem;
-        text-align: right;
-    }
-    .bad-count {
-        min-width: 3rem;
     }
 </style>
