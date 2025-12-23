@@ -1110,7 +1110,7 @@
             {/if}
             <div class="flex items-center space-x-2">
                 <button
-                    class="inline-flex items-center space-x-1 rounded-full bg-green-100/80 hover:bg-green-100/40 px-3 py-1 text-green-800"
+                    class="inline-flex items-center space-x-1 rounded-full bg-lime-500/10 hover:bg-gray-500/40 px-3 py-1 text-green-500"
                     onclick={tryLoL}
                 >
                     <span class="font-bold">草</span>
@@ -1119,7 +1119,7 @@
                     >
                 </button>
                 <div
-                    class="relative overflow-hidden whitespace-nowrap text-green-500"
+                    class="relative overflow-hidden whitespace-nowrap text-green-500/80"
                 >
                     <span
                         class="inline-block animate-wave text-base font-normal leading-none tracking-tight"
