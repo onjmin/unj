@@ -9,7 +9,7 @@
     <li class="text-sm text-gray-500">板一覧</li>
 
     {#each publicBoards as b}
-      <li class="rounded-md even:bg-gray-500/10">
+      <li class="rounded-md even:bg-gray-500/20">
         <Link
           to={makePathname(`/${b.key}`)}
           class="block px-3 py-1 rounded-md transition-colors"

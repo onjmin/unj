@@ -211,7 +211,7 @@
       class="inline-flex shrink-0 items-baseline w-12 align-baseline relative top-1"
     >
       {#if showBlockButtons}
-        <div class="ml-auto inline-flex space-x-1">
+        <div class="inline-flex space-x-1">
           <button
             class="p-0.5 rounded text-red-500 hover:bg-gray-100"
             onclick={() => {
@@ -235,12 +235,14 @@
           </button>
         </div>
       {:else}
-        <button
-          class="p-0.5 rounded hover:bg-gray-100 text-gray-500"
-          onclick={() => (showBlockButtons = true)}
-        >
-          <XIcon class="h-3.5 w-3.5" />
-        </button>
+        <div class="inline-flex">
+          <button
+            class="p-0.5 rounded hover:bg-gray-100 text-gray-500"
+            onclick={() => (showBlockButtons = true)}
+          >
+            <XIcon class="h-3.5 w-3.5" />
+          </button>
+        </div>
       {/if}
     </div>
 
