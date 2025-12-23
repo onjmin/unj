@@ -86,7 +86,7 @@
                     {@const chip = item.labels.at(0) ?? ""}
                     {@const IconComponent = getLabelIconComponent(chip)}
                     <span
-                      class="inline-flex items-center h-5 text-xs font-medium px-2 py-0.5 rounded-full border border-gray-500/10 bg-gray-100/10 text-gray-700 whitespace-nowrap"
+                      class="inline-flex items-center h-5 text-xs font-medium px-2 py-0.5 rounded-full border border-gray-500/40 text-gray-500 whitespace-nowrap"
                     >
                       {#if IconComponent}
                         <IconComponent
@@ -94,7 +94,7 @@
                           class="mr-1 text-gray-500 shrink-0"
                         />
                       {/if}
-                      <span class="text-sm">
+                      <span class="text-sm text-gray-500">
                         {chip}
                       </span>
                     </span>

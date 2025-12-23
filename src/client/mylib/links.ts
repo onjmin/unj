@@ -2,6 +2,11 @@ import { SiteInfo } from "../../common/request/whitelist/site-info.js";
 
 export const links = [
 	new SiteInfo({
+		name: "おんJ",
+		description: "やきうはじめり",
+		src: "https://hayabusa.open2ch.net/livejupiter/",
+	}),
+	new SiteInfo({
 		name: "29(肉)ちゃんねる",
 		description:
 			"「制限された自由」から「ある程度ある自由」までを手広くカバーする小規模匿名掲示板",

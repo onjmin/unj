@@ -166,10 +166,10 @@
         focus();
       }}
     >
-      {num}：
+      {num}:
       <span
         class={`font-bold ${
-          ccUserName.includes("★") ? "text-red-400" : "text-teal-600"
+          ccUserName.includes("★") ? "text-red-500" : "text-teal-600"
         }`}
       >
         {ccUserName !== ""
@@ -185,55 +185,64 @@
             )}
       </span>
     </button>
-    ：{format(createdAt, "yy/MM/dd(EEE) HH:mm:ss", { locale: ja })}
+    <span>:</span>
+    <span>{format(createdAt, "yy/MM/dd(EEE) HH:mm:ss", { locale: ja })}</span>
 
-    {#if ccUserId === ""}
-      ID:???
-    {:else if ccUserId === "AI"}
-      ID:{ccUserId}
-    {:else}
-      ID:
-      <Link to={makePathname(`/${board.key}/search?q=${ccUserId}`)}>
-        {ccUserId}
-      </Link>
-    {/if}
+    <span class="inline-flex items-baseline whitespace-nowrap gap-1">
+      {#if ccUserId === ""}
+        <span>ID:???</span>
+      {:else if ccUserId === "AI"}
+        <span>ID:{ccUserId}</span>
+      {:else}
+        <Link
+          class="hover:underline"
+          to={makePathname(`/${board.key}/search?q=${ccUserId}`)}
+        >
+          ID:{ccUserId}
+        </Link>
+      {/if}
+    </span>
 
     {#if isOwner}
-      <span class="text-xs text-red-400">主</span>
+      <span class="text-xs text-red-500">主</span>
     {/if}
 
-    {#if showBlockButtons}
-      <div class="inline-flex shrink-0 space-x-2 items-end">
-        <button
-          class="p-1 rounded-full text-red-500 bg-gray-100 hover:text-gray-500 self-end"
-          onclick={() => {
-            if (ccUserId && ignoreList) {
-              toaster.success({ title: `ID:${ccUserId}をバツポチしました` });
-              ignoreList.add(ccUserId);
-              ignoreList = new Set(ignoreList);
-              ignoreListCache.set([...ignoreList]);
-              showBlockButtons = false;
-            }
-          }}
-        >
-          <BanIcon class="h-4 w-4" />
-        </button>
+    <div
+      class="inline-flex shrink-0 items-baseline w-12 align-baseline relative top-1"
+    >
+      {#if showBlockButtons}
+        <div class="ml-auto inline-flex space-x-1">
+          <button
+            class="p-0.5 rounded text-red-500 hover:bg-gray-100"
+            onclick={() => {
+              if (ccUserId && ignoreList) {
+                toaster.success({ title: `ID:${ccUserId}をバツポチしました` });
+                ignoreList.add(ccUserId);
+                ignoreList = new Set(ignoreList);
+                ignoreListCache.set([...ignoreList]);
+                showBlockButtons = false;
+              }
+            }}
+          >
+            <BanIcon class="h-3.5 w-3.5" />
+          </button>
 
+          <button
+            class="p-0.5 rounded hover:bg-gray-100 text-gray-500"
+            onclick={() => (showBlockButtons = false)}
+          >
+            <XIcon class="h-3.5 w-3.5" />
+          </button>
+        </div>
+      {:else}
         <button
-          class="p-1 rounded-full hover:text-gray-500 self-end"
-          onclick={() => (showBlockButtons = false)}
+          class="p-0.5 rounded hover:bg-gray-100 text-gray-500"
+          onclick={() => (showBlockButtons = true)}
         >
-          <XIcon class="h-4 w-4" />
+          <XIcon class="h-3.5 w-3.5" />
         </button>
-      </div>
-    {:else}
-      <button
-        class="hover:text-gray-500 transition-colors duration-200 ease-in-out self-end"
-        onclick={() => (showBlockButtons = true)}
-      >
-        <XIcon class="h-4 w-4" />
-      </button>
-    {/if}
+      {/if}
+    </div>
 
     {#if backgroundEmbedControls}
       <IconButton
@@ -330,7 +339,7 @@
       {/if}
 
       {#if commandResult !== ""}
-        <div class="text-red-400 text-[0px] leading-[1.2]">
+        <div class="text-red-500 text-[0px] leading-[1.2]">
           {commandResult}
         </div>
       {/if}
@@ -338,7 +347,7 @@
       {#if ps !== ""}
         <div>
           <br />
-          <div class="text-red-400">※追記</div>
+          <div class="text-red-500">※追記</div>
           <div class="text-[0px] leading-[1.2] wrap-anywhere max-w-full">
             <span
               class="inline-block align-middle text-base m-0 wrap-anywhere max-w-full"
@@ -377,12 +386,12 @@
       {/if}
 
       {#if contentType === Enum.Dtm}
-        <div class="text-red-400">※DTM機能</div>
+        <div class="text-red-500">※DTM機能</div>
         <DecryptPart bind:contentText bind:contentType />
       {/if}
 
       {#if contentType === Enum.Encrypt}
-        <div class="text-red-400">※暗号レス</div>
+        <div class="text-red-500">※暗号レス</div>
         <DecryptPart bind:contentText bind:contentType />
       {/if}
     </div>

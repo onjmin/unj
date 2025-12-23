@@ -251,7 +251,7 @@
 
 {#if siteInfo}
   {#if contentType === Enum.Oekaki}
-    <div class="text-red-400">※お絵描き機能</div>
+    <div class="text-red-500">※お絵描き機能</div>
   {/if}
   {#if embedError}
     <MessageBoxPart
