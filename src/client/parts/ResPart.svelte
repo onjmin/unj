@@ -294,7 +294,7 @@
             v.type === "customEmoji" ||
             v.type === "customAnimeEmoji",
         )}
-        <div class="unj-font text-base leading-[1.2] inline-flex">
+        <div class="unj-font text-base leading-[1.2]">
           {#each parts as part}
             {#if part.type === "text"}
               <span
@@ -336,11 +336,6 @@
           {/if}
           {#if isAnniversary([Anniversary.HALLOWEEN])}
             <span>{makeHalloweenEmojiSuffix(createdAt.toString())}</span>
-          {/if}
-          {#if isAnniversary([Anniversary.CHRISTMAS])}
-            <span class="text-rainbow"
-              >{seededRandArray(["★", "☆"], createdAt.toString())}</span
-            >
           {/if}
         </div>
       {/if}
