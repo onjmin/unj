@@ -280,7 +280,7 @@
                         <input
                             type="file"
                             accept="image/*"
-                            class=" flex-1 min-w-0 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border file:text-sm file:font-medium cursor-pointer"
+                            class=" flex-1 min-w-0 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border file:border-gray-500/80 file:text-sm file:font-medium cursor-pointer"
                             onchange={async (e) => {
                                 const input =
                                     e.currentTarget as HTMLInputElement;
