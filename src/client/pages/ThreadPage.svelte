@@ -1170,14 +1170,14 @@
                             >
 
                             <div
-                                class="relative w-16 h-5 mx-2 rounded-full bg-gray-500/20 overflow-hidden"
+                                class="relative w-16 h-5 mx-2 rounded-full bg-gray-500/40 overflow-hidden"
                             >
                                 <div
-                                    class="absolute left-0 top-0 bottom-0 bg-sky-500/40"
+                                    class="absolute left-0 top-0 bottom-0 bg-sky-500/80"
                                     style="width:{goodRatio}%;"
                                 ></div>
                                 <div
-                                    class="absolute right-0 top-0 bottom-0 bg-red-500/40"
+                                    class="absolute right-0 top-0 bottom-0 bg-red-500/80"
                                     style="width:{badRatio}%;"
                                 ></div>
                             </div>
