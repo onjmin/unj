@@ -337,6 +337,11 @@
           {#if isAnniversary([Anniversary.HALLOWEEN])}
             <span>{makeHalloweenEmojiSuffix(createdAt.toString())}</span>
           {/if}
+          {#if isAnniversary([Anniversary.CHRISTMAS])}
+            <span class="text-rainbow"
+              >{seededRandArray(["★", "☆"], createdAt.toString())}</span
+            >
+          {/if}
         </div>
       {/if}
 
