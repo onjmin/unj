@@ -137,3 +137,32 @@ body {
 	background-color: #66c0b5;
 	box-shadow: 0 0 5px rgba(0, 0, 0, 0.5); /* ボーダーやシャドウの追加 */
 }
+
+/* 虹色のグラデーションテキスト */
+@layer utilities {
+	.text-rainbow {
+		background: linear-gradient(
+			90deg,
+			#ef4444,
+			#f59e0b,
+			#eab308,
+			#22c55e,
+			#3b82f6,
+			#a855f7
+		);
+		background-size: 300% 300%;
+		background-clip: text;
+		-webkit-background-clip: text;
+		color: transparent;
+		animation: rainbow 3s ease infinite;
+		font-size: inherit;
+		line-height: inherit;
+  		vertical-align: middle;
+	}
+}
+
+@keyframes rainbow {
+  0%   { background-position:   0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position:   0% 50%; }
+}
