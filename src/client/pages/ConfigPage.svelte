@@ -37,8 +37,8 @@
         ninjaScore,
         replyResSound,
         soundVolume,
-        theme,
     } from "../mylib/unj-storage.js";
+    import { selectedTheme } from "../mylib/store.js";
 
     let { board }: { board: Board } = $props();
 
@@ -75,12 +75,6 @@
         ["svelte", "スッキリ軽め（Svelte公式っぽい）"],
         ["unity", "調和・統一感（まとまりある）"],
     ]);
-
-    let selectedTheme: string = $state(theme.value ?? "");
-    $effect(() => {
-        if (!selectedTheme) return;
-        theme.value = selectedTheme;
-    });
 
     let openAccordion: string | null = $state(null);
     const toggleAccordion = (panelName: string) => {
@@ -248,7 +242,7 @@
                                 <input
                                     type="radio"
                                     id="{theme}-theme"
-                                    bind:group={selectedTheme}
+                                    bind:group={$selectedTheme}
                                     value={theme}
                                     class="form-radio h-4 w-4 text-blue-600 transition duration-150 ease-in-out"
                                 />

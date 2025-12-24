@@ -9,6 +9,7 @@
     isMobile,
     openLeft,
     openRight,
+    customBackground,
   } from "../mylib/store.js";
   import LeftMenuPart from "./LeftMenuPart.svelte";
   import RightMenuPart from "./RightMenuPart.svelte";
@@ -71,9 +72,7 @@
       aria-hidden="true"
     />
   </div>
-{/if}
-
-{#if isAnniversary([Anniversary.HALLOWEEN])}
+{:else if isAnniversary([Anniversary.HALLOWEEN])}
   <div class="absolute inset-0 z-0">
     <img
       src={seededRandArray(
@@ -93,13 +92,20 @@
       aria-hidden="true"
     />
   </div>
-{/if}
-
-{#if isAnniversary([Anniversary.CHRISTMAS])}
+{:else if isAnniversary([Anniversary.CHRISTMAS])}
   <div
     aria-hidden="true"
     class="absolute inset-0 z-0 pointer-events-none opacity-60 snow"
   ></div>
+{:else if $customBackground}
+  <div class="absolute inset-0 z-0">
+    <img
+      src={$customBackground}
+      alt="Background"
+      class="h-screen w-full object-cover opacity-10"
+      aria-hidden="true"
+    />
+  </div>
 {/if}
 
 <header class="unj-header-part w-full bg-gray-800 text-gray-200 shadow-md">

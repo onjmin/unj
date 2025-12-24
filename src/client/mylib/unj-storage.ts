@@ -1,7 +1,6 @@
 import { sha256 } from "js-sha256";
 import { decode, encode } from "../../common/anti-debug.js";
 import { DEV_MODE, decodeEnv } from "./env.js";
-import { Anniversary, ifAnniversary } from "./anniversary.js";
 
 const delimiter = "###";
 const VITE_UNJ_HASHIDS_SECRET_PEPPER = decodeEnv(
@@ -42,17 +41,14 @@ const save = (key: string, value: string | null): void => {
 
 export class UnjStorage {
 	#key;
-	#reactive?: () => void;
-	constructor(key: string, reactive?: () => void) {
+	constructor(key: string) {
 		this.#key = key;
-		this.#reactive = reactive;
 	}
 	get value() {
 		return load(this.#key);
 	}
 	set value(value: string | null) {
 		if (this.value !== value) save(this.#key, value);
-		this.#reactive?.();
 	}
 }
 
@@ -70,25 +66,14 @@ export const replyResSound = new UnjStorage("replyResSound");
 export const openLeft = new UnjStorage("openLeft");
 export const openRight = new UnjStorage("openRight");
 
-// theme-color
-export const theme = new UnjStorage("theme", () => {
-	const v = (theme.value ?? "").replace("-dark", "");
-	const href = ifAnniversary(
-		[Anniversary.HALLOWEEN, Anniversary.CHRISTMAS],
-		() => {
-			return `https://cdn.jsdelivr.net/npm/svelte-material-ui@8.0.0-beta.3/themes/${v}-dark.min.css`;
-		},
-		() => {
-			return `https://cdn.jsdelivr.net/npm/svelte-material-ui@8.0.0-beta.3/themes/${v}.min.css`;
-		},
-	);
-	document.getElementById("unj-theme")?.setAttribute("href", href);
-});
-theme.value = theme.value ?? "unity";
+// theme
+export const theme = new UnjStorage("theme");
+
+// customBackground
+export const customBackground = new UnjStorage("customBackground");
 
 // RPG
 export const rpgMode = new UnjStorage("rpgMode");
-rpgMode.value = rpgMode.value ?? "0";
 export const sAnimsId = new UnjStorage("sAnimsId");
 
 // oekaki
