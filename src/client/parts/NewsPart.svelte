@@ -76,7 +76,7 @@
       <div class="w-full">
         <ul class="list-none p-0 m-0">
           {#each items as item}
-            <li class="odd:bg-gray-500/30">
+            <li class="odd:bg-gray-500/20">
               <div class="flex items-center px-2 py-1">
                 <div class="shrink-0 text-xs text-gray-500 mr-3 w-16">
                   {formatDate(item.published)}
