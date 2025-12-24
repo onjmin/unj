@@ -38,7 +38,7 @@
         replyResSound,
         soundVolume,
     } from "../mylib/unj-storage.js";
-    import { selectedTheme } from "../mylib/store.js";
+    import { customBackground, selectedTheme } from "../mylib/store.js";
 
     let { board }: { board: Board } = $props();
 
@@ -257,6 +257,68 @@
                 </div>
             {/if}
         </div>
+
+        <div class="border border-gray-500/40 rounded-lg shadow">
+            <div
+                tabindex="0"
+                role="button"
+                onkeydown={() => {}}
+                class="flex justify-between items-center p-4 cursor-pointer"
+                onclick={() => toggleAccordion("background")}
+            >
+                <h3 class="font-bold text-lg">カスタム背景</h3>
+                {#if openAccordion === "background"}
+                    <ChevronDownIcon class="h-6 w-6" />
+                {:else}
+                    <ChevronRightIcon class="h-6 w-6" />
+                {/if}
+            </div>
+
+            {#if openAccordion === "background"}
+                <div class="p-4 border-t border-gray-200 space-y-3">
+                    <div class="flex items-center gap-3">
+                        <input
+                            type="file"
+                            accept="image/*"
+                            class=" flex-1 min-w-0 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border file:text-sm file:font-medium cursor-pointer"
+                            onchange={async (e) => {
+                                const input =
+                                    e.currentTarget as HTMLInputElement;
+                                const file = input.files?.[0];
+                                if (!file) return;
+
+                                $customBackground = await new Promise(
+                                    (resolve, reject) => {
+                                        const reader = new FileReader();
+                                        reader.onload = () =>
+                                            resolve(reader.result as string);
+                                        reader.onerror = reject;
+                                        reader.readAsDataURL(file);
+                                    },
+                                );
+                            }}
+                        />
+
+                        {#if $customBackground}
+                            <button
+                                class="shrink-0 p-2 rounded hover:text-red-500"
+                                onclick={() => {
+                                    $customBackground = "";
+                                }}
+                                title="背景を削除"
+                            >
+                                <Trash2Icon class="h-5 w-5" />
+                            </button>
+                        {/if}
+                    </div>
+
+                    <p class="text-xs opacity-60">
+                        選択した画像を背景として使用します（未選択時はテーマ既定）
+                    </p>
+                </div>
+            {/if}
+        </div>
+
         <div class="border border-gray-500/40 rounded-lg shadow">
             <div
                 tabindex="0"
