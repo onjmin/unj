@@ -62,14 +62,10 @@ export const soundVolume = new UnjStorage("soundVolume");
 export const newResSound = new UnjStorage("newResSound");
 export const replyResSound = new UnjStorage("replyResSound");
 
-// Menu
+// UI
 export const openLeft = new UnjStorage("openLeft");
 export const openRight = new UnjStorage("openRight");
-
-// theme
 export const theme = new UnjStorage("theme");
-
-// customBackground
 export const customBackground = new UnjStorage("customBackground");
 
 // RPG

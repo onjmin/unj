@@ -289,7 +289,7 @@
 <MainPart {board}>
     <div class="p-3 sm:p-4">
         <div
-            class={`${board.banner ? "" : "aspect-49/12"} w-[490px] max-w-full mx-auto mb-4 border border-gray-500/10 flex items-center justify-center`}
+            class={`${board.banner ? "" : "aspect-49/12"} w-[490px] max-w-full mx-auto mb-4 border border-gray-500/40 flex items-center justify-center`}
         >
             {#if board.banner}
                 <img
@@ -345,7 +345,7 @@
                                 tabindex="0"
                                 role="button"
                                 onkeydown={() => {}}
-                                class="border border-gray-500/10 hover:bg-gray-500/10 block w-full text-left p-3 transition-colors duration-150 ease-in-out cursor-pointer"
+                                class="border border-gray-500/40 hover:bg-gray-500/10 block w-full text-left p-3 transition-colors duration-150 ease-in-out cursor-pointer"
                                 onclick={() =>
                                     navigate(
                                         makePathname(
