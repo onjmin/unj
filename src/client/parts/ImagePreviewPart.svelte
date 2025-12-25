@@ -9,7 +9,7 @@
 
 {#if open}
     <div
-        class="fixed inset-0 z-50 flex items-center justify-center p-4"
+        class="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm"
         onclick={closeModal}
         onkeydown={(event) => {
             if (event.key === "Escape") {
@@ -17,16 +17,18 @@
             }
         }}
         tabindex="0"
-        role="button"
+        role="dialog"
         aria-label="Close enlarged image"
     >
-        <div class="absolute inset-0 bg-black opacity-50"></div>
+        <div class="absolute inset-0 bg-gray-100/10 transition-opacity"></div>
 
-        <div class="relative max-w-full max-h-full z-10">
+        <div
+            class="relative z-10 flex items-center justify-center w-full h-full pointer-events-none"
+        >
             <img
                 {src}
                 alt="拡大画像"
-                class="max-w-full max-h-full select-none"
+                class="max-w-full max-h-[80vh] w-auto h-auto object-contain select-none shadow-xl pointer-events-auto"
             />
         </div>
     </div>
