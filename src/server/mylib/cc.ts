@@ -10,14 +10,15 @@ import { encodeUserId } from "./anti-debug.js";
 import auth from "./auth.js";
 import { ninjaPokemonCache, ninjaScoreCache } from "./cache.js";
 import { getIP, sliceIPRange } from "./ip.js";
+import { formatInTimeZone } from "date-fns-tz";
 
 const base62 = baseX(
 	"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
 );
 
 const genId = (userId: number, boardId: number): string => {
-	const basedTime = differenceInDays(new Date(), new Date(0));
-	const bytes = sha256.array([userId, boardId, basedTime].join("###"));
+	const jstDate = formatInTimeZone(new Date(), "Asia/Tokyo", "yyyy-MM-dd");
+	const bytes = sha256.array([userId, boardId, jstDate].join("###"));
 	return base62.encode(new Uint8Array(bytes));
 };
 
