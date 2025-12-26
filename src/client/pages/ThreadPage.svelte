@@ -1110,7 +1110,7 @@
             {/if}
             <div class="flex items-center space-x-2">
                 <button
-                    class="inline-flex items-center space-x-1 rounded-full bg-lime-500/10 hover:bg-gray-500/40 px-3 py-1 text-green-500"
+                    class="inline-flex items-center space-x-1 rounded-full border border-green-500 hover:bg-gray-500/10 px-3 py-1 text-green-500"
                     onclick={tryLoL}
                 >
                     <span class="font-bold">草</span>
