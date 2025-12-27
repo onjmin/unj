@@ -11,6 +11,7 @@ export const customEmojiMap = new Map([
 	["satoru", "1441011962938134539"],
 	["satoruaikon", "1451476135584989416"],
 	["sirakegaoroze", "1441019313124540448"],
+	["tarew", "1454081065315729500"],
 	["tikutiku", "1441798021972103239"],
 	["yakiumin", "1441039196700545046"],
 ]);
