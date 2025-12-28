@@ -914,7 +914,7 @@
 </Banner>
 
 {#if thread?.ageRes && !ignoreList?.has(thread?.ageRes.ccUserId)}
-    <div class="ageRes">
+    <div class="ageRes border border-gray-500/20 rounded-md p-2">
         <ResPart
             {board}
             bind:ignoreList
