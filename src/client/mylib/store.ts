@@ -37,7 +37,16 @@ selectedTheme.subscribe((value) => {
 	document.getElementById("unj-theme")?.setAttribute("href", href);
 });
 
-export const customBackground = writable(unjStorage.customBackground.value);
+export const customBackground = writable(
+	unjStorage.customBackground.value ?? "",
+);
 customBackground.subscribe((value) => {
-	unjStorage.customBackground.value = String(value);
+	if (value !== null) unjStorage.customBackground.value = String(value);
+});
+
+export const customBackgroundOpacity = writable(
+	Number(unjStorage.customBackgroundOpacity.value ?? 0.16),
+);
+customBackgroundOpacity.subscribe((value) => {
+	if (value !== null) unjStorage.customBackgroundOpacity.value = String(value);
 });

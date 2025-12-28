@@ -67,6 +67,9 @@ export const openLeft = new UnjStorage("openLeft");
 export const openRight = new UnjStorage("openRight");
 export const theme = new UnjStorage("theme");
 export const customBackground = new UnjStorage("customBackground");
+export const customBackgroundOpacity = new UnjStorage(
+	"customBackgroundOpacity",
+);
 
 // RPG
 export const rpgMode = new UnjStorage("rpgMode");

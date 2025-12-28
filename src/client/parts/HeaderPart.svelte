@@ -10,6 +10,7 @@
     openLeft,
     openRight,
     customBackground,
+    customBackgroundOpacity,
   } from "../mylib/store.js";
   import LeftMenuPart from "./LeftMenuPart.svelte";
   import RightMenuPart from "./RightMenuPart.svelte";
@@ -97,12 +98,13 @@
     aria-hidden="true"
     class="absolute inset-0 z-0 pointer-events-none opacity-60 snow"
   ></div>
-{:else if $customBackground}
+{:else if $customBackground !== "" && $customBackground !== "null"}
   <div class="absolute inset-0 z-0">
     <img
       src={$customBackground}
       alt="Background"
-      class="h-screen w-full object-cover opacity-10"
+      class="h-screen w-full object-cover"
+      style="opacity:{$customBackgroundOpacity};"
       aria-hidden="true"
     />
   </div>

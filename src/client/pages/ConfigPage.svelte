@@ -38,13 +38,21 @@
         replyResSound,
         soundVolume,
     } from "../mylib/unj-storage.js";
-    import { customBackground, selectedTheme } from "../mylib/store.js";
+    import {
+        customBackground,
+        customBackgroundOpacity,
+        selectedTheme,
+    } from "../mylib/store.js";
 
     let { board }: { board: Board } = $props();
 
     changeVolume();
     changeNewResSound();
     changeReplyResSound();
+
+    let customBackgroundOpacitySlider = $state([
+        $customBackgroundOpacity * 100,
+    ]);
 
     let soundVolumeSlider = $state([Howler.volume() * 100]);
     let selectedNewResSound: string = $state(
@@ -275,12 +283,13 @@
             </div>
 
             {#if openAccordion === "background"}
-                <div class="p-4 border-t border-gray-200 space-y-3">
+                <div class="p-4 border-t border-gray-200 space-y-4">
+                    <!-- 背景画像選択 -->
                     <div class="flex items-center gap-3">
                         <input
                             type="file"
                             accept="image/*"
-                            class=" flex-1 min-w-0 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border file:border-gray-500/80 file:text-sm file:font-medium cursor-pointer"
+                            class="flex-1 min-w-0 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border file:border-gray-500/80 file:text-sm file:font-medium cursor-pointer"
                             onchange={async (e) => {
                                 const input =
                                     e.currentTarget as HTMLInputElement;
@@ -312,9 +321,59 @@
                         {/if}
                     </div>
 
-                    <p class="text-xs opacity-60">
-                        選択した画像を背景として使用します
-                    </p>
+                    <!-- 不透明度スライダー -->
+                    {#if $customBackground}
+                        <div class="flex items-center gap-4">
+                            <div class="flex-1">
+                                <Slider
+                                    min={0}
+                                    max={100}
+                                    step={1}
+                                    defaultValue={customBackgroundOpacitySlider}
+                                    onValueChange={(details) => {
+                                        customBackgroundOpacitySlider =
+                                            details.value;
+                                        $customBackgroundOpacity =
+                                            details.value[0] / 100;
+                                    }}
+                                    dir="ltr"
+                                >
+                                    <Slider.Label class="text-sm">
+                                        不透明度
+                                    </Slider.Label>
+
+                                    <Slider.Control class="relative flex-1 h-4">
+                                        <Slider.Track
+                                            class="bg-gray-300 relative flex-1 h-2 rounded-full"
+                                        >
+                                            <Slider.Range
+                                                class="absolute bg-gray-600 h-full rounded-full"
+                                            />
+                                        </Slider.Track>
+
+                                        <Slider.Thumb
+                                            index={0}
+                                            class="block w-4 h-4 bg-white border border-gray-400 rounded-full"
+                                        >
+                                            <Slider.HiddenInput />
+                                        </Slider.Thumb>
+                                    </Slider.Control>
+
+                                    <Slider.MarkerGroup>
+                                        <Slider.Marker value={0} />
+                                        <Slider.Marker value={25} />
+                                        <Slider.Marker value={50} />
+                                        <Slider.Marker value={75} />
+                                        <Slider.Marker value={100} />
+                                    </Slider.MarkerGroup>
+                                </Slider>
+                            </div>
+
+                            <div class="shrink-0 text-sm tabular-nums">
+                                {customBackgroundOpacitySlider[0]}%
+                            </div>
+                        </div>
+                    {/if}
                 </div>
             {/if}
         </div>
