@@ -14,10 +14,11 @@
 <HeaderPart {board} title="リンク集" />
 
 <MainPart {board}>
-    <p class="mb-4">おんj発の掲示板群</p>
+    <p class="mb-4">おんJ発の掲示板群です。</p>
+    <p class="mb-4">暇つぶしにでも、ふらっと寄ってみてください。</p>
     <div class="w-full max-w-lg mx-auto">
         <ul
-            class="rounded-lg shadow-md divide-y divide-gray-200 border border-gray-500/10"
+            class="rounded-lg shadow-md divide-y divide-gray-500/20 border border-gray-500/10"
         >
             {#each links as siteInfo, i}
                 <li class="p-4 flex items-center space-x-4">
@@ -34,7 +35,7 @@
                         >
                             {siteInfo.name}
                         </a>
-                        <p class="opacity-50 text-sm truncate text-left">
+                        <p class="opacity-60 text-sm truncate text-left">
                             {siteInfo.description}
                         </p>
                     </div>

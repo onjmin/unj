@@ -7,6 +7,21 @@ export const links = [
 		src: "https://hayabusa.open2ch.net/livejupiter/",
 	}),
 	new SiteInfo({
+		name: "雑談たぬき",
+		description: "v系以外の雑談はこちらで。。",
+		src: "https://b.2ch2.net/zatsudan/i/",
+	}),
+	new SiteInfo({
+		name: "gemini canvas、なんでも作れる",
+		description: "掲示板も作れる模様",
+		src: "https://gemini.google.com/share/3a74fb65e8c7",
+	}),
+	new SiteInfo({
+		name: "ルナエクリプス",
+		description: "多機能インターネット掲示板",
+		src: "https://hei-bu-jing.onrender.com/",
+	}),
+	new SiteInfo({
 		name: "29(肉)ちゃんねる",
 		description:
 			"「制限された自由」から「ある程度ある自由」までを手広くカバーする小規模匿名掲示板",
@@ -39,7 +54,7 @@ export const links = [
 	}),
 	new SiteInfo({
 		name: "おんたこ",
-		description: "おんｊの植民地",
+		description: "たこ焼き・お好み焼き・その他(仮)＠おーぷん",
 		src: "https://ikura.open2ch.net/konamono/",
 	}),
 	new SiteInfo({
