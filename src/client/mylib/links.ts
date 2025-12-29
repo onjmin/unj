@@ -22,11 +22,11 @@ export const links = [
 	// 	description: "あらすなよ☝️🥺URL変なのわ御愛嬌🥺",
 	// 	src: "https://hikakinmania4-cmyk.github.io/puyuyu-na-shukaijo/",
 	// }),
-	// new SiteInfo({
-	// 	name: "なんI",
-	// 	description: "掲示板作ったんやが",
-	// 	src: "https://openlive2ch.pages.dev/",
-	// }),
+	new SiteInfo({
+		name: "なんI",
+		description: "掲示板作ったんやが",
+		src: "https://openlive2ch.pages.dev/",
+	}),
 	// new SiteInfo({
 	// 	name: "なんでも実況osv",
 	// 	description: "OSVを内部で用いています",
@@ -47,15 +47,15 @@ export const links = [
 		description: "全員が執筆者や",
 		src: "https://onjstu.livedoor.blog/",
 	}),
-	new SiteInfo({
-		name: "7ちゃんねる",
-		description: "俺が作った掲示板サイト盛り上げてくれ",
-		src: "https://7ch.1my.jp/",
-	}),
+	// new SiteInfo({
+	// 	name: "7ちゃんねる",
+	// 	description: "俺が作った掲示板サイト盛り上げてくれ",
+	// 	src: "https://7ch.1my.jp/",
+	// }),
 	new SiteInfo({
 		name: "Hallo おんｊ",
 		description: "おんj民でウェブサイト作るぞ",
-		src: "https://onj-onj.vercel.app/1",
+		src: "https://onj-onj.vercel.app/",
 	}),
 	new SiteInfo({
 		name: "WTAG",
