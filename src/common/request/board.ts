@@ -60,7 +60,7 @@ export const unjBoard = new Board({
 	description: "運営と運命を共にする、うんち実況（セーラージュピター）",
 	// banner: "https://i.imgur.com/O1A36k3.png",
 	// banner: "https://pub-d049c945dab44db6b75372fdf9cb8401.r2.dev/69c4be44.png",
-	banner: "https://i.imgur.com/6x0RndJ.png",
+	banner: "https://pub-d049c945dab44db6b75372fdf9cb8401.r2.dev/bc307e45.png",
 });
 for (const v of unjAvatars) unjBoard.avatarMap.set(v.id, v);
 export const noharaBoard = new Board({
