@@ -32,6 +32,15 @@
 
   $effect.root(() => {
     $isEnabledRightMenu = children !== null;
+    if (isMobile) {
+      $openLeft = false;
+      $openRight = false;
+    }
+  });
+  $effect(() => {
+    if (!$isEnabledRightMenu) {
+      $openRight = false;
+    }
   });
 
   let pathname1 = $state("");
@@ -158,16 +167,18 @@
       {@render children?.()}
     </RightMenuPart>
   {/if}
-  <button
-    type="button"
+  <div
+    tabindex="0"
+    role="button"
+    onkeydown={() => {}}
     class="unj-main-part-overlay {isMobile && ($openLeft || $openRight)
       ? ''
       : 'hidden'}"
     onclick={() => {
       $openLeft = false;
       $openRight = false;
-    }}>うんｊ</button
-  >
+    }}
+  ></div>
 {/if}
 
 <style>
