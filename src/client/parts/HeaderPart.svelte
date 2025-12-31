@@ -78,7 +78,7 @@
     <img
       src="https://plus.unsplash.com/premium_photo-1661964177687-57387c2cbd14"
       alt="Background"
-      class="h-screen w-full object-cover opacity-10"
+      class="h-screen w-full object-cover opacity-20"
       aria-hidden="true"
     />
   </div>

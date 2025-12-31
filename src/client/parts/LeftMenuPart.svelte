@@ -26,62 +26,9 @@
 
 <Card class="drawer-container-left {open ? '' : 'hidden'}">
     {@render margin()}
-    <Header>
-        <Title class="left-menu-title">メインメニュー</Title>
-        <Subtitle class="left-menu-subtitle"
-            >うんｊのサイトマップです。</Subtitle
-        >
-    </Header>
     <div class="content">
         <List>
-            <Item
-                onclick={() => navigate(makePathname(`/${board.key}/new`))}
-                activated={pathname2 === "new"}
-            >
-                <Graphic class="material-icons" aria-hidden="true"
-                    >edit_note</Graphic
-                >
-                <Text>スレ立て</Text>
-            </Item>
-            <Item
-                onclick={() => navigate(makePathname(`/${board.key}`))}
-                activated={pathname2 === ""}
-            >
-                <Graphic class="material-icons" aria-hidden="true"
-                    >article</Graphic
-                >
-                <Text>ヘッドライン</Text>
-            </Item>
-            <Item
-                onclick={() => navigate(makePathname(`/${board.key}/search`))}
-                activated={pathname2 === "search"}
-            >
-                <Graphic class="material-icons" aria-hidden="true"
-                    >search</Graphic
-                >
-                <Text>検索</Text>
-            </Item>
-            <Item
-                onclick={() => navigate(makePathname(`/${board.key}/history`))}
-                activated={pathname2 === "history"}
-            >
-                <Graphic class="material-icons" aria-hidden="true"
-                    >history</Graphic
-                >
-                <Text>履歴</Text>
-            </Item>
-            <Item
-                onclick={() => navigate(makePathname(`/${board.key}/config`))}
-                activated={pathname2 === "config"}
-            >
-                <Graphic class="material-icons" aria-hidden="true"
-                    >settings</Graphic
-                >
-                <Text>個人設定</Text>
-            </Item>
-
-            <Separator />
-            <Subheader tag="h6">サイト情報</Subheader>
+            <Subheader tag="h6">おまけのページ</Subheader>
             <Item
                 onclick={() => navigate(makePathname(`/${board.key}/terms`))}
                 activated={pathname2 === "terms"}
@@ -116,6 +63,7 @@
                 >
                 <Text>リンク集</Text>
             </Item>
+            <Separator />
         </List>
     </div>
 
@@ -146,14 +94,6 @@
     }
     :global(.drawer-container-left.hidden) {
         transform: translateX(calc(-100% - 32px));
-    }
-    :global(.left-menu-title) {
-        opacity: 0.87;
-        font-size: var(--mdc-typography-headline6-font-size, 1.25rem);
-    }
-    :global(.left-menu-subtitle) {
-        opacity: 0.6;
-        font-size: var(--mdc-typography-body2-font-size, 0.875rem);
     }
     .content {
         padding: 0 8px;

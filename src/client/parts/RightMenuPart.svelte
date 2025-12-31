@@ -14,10 +14,6 @@
 
 <Card class="drawer-container-right {open ? '' : 'hidden'}">
     {@render margin()}
-    <Header>
-        <Title class="right-menu-title">サブメニュー</Title>
-        <Subtitle class="right-menu-subtitle">固有のUIです。</Subtitle>
-    </Header>
     <div class="content">
         {@render children?.()}
     </div>
@@ -46,14 +42,6 @@
     }
     :global(.drawer-container-right.hidden) {
         transform: translateX(calc(100% + 32px));
-    }
-    :global(.right-menu-title) {
-        opacity: 0.87;
-        font-size: var(--mdc-typography-headline6-font-size, 1.25rem);
-    }
-    :global(.right-menu-subtitle) {
-        opacity: 0.6;
-        font-size: var(--mdc-typography-body2-font-size, 0.875rem);
     }
     .content {
         padding: 0 8px;
