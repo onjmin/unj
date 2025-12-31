@@ -151,10 +151,10 @@
 
 <div
   id={makeUnjResNumId(num)}
-  class="bg-transparent p-0 sm:p-4 rounded-lg shadow-inner"
+  class="bg-transparent p-2 sm:p-4 rounded-lg shadow-inner"
 >
   <!-- 上段: 名前欄 -->
-  <div class="unj-font w-full text-gray-500 text-sm">
+  <div class="unj-font w-full text-gray-500 text-xs sm:text-sm">
     <button
       class="bg-transparent border-0 text-inherit cursor-pointer pr-0 hover:opacity-80 {sage
         ? 'underline sage'
@@ -204,7 +204,7 @@
     </span>
 
     {#if isOwner}
-      <span class="text-xs text-red-500">主</span>
+      <span class="text-red-500">主</span>
     {/if}
 
     <div
