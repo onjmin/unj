@@ -42,14 +42,16 @@
                     図{i + 1}
                     {topIllust.label}
                 </div>
-                <a
-                    class="text-sm text-blue-600 hover:underline wrap-break-words block"
-                    href={topIllust.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    {topIllust.href}
-                </a>
+                <div class="mb-0.5 wrap-anywhere">
+                    <a
+                        href={topIllust.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="cursor-pointer"
+                    >
+                        {topIllust.href}
+                    </a>
+                </div>
             </div>
         {/each}
     </div>
