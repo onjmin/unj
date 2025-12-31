@@ -134,7 +134,9 @@
       <!-- empty -->
     {/if}
     <div class="flex-1 text-center">
-      <h1 class="text-xl font-bold inline-flex items-center space-x-2">
+      <h1
+        class="text-sm sm:text-lg font-bold inline-flex items-center space-x-2"
+      >
         <span>{displayTitle}</span>
       </h1>
     </div>
