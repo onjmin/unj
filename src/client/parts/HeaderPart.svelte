@@ -37,11 +37,6 @@
       $openRight = false;
     }
   });
-  $effect(() => {
-    if (!$isEnabledRightMenu) {
-      $openRight = false;
-    }
-  });
 
   let pathname1 = $state("");
   let pathname2 = $state("");
