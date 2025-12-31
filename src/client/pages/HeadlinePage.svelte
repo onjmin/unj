@@ -356,7 +356,7 @@
                                     )}
                             >
                                 <div class="flex items-start">
-                                    <div class="mr-2 shrink-0">
+                                    <div class="mr-2 shrink-0 relative top-0.5">
                                         {#key thread.id}
                                             {#if findMisskey(board.key, thread.id)}
                                                 <FaviconPart
