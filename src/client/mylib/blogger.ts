@@ -1,5 +1,5 @@
 import { BugIcon, CodeIcon, ShieldHalfIcon, ZapIcon } from "@lucide/svelte";
-import { format } from "date-fns";
+import { format, parseISO, isValid } from "date-fns";
 import { ja } from "date-fns/locale";
 
 export type BloggerItem = {
@@ -10,8 +10,19 @@ export type BloggerItem = {
 	content: string;
 };
 
-export const formatDate = (date: string): string =>
-	format(new Date(date), "MM月dd日", { locale: ja });
+const safeFormat = (date: string, fmt: string): string => {
+	const d = parseISO(date);
+	if (!isValid(d)) return "";
+	return format(d, fmt, { locale: ja });
+};
+
+/** yyyy年MM月dd日 */
+export const formatDateYMD = (date: string): string =>
+	safeFormat(date, "yyyy年MM月dd日");
+
+/** MM月dd日 */
+export const formatDateMD = (date: string): string =>
+	safeFormat(date, "MM月dd日");
 
 export const getLabelIconComponent = (label: string) => {
 	if (label === "新機能") {

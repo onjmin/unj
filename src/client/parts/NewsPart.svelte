@@ -4,7 +4,7 @@
   import type { Board } from "../../common/request/board.js";
   import {
     type BloggerItem,
-    formatDate,
+    formatDateMD,
     getLabelIconComponent,
   } from "../mylib/blogger.js";
   import { decodeEnv, makePathname } from "../mylib/env.js";
@@ -79,7 +79,7 @@
             <li class="odd:bg-gray-500/20">
               <div class="flex items-center px-2 py-1">
                 <div class="shrink-0 text-xs text-gray-500 mr-3 w-16">
-                  {formatDate(item.published)}
+                  {formatDateMD(item.published)}
                 </div>
                 <div class="hidden md:flex shrink-0 mr-4 space-x-2">
                   {#if item.labels?.length}
