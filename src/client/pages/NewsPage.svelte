@@ -12,7 +12,6 @@
         ChevronRightIcon,
         ChevronsLeftRightEllipsisIcon,
     } from "@lucide/svelte";
-    import Chip, { Set as ChipSet, LeadingIcon, Text } from "@smui/chips";
     import { navigate } from "svelte-routing";
     import type { Board } from "../../common/request/board.js";
     import {

@@ -29,7 +29,7 @@
     (async () => {
       try {
         const res = await fetch(
-          `https://www.googleapis.com/blogger/v3/blogs/${VITE_BLOGGER_BLOG_ID}/posts?key=${VITE_BLOGGER_API_KEY}&fields=items(id,title,published,labels)`,
+          `https://www.googleapis.com/blogger/v3/blogs/${VITE_BLOGGER_BLOG_ID}/posts?maxResults=334&key=${VITE_BLOGGER_API_KEY}&fields=items(id,title,published,labels)`,
         ).then((response) => response.json());
         items = res.items;
         cache.set(items);
