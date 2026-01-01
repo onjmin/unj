@@ -71,7 +71,7 @@
     } from "../mylib/imgur.js";
     import { ObjectStorage } from "../mylib/object-storage.js";
     import type { ResHistory } from "../mylib/res-history.js";
-    import { scrollToAnka } from "../mylib/scroll.js";
+    import { makeUnjResNumId, scrollToAnka } from "../mylib/scroll.js";
     import { goodbye, hello, ok, socket } from "../mylib/socket.js";
     import {
         changeNewResSound,
@@ -1132,72 +1132,7 @@
         </div>
         <div class="res-list">
             {#if !ignoreList?.has(thread.ccUserId)}
-                <ResPart
-                    {board}
-                    {focus}
-                    bind:ignoreList
-                    bind:oekakiCollab
-                    bind:bindContentText={contentText}
-                    bind:bindContentType={contentType}
-                    ccUserId={thread.ccUserId}
-                    ccUserName={thread.ccUserName}
-                    ccUserAvatar={thread.ccUserAvatar}
-                    contentText={thread.contentText}
-                    contentUrl={thread.contentUrl}
-                    contentType={thread.contentType}
-                    ps={thread.ps}
-                    num={1}
-                    isOwner={true}
-                    createdAt={thread.createdAt}
-                    threadId={thread.id}
-                >
-                    <div
-                        class="unj-like-vote-container flex justify-end gap-2 p-2"
-                    >
-                        <div class="flex items-center gap-1">
-                            <button
-                                type="button"
-                                onclick={() => tryLike(true)}
-                                class="text-blue-500/80 font-bold px-1"
-                            >
-                                ｲｲ!
-                            </button>
-
-                            <span class="min-w-12 text-right text-gray-500"
-                                >+{goodVotes}</span
-                            >
-
-                            <div
-                                class="relative w-16 h-5 mx-2 rounded-full bg-gray-500/40 overflow-hidden"
-                            >
-                                <div
-                                    class="absolute left-0 top-0 bottom-0 bg-sky-500/80"
-                                    style="width:{goodRatio}%;"
-                                ></div>
-                                <div
-                                    class="absolute right-0 top-0 bottom-0 bg-red-500/80"
-                                    style="width:{badRatio}%;"
-                                ></div>
-                            </div>
-
-                            <span class="min-w-12 text-gray-500"
-                                >-{badVotes}</span
-                            >
-
-                            <button
-                                type="button"
-                                onclick={() => tryLike(false)}
-                                class="text-red-500/80 font-bold px-1"
-                            >
-                                ｲｸﾅｲ!
-                            </button>
-                        </div>
-                    </div>
-                </ResPart>
-            {/if}
-            {#each thread.resList as res}
-                <hr class="opacity-10" />
-                {#if !ignoreList?.has(res.ccUserId)}
+                <div id={makeUnjResNumId(1)}>
                     <ResPart
                         {board}
                         {focus}
@@ -1205,23 +1140,92 @@
                         bind:oekakiCollab
                         bind:bindContentText={contentText}
                         bind:bindContentType={contentType}
-                        ccUserId={res.ccUserId}
-                        ccUserName={res.ccUserName}
-                        ccUserAvatar={res.ccUserAvatar}
-                        contentText={res.contentText}
-                        contentUrl={res.contentUrl}
-                        contentType={res.contentType}
-                        commandResult={res.commandResult}
-                        num={res.num}
-                        isOwner={res.isOwner}
-                        sage={res.sage}
-                        createdAt={res.createdAt}
+                        ccUserId={thread.ccUserId}
+                        ccUserName={thread.ccUserName}
+                        ccUserAvatar={thread.ccUserAvatar}
+                        contentText={thread.contentText}
+                        contentUrl={thread.contentUrl}
+                        contentType={thread.contentType}
+                        ps={thread.ps}
+                        num={1}
+                        isOwner={true}
+                        createdAt={thread.createdAt}
                         threadId={thread.id}
                     >
-                        {#if res.num === thread.balsResNum}
-                            <BalsPart {threadId} />
-                        {/if}
+                        <div
+                            class="unj-like-vote-container flex justify-end gap-2 p-2"
+                        >
+                            <div class="flex items-center gap-1">
+                                <button
+                                    type="button"
+                                    onclick={() => tryLike(true)}
+                                    class="text-blue-500/80 font-bold px-1"
+                                >
+                                    ｲｲ!
+                                </button>
+
+                                <span class="min-w-12 text-right text-gray-500"
+                                    >+{goodVotes}</span
+                                >
+
+                                <div
+                                    class="relative w-16 h-5 mx-2 rounded-full bg-gray-500/40 overflow-hidden"
+                                >
+                                    <div
+                                        class="absolute left-0 top-0 bottom-0 bg-sky-500/80"
+                                        style="width:{goodRatio}%;"
+                                    ></div>
+                                    <div
+                                        class="absolute right-0 top-0 bottom-0 bg-red-500/80"
+                                        style="width:{badRatio}%;"
+                                    ></div>
+                                </div>
+
+                                <span class="min-w-12 text-gray-500"
+                                    >-{badVotes}</span
+                                >
+
+                                <button
+                                    type="button"
+                                    onclick={() => tryLike(false)}
+                                    class="text-red-500/80 font-bold px-1"
+                                >
+                                    ｲｸﾅｲ!
+                                </button>
+                            </div>
+                        </div>
                     </ResPart>
+                </div>
+            {/if}
+            {#each thread.resList as res}
+                <hr class="opacity-10" />
+                {#if !ignoreList?.has(res.ccUserId)}
+                    <div id={makeUnjResNumId(res.num)}>
+                        <ResPart
+                            {board}
+                            {focus}
+                            bind:ignoreList
+                            bind:oekakiCollab
+                            bind:bindContentText={contentText}
+                            bind:bindContentType={contentType}
+                            ccUserId={res.ccUserId}
+                            ccUserName={res.ccUserName}
+                            ccUserAvatar={res.ccUserAvatar}
+                            contentText={res.contentText}
+                            contentUrl={res.contentUrl}
+                            contentType={res.contentType}
+                            commandResult={res.commandResult}
+                            num={res.num}
+                            isOwner={res.isOwner}
+                            sage={res.sage}
+                            createdAt={res.createdAt}
+                            threadId={thread.id}
+                        >
+                            {#if res.num === thread.balsResNum}
+                                <BalsPart {threadId} />
+                            {/if}
+                        </ResPart>
+                    </div>
                 {/if}
             {/each}
         </div>

@@ -18,7 +18,7 @@
   import { activeController } from "../mylib/background-embed.js";
   import { makePathname } from "../mylib/env.js";
   import { ObjectStorage } from "../mylib/object-storage.js";
-  import { jumpToAnka, makeUnjResNumId } from "../mylib/scroll.js";
+  import { jumpToAnka } from "../mylib/scroll.js";
   import DecryptPart from "./DecryptPart.svelte";
   import EmbedPart from "./EmbedPart.svelte";
   import {
@@ -149,10 +149,7 @@
   };
 </script>
 
-<div
-  id={makeUnjResNumId(num)}
-  class="bg-transparent p-2 sm:p-4 rounded-lg shadow-inner"
->
+<div class="bg-transparent p-2 sm:p-4 rounded-lg shadow-inner">
   <!-- 上段: 名前欄 -->
   <div class="unj-font w-full text-gray-500 text-xs sm:text-sm">
     <button
