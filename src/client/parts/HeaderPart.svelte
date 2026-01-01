@@ -11,6 +11,7 @@
     openRight,
     customBackground,
     customBackgroundOpacity,
+    isDarkMode,
   } from "../mylib/store.js";
   import LeftMenuPart from "./LeftMenuPart.svelte";
   import RightMenuPart from "./RightMenuPart.svelte";
@@ -55,6 +56,26 @@
 
 <svelte:head>
   <title>{displayTitle}</title>
+  {#if $isDarkMode}
+    <style>
+      a {
+        color: #8ab4f8 !important;
+      }
+      a:visited {
+        color: #c58af9 !important;
+      }
+    </style>
+  {:else}
+    <style>
+      a {
+        color: #1a73e8 !important;
+      }
+      a:visited {
+        color: #6f42c1 !important;
+      }
+    </style>
+  {/if}
+
   {#if isAnniversary([Anniversary.HALLOWEEN])}
     <link
       rel="stylesheet"
