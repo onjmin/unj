@@ -16,13 +16,11 @@ const safeFormat = (date: string, fmt: string): string => {
 	return format(d, fmt, { locale: ja });
 };
 
-/** yyyy年MM月dd日 */
-export const formatDateYMD = (date: string): string =>
+export const formatDateYMDVerbose = (date: string): string =>
 	safeFormat(date, "yyyy年MM月dd日");
 
-/** MM月dd日 */
-export const formatDateMD = (date: string): string =>
-	safeFormat(date, "MM月dd日");
+export const formatDateYMDCompact = (date: string): string =>
+	safeFormat(date, "yy/MM/dd");
 
 export const getLabelIconComponent = (label: string) => {
 	if (label === "新機能") {

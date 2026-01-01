@@ -16,7 +16,7 @@
     import type { Board } from "../../common/request/board.js";
     import {
         type BloggerItem,
-        formatDateYMD,
+        formatDateYMDVerbose,
         getLabelIconComponent,
     } from "../mylib/blogger.js";
     import { decodeEnv, makePathname } from "../mylib/env.js";
@@ -177,7 +177,7 @@
         <p
             class="text-left text-sm mb-4 mx-auto w-full max-w-3xl px-4 wrap-break-words whitespace-normal"
         >
-            公開日：{formatDateYMD(item.published)}
+            公開日：{formatDateYMDVerbose(item.published)}
         </p>
         <h1
             class="text-left my-2 mx-auto w-full max-w-3xl px-4 wrap-break-words whitespace-normal"
