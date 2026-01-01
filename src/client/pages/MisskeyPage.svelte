@@ -230,9 +230,9 @@
     {/if}
     {#if timeline.length > 0}
         <div class="text-left w-full mx-auto px-4 pb-4">
-            <p class="flex items-center font-bold text-teal-600">
+            <p class="flex items-center font-bold unj-font opacity-60">
                 <FaviconPart {hostname} />
-                <span class="unj-font pl-1.5">{title}</span>
+                <span class="pl-1.5">{title}</span>
             </p>
         </div>
         <div class="mx-auto my-0 w-full px-4">

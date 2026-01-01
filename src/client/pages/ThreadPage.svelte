@@ -1070,11 +1070,9 @@
             </div>
         </div>
         <div class="thread-header">
-            <p class="thread-title flex items-center">
+            <p class="flex items-center font-bold unj-font opacity-60">
                 <TwemojiPart emoji={makeEmojiByThreadId(thread.id)} />
-                <span class="unj-font pl-1.5 min-w-0 truncate"
-                    >{thread.title}</span
-                >
+                <span class="pl-1.5 min-w-0 truncate">{thread.title}</span>
                 <span class="inline-block shrink-0 ml-1"
                     >({thread.resCount})</span
                 >
@@ -1308,10 +1306,6 @@
         padding-bottom: 16px;
         padding-left: 16px;
         padding-right: 16px;
-    }
-    .thread-title {
-        color: #409090;
-        font-weight: bold;
     }
     .res-list {
         display: flex;
