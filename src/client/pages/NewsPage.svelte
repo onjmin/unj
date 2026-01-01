@@ -180,7 +180,7 @@
             公開日：{formatDateYMDVerbose(item.published)}
         </p>
         <h1
-            class="text-left my-2 mx-auto w-full max-w-3xl px-4 wrap-break-words whitespace-normal"
+            class="text-left my-2 mx-auto w-full max-w-3xl px-4 h-7 flex items-center wrap-break-words whitespace-normal"
         >
             {#if item.labels?.length}
                 {@const chip = item.labels.at(0) ?? ""}
@@ -193,12 +193,10 @@
                     {#if IconComponent}
                         <IconComponent
                             size={12}
-                            class="mr-1 text-gray-500 shrink-0"
+                            class="mr-1 shrink-0 text-gray-500"
                         />
                     {/if}
-                    <span class="text-sm">
-                        {chip}
-                    </span>
+                    <span class="text-sm">{chip}</span>
                 </span>
             {/if}
         </h1>
