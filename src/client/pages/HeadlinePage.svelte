@@ -40,6 +40,7 @@
     import KomePart from "../parts/KomePart.svelte";
     import MessageBoxPart from "../parts/MessageBoxPart.svelte";
     import NewsPart from "../parts/NewsPart.svelte";
+    import CopyleftPart from "../parts/CopyleftPart.svelte";
 
     let { board }: { board: Board } = $props();
 
@@ -442,6 +443,10 @@
                 >
             </center>
         </div>
+
+        {#if threadList.length > 8}
+            <CopyleftPart />
+        {/if}
     {/if}
 </MainPart>
 

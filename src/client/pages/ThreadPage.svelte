@@ -106,6 +106,7 @@
     import ResFormPart from "../parts/ResFormPart.svelte";
     import ResPart from "../parts/ResPart.svelte";
     import TermsConfirmPart from "../parts/TermsConfirmPart.svelte";
+    import CopyleftPart from "../parts/CopyleftPart.svelte";
 
     changeVolume();
     changeNewResSound();
@@ -1437,6 +1438,8 @@
         </div>
 
         <FooterLinkPart {board} />
+
+        <CopyleftPart />
     {/if}
 </MainPart>
 
