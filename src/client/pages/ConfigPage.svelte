@@ -39,6 +39,7 @@
         soundVolume,
     } from "../mylib/unj-storage.js";
     import {
+        isMobile,
         customBackgroundUrl,
         customBackgroundOpacity,
         selectedTheme,
@@ -310,7 +311,7 @@
                                 );
 
                                 // Canvasに縮小して描画
-                                const MAX_SIZE = 1024;
+                                const MAX_SIZE = isMobile ? 512 : 1024;
                                 const scale = Math.min(
                                     1,
                                     MAX_SIZE / Math.max(img.width, img.height),
