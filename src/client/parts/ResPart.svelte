@@ -18,7 +18,6 @@
   import { activeController } from "../mylib/background-embed.js";
   import { makePathname } from "../mylib/env.js";
   import { ObjectStorage } from "../mylib/object-storage.js";
-  import { jumpToAnka } from "../mylib/scroll.js";
   import DecryptPart from "./DecryptPart.svelte";
   import EmbedPart from "./EmbedPart.svelte";
   import {
@@ -31,6 +30,7 @@
   import { makeValentineEmojiSuffix } from "../mylib/emoji/valentine.js";
 
   let {
+    onRequestFloating = () => {},
     board,
     children = null,
     backgroundEmbedControls = false,
@@ -306,11 +306,13 @@
                 tabindex="0"
                 role="button"
                 onkeydown={() => {}}
-                class="cursor-pointer hover:underline text-blue-500 text-base align-baseline"
-                onclick={() =>
-                  jumpToAnka(board.key, Number(part.value), threadId)}
+                class="cursor-pointer text-blue-500 hover:underline"
+                onmouseenter={(e) =>
+                  onRequestFloating?.(Number(part.value), e, false)}
+                onclick={(e) =>
+                  onRequestFloating?.(Number(part.value), e, true)}
               >
-                >>{part.value}
+                &gt;&gt;{part.value}
               </span>
             {:else if part.type === "customEmoji"}
               <CustomEmojiPart

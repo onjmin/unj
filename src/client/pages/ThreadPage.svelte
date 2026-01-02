@@ -732,6 +732,89 @@
                 );
         }
     });
+
+    // 安価クリック時に安価先をフローティング表示させる実装
+    let floating: {
+        resNum: number;
+        x: number;
+        y: number;
+    } | null = $state(null);
+    let floatingStyle = $state("");
+    let floatingEl: HTMLElement | null = $state(null);
+
+    $effect(() => {
+        if (!floating) return;
+
+        const close = (e: Event) => {
+            // フローティング自身 or その子要素なら何もしない
+            if (
+                floatingEl &&
+                e.target instanceof Node &&
+                floatingEl.contains(e.target)
+            ) {
+                return;
+            }
+
+            floating = null;
+        };
+
+        window.addEventListener("pointerdown", close, { capture: true });
+        window.addEventListener("scroll", close, { capture: true });
+        window.addEventListener("wheel", close, { capture: true });
+        window.addEventListener("touchmove", close, { capture: true });
+
+        return () => {
+            window.removeEventListener("pointerdown", close, { capture: true });
+            window.removeEventListener("scroll", close, { capture: true });
+            window.removeEventListener("wheel", close, { capture: true });
+            window.removeEventListener("touchmove", close, { capture: true });
+        };
+    });
+
+    const requestFloating = (
+        resNum: number,
+        e: MouseEvent | PointerEvent,
+        isClick: boolean,
+    ) => {
+        if (!thread) return;
+
+        const res =
+            (resNum === 1 && { ...thread, num: 1 }) ||
+            thread.ageRes?.num === resNum
+                ? thread.ageRes
+                : thread.resList.find((v) => v.num === resNum);
+
+        if (!res) {
+            if (isClick) {
+                navigate(
+                    makePathname(`/${board.key}/thread/${threadId}/${resNum}`),
+                );
+            }
+            return;
+        }
+
+        // ここで「元を消す」処理は不要
+        // floating を上書きすれば自然に置き換わる
+        floating = {
+            resNum,
+            x: e.clientX,
+            y: e.clientY,
+        };
+    };
+
+    // 位置計算（アンカー基準）
+    $effect(() => {
+        if (!floating) {
+            floatingStyle = "";
+            return;
+        }
+
+        floatingStyle = `
+        position: absolute;
+        top: ${floating.y}px;
+        left: ${floating.x}px;
+    `;
+    });
 </script>
 
 {#snippet form(menu = false)}
@@ -916,6 +999,7 @@
 {#if thread?.ageRes && !ignoreList?.has(thread?.ageRes.ccUserId)}
     <div class="ageRes border border-gray-500/20 rounded-md p-2">
         <ResPart
+            onRequestFloating={requestFloating}
             {board}
             bind:ignoreList
             bind:oekakiCollab
@@ -947,6 +1031,66 @@
             />
         {/key}
     {/if}
+{/if}
+
+{#if thread && floating}
+    <div
+        bind:this={floatingEl}
+        tabindex="0"
+        role="button"
+        onkeydown={() => {}}
+        class="z-50"
+        style={floatingStyle}
+        onmouseleave={() => (floating = null)}
+    >
+        <div class="max-w-md shadow-lg border rounded mdc-card">
+            {#if floating.resNum === 1}
+                <ResPart
+                    onRequestFloating={requestFloating}
+                    {board}
+                    {focus}
+                    bind:ignoreList
+                    bind:oekakiCollab
+                    bind:bindContentText={contentText}
+                    bind:bindContentType={contentType}
+                    num={1}
+                    isOwner={true}
+                    ccUserId={thread.ccUserId}
+                    ccUserName={thread.ccUserName}
+                    ccUserAvatar={thread.ccUserAvatar}
+                    contentText={thread.contentText}
+                    contentUrl={thread.contentUrl}
+                    contentType={thread.contentType}
+                    createdAt={thread.createdAt}
+                    threadId={thread.id}
+                />
+            {:else if thread.ageRes?.num === floating.resNum}
+                <ResPart
+                    onRequestFloating={requestFloating}
+                    {board}
+                    {focus}
+                    bind:ignoreList
+                    bind:oekakiCollab
+                    bind:bindContentText={contentText}
+                    bind:bindContentType={contentType}
+                    {...thread.ageRes}
+                />
+            {:else}
+                <ResPart
+                    onRequestFloating={requestFloating}
+                    {board}
+                    {focus}
+                    bind:ignoreList
+                    bind:oekakiCollab
+                    bind:bindContentText={contentText}
+                    bind:bindContentType={contentType}
+                    {...thread.resList.find(
+                        (v) => v.num === floating?.resNum,
+                    ) ?? {}}
+                />
+            {/if}
+        </div>
+    </div>
 {/if}
 
 <!-- {#if isRpgMode}
@@ -1134,6 +1278,7 @@
             {#if !ignoreList?.has(thread.ccUserId)}
                 <div id={makeUnjResNumId(1)}>
                     <ResPart
+                        onRequestFloating={requestFloating}
                         {board}
                         {focus}
                         bind:ignoreList
@@ -1202,6 +1347,7 @@
                 {#if !ignoreList?.has(res.ccUserId)}
                     <div id={makeUnjResNumId(res.num)}>
                         <ResPart
+                            onRequestFloating={requestFloating}
                             {board}
                             {focus}
                             bind:ignoreList

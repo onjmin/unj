@@ -1,6 +1,3 @@
-import { navigate } from "svelte-routing";
-import { makePathname } from "./env.js";
-
 export const scrollToEnd = () => {
 	const main = document.querySelector(".unj-main-part") ?? document.body;
 	main.scrollTo({ top: main.scrollHeight, behavior: "smooth" });
@@ -30,14 +27,4 @@ export const scrollToAnka = (resNum: number): boolean => {
 		return true;
 	}
 	return false;
-};
-
-export const jumpToAnka = (
-	boardKey: string,
-	resNum: number,
-	threadId: string,
-) => {
-	if (!scrollToAnka(resNum)) {
-		navigate(makePathname(`/${boardKey}/thread/${threadId}/${resNum}`));
-	}
 };
