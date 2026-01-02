@@ -54,6 +54,7 @@
     let customBackgroundOpacitySlider = $state([
         ($customBackgroundOpacity * 100) | 0,
     ]);
+    let isBackgroundLoading = $state(false);
 
     let soundVolumeSlider = $state([(Howler.volume() * 100) | 0]);
     let selectedNewResSound: string = $state(
@@ -292,49 +293,73 @@
                             accept="image/*"
                             class="flex-1 min-w-0 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border file:border-gray-500/80 file:text-sm file:font-medium cursor-pointer"
                             onchange={async (e) => {
-                                const input = e.currentTarget;
+                                const input =
+                                    e.currentTarget as HTMLInputElement;
                                 const file = input.files?.[0];
                                 if (!file) return;
 
-                                // まず画像を読み込む
-                                const img = await new Promise<HTMLImageElement>(
-                                    (resolve, reject) => {
-                                        const url = URL.createObjectURL(file);
-                                        const image = new Image();
-                                        image.onload = () => {
-                                            resolve(image);
-                                            URL.revokeObjectURL(url); // 不要になったら解放
-                                        };
-                                        image.onerror = reject;
-                                        image.src = url;
-                                    },
-                                );
+                                isBackgroundLoading = true;
 
-                                // Canvasに縮小して描画
-                                const MAX_SIZE = isMobile ? 512 : 1024;
-                                const scale = Math.min(
-                                    1,
-                                    MAX_SIZE / Math.max(img.width, img.height),
-                                );
-                                const canvas = document.createElement("canvas");
-                                canvas.width = img.width * scale;
-                                canvas.height = img.height * scale;
-                                const ctx = canvas.getContext("2d")!;
-                                ctx.drawImage(
-                                    img,
-                                    0,
-                                    0,
-                                    canvas.width,
-                                    canvas.height,
-                                );
+                                try {
+                                    // 画像読み込み
+                                    const img =
+                                        await new Promise<HTMLImageElement>(
+                                            (resolve, reject) => {
+                                                const url =
+                                                    URL.createObjectURL(file);
+                                                const image = new Image();
+                                                image.onload = () => {
+                                                    URL.revokeObjectURL(url);
+                                                    resolve(image);
+                                                };
+                                                image.onerror = reject;
+                                                image.src = url;
+                                            },
+                                        );
 
-                                // Base64化
-                                $customBackgroundUrl =
-                                    canvas.toDataURL("image/png");
+                                    // Canvas 縮小
+                                    const MAX_SIZE = isMobile ? 512 : 1024;
+                                    const scale = Math.min(
+                                        1,
+                                        MAX_SIZE /
+                                            Math.max(img.width, img.height),
+                                    );
+
+                                    const canvas =
+                                        document.createElement("canvas");
+                                    canvas.width = img.width * scale;
+                                    canvas.height = img.height * scale;
+
+                                    const ctx = canvas.getContext("2d")!;
+                                    ctx.drawImage(
+                                        img,
+                                        0,
+                                        0,
+                                        canvas.width,
+                                        canvas.height,
+                                    );
+
+                                    // Base64 化
+                                    $customBackgroundUrl =
+                                        canvas.toDataURL("image/png");
+                                } finally {
+                                    isBackgroundLoading = false;
+                                }
                             }}
                         />
 
-                        {#if $customBackgroundUrl}
+                        {#if isBackgroundLoading}
+                            <div
+                                class="shrink-0 flex items-center gap-2 text-sm text-gray-500"
+                            >
+                                <div
+                                    class="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"
+                                ></div>
+                                読み込み中…
+                            </div>
+                        {/if}
+
+                        {#if $customBackgroundUrl && !isBackgroundLoading}
                             <button
                                 class="shrink-0 p-2 rounded hover:text-red-500"
                                 onclick={() => {
