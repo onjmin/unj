@@ -1043,7 +1043,7 @@
         style={floatingStyle}
         onmouseleave={() => (floating = null)}
     >
-        <div class="max-w-md shadow-lg border rounded mdc-card">
+        <div class="shadow-lg border rounded mdc-card w-fit">
             {#if floating.resNum === 1}
                 <ResPart
                     onRequestFloating={requestFloating}
