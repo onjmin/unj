@@ -54,4 +54,4 @@
     <TermsPart />
 </MainPart>
 
-<FooterPart />
+<FooterPart {board} />

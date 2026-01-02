@@ -573,4 +573,4 @@
     </div>
 </MainPart>
 
-<FooterPart />
+<FooterPart {board} />

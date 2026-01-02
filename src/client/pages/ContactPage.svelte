@@ -214,7 +214,7 @@
     </div>
 </MainPart>
 
-<FooterPart />
+<FooterPart {board} />
 
 <Toast.Group {toaster}>
     {#snippet children(toast)}

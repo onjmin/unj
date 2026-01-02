@@ -425,7 +425,7 @@
     </div>
 </MainPart>
 
-<FooterPart />
+<FooterPart {board} />
 
 <ImagePreviewModal bind:open bind:src />
 

@@ -225,4 +225,4 @@
     {/if}
 </MainPart>
 
-<FooterPart />
+<FooterPart {board} />
