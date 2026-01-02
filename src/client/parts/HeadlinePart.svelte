@@ -4,9 +4,39 @@
   import type { HeadlineThread } from "../../common/response/schema.js";
   import { ObjectStorage } from "../mylib/object-storage.js";
   import { makePathname } from "../mylib/env.js";
+  import {
+    differenceInDays,
+    differenceInHours,
+    differenceInMinutes,
+    differenceInMonths,
+    differenceInSeconds,
+    differenceInWeeks,
+    differenceInYears,
+  } from "date-fns";
   import MessageBoxPart from "./MessageBoxPart.svelte";
+  import { Clock } from "@lucide/svelte";
+  import { findMisskey } from "../mylib/misskey.js";
+  import { queryResultLimit } from "../../common/request/schema.js";
 
   let { board }: { board: Board } = $props();
+
+  const formatTimeAgo = (date: Date): string => {
+    const now = new Date();
+    if (date > now) return "0秒";
+    if (differenceInYears(now, date) > 0)
+      return `${differenceInYears(now, date)}年`;
+    if (differenceInMonths(now, date) > 0)
+      return `${differenceInMonths(now, date)}か月`;
+    if (differenceInWeeks(now, date) > 0)
+      return `${differenceInWeeks(now, date)}週間`;
+    if (differenceInDays(now, date) > 0)
+      return `${differenceInDays(now, date)}日`;
+    if (differenceInHours(now, date) > 0)
+      return `${differenceInHours(now, date)}時間`;
+    if (differenceInMinutes(now, date) > 0)
+      return `${differenceInMinutes(now, date)}分`;
+    return `${differenceInSeconds(now, date)}秒`;
+  };
 
   let items: HeadlineThread[] | null = $state(null);
   let error = $state(false);
@@ -33,56 +63,86 @@
   });
 </script>
 
-<div
-  class="h-[8svh] overflow-y-auto border border-gray-500/20 rounded-md scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100"
->
-  <div class="px-2 py-1">
-    <h2 class="text-xs leading-none font-semibold mb-1">ヘッドライン</h2>
+<div class="my-2 flex justify-center text-center">
+  <div
+    class="w-[490px] max-w-full h-[24svh] overflow-y-auto border border-gray-500/20 rounded-md scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100"
+  >
+    <div class="px-2 py-1">
+      <h2 class="text-xs leading-none font-semibold mb-1 flex items-center">
+        <Clock size={12} class="mr-1 shrink-0" />
+        ヘッドライン
+      </h2>
 
-    {#if error}
-      <MessageBoxPart
-        title="エラー発生"
-        description={["ヘッドラインの読み込みに失敗しました。"]}
-      />
-    {:else if items === null}
-      <p class="text-gray-500">ヘッドライン取得中…</p>
-      {#if laaaaaaaag}
+      {#if error}
         <MessageBoxPart
-          title="まだ終わらない？"
-          description={[
-            "キャッシュが壊れているかも。",
-            "再読み込みしてみてね。",
-          ]}
+          title="エラー発生"
+          description={["ヘッドラインの読み込みに失敗しました。"]}
         />
-      {/if}
-    {:else if items.length === 0}
-      <p class="text-gray-500 text-xs py-2">
-        表示できるヘッドラインがありません。
-      </p>
-    {:else}
-      <ul class="list-none p-0 m-0">
-        {#each items as thread}
-          <li class="odd:bg-gray-500/20">
-            <div class="flex items-center px-2 py-1">
-              <div
-                class="flex-1 overflow-hidden whitespace-nowrap text-ellipsis text-left text-xs"
-              >
+      {:else if items === null}
+        <p class="text-gray-500">ヘッドライン取得中…</p>
+        {#if laaaaaaaag}
+          <MessageBoxPart
+            title="まだ終わらない？"
+            description={[
+              "キャッシュが壊れているかも。",
+              "再読み込みしてみてね。",
+            ]}
+          />
+        {/if}
+      {:else if items.length === 0}
+        <p class="text-gray-500 text-xs py-2">
+          表示できるヘッドラインがありません。
+        </p>
+      {:else}
+        <ul class="list-none p-0 m-0">
+          {#each items as thread}
+            <li>
+              <div class="px-2 py-1 text-xs text-left">
                 <Link
-                  to={makePathname(`/${board.key}/thread/${thread.id}`)}
-                  class="block truncate"
+                  to={makePathname(
+                    findMisskey(board.key, thread.id)
+                      ? `/${board.key}/misskey/${findMisskey(board.key, thread.id)?.misskeyId}`
+                      : `/${board.key}/thread/${thread.id}/${thread.resCount > queryResultLimit ? thread.resCount - 8 : ""}`,
+                  )}
+                  class="block"
                 >
-                  {thread.title}
+                  <!-- 1行目：ヘッドライン（背景あり） -->
+                  <div class="truncate bg-gray-500/10 px-1">
+                    <!-- 日時 -->
+                    <span class="text-gray-500 mr-2 shrink-0">
+                      {formatTimeAgo(thread.latestResAt)}
+                    </span>
+
+                    <!-- 新着レス数（仮） -->
+                    {#if true}
+                      <span class="mr-2 text-red-500 font-medium shrink-0">
+                        +1
+                      </span>
+                    {/if}
+
+                    <!-- スレタイ -->
+                    <span class="font-medium">
+                      {thread.title}
+                    </span>
+
+                    <!-- レス数（スレタイ右） -->
+                    <span class="ml-1 shrink-0">
+                      ({thread.resCount})
+                    </span>
+                  </div>
+
+                  <!-- 2行目：最新レス（背景なし） -->
+                  {#if thread.latestRes}
+                    <div class="mt-0.5 text-gray-500 truncate px-1">
+                      {thread.latestRes}
+                    </div>
+                  {/if}
                 </Link>
               </div>
-              <div
-                class="shrink-0 ml-2 text-xs text-gray-500 whitespace-nowrap"
-              >
-                ({thread.resCount})
-              </div>
-            </div>
-          </li>
-        {/each}
-      </ul>
-    {/if}
+            </li>
+          {/each}
+        </ul>
+      {/if}
+    </div>
   </div>
 </div>
