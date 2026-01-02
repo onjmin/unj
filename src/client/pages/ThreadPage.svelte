@@ -1343,7 +1343,6 @@
                 </div>
             {/if}
             {#each thread.resList as res}
-                <hr class="opacity-10" />
                 {#if !ignoreList?.has(res.ccUserId)}
                     <div id={makeUnjResNumId(res.num)}>
                         <ResPart

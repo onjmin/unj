@@ -237,10 +237,9 @@
                 <span class="pl-1.5">{title}</span>
             </p>
         </div>
-        <div class="mx-auto my-0 w-full px-4">
-            <div class="space-y-4">
+        <div class="mx-auto w-full px-2">
+            <div>
                 {#each timeline as note (note.id)}
-                    <hr class="opacity-10" />
                     {#if !note.isHidden && note.text !== null && note.userId !== "9tjlknm0fl"}
                         {@const embeddable = findEmbeddable(note.text ?? "")}
                         <div class="p-4 rounded-lg shadow-inner">

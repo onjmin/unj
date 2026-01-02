@@ -335,14 +335,14 @@
     {:else}
         <div class="text-left w-full mx-auto">
             <ul class="list-none p-0 m-0">
-                {#each threadList as thread, i}
+                {#each threadList as thread}
                     {#if !ignoreList?.has(thread.ccUserId)}
                         <li>
                             <div
                                 tabindex="0"
                                 role="button"
                                 onkeydown={() => {}}
-                                class="border border-gray-500/40 hover:bg-gray-500/10 block w-full text-left p-2 transition-colors duration-150 ease-in-out cursor-pointer"
+                                class="border border-gray-500/20 hover:bg-gray-500/10 block w-full text-left p-2 transition-colors duration-150 ease-in-out cursor-pointer"
                                 onclick={() =>
                                     navigate(
                                         makePathname(
@@ -428,10 +428,6 @@
                                     </div>
                                 </div>
                             </div>
-
-                            {#if i % 4 === 3 && i !== threadList.length - 1}
-                                <hr class="opacity-10" />
-                            {/if}
                         </li>
                     {/if}
                 {/each}
