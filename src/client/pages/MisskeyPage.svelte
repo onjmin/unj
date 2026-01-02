@@ -24,7 +24,7 @@
     } from "../mylib/misskey.js";
     import { ObjectStorage } from "../mylib/object-storage.js";
     import EmbedPart from "../parts/EmbedPart.svelte";
-    import FaviconPart from "../parts/FaviconPart.svelte";
+    import FaviconPart from "../parts/emoji/FaviconPart.svelte";
     import FooterLinkPart from "../parts/FooterLinkPart.svelte";
     import ImagePreviewModal from "../parts/ImagePreviewPart.svelte";
     import KomePart from "../parts/KomePart.svelte";
@@ -231,7 +231,9 @@
     {#if timeline.length > 0}
         <div class="text-left w-full mx-auto px-4 pb-4">
             <p class="flex items-center font-bold unj-font opacity-60">
-                <FaviconPart {hostname} />
+                <span class="w-4 h-4">
+                    <FaviconPart {hostname} />
+                </span>
                 <span class="pl-1.5">{title}</span>
             </p>
         </div>

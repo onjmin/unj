@@ -36,7 +36,7 @@
     import { nonceKey } from "../mylib/unj-storage.js";
     import AccessCounterPart from "../parts/AccessCounterPart.svelte";
     import TwemojiPart from "../parts/emoji/TwemojiPart.svelte";
-    import FaviconPart from "../parts/FaviconPart.svelte";
+    import FaviconPart from "../parts/emoji/FaviconPart.svelte";
     import KomePart from "../parts/KomePart.svelte";
     import MessageBoxPart from "../parts/MessageBoxPart.svelte";
     import NewsPart from "../parts/NewsPart.svelte";
@@ -352,25 +352,27 @@
                                         ),
                                     )}
                             >
-                                <div class="flex items-start text-xs">
+                                <div
+                                    class="flex items-start text-xs sm:text-base"
+                                >
                                     <div class="mr-2 shrink-0 relative top-0.5">
                                         {#key thread.id}
-                                            {#if findMisskey(board.key, thread.id)}
-                                                <FaviconPart
-                                                    size="12"
-                                                    hostname={findMisskey(
-                                                        board.key,
-                                                        thread.id,
-                                                    )?.hostname}
-                                                />
-                                            {:else}
-                                                <TwemojiPart
-                                                    size="12"
-                                                    emoji={makeEmojiByThreadId(
-                                                        thread.id,
-                                                    )}
-                                                />
-                                            {/if}
+                                            <div class="w-4 h-4">
+                                                {#if findMisskey(board.key, thread.id)}
+                                                    <FaviconPart
+                                                        hostname={findMisskey(
+                                                            board.key,
+                                                            thread.id,
+                                                        )?.hostname}
+                                                    />
+                                                {:else}
+                                                    <TwemojiPart
+                                                        emoji={makeEmojiByThreadId(
+                                                            thread.id,
+                                                        )}
+                                                    />
+                                                {/if}
+                                            </div>
                                         {/key}
                                     </div>
                                     <div class="grow min-w-0">

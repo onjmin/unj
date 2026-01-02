@@ -1071,7 +1071,9 @@
         </div>
         <div class="thread-header">
             <p class="flex items-center font-bold unj-font opacity-60">
-                <TwemojiPart emoji={makeEmojiByThreadId(thread.id)} />
+                <span class="w-4 h-4">
+                    <TwemojiPart emoji={makeEmojiByThreadId(thread.id)} />
+                </span>
                 <span class="pl-1.5 min-w-0 truncate">{thread.title}</span>
                 <span class="inline-block shrink-0 ml-1"
                     >({thread.resCount})</span
