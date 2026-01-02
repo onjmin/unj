@@ -9,7 +9,7 @@
     isMobile,
     openLeft,
     openRight,
-    customBackground,
+    customBackgroundUrl,
     customBackgroundOpacity,
     isDarkMode,
   } from "../mylib/store.js";
@@ -89,10 +89,10 @@
   {/if}
 </svelte:head>
 
-{#if $customBackground !== "" && $customBackground !== "null"}
+{#if $customBackgroundUrl !== "" && $customBackgroundUrl !== "null"}
   <div class="absolute inset-0 z-0">
     <img
-      src={$customBackground}
+      src={$customBackgroundUrl}
       alt="Background"
       class="h-screen w-full object-cover"
       style="opacity:{$customBackgroundOpacity};"

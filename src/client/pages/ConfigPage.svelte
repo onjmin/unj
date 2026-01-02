@@ -39,9 +39,8 @@
         soundVolume,
     } from "../mylib/unj-storage.js";
     import {
-        customBackground,
+        customBackgroundUrl,
         customBackgroundOpacity,
-        isMobile,
         selectedTheme,
     } from "../mylib/store.js";
 
@@ -311,7 +310,7 @@
                                 );
 
                                 // Canvasに縮小して描画
-                                const MAX_SIZE = isMobile ? 256 : 1024;
+                                const MAX_SIZE = 1024;
                                 const scale = Math.min(
                                     1,
                                     MAX_SIZE / Math.max(img.width, img.height),
@@ -329,16 +328,16 @@
                                 );
 
                                 // Base64化
-                                $customBackground =
+                                $customBackgroundUrl =
                                     canvas.toDataURL("image/png");
                             }}
                         />
 
-                        {#if $customBackground}
+                        {#if $customBackgroundUrl}
                             <button
                                 class="shrink-0 p-2 rounded hover:text-red-500"
                                 onclick={() => {
-                                    $customBackground = "";
+                                    $customBackgroundUrl = "";
                                 }}
                                 title="背景を削除"
                             >
@@ -348,7 +347,7 @@
                     </div>
 
                     <!-- 不透明度スライダー -->
-                    {#if $customBackground}
+                    {#if $customBackgroundUrl}
                         <div class="flex items-center gap-4">
                             <div class="flex-1">
                                 <Slider

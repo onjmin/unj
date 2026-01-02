@@ -2,6 +2,7 @@ import * as oekaki from "@onjmin/oekaki";
 import { writable, get } from "svelte/store";
 import * as unjStorage from "../mylib/unj-storage.js";
 import { Anniversary, isAnniversary } from "./anniversary.js";
+import { ObjectStorage } from "./object-storage.js";
 
 export const isMobile = window.innerWidth < 768;
 
@@ -34,11 +35,13 @@ selectedTheme.subscribe((value) => {
 	document.getElementById("unj-theme")?.setAttribute("href", href);
 });
 
-export const customBackground = writable(
-	unjStorage.customBackground.value ?? "",
-);
-customBackground.subscribe((value) => {
-	if (value !== null) unjStorage.customBackground.value = String(value);
+export const customBackgroundUrl = writable("");
+const customBackground = new ObjectStorage<string>("customBackground");
+customBackgroundUrl.subscribe((value) => {
+	customBackground.set(value);
+});
+customBackground.get().then((v) => {
+	if (v) customBackgroundUrl.set(v);
 });
 
 export const customBackgroundOpacity = writable(
