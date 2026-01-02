@@ -291,20 +291,45 @@
                             accept="image/*"
                             class="flex-1 min-w-0 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border file:border-gray-500/80 file:text-sm file:font-medium cursor-pointer"
                             onchange={async (e) => {
-                                const input =
-                                    e.currentTarget as HTMLInputElement;
+                                const input = e.currentTarget;
                                 const file = input.files?.[0];
                                 if (!file) return;
 
-                                $customBackground = await new Promise(
+                                // まず画像を読み込む
+                                const img = await new Promise<HTMLImageElement>(
                                     (resolve, reject) => {
-                                        const reader = new FileReader();
-                                        reader.onload = () =>
-                                            resolve(reader.result as string);
-                                        reader.onerror = reject;
-                                        reader.readAsDataURL(file);
+                                        const url = URL.createObjectURL(file);
+                                        const image = new Image();
+                                        image.onload = () => {
+                                            resolve(image);
+                                            URL.revokeObjectURL(url); // 不要になったら解放
+                                        };
+                                        image.onerror = reject;
+                                        image.src = url;
                                     },
                                 );
+
+                                // Canvasに縮小して描画
+                                const MAX_SIZE = 1024;
+                                const scale = Math.min(
+                                    1,
+                                    MAX_SIZE / Math.max(img.width, img.height),
+                                );
+                                const canvas = document.createElement("canvas");
+                                canvas.width = img.width * scale;
+                                canvas.height = img.height * scale;
+                                const ctx = canvas.getContext("2d")!;
+                                ctx.drawImage(
+                                    img,
+                                    0,
+                                    0,
+                                    canvas.width,
+                                    canvas.height,
+                                );
+
+                                // Base64化
+                                $customBackground =
+                                    canvas.toDataURL("image/png");
                             }}
                         />
 
