@@ -23,6 +23,8 @@
     import { ObjectStorage } from "../mylib/object-storage.js";
     import FooterLinkPart from "../parts/FooterLinkPart.svelte";
     import MessageBoxPart from "../parts/MessageBoxPart.svelte";
+    import HeadlinePart from "../parts/HeadlinePart.svelte";
+    import CopyleftPart from "../parts/CopyleftPart.svelte";
 
     let { board, newsId }: { board: Board; newsId: string } = $props();
 
@@ -222,6 +224,8 @@
         </div>
 
         <FooterLinkPart {board} />
+        <HeadlinePart {board} />
+        <CopyleftPart />
     {/if}
 </MainPart>
 

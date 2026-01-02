@@ -29,6 +29,8 @@
     import ImagePreviewModal from "../parts/ImagePreviewPart.svelte";
     import KomePart from "../parts/KomePart.svelte";
     import MessageBoxPart from "../parts/MessageBoxPart.svelte";
+    import HeadlinePart from "../parts/HeadlinePart.svelte";
+    import CopyleftPart from "../parts/CopyleftPart.svelte";
 
     const INITIAL_LIMIT = 16;
     const LOAD_MORE_LIMIT = 16;
@@ -416,6 +418,8 @@
         </div>
 
         <FooterLinkPart {board} />
+        <HeadlinePart {board} />
+        <CopyleftPart />
     {/if}
 </MainPart>
 
