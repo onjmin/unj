@@ -1,10 +1,8 @@
 <script lang="ts">
-  let { hostname = "" } = $props();
-
-  const height = "16";
+  let { size = "16", hostname = "" } = $props();
 
   const src = $derived(`https://www.google.com/s2/favicons?domain=${hostname}`);
   const alt = $derived(`Favicon for ${hostname}`);
 </script>
 
-<img class="img" {src} {alt} {height} width={height} loading="lazy" />
+<img class="img" {src} {alt} width={size} height={size} loading="lazy" />

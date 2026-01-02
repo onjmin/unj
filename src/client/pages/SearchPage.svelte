@@ -145,7 +145,7 @@
                         id="contentText"
                         type="text"
                         bind:value={searchQuery}
-                        class="bg-gray-100/0 w-full p-2 pl-10 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        class="bg-gray-100/0 w-full p-2 pl-10 pr-10 border border-gray-500/40 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="全文検索"
                         onkeydown={(e) =>
                             e.key === "Enter" && isQueryValid && jumpToSearch()}

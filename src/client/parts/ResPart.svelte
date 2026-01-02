@@ -343,7 +343,7 @@
       {/if}
 
       {#if commandResult !== ""}
-        <div class="text-red-500 text-[0px] leading-[1.2]">
+        <div class="text-red-500 text-base leading-[1.2]">
           {commandResult}
         </div>
       {/if}
@@ -352,7 +352,7 @@
         <div>
           <br />
           <div class="text-red-500">※追記</div>
-          <div class="text-[0px] leading-[1.2] wrap-anywhere max-w-full">
+          <div class="text-base leading-[1.2] wrap-anywhere max-w-full">
             <span
               class="inline-block align-middle text-base m-0 wrap-anywhere max-w-full"
             >

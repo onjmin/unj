@@ -52,7 +52,7 @@
   class="h-[8svh] overflow-y-auto border border-gray-500/20 rounded-md scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100"
 >
   <div class="px-2 py-1">
-    <h2 class="text-[11px] leading-none font-semibold mb-1 flex items-center">
+    <h2 class="text-xs leading-none font-semibold mb-1 flex items-center">
       <RssIcon size={12} class="mr-1 shrink-0" />
       ニュース
     </h2>

@@ -287,26 +287,26 @@
 </HeaderPart>
 
 <MainPart {board}>
-    <div class="p-3 sm:p-4">
-        <div
-            class={`${board.banner ? "" : "aspect-49/12"} w-[490px] max-w-full mx-auto mb-4 border border-gray-500/40 flex items-center justify-center`}
-        >
-            {#if board.banner}
-                <img
-                    src={board.banner}
-                    alt={`${board.name} バナー`}
-                    class="w-full h-full object-cover"
-                />
-            {:else}
-                <span class="opacity-50 text-lg font-semibold"
-                    >バナーはまだぬい</span
-                >
-            {/if}
-        </div>
+    <div
+        class={`${board.banner ? "" : "aspect-49/12"} w-[490px] max-w-full mx-auto border border-gray-500/40 flex items-center justify-center`}
+    >
+        {#if board.banner}
+            <img
+                src={board.banner}
+                alt={`${board.name} バナー`}
+                class="w-full h-full object-cover"
+            />
+        {:else}
+            <span class="opacity-50 text-lg font-semibold"
+                >バナーはまだぬい</span
+            >
+        {/if}
+    </div>
 
-        <div class="text-left mb-3">
+    <div class="p-1 sm:p-2">
+        <div class="text-left sm:mb-2">
             <h1
-                class="opacity-50 text-base sm:text-2xl font-semibold leading-tight mb-0.5"
+                class="opacity-60 text-base sm:text-2xl font-semibold leading-tight"
             >
                 {board.name}
             </h1>
@@ -314,9 +314,6 @@
                 {board.description}
             </p>
         </div>
-    </div>
-
-    <div class="p-3 sm:p-4 pt-0">
         <NewsPart {board} />
     </div>
 
@@ -345,7 +342,7 @@
                                 tabindex="0"
                                 role="button"
                                 onkeydown={() => {}}
-                                class="border border-gray-500/40 hover:bg-gray-500/10 block w-full text-left p-3 transition-colors duration-150 ease-in-out cursor-pointer"
+                                class="border border-gray-500/40 hover:bg-gray-500/10 block w-full text-left p-2 transition-colors duration-150 ease-in-out cursor-pointer"
                                 onclick={() =>
                                     navigate(
                                         makePathname(
@@ -355,11 +352,12 @@
                                         ),
                                     )}
                             >
-                                <div class="flex items-start">
+                                <div class="flex items-start text-xs">
                                     <div class="mr-2 shrink-0 relative top-0.5">
                                         {#key thread.id}
                                             {#if findMisskey(board.key, thread.id)}
                                                 <FaviconPart
+                                                    size="12"
                                                     hostname={findMisskey(
                                                         board.key,
                                                         thread.id,
@@ -367,6 +365,7 @@
                                                 />
                                             {:else}
                                                 <TwemojiPart
+                                                    size="12"
                                                     emoji={makeEmojiByThreadId(
                                                         thread.id,
                                                     )}
@@ -379,7 +378,7 @@
                                             class="flex items-start justify-between"
                                         >
                                             <div
-                                                class="grow text-base font-medium leading-tight pr-2 wrap-break-words"
+                                                class="grow font-medium leading-tight pr-2 wrap-break-words"
                                             >
                                                 <span class="inline">
                                                     {thread.title}
@@ -391,7 +390,7 @@
                                                 </span>
                                             </div>
                                             <div
-                                                class="opacity-50 text-xs shrink-0 ml-2 mt-0"
+                                                class="opacity-50 shrink-0 ml-2 mt-0"
                                             >
                                                 {formatTimeAgo(
                                                     thread.latestResAt,
@@ -399,11 +398,9 @@
                                             </div>
                                         </div>
 
-                                        <div
-                                            class="flex items-center text-xs mt-1"
-                                        >
+                                        <div class="flex items-center mt-1">
                                             <div
-                                                class="opacity-50 grow text-sm whitespace-nowrap overflow-hidden pr-2"
+                                                class="opacity-50 grow whitespace-nowrap overflow-hidden pr-2"
                                             >
                                                 {#if thread.latestRes}
                                                     <span class="truncate"
