@@ -8,6 +8,7 @@
     import {
         ChevronDownIcon,
         ChevronRightIcon,
+        DownloadIcon,
         LightbulbIcon,
         PlayIcon,
         Trash2Icon,
@@ -360,15 +361,34 @@
                         {/if}
 
                         {#if $customBackgroundUrl && !isBackgroundLoading}
-                            <button
-                                class="shrink-0 p-2 rounded hover:text-red-500"
-                                onclick={() => {
-                                    $customBackgroundUrl = "";
-                                }}
-                                title="背景を削除"
-                            >
-                                <Trash2Icon class="h-5 w-5" />
-                            </button>
+                            <div class="shrink-0 flex items-center gap-1">
+                                <!-- download -->
+                                <button
+                                    class="p-2 rounded hover:text-blue-500"
+                                    onclick={() => {
+                                        const a = document.createElement("a");
+                                        a.href = $customBackgroundUrl;
+                                        a.download = "background.png";
+                                        document.body.appendChild(a);
+                                        a.click();
+                                        document.body.removeChild(a);
+                                    }}
+                                    title="背景をダウンロード"
+                                >
+                                    <DownloadIcon class="h-5 w-5" />
+                                </button>
+
+                                <!-- delete -->
+                                <button
+                                    class="p-2 rounded hover:text-red-500"
+                                    onclick={() => {
+                                        $customBackgroundUrl = "";
+                                    }}
+                                    title="背景を削除"
+                                >
+                                    <Trash2Icon class="h-5 w-5" />
+                                </button>
+                            </div>
                         {/if}
                     </div>
 
