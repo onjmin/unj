@@ -306,7 +306,7 @@
     <div class="p-1 sm:p-2">
         <div class="text-left sm:mb-2">
             <h1
-                class="opacity-60 text-base sm:text-2xl font-semibold leading-tight"
+                class="opacity-40 text-base sm:text-2xl font-semibold leading-tight"
             >
                 {board.name}
             </h1>

@@ -1108,7 +1108,7 @@
             {/if}
             <div class="flex items-center space-x-2">
                 <button
-                    class="inline-flex items-center space-x-1 rounded-full border border-green-500 hover:bg-gray-500/10 px-3 py-1 text-green-500"
+                    class="inline-flex items-center space-x-1 rounded-full border border-teal-500 hover:bg-gray-500/10 px-3 py-1 text-teal-500"
                     onclick={tryLoL}
                 >
                     <span class="font-bold">草</span>
@@ -1117,7 +1117,7 @@
                     >
                 </button>
                 <div
-                    class="relative overflow-hidden whitespace-nowrap text-green-500/80"
+                    class="relative overflow-hidden whitespace-nowrap text-teal-500/80"
                 >
                     <span
                         class="inline-block animate-wave text-base font-normal leading-none tracking-tight"

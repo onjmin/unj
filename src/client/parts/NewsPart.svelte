@@ -94,14 +94,14 @@
                           class="mr-1 text-gray-500 shrink-0"
                         />
                       {/if}
-                      <span class="text-sm text-gray-500">
+                      <span class="text-xs text-gray-500">
                         {chip}
                       </span>
                     </span>
                   {/if}
                 </div>
                 <div
-                  class="flex-1 overflow-hidden whitespace-nowrap text-ellipsis text-left text-sm"
+                  class="flex-1 overflow-hidden whitespace-nowrap text-ellipsis text-left text-xs"
                 >
                   <Link
                     to={makePathname(`/${board.key}/news/${item.id}`)}
