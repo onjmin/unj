@@ -89,7 +89,17 @@
   {/if}
 </svelte:head>
 
-{#if isAnniversary([Anniversary.NEW_YEAR])}
+{#if $customBackground !== "" && $customBackground !== "null"}
+  <div class="absolute inset-0 z-0">
+    <img
+      src={$customBackground}
+      alt="Background"
+      class="h-screen w-full object-cover"
+      style="opacity:{$customBackgroundOpacity};"
+      aria-hidden="true"
+    />
+  </div>
+{:else if isAnniversary([Anniversary.NEW_YEAR])}
   <div class="absolute inset-0 z-0">
     <img
       src="https://plus.unsplash.com/premium_photo-1661964177687-57387c2cbd14"
@@ -123,16 +133,6 @@
     aria-hidden="true"
     class="absolute inset-0 z-0 pointer-events-none opacity-60 snow"
   ></div>
-{:else if $customBackground !== "" && $customBackground !== "null"}
-  <div class="absolute inset-0 z-0">
-    <img
-      src={$customBackground}
-      alt="Background"
-      class="h-screen w-full object-cover"
-      style="opacity:{$customBackgroundOpacity};"
-      aria-hidden="true"
-    />
-  </div>
 {/if}
 
 <header class="unj-header-part w-full bg-gray-800 text-gray-200 shadow-md">
