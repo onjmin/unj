@@ -41,6 +41,7 @@
     import {
         customBackground,
         customBackgroundOpacity,
+        isMobile,
         selectedTheme,
     } from "../mylib/store.js";
 
@@ -310,7 +311,7 @@
                                 );
 
                                 // Canvasに縮小して描画
-                                const MAX_SIZE = 1024;
+                                const MAX_SIZE = isMobile ? 256 : 1024;
                                 const scale = Math.min(
                                     1,
                                     MAX_SIZE / Math.max(img.width, img.height),
