@@ -136,32 +136,30 @@
 {/if}
 
 <header class="unj-header-part w-full bg-gray-800 text-gray-200 shadow-md">
-  <div class="max-w-6xl mx-auto px-4 flex items-center">
+  <div class="text-xs sm:text-sm max-w-6xl mx-auto px-4 flex items-center">
     {#if pathname1 === board.key}
       {#if pathname2 !== ""}
         <button
           class="flex items-center space-x-1 px-3 py-2 rounded bg-gray-600 text-gray-200 hover:opacity-80"
           onclick={() => navigate(makePathname(`/${board.key}`))}
         >
-          <ArrowLeftIcon class="w-5 h-5" />
-          <span class="text-sm font-medium">板TOP</span>
+          <ArrowLeftIcon class="w-4 h-4" />
+          <span class="font-medium">板TOP</span>
         </button>
       {:else}
         <button
           class="flex items-center space-x-1 px-3 py-2 rounded bg-gray-600 text-gray-200 hover:opacity-80"
           onclick={() => navigate(makePathname("/"))}
         >
-          <ArrowLeftIcon class="w-5 h-5" />
-          <span class="text-sm font-medium">板一覧</span>
+          <ArrowLeftIcon class="w-4 h-4" />
+          <span class="font-medium">板一覧</span>
         </button>
       {/if}
     {:else}
       <!-- empty -->
     {/if}
     <div class="flex-1 text-center">
-      <h1
-        class="text-sm sm:text-lg font-bold inline-flex items-center space-x-2"
-      >
+      <h1 class="sm:text-lg font-bold inline-flex items-center space-x-2">
         <span>{displayTitle}</span>
       </h1>
     </div>

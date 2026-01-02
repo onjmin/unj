@@ -1070,7 +1070,7 @@
             </div>
         </div>
         <div class="thread-header">
-            <p class="flex items-center font-bold unj-font opacity-60">
+            <p class="flex items-center font-bold unj-font text-gray-500">
                 <span class="w-4 h-4">
                     <TwemojiPart emoji={makeEmojiByThreadId(thread.id)} />
                 </span>
