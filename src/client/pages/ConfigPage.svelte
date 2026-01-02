@@ -52,10 +52,10 @@
     changeReplyResSound();
 
     let customBackgroundOpacitySlider = $state([
-        $customBackgroundOpacity * 100,
+        ($customBackgroundOpacity * 100) | 0,
     ]);
 
-    let soundVolumeSlider = $state([Howler.volume() * 100]);
+    let soundVolumeSlider = $state([(Howler.volume() * 100) | 0]);
     let selectedNewResSound: string = $state(
         newResSound.value ?? coinSound.key,
     );

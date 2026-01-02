@@ -45,7 +45,7 @@ customBackground.get().then((v) => {
 });
 
 export const customBackgroundOpacity = writable(
-	Number(Number(unjStorage.customBackgroundOpacity.value ?? 0.16).toFixed(2)),
+	Number(unjStorage.customBackgroundOpacity.value ?? 0.16),
 );
 customBackgroundOpacity.subscribe((value) => {
 	if (value !== null) unjStorage.customBackgroundOpacity.value = String(value);
