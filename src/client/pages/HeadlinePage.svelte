@@ -337,7 +337,7 @@
             <ul class="list-none p-0 m-0">
                 {#each threadList as thread, i}
                     {#if !ignoreList?.has(thread.ccUserId)}
-                        <li class="mb-2 last:mb-0">
+                        <li>
                             <div
                                 tabindex="0"
                                 role="button"
