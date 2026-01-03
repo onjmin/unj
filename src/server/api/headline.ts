@@ -71,7 +71,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 					online: sizeOf(io, getThreadRoom(record.id)),
 					ikioi:
 						Math.floor(
-							(resCount * 3600_000_0) / (+new Date() - +record.created_at),
+							(resCount * 3600_000_0) / (Date.now() - +record.created_at),
 						) / 10,
 					lolCount: record.lol_count,
 					goodCount: record.good_count,

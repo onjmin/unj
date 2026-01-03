@@ -102,7 +102,7 @@
             }
         } catch (err) {}
         if (success) {
-            contactedAt.value = `${+new Date()}`;
+            contactedAt.value = `${Date.now()}`;
             isSuspend = true;
             toaster.success({
                 title: "送信しました。",

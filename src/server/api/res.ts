@@ -324,7 +324,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 					// 動的なデータ
 					online: sizeOf(io, getThreadRoom(threadId)),
 					ikioi:
-						Math.floor((nextResNum * 3600_000_0) / (+new Date() - +createdAt)) /
+						Math.floor((nextResNum * 3600_000_0) / (Date.now() - +createdAt)) /
 						10,
 					lolCount: lolCountCache.get(threadId) ?? 0,
 					goodCount: goodCountCache.get(threadId) ?? 0,

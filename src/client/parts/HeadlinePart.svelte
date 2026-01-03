@@ -107,15 +107,15 @@
                   class="block"
                 >
                   <!-- 1行目：ヘッドライン（背景あり） -->
-                  <div class="truncate bg-gray-500/10 px-1">
+                  <div class="truncate bg-gray-500/10">
                     <!-- 日時 -->
-                    <span class="text-gray-500 mr-2 shrink-0">
+                    <span class="text-gray-500 shrink-0">
                       {formatTimeAgo(thread.latestResAt)}
                     </span>
 
                     <!-- 新着レス数（仮） -->
                     {#if true}
-                      <span class="mr-2 text-red-500 font-medium shrink-0">
+                      <span class="text-red-500 font-medium shrink-0">
                         +1
                       </span>
                     {/if}
@@ -126,14 +126,14 @@
                     </span>
 
                     <!-- レス数（スレタイ右） -->
-                    <span class="ml-1 shrink-0">
+                    <span class="shrink-0">
                       ({thread.resCount})
                     </span>
                   </div>
 
                   <!-- 2行目：最新レス（背景なし） -->
                   {#if thread.latestRes}
-                    <div class="mt-0.5 text-gray-500 truncate px-1">
+                    <div class="mt-0.5 truncate px-2 text-gray-500">
                       {thread.latestRes}
                     </div>
                   {/if}
