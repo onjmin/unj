@@ -1026,7 +1026,7 @@
         />
     </div>
     {#if board === touhouBoard}
-        {#key thread?.ageRes.num}
+        {#key threadId && thread?.ageRes.num}
             <BackgroundEmbedPart
                 contentUrl={thread.ageRes.contentUrl}
                 contentType={thread.ageRes.contentType}
