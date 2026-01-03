@@ -226,10 +226,10 @@
 
     $effect(() => {
         hello(() => {
-            socket.emit("joinHeadline", {
+            socket?.emit("joinHeadline", {
                 boardId: board.id,
             });
-            socket.emit("headline", {
+            socket?.emit("headline", {
                 boardId: board.id,
                 nonce: genNonce(nonceKey.value ?? ""),
                 limit: queryResultLimit,
@@ -237,17 +237,17 @@
                 untilDate: null,
             });
         });
-        socket.on("joinHeadline", handleJoinHeadline);
-        socket.on("headline", handleHeadline);
-        socket.on("newHeadline", handleNewHeadline);
+        socket?.on("joinHeadline", handleJoinHeadline);
+        socket?.on("headline", handleHeadline);
+        socket?.on("newHeadline", handleNewHeadline);
         const aborts = misskeyList
             .get(board.key)
             ?.map((v) => fetchMisskey(v, board));
         return () => {
             goodbye();
-            socket.off("joinHeadline", handleJoinHeadline);
-            socket.off("headline", handleHeadline);
-            socket.off("newHeadline", handleNewHeadline);
+            socket?.off("joinHeadline", handleJoinHeadline);
+            socket?.off("headline", handleHeadline);
+            socket?.off("newHeadline", handleNewHeadline);
             aborts?.map((func) => func());
         };
     });
@@ -258,7 +258,7 @@
         if (emitting) return;
         emitting = true;
         pagination = true;
-        socket.emit("headline", {
+        socket?.emit("headline", {
             boardId: board.id,
             nonce: genNonce(nonceKey.value ?? ""),
             limit: queryResultLimit,

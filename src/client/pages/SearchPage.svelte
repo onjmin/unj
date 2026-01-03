@@ -49,11 +49,11 @@
 
     $effect(() => {
         hello();
-        socket.on("search", handleSearch);
+        socket?.on("search", handleSearch);
         setTimeout(trySearch);
         return () => {
             goodbye();
-            socket.off("search", handleSearch);
+            socket?.off("search", handleSearch);
         };
     });
 
@@ -88,7 +88,7 @@
             emitting = false;
             return;
         }
-        socket.emit("search", result);
+        socket?.emit("search", result);
         await sleep(1024);
         emitting = false;
         ok();

@@ -473,10 +473,10 @@
             remaining = countdown(thread.deletedAt);
         }, 512);
         hello(() => {
-            socket.emit("joinThread", {
+            socket?.emit("joinThread", {
                 threadId,
             });
-            socket.emit("readThread", {
+            socket?.emit("readThread", {
                 nonce: genNonce(nonceKey.value ?? ""),
                 limit: queryResultLimit,
                 sinceResNum: resNum,
@@ -485,21 +485,21 @@
             });
             latestReadThreadId.value = threadId;
         });
-        socket.on("joinThread", handleJoinThread);
-        socket.on("readThread", handleReadThread);
-        socket.on("updateMeta", handleUpdateMeta);
-        socket.on("res", handleRes);
-        socket.on("lol", handleLoL);
-        socket.on("like", handleLike);
+        socket?.on("joinThread", handleJoinThread);
+        socket?.on("readThread", handleReadThread);
+        socket?.on("updateMeta", handleUpdateMeta);
+        socket?.on("res", handleRes);
+        socket?.on("lol", handleLoL);
+        socket?.on("like", handleLike);
         return () => {
             clearInterval(id);
             goodbye();
-            socket.off("joinThread", handleJoinThread);
-            socket.off("readThread", handleReadThread);
-            socket.off("updateMeta", handleUpdateMeta);
-            socket.off("res", handleRes);
-            socket.off("lol", handleLoL);
-            socket.off("like", handleLike);
+            socket?.off("joinThread", handleJoinThread);
+            socket?.off("readThread", handleReadThread);
+            socket?.off("updateMeta", handleUpdateMeta);
+            socket?.off("res", handleRes);
+            socket?.off("lol", handleLoL);
+            socket?.off("like", handleLike);
         };
     });
 
@@ -668,21 +668,21 @@
             expectedResNum = thread.resCount + 1;
         }
 
-        socket.emit("res", result);
+        socket?.emit("res", result);
         await sleep(1024);
         emitting = false;
         ok();
     };
 
     const tryLoL = () => {
-        socket.emit("lol", {
+        socket?.emit("lol", {
             nonce: genNonce(nonceKey.value ?? ""),
             threadId,
         });
     };
 
     const tryLike = (good: boolean) => {
-        socket.emit("like", {
+        socket?.emit("like", {
             nonce: genNonce(nonceKey.value ?? ""),
             threadId,
             good,

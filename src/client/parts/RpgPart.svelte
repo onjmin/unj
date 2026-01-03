@@ -57,7 +57,7 @@
     };
     const res = v.safeParse(RpgPatchSchema, data, myConfig);
     if (!res.success) return;
-    socket.emit("rpgPatch", data);
+    socket?.emit("rpgPatch", data);
   };
 
   const handleRpgInit = async (data: {
@@ -144,23 +144,23 @@
     };
     const res = v.safeParse(RpgPatchSchema, data, myConfig);
     if (!res.success) return;
-    socket.emit("rpgPatch", data);
+    socket?.emit("rpgPatch", data);
   };
 
   $effect(() => {
     setTimeout(() => {
-      socket.emit("rpgInit", {
+      socket?.emit("rpgInit", {
         threadId,
         sAnimsId: Number(sAnimsId.value ?? 2086),
       });
-      socket.on("rpgInit", handleRpgInit);
-      socket.on("rpgPatch", handleRpgPatch);
+      socket?.on("rpgInit", handleRpgInit);
+      socket?.on("rpgPatch", handleRpgPatch);
       document.addEventListener("click", handleGlobalClick, true);
       document.addEventListener("touchend", handleGlobalClick, true);
     });
     return () => {
-      socket.off("rpgInit", handleRpgInit);
-      socket.off("rpgPatch", handleRpgPatch);
+      socket?.off("rpgInit", handleRpgInit);
+      socket?.off("rpgPatch", handleRpgPatch);
       document.removeEventListener("click", handleGlobalClick, true);
       document.removeEventListener("touchend", handleGlobalClick, true);
     };

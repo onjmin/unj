@@ -18,10 +18,10 @@ const uri = PROD_MODE
 	: `http://localhost:${decodeEnv(import.meta.env.VITE_LOCALHOST_PORT)}`;
 
 export let errorReason = "";
-export let socket: Socket;
+export let socket: Socket | undefined = undefined;
 let isOK = false;
 let retry: (() => void) | null;
-const getNonceKey = () => socket.emit("getNonceKey", {});
+const getNonceKey = () => socket?.emit("getNonceKey", {});
 
 /**
  * サーバーと対話が成立したのでNonce値を更新する
@@ -56,7 +56,7 @@ export const hello = (callback: (() => void) | null = null) => {
 			},
 		});
 		window.addEventListener("beforeunload", () => {
-			socket.disconnect();
+			socket?.disconnect();
 		});
 		socket.on("kicked", (data: { ok: boolean; reason: string }) => {
 			if (!data.ok || !data.reason) return;

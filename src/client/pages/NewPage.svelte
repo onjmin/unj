@@ -163,10 +163,10 @@
 
     $effect(() => {
         hello();
-        socket.on("makeThread", handleMakeThread);
+        socket?.on("makeThread", handleMakeThread);
         return () => {
             goodbye();
-            socket.off("makeThread", handleMakeThread);
+            socket?.off("makeThread", handleMakeThread);
         };
     });
 
@@ -327,7 +327,7 @@
             emitting = false;
             return;
         }
-        socket.emit("makeThread", result);
+        socket?.emit("makeThread", result);
         await sleep(1024);
         emitting = false;
         ok();
