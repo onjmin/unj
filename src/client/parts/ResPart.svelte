@@ -376,7 +376,7 @@
           </a>
         </div>
 
-        {#key num}
+        {#key contentUrl}
           <div class="mb-0.5">
             <EmbedPart
               {ccUserId}
