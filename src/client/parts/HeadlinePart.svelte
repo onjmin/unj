@@ -17,6 +17,7 @@
   import { Clock } from "@lucide/svelte";
   import { findMisskey } from "../mylib/misskey.js";
   import { queryResultLimit } from "../../common/request/schema.js";
+  import { socket } from "../mylib/socket.js";
 
   let { board }: { board: Board } = $props();
 
@@ -60,6 +61,26 @@
       laaaaaaaag = true;
     }, 4096);
     return () => clearTimeout(id);
+  });
+
+  /**
+   * 新規スレッド or 新着レス
+   * 競合を避けるため、受信してもキャッシュを上書きしない。
+   */
+  const handleNewHeadline = (data: { ok: boolean; new: HeadlineThread }) => {
+    if (!data.ok || !items) return;
+    if (items.length > 128) {
+      items.pop();
+    }
+    items.unshift(data.new);
+  };
+
+  $effect(() => {
+    // コンポーネントの中ではhello-goodbye処理を使わない
+    socket?.on("newHeadline", handleNewHeadline);
+    return () => {
+      socket?.off("newHeadline", handleNewHeadline);
+    };
   });
 </script>
 
@@ -113,8 +134,8 @@
                       {formatTimeAgo(thread.latestResAt)}
                     </span>
 
-                    <!-- 新着レス数（仮） -->
-                    {#if true}
+                    <!-- 新着レス数 -->
+                    {#if differenceInSeconds(Date.now(), thread.latestResAt) <= 64}
                       <span class="text-red-500 font-medium shrink-0">
                         +1
                       </span>
