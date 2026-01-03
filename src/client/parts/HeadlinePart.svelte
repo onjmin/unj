@@ -91,7 +91,7 @@
     <div class="px-2 py-1">
       <h2 class="text-xs leading-none font-semibold mb-1 flex items-center">
         <RssIcon size={12} class="mr-1 shrink-0" />
-        ヘッドライン
+        ヘッドライソ
       </h2>
 
       {#if error}
