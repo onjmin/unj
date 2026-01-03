@@ -44,8 +44,9 @@ import { logger } from "./mylib/log.js";
 import nonce from "./mylib/nonce.js";
 import {
 	incrementAccessCount,
-	multipleConnectionsLimit,
+	limitByIP,
 	online,
+	totalSocketConnectionsLimit,
 } from "./mylib/socket.js";
 
 const bannedCheckMiddleware = (
@@ -170,11 +171,18 @@ io.on("connection", async (socket) => {
 	logger.http(`👀 ${ip}`);
 	verifyIP(socket, ip);
 
-	// 複数タブ検出
+	// 接続数の上限で弾く
+	if (io.sockets.sockets.size >= totalSocketConnectionsLimit) {
+		auth.kick(socket, "totalSocketConnectionsLimit");
+		socket.disconnect();
+		return;
+	}
+
+	// 複数タブを検出して弾く
 	const s = online.get(ip) ?? new Set();
 	online.set(ip, s);
-	if (s.size >= multipleConnectionsLimit) {
-		auth.kick(socket, "multipleConnectionsLimit");
+	if (s.size >= limitByIP) {
+		auth.kick(socket, "limitByIP");
 		socket.disconnect();
 		return;
 	}

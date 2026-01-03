@@ -69,7 +69,10 @@ export const hello = (callback: (() => void) | null = null) => {
 					banStatus.value = "ban";
 					navigate(makePathname("/akukin"), { replace: true });
 					break;
-				case "multipleConnectionsLimit":
+				case "totalSocketConnectionsLimit":
+					navigate(makePathname("/error"));
+					break;
+				case "limitByIP":
 					navigate(makePathname("/error"));
 					break;
 				case "newUsersRateLimit":

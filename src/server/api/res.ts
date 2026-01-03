@@ -64,10 +64,10 @@ import { pool } from "../mylib/pool.js";
 import { doppelgangers, humans } from "../mylib/rpg.js";
 import { isSameSimhash } from "../mylib/simhash.js";
 import {
+	broadcastLimit,
 	exist,
 	getHeadlineRoom,
 	getThreadRoom,
-	isOverBroadcastLimit,
 	joined,
 	sizeOf,
 } from "../mylib/socket.js";
@@ -333,7 +333,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 				};
 
 				// ヘッドラインの更新を全体通知
-				if (isOverBroadcastLimit(io)) {
+				if (io.sockets.sockets.size >= broadcastLimit) {
 					socket
 						.to(getHeadlineRoom(board.id))
 						.emit("newHeadline", { ok: true, new: newHeadline, yours: false });

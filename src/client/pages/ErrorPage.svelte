@@ -21,7 +21,15 @@
                 "少し時間を置いてから再度アクセスしてください。",
             ]}
         />
-    {:else if errorReason === "multipleConnectionsLimit"}
+    {:else if errorReason === "totalSocketConnectionsLimit"}
+        <MessageBoxPart
+            title="サーバーの同時接続上限に達しました。"
+            description={[
+                "既存ユーザーの接続を維持するため、あなたの接続は一時的に制限されています。",
+                "しばらく待ってからリロードしてください。",
+            ]}
+        />
+    {:else if errorReason === "limitByIP"}
         <MessageBoxPart
             title="複数タブの個数上限です。"
             description={[
