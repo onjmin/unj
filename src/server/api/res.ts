@@ -67,6 +67,7 @@ import {
 	exist,
 	getHeadlineRoom,
 	getThreadRoom,
+	isOverBroadcastLimit,
 	joined,
 	sizeOf,
 } from "../mylib/socket.js";
@@ -330,9 +331,19 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 					goodCount: goodCountCache.get(threadId) ?? 0,
 					badCount: badCountCache.get(threadId) ?? 0,
 				};
-				socket
-					.to(getHeadlineRoom(board.id))
-					.emit("newHeadline", { ok: true, new: newHeadline, yours: false });
+
+				// ヘッドラインの更新を全体通知
+				if (isOverBroadcastLimit(io)) {
+					socket
+						.to(getHeadlineRoom(board.id))
+						.emit("newHeadline", { ok: true, new: newHeadline, yours: false });
+				} else {
+					io.emit("newHeadline", {
+						ok: true,
+						new: newHeadline,
+						yours: false,
+					});
+				}
 			}
 
 			// !age

@@ -1,7 +1,13 @@
 import type { Server, Socket } from "socket.io";
 
 export const multipleConnectionsLimit = 3; // 複タブ上限
-export const broadcastLimit = 16; // ブロードキャスト上限, 0.25 vCPU, 256 MB RAM, 2 GB Disk の場合
+const broadcastLimit = 16; // ブロードキャスト上限, 0.25 vCPU, 256 MB RAM, 2 GB Disk の場合
+
+/**
+ * 接続中 socket 数がブロードキャスト上限に達しているか
+ */
+export const isOverBroadcastLimit = (io: Server) =>
+	io.sockets.sockets.size >= broadcastLimit;
 
 let accessCount = 0;
 export const getAccessCount = () => accessCount;

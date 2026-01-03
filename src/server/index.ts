@@ -221,7 +221,7 @@ io.on("connection", async (socket) => {
 	handleHeadline({ socket, io });
 	handleLike({ socket, io });
 	handleLol({ socket, io });
-	handleMakeThread({ socket });
+	handleMakeThread({ socket, io });
 	handleReadThread({ socket });
 	handleRes({ socket, io });
 	handleRpgInit({ socket });

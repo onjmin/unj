@@ -1,6 +1,6 @@
 import type { PoolClient } from "@neondatabase/serverless";
 import { addHours } from "date-fns";
-import type { Socket } from "socket.io";
+import type { Server, Socket } from "socket.io";
 import * as v from "valibot";
 import { boardIdMap, noharaBoard } from "../../common/request/board.js";
 import { contentSchemaMap } from "../../common/request/content-schema.js";
@@ -14,7 +14,7 @@ import { logger } from "../mylib/log.js";
 import nonce from "../mylib/nonce.js";
 import { pool } from "../mylib/pool.js";
 import { isSameSimhash } from "../mylib/simhash.js";
-import { getHeadlineRoom } from "../mylib/socket.js";
+import { getHeadlineRoom, isOverBroadcastLimit } from "../mylib/socket.js";
 import { TokenBucket } from "../mylib/token-bucket.js";
 
 const api = "makeThread";
@@ -24,7 +24,7 @@ export const tokenBucket = new TokenBucket({
 	costPerAction: 1,
 });
 
-export default ({ socket }: { socket: Socket }) => {
+export default ({ socket, io }: { socket: Socket; io: Server }) => {
 	socket.on(api, async (data) => {
 		const makeThread = v.safeParse(MakeThreadSchema, data, myConfig);
 		if (!makeThread.success) return;
@@ -178,10 +178,18 @@ export default ({ socket }: { socket: Socket }) => {
 				nonceKey: nonce.getUnsafe(socket), // スレ立て直後のreadThreadを成功させるための特別措置
 			});
 
-			// ヘッドライン更新
-			socket
-				.to(getHeadlineRoom(board.id))
-				.emit("newHeadline", { ok: true, new: newThread, yours: false });
+			// ヘッドラインの更新を全体通知
+			if (isOverBroadcastLimit(io)) {
+				socket
+					.to(getHeadlineRoom(board.id))
+					.emit("newHeadline", { ok: true, new: newThread, yours: false });
+			} else {
+				io.emit("newHeadline", {
+					ok: true,
+					new: newThread,
+					yours: false,
+				});
+			}
 
 			await poolClient.query("COMMIT"); // 問題なければコミット
 			logger.verbose(api);
