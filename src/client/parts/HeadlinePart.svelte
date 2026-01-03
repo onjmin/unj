@@ -86,7 +86,7 @@
 
 <div class="my-2 flex justify-center text-center">
   <div
-    class="w-[490px] max-w-full h-[64svh] overflow-y-auto border border-gray-500/20 rounded-md scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100"
+    class="w-[490px] max-w-full h-[50svh] sm:h-[25svh] overflow-y-auto border border-gray-500/20 rounded-md scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100"
   >
     <div class="px-2 py-1">
       <h2 class="text-xs leading-none font-semibold mb-1 flex items-center">
