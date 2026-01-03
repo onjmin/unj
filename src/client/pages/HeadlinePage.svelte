@@ -381,7 +381,7 @@
                                             class="flex items-start justify-between"
                                         >
                                             <div
-                                                class="grow font-medium leading-tight pr-2 wrap-break-words"
+                                                class="grow leading-tight pr-2 wrap-break-words"
                                             >
                                                 <span class="inline">
                                                     <a
@@ -421,7 +421,7 @@
                                             </div>
 
                                             <div
-                                                class="transition-all duration-200 ease-in font-medium shrink-0"
+                                                class="transition-all duration-200 ease-in shrink-0"
                                                 class:text-gray-500={thread.online ===
                                                     0}
                                                 class:text-blue-500={thread.online ===

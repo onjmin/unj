@@ -151,19 +151,18 @@
                     <span class="text-red-500 font-medium shrink-0"> +1 </span>
                   {/if}
 
-                  <!-- スレタイ -->
-                  <a
-                    {href}
-                    onclick={(e) => {
-                      if (e.button === 0) e.preventDefault();
-                    }}
-                  >
-                    {thread.title}
-                  </a>
-
-                  <!-- レス数 -->
-                  <span class="shrink-0">
-                    ({thread.resCount})
+                  <span class="font-medium">
+                    <a
+                      {href}
+                      onclick={(e) => {
+                        if (e.button === 0) e.preventDefault();
+                      }}
+                    >
+                      {thread.title}
+                    </a>
+                    <span class="shrink-0">
+                      ({thread.resCount})
+                    </span>
                   </span>
                 </div>
 
