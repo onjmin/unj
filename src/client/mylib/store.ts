@@ -50,3 +50,5 @@ export const customBackgroundOpacity = writable(
 customBackgroundOpacity.subscribe((value) => {
 	if (value !== null) unjStorage.customBackgroundOpacity.value = String(value);
 });
+
+export const backgroundEmbedding = writable(false);

@@ -15,6 +15,7 @@
     parseVideoEmbedNicovideo,
     parseVideoEmbedYouTube,
   } from "../mylib/embed.js";
+  import { backgroundEmbedding } from "../mylib/store.js";
 
   let { contentUrl = "", contentType = 0 } = $props();
 
@@ -78,8 +79,10 @@
     if (siteInfo) {
       tryEmbed(siteInfo);
       if (!embedding) return;
+      $backgroundEmbedding = true;
     }
     return () => {
+      $backgroundEmbedding = false;
       clearActiveController();
     };
   });

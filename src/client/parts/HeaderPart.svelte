@@ -12,6 +12,7 @@
     customBackgroundUrl,
     customBackgroundOpacity,
     isDarkMode,
+    backgroundEmbedding,
   } from "../mylib/store.js";
   import LeftMenuPart from "./LeftMenuPart.svelte";
   import RightMenuPart from "./RightMenuPart.svelte";
@@ -89,50 +90,52 @@
   {/if}
 </svelte:head>
 
-{#if $customBackgroundUrl !== "" && $customBackgroundUrl !== "null"}
-  <div class="absolute inset-0 z-0">
-    <img
-      src={$customBackgroundUrl}
-      alt="Background"
-      class="h-screen w-full object-cover"
-      style="opacity:{$customBackgroundOpacity};"
+{#if !$backgroundEmbedding}
+  {#if $customBackgroundUrl !== "" && $customBackgroundUrl !== "null"}
+    <div class="absolute inset-0 z-0">
+      <img
+        src={$customBackgroundUrl}
+        alt="Background"
+        class="h-screen w-full object-cover"
+        style="opacity:{$customBackgroundOpacity};"
+        aria-hidden="true"
+      />
+    </div>
+  {:else if isAnniversary([Anniversary.NEW_YEAR])}
+    <div class="absolute inset-0 z-0">
+      <img
+        src="https://plus.unsplash.com/premium_photo-1661964177687-57387c2cbd14"
+        alt="Background"
+        class="h-screen w-full object-cover opacity-20"
+        aria-hidden="true"
+      />
+    </div>
+  {:else if isAnniversary([Anniversary.HALLOWEEN])}
+    <div class="absolute inset-0 z-0">
+      <img
+        src={seededRandArray(
+          [
+            "https://images.unsplash.com/photo-1665582300475-d9b6f074495b",
+            "https://images.unsplash.com/photo-1598983870677-01e066a0b901",
+            "https://images.unsplash.com/photo-1666324574196-9d027f7ad5e0",
+            "https://images.unsplash.com/photo-1635078645658-9adaefeddc7f",
+            "https://plus.unsplash.com/premium_photo-1663840243055-535e20f4056f",
+            "https://plus.unsplash.com/premium_photo-1695680239779-c9c0a8642eb9",
+            "https://plus.unsplash.com/premium_photo-1694111280528-cbeb3bc37cfd",
+          ],
+          new Date().getHours().toString(),
+        )}
+        alt="Background"
+        class="h-screen w-full object-cover opacity-10"
+        aria-hidden="true"
+      />
+    </div>
+  {:else if isAnniversary([Anniversary.CHRISTMAS])}
+    <div
       aria-hidden="true"
-    />
-  </div>
-{:else if isAnniversary([Anniversary.NEW_YEAR])}
-  <div class="absolute inset-0 z-0">
-    <img
-      src="https://plus.unsplash.com/premium_photo-1661964177687-57387c2cbd14"
-      alt="Background"
-      class="h-screen w-full object-cover opacity-20"
-      aria-hidden="true"
-    />
-  </div>
-{:else if isAnniversary([Anniversary.HALLOWEEN])}
-  <div class="absolute inset-0 z-0">
-    <img
-      src={seededRandArray(
-        [
-          "https://images.unsplash.com/photo-1665582300475-d9b6f074495b",
-          "https://images.unsplash.com/photo-1598983870677-01e066a0b901",
-          "https://images.unsplash.com/photo-1666324574196-9d027f7ad5e0",
-          "https://images.unsplash.com/photo-1635078645658-9adaefeddc7f",
-          "https://plus.unsplash.com/premium_photo-1663840243055-535e20f4056f",
-          "https://plus.unsplash.com/premium_photo-1695680239779-c9c0a8642eb9",
-          "https://plus.unsplash.com/premium_photo-1694111280528-cbeb3bc37cfd",
-        ],
-        new Date().getHours().toString(),
-      )}
-      alt="Background"
-      class="h-screen w-full object-cover opacity-10"
-      aria-hidden="true"
-    />
-  </div>
-{:else if isAnniversary([Anniversary.CHRISTMAS])}
-  <div
-    aria-hidden="true"
-    class="absolute inset-0 z-0 pointer-events-none opacity-60 snow"
-  ></div>
+      class="absolute inset-0 z-0 pointer-events-none opacity-60 snow"
+    ></div>
+  {/if}
 {/if}
 
 <header class="unj-header-part w-full bg-gray-800 text-gray-200 shadow-md">
