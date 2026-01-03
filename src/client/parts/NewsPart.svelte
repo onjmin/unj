@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { RssIcon } from "@lucide/svelte";
+  import { MegaphoneIcon } from "@lucide/svelte";
   import { Link } from "svelte-routing";
   import type { Board } from "../../common/request/board.js";
   import {
@@ -53,7 +53,7 @@
 >
   <div class="px-2 py-1">
     <h2 class="text-xs leading-none font-semibold mb-1 flex items-center">
-      <RssIcon size={12} class="mr-1 shrink-0" />
+      <MegaphoneIcon size={12} class="mr-1 shrink-0" />
       ニュース
     </h2>
     {#if error}

@@ -14,7 +14,7 @@
     differenceInYears,
   } from "date-fns";
   import MessageBoxPart from "./MessageBoxPart.svelte";
-  import { Clock } from "@lucide/svelte";
+  import { RssIcon } from "@lucide/svelte";
   import { findMisskey } from "../mylib/misskey.js";
   import { queryResultLimit } from "../../common/request/schema.js";
   import { socket } from "../mylib/socket.js";
@@ -90,7 +90,7 @@
   >
     <div class="px-2 py-1">
       <h2 class="text-xs leading-none font-semibold mb-1 flex items-center">
-        <Clock size={12} class="mr-1 shrink-0" />
+        <RssIcon size={12} class="mr-1 shrink-0" />
         ヘッドライン
       </h2>
 
