@@ -1,6 +1,6 @@
 import type { Server, Socket } from "socket.io";
 
-export const multipleConnectionsLimit = 3; // 複タブ上限
+export const multipleConnectionsLimit = 2; // 複タブ上限
 const broadcastLimit = 16; // ブロードキャスト上限, 0.25 vCPU, 256 MB RAM, 2 GB Disk の場合
 
 /**
