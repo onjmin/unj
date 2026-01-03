@@ -42,7 +42,11 @@ import auth from "./mylib/auth.js";
 import { detectClientIp, getIP, isBannedIP, setIP } from "./mylib/ip.js";
 import { logger } from "./mylib/log.js";
 import nonce from "./mylib/nonce.js";
-import type { Online } from "./mylib/socket.js";
+import {
+	incrementAccessCount,
+	multipleConnectionsLimit,
+	online,
+} from "./mylib/socket.js";
 
 const bannedCheckMiddleware = (
 	req: Request,
@@ -103,11 +107,6 @@ app.get("/ping", bannedCheckMiddleware, (req, res) => {
 	res.send("pong");
 });
 
-const multipleConnectionsLimit = 3;
-const online: Online = new Map();
-let accessCount = 0;
-const accessCounter = () => accessCount;
-
 const router = express.Router();
 router.use(bannedCheckMiddleware, adminAuthMiddleware);
 registerLogGrep(router);
@@ -117,8 +116,8 @@ registerBlacklistIP(router);
 registerBlacklistTor(router);
 registerBlacklistVpngate(router);
 registerDebugProxy(router);
-registerDebugZombie(router, io, online);
-registerEmergencyDenyAll(router, io, online);
+registerDebugZombie(router, io);
+registerEmergencyDenyAll(router);
 registerThreadOwner(router);
 registerThreadRes(router, io);
 registerUserNinja(router);
@@ -217,7 +216,7 @@ io.on("connection", async (socket) => {
 	});
 
 	handleGetNonceKey({ socket });
-	handleJoinHeadline({ socket, io, online, accessCounter });
+	handleJoinHeadline({ socket, io });
 	handleJoinThread({ socket, io });
 	handleHeadline({ socket, io });
 	handleLike({ socket, io });
@@ -229,7 +228,7 @@ io.on("connection", async (socket) => {
 	handleRpgPatch({ socket, io });
 	handleSearch({ socket });
 
-	accessCount++;
+	incrementAccessCount();
 });
 
 const PORT = process.env.PORT || process.env.VITE_LOCALHOST_PORT;

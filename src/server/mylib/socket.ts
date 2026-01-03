@@ -1,9 +1,17 @@
 import type { Server, Socket } from "socket.io";
 
+export const multipleConnectionsLimit = 3; // 複タブ上限
+export const broadcastLimit = 16; // ブロードキャスト上限, 0.25 vCPU, 256 MB RAM, 2 GB Disk の場合
+
+let accessCount = 0;
+export const getAccessCount = () => accessCount;
+export const incrementAccessCount = () => accessCount++;
+
 /**
  * Map<IP, Set<socket.id>>
  */
-export type Online = Map<string, Set<string>>;
+export const online: Map<string, Set<string>> = new Map();
+
 export const getHeadlineRoom = (boardId: number) => `headline:${boardId}`;
 export const getThreadRoom = (threadId: number) => `thread:${threadId}`;
 

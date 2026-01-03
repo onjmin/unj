@@ -1,10 +1,10 @@
 import type { Request, Response, Router } from "express";
 import type { Server } from "socket.io";
-import type { Online } from "../../mylib/socket.js";
+import { online } from "../../mylib/socket.js";
 
 const api = "/debug/zombie";
 
-export default (router: Router, io: Server, online: Online) => {
+export default (router: Router, io: Server) => {
 	// GET: ゾンビ接続の確認
 	router.get(api, (req: Request, res: Response) => {
 		res.status(200).json({

@@ -3,25 +3,16 @@ import * as v from "valibot";
 import { boardIdMap } from "../../common/request/board.js";
 import { joinHeadlineSchema } from "../../common/request/schema.js";
 import {
-	type Online,
+	getAccessCount,
 	getHeadlineRoom,
+	online,
 	sizeOf,
 	switchTo,
 } from "../mylib/socket.js";
 
 const api = "joinHeadline";
 
-export default ({
-	socket,
-	io,
-	online,
-	accessCounter,
-}: {
-	socket: Socket;
-	io: Server;
-	online: Online;
-	accessCounter: () => number;
-}) => {
+export default ({ socket, io }: { socket: Socket; io: Server }) => {
 	socket.data.prevRoom = "";
 	socket.on(api, async (data) => {
 		const joinHeadline = v.safeParse(joinHeadlineSchema, data);
@@ -33,7 +24,7 @@ export default ({
 		const room = getHeadlineRoom(board.id);
 		const moved = await switchTo(socket, room);
 		const { size } = online;
-		const accessCount = accessCounter();
+		const accessCount = getAccessCount();
 		if (moved) {
 			io.to(room).emit(api, { ok: true, size, accessCount });
 			// 元いたスレに退室通知
@@ -50,7 +41,7 @@ export default ({
 	socket.on("disconnect", () => {
 		const { prevRoom } = socket.data;
 		const { size } = online;
-		const accessCount = accessCounter();
+		const accessCount = getAccessCount();
 		if (prevRoom !== "") {
 			socket.to(prevRoom).emit(api, { ok: true, size, accessCount });
 		}

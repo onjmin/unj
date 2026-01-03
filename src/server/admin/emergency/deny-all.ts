@@ -1,13 +1,11 @@
 import type { Request, Response, Router } from "express";
-import type { Server } from "socket.io";
-import type { Online } from "../../mylib/socket.js";
 
 const api = "/emergency/deny-all";
 
 // 攻撃遮断フラグ（モジュール変数）
 let denyAllFlag = false;
 
-export default (router: Router, io: Server, online: Online) => {
+export default (router: Router) => {
 	// GET: 現在の denyAll 状態を返す
 	router.get(api, (req: Request, res: Response) => {
 		res.status(200).json({
