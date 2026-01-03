@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Link } from "svelte-routing";
+  import { navigate } from "svelte-routing";
   import type { Board } from "../../common/request/board.js";
   import type { HeadlineThread } from "../../common/response/schema.js";
   import { ObjectStorage } from "../mylib/object-storage.js";
@@ -18,6 +18,7 @@
   import { findMisskey } from "../mylib/misskey.js";
   import { queryResultLimit } from "../../common/request/schema.js";
   import { socket } from "../mylib/socket.js";
+  import { scrollToTop } from "../mylib/scroll.js";
 
   let { board }: { board: Board } = $props();
 
@@ -117,48 +118,61 @@
       {:else}
         <ul class="list-none p-0 m-0">
           {#each items as thread}
+            {@const href = makePathname(
+              findMisskey(board.key, thread.id)
+                ? `/${board.key}/misskey/${findMisskey(board.key, thread.id)?.misskeyId}`
+                : `/${board.key}/thread/${thread.id}/${thread.resCount > queryResultLimit ? thread.resCount - 8 : ""}?top`,
+            )}
             <li>
-              <div class="px-2 py-1 text-xs text-left">
-                <Link
-                  to={makePathname(
-                    findMisskey(board.key, thread.id)
-                      ? `/${board.key}/misskey/${findMisskey(board.key, thread.id)?.misskeyId}`
-                      : `/${board.key}/thread/${thread.id}/${thread.resCount > queryResultLimit ? thread.resCount - 8 : ""}`,
-                  )}
-                  class="block"
-                >
-                  <!-- 1行目：ヘッドライン（背景あり） -->
-                  <div class="truncate bg-gray-500/10">
-                    <!-- 日時 -->
-                    <span class="text-gray-500 shrink-0">
-                      {formatTimeAgo(thread.latestResAt)}
-                    </span>
+              <div
+                class="px-2 py-1 text-xs text-left cursor-pointer hover:bg-gray-500/10 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-400"
+                role="link"
+                tabindex="0"
+                onclick={() => {
+                  navigate(href);
+                  scrollToTop();
+                }}
+                onkeydown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    e.currentTarget.click();
+                  }
+                }}
+              >
+                <!-- 1行目：ヘッドライン（背景あり） -->
+                <div class="truncate bg-gray-500/10 px-1">
+                  <!-- 日時 -->
+                  <span class="text-gray-500 shrink-0">
+                    {formatTimeAgo(thread.latestResAt)}
+                  </span>
 
-                    <!-- 新着レス数 -->
-                    {#if differenceInSeconds(Date.now(), thread.latestResAt) <= 64}
-                      <span class="text-red-500 font-medium shrink-0">
-                        +1
-                      </span>
-                    {/if}
-
-                    <!-- スレタイ -->
-                    <span class="font-medium">
-                      {thread.title}
-                    </span>
-
-                    <!-- レス数（スレタイ右） -->
-                    <span class="shrink-0">
-                      ({thread.resCount})
-                    </span>
-                  </div>
-
-                  <!-- 2行目：最新レス（背景なし） -->
-                  {#if thread.latestRes}
-                    <div class="mt-0.5 truncate px-2 text-gray-500">
-                      {thread.latestRes}
-                    </div>
+                  <!-- 新着レス数 -->
+                  {#if differenceInSeconds(Date.now(), thread.latestResAt) <= 64}
+                    <span class="text-red-500 font-medium shrink-0"> +1 </span>
                   {/if}
-                </Link>
+
+                  <!-- スレタイ -->
+                  <a
+                    {href}
+                    onclick={(e) => {
+                      if (e.button === 0) e.preventDefault();
+                    }}
+                  >
+                    {thread.title}
+                  </a>
+
+                  <!-- レス数 -->
+                  <span class="shrink-0">
+                    ({thread.resCount})
+                  </span>
+                </div>
+
+                <!-- 2行目：最新レス（背景なし） -->
+                {#if thread.latestRes}
+                  <div class="mt-0.5 truncate px-2">
+                    {thread.latestRes}
+                  </div>
+                {/if}
               </div>
             </li>
           {/each}

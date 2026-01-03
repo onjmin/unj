@@ -338,20 +338,20 @@
             <ul class="list-none p-0 m-0">
                 {#each threadList as thread}
                     {#if !ignoreList?.has(thread.ccUserId)}
+                        {@const href = makePathname(
+                            findMisskey(board.key, thread.id)
+                                ? `/${board.key}/misskey/${findMisskey(board.key, thread.id)?.misskeyId}`
+                                : `/${board.key}/thread/${thread.id}/${thread.resCount > queryResultLimit ? thread.resCount - 8 : ""}?top`,
+                        )}
                         <li>
                             <div
                                 tabindex="0"
                                 role="button"
                                 onkeydown={() => {}}
                                 class="border border-gray-500/20 hover:bg-gray-500/10 block w-full text-left p-2 transition-colors duration-150 ease-in-out cursor-pointer"
-                                onclick={() =>
-                                    navigate(
-                                        makePathname(
-                                            findMisskey(board.key, thread.id)
-                                                ? `/${board.key}/misskey/${findMisskey(board.key, thread.id)?.misskeyId}`
-                                                : `/${board.key}/thread/${thread.id}/${thread.resCount > queryResultLimit ? thread.resCount - 8 : ""}?top`,
-                                        ),
-                                    )}
+                                onclick={() => {
+                                    navigate(href);
+                                }}
                             >
                                 <div
                                     class="flex items-start text-xs sm:text-base"
@@ -384,7 +384,15 @@
                                                 class="grow font-medium leading-tight pr-2 wrap-break-words"
                                             >
                                                 <span class="inline">
-                                                    {thread.title}
+                                                    <a
+                                                        {href}
+                                                        onclick={(e) => {
+                                                            if (e.button === 0)
+                                                                e.preventDefault();
+                                                        }}
+                                                    >
+                                                        {thread.title}
+                                                    </a>
                                                 </span>
                                                 <span
                                                     class="inline-block shrink-0 ml-1 whitespace-nowrap"

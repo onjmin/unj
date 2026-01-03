@@ -1,3 +1,8 @@
+export const scrollToTop = () => {
+	const main = document.querySelector(".unj-main-part") ?? document.body;
+	main.scrollTo({ top: 0, behavior: "smooth" });
+};
+
 export const scrollToEnd = () => {
 	const main = document.querySelector(".unj-main-part") ?? document.body;
 	main.scrollTo({ top: main.scrollHeight, behavior: "smooth" });
