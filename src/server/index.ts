@@ -103,7 +103,7 @@ app.get("/ping", bannedCheckMiddleware, (req, res) => {
 	res.send("pong");
 });
 
-const multipleConnectionsLimit = 2;
+const multipleConnectionsLimit = 3;
 const online: Online = new Map();
 let accessCount = 0;
 const accessCounter = () => accessCount;
