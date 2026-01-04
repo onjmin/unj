@@ -392,11 +392,13 @@
                                                         {thread.title}
                                                     </a>
                                                 </span>
-                                                <span
-                                                    class="inline-block shrink-0 ml-1 whitespace-nowrap"
-                                                >
-                                                    ({thread.resCount})
-                                                </span>
+                                                {#if !misskey}
+                                                    <span
+                                                        class="inline-block shrink-0 ml-1 whitespace-nowrap"
+                                                    >
+                                                        ({thread.resCount})
+                                                    </span>
+                                                {/if}
                                             </div>
                                             <div
                                                 class="opacity-50 shrink-0 ml-2 mt-0"
