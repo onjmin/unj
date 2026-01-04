@@ -34,10 +34,11 @@
 
     const INITIAL_LIMIT = 16;
     const LOAD_MORE_LIMIT = 16;
+    const misskeyEmojiRegex = /:[A-Za-z0-9_]{1,32}:/g;
 
     let { board, misskeyId }: { board: Board; misskeyId: string } = $props();
 
-    let misskey: Misskey | undefined;
+    let misskey: Misskey | undefined = $state();
     $effect.root(() => {
         misskey = findMisskey(board.key, misskeyId);
     });
@@ -204,7 +205,9 @@
             投稿をしたい場合はMisskeyを開いてください。
         </p>
         <a
-            href={`https://${hostname}`}
+            href={misskey?.channelId
+                ? `https://${hostname}/channels/${misskey.channelId}`
+                : `https://${hostname}`}
             target="_blank"
             rel="noopener noreferrer"
             class="flex items-center space-x-2 px-4 py-2 rounded-lg bg-gray-500/10 hover:bg-gray-500/20 transition-colors duration-200"
@@ -286,7 +289,10 @@
                                             {:else}
                                                 <span
                                                     class="unj-font whitespace-pre-wrap"
-                                                    >{segment.content}</span
+                                                    >{segment.content.replace(
+                                                        misskeyEmojiRegex,
+                                                        "",
+                                                    )}</span
                                                 >
                                             {/if}
                                         {/each}
