@@ -240,38 +240,32 @@
         </div>
         <div class="mx-auto w-full px-2">
             <div>
-                {#each timeline as note (note.id)}
+                {#each timeline as note, i}
                     {#if !note.isHidden && note.text !== null && note.userId !== "9tjlknm0fl"}
                         {@const embeddable = findEmbeddable(note.text ?? "")}
                         <div class="p-4 rounded-lg shadow-inner">
                             <div
                                 class="unj-font flex flex-wrap items-center mb-2 text-gray-500 text-sm"
                             >
-                                <span> 0： </span>
-                                <span class="font-bold text-teal-600">
-                                    {note.user.name ?? note.user.username}
-                                </span>
-                                <span>
-                                    ：{format(
+                                <span class="mr-1">{i + 1}:</span>
+                                <span class="font-bold text-teal-600"
+                                    >風吹けば名無し</span
+                                >
+                                <span class="mx-1">:</span>
+                                <span
+                                    >{format(
                                         note.createdAt,
                                         "yy/MM/dd(EEE) HH:mm:ss",
                                         {
                                             locale: ja,
                                         },
-                                    )}
-                                </span>
-                                <span class="ml-1">
-                                    ID:{note.user.username}
-                                </span>
+                                    )}</span
+                                >
+                                <span class="ml-1">ID:{note.user.username}</span
+                                >
                             </div>
                             <div class="flex items-start">
-                                <div class="mr-2 shrink-0">
-                                    <img
-                                        src={note.user.avatarUrl}
-                                        alt={`${note.user.username}'s avatar`}
-                                        class="w-16 h-16 rounded-full"
-                                    />
-                                </div>
+                                <div class="w-8"></div>
 
                                 <div class="flex-1 min-w-0">
                                     <div
