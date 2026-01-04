@@ -2,7 +2,7 @@ export type Misskey = {
 	misskeyId: string;
 	hostname: string;
 	title: string;
-	api: string;
+	channelId?: string;
 };
 
 /**
@@ -18,22 +18,18 @@ export const misskeyList: Map<string, Misskey[]> = new Map();
 
 misskeyList.set("unj", [
 	{
-		misskeyId: "inmusky",
-		hostname: "inmusky.net",
-		title: "いんむすきー",
-		api: "https://inmusky.net/api/notes/local-timeline",
-	},
-	{
 		misskeyId: "nukumori",
 		hostname: "misskey.nukumori-sky.net",
-		title: "ぬくもりすきー（Nukumori-Sky）",
-		api: "https://misskey.nukumori-sky.net/api/notes/local-timeline",
+		title: "ぬくもりすきー",
 	},
+]);
+
+misskeyList.set("roze", [
 	{
-		misskeyId: "design",
-		hostname: "misskey.design",
-		title: "一次創作 misskey.design",
-		api: "https://misskey.design/api/notes/local-timeline",
+		misskeyId: "roze",
+		hostname: "nijimiss.moe",
+		title: "にじみすUTAU部",
+		channelId: "01H17XY90GPQTSP2X1QPXRS1JB",
 	},
 ]);
 
@@ -41,12 +37,17 @@ misskeyList.set("unj", [
  * Misskeyのタイムラインを取得する関数
  */
 export const fetchMisskeyTimeline = (
-	url: string,
+	misskey: Misskey,
 	limit = 1,
 	untilId?: string,
 ) => {
 	const controller = new AbortController();
 	const signal = controller.signal;
+
+	const isChannelsTimeline = "channelId" in misskey;
+	const url = isChannelsTimeline
+		? `https://${misskey.hostname}/api/channels/timeline`
+		: `https://${misskey.hostname}/api/notes/local-timeline`;
 
 	const promise = fetch(url, {
 		method: "POST",
@@ -56,6 +57,7 @@ export const fetchMisskeyTimeline = (
 		body: JSON.stringify({
 			limit,
 			untilId,
+			...(isChannelsTimeline ? { channelId: misskey.channelId } : {}),
 		}),
 		signal,
 	})

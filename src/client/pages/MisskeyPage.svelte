@@ -44,14 +44,13 @@
 
     const hostname = $derived(misskey?.hostname ?? "");
     const title = $derived(misskey?.title ?? "");
-    const api = $derived(misskey?.api ?? "");
 
     let timeline = $state<Note[]>([]);
     let isLoading = $state(false);
     let lastNoteId: string | undefined;
 
     async function loadTimeline(limit: number, untilId?: string) {
-        if (isLoading || !api) return;
+        if (isLoading || !misskey) return;
 
         // キャッシュを最初にチェック
         const cachedTimeline = await misskeyTimelineCache.get();
@@ -61,7 +60,7 @@
 
         isLoading = true;
         const { promise, controller } = fetchMisskeyTimeline(
-            api,
+            misskey,
             limit,
             untilId,
         );

@@ -158,7 +158,7 @@
     };
 
     const fetchMisskey = (misskey: Misskey, misskeyBoard: Board) => {
-        const { controller, promise } = fetchMisskeyTimeline(misskey.api);
+        const { controller, promise } = fetchMisskeyTimeline(misskey);
         promise.then((timeline) => {
             if (!timeline.length) return;
             const [note] = timeline;
@@ -338,9 +338,10 @@
             <ul class="list-none p-0 m-0">
                 {#each threadList as thread}
                     {#if !ignoreList?.has(thread.ccUserId)}
+                        {@const misskey = findMisskey(board.key, thread.id)}
                         {@const href = makePathname(
-                            findMisskey(board.key, thread.id)
-                                ? `/${board.key}/misskey/${findMisskey(board.key, thread.id)?.misskeyId}`
+                            misskey
+                                ? `/${board.key}/misskey/${misskey.misskeyId}`
                                 : `/${board.key}/thread/${thread.id}/${thread.resCount > queryResultLimit ? thread.resCount - 8 : ""}?top`,
                         )}
                         <li>
@@ -359,12 +360,9 @@
                                     <div class="mr-2 shrink-0 relative top-0.5">
                                         {#key thread.id}
                                             <div class="w-4 h-4">
-                                                {#if findMisskey(board.key, thread.id)}
+                                                {#if misskey}
                                                     <FaviconPart
-                                                        hostname={findMisskey(
-                                                            board.key,
-                                                            thread.id,
-                                                        )?.hostname}
+                                                        hostname={misskey.hostname}
                                                     />
                                                 {:else}
                                                     <TwemojiPart
@@ -420,19 +418,27 @@
                                                 {/if}
                                             </div>
 
-                                            <div
-                                                class="transition-all duration-200 ease-in shrink-0"
-                                                class:text-gray-500={thread.online ===
-                                                    0}
-                                                class:text-blue-500={thread.online ===
-                                                    1}
-                                                class:text-orange-500={thread.online ===
-                                                    2}
-                                                class:text-red-500={thread.online >=
-                                                    3}
-                                            >
-                                                {thread.online}人閲覧中
-                                            </div>
+                                            {#if misskey}
+                                                <div
+                                                    class="shrink-0 text-purple-500"
+                                                >
+                                                    @misskey
+                                                </div>
+                                            {:else}
+                                                <div
+                                                    class="transition-all duration-200 ease-in shrink-0"
+                                                    class:text-gray-500={thread.online ===
+                                                        0}
+                                                    class:text-blue-500={thread.online ===
+                                                        1}
+                                                    class:text-orange-500={thread.online ===
+                                                        2}
+                                                    class:text-red-500={thread.online >=
+                                                        3}
+                                                >
+                                                    {thread.online}人閲覧中
+                                                </div>
+                                            {/if}
                                         </div>
                                     </div>
                                 </div>
