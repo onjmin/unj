@@ -22,14 +22,41 @@ misskeyList.set("unj", [
 		hostname: "misskey.nukumori-sky.net",
 		title: "ぬくもりすきー",
 	},
+	{
+		misskeyId: "submarin-npb",
+		hostname: "submarin.online",
+		title: "さぶまりん野球部",
+		channelId: "9guilbsdvp",
+	},
+	{
+		misskeyId: "gamelore-npb",
+		hostname: "misskey.gamelore.fun",
+		title: "げむすき野球部（総合）",
+		channelId: "9c07lvabtw",
+	},
 ]);
 
 misskeyList.set("roze", [
 	{
-		misskeyId: "roze",
+		misskeyId: "nijimiss-utau",
 		hostname: "nijimiss.moe",
 		title: "にじみすUTAU部",
 		channelId: "01H17XY90GPQTSP2X1QPXRS1JB",
+	},
+	{
+		misskeyId: "design-utau",
+		hostname: "misskey.design",
+		title: "合成音声チャンネル",
+		channelId: "9cpwt620gm",
+	},
+]);
+
+misskeyList.set("news4vip", [
+	{
+		misskeyId: "gamelore-news",
+		hostname: "misskey.gamelore.fun",
+		title: "みんながニュース記者",
+		channelId: "9gh3xcht9l",
 	},
 ]);
 
