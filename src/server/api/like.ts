@@ -23,7 +23,7 @@ const lazyUpdate = (threadId: number, goodCount: number, badCount: number) => {
 				"UPDATE threads SET good_count = $1, bad_count = $2 WHERE id = $3",
 				[goodCount, badCount, threadId],
 			);
-		} catch (err) {}
+		} catch {}
 	}, delay);
 	neet.set(threadId, id);
 };

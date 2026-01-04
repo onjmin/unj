@@ -23,7 +23,7 @@ const lazyUpdate = (threadId: number, lolCount: number) => {
 				lolCount,
 				threadId,
 			]);
-		} catch (err) {}
+		} catch {}
 	}, delay);
 	neet.set(threadId, id);
 };

@@ -13,6 +13,6 @@ export class ObjectStorage<T> {
 	set(value: T | null): void {
 		try {
 			localforage.setItem(this.key, JSON.parse(JSON.stringify(value)));
-		} catch (err) {}
+		} catch {}
 	}
 }
