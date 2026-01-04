@@ -31,6 +31,7 @@
     import MessageBoxPart from "../parts/MessageBoxPart.svelte";
     import HeadlinePart from "../parts/HeadlinePart.svelte";
     import CopyleftPart from "../parts/CopyleftPart.svelte";
+    import { untrack } from "svelte";
 
     const INITIAL_LIMIT = 16;
     const LOAD_MORE_LIMIT = 16;
@@ -39,8 +40,20 @@
     let { board, misskeyId }: { board: Board; misskeyId: string } = $props();
 
     let misskey: Misskey | undefined = $state();
-    $effect.root(() => {
-        misskey = findMisskey(board.key, misskeyId);
+    let misskeyTimelineCache: ObjectStorage<Note[]>;
+    $effect(() => {
+        // このエフェクトは board.key か misskeyId が変わった時だけ実行したい
+        const key = board.key;
+        const id = misskeyId;
+
+        // 更新処理と関数実行を untrack で囲む
+        untrack(() => {
+            misskey = findMisskey(key, id);
+            misskeyTimelineCache = new ObjectStorage<Note[]>(
+                `misskeyTimelineCache###${id}`,
+            );
+            loadTimeline(INITIAL_LIMIT);
+        });
     });
 
     const hostname = $derived(misskey?.hostname ?? "");
@@ -91,18 +104,6 @@
             controller.abort();
         }
     }
-
-    // Misskeyの過去ログの保存
-    let misskeyTimelineCache: ObjectStorage<Note[]>;
-    $effect.root(() => {
-        misskeyTimelineCache = new ObjectStorage<Note[]>(
-            `misskeyTimelineCache###${misskeyId}`,
-        );
-    });
-
-    $effect.root(() => {
-        loadTimeline(INITIAL_LIMIT);
-    });
 
     const handleLoadMore = () => {
         if (lastNoteId) {
