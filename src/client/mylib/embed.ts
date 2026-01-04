@@ -79,28 +79,31 @@ export const parseGifEmbedGIPHY = (url: URL): string | undefined => {
 export const parseVideoEmbedYouTube = (url: URL): string | undefined => {
 	const path = url.pathname;
 	let id = "";
-	// youtu.be 短縮URLの場合: https://youtu.be/VIDEO_ID
+
+	// youtu.be 短縮URL: https://youtu.be/VIDEO_ID
 	if (url.hostname === "youtu.be") {
-		// pathname は "/VIDEO_ID" になってる
 		id = path.slice(1);
 	}
-	// ショート動画の場合: https://www.youtube.com/shorts/VIDEO_ID
-	else if (path.startsWith("/shorts/")) {
-		// "/shorts/VIDEO_ID" となっているので、2 番目の要素が動画ID
+	// ライブ配信: https://www.youtube.com/live/VIDEO_ID
+	else if (path.startsWith("/live/")) {
 		const parts = path.split("/");
 		id = parts[2];
 	}
-	// 埋め込み済みの場合: https://www.youtube.com/embed/VIDEO_ID
+	// ショート動画: https://www.youtube.com/shorts/VIDEO_ID
+	else if (path.startsWith("/shorts/")) {
+		const parts = path.split("/");
+		id = parts[2];
+	}
+	// 埋め込みURL: https://www.youtube.com/embed/VIDEO_ID
 	else if (path.startsWith("/embed/")) {
 		const parts = path.split("/");
 		id = parts[2];
 	}
-	// 通常の動画の場合: https://www.youtube.com/watch?v=VIDEO_ID など
+	// 通常動画: https://www.youtube.com/watch?v=VIDEO_ID
 	else {
-		// URLSearchParams から "v" パラメータを取得
 		id = url.searchParams.get("v") || "";
 	}
-	// 動画 ID が抽出できた場合、埋め込み URL を返す
+
 	if (!id) return;
 	return `https://www.youtube.com/embed/${id}`;
 };
@@ -124,7 +127,6 @@ export const parseAudioEmbedSpotify = (url: URL): string | undefined => {
 export const parseAudioEmbedSuno = (url: URL): string | undefined => {
 	const match = url.pathname.match(/\/(song)\/([a-f0-9-]{36})/);
 	if (!match) return;
-	const type = match[1];
 	const id = match[2];
 	return `https://suno.com/embed/${id}`;
 };
