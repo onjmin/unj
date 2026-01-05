@@ -25,6 +25,7 @@
     import MessageBoxPart from "../parts/MessageBoxPart.svelte";
     import HeadlinePart from "../parts/HeadlinePart.svelte";
     import CopyleftPart from "../parts/CopyleftPart.svelte";
+    import PaginationControlsPart from "../parts/PaginationControlsPart.svelte";
 
     let { board, newsId }: { board: Board; newsId: string } = $props();
 
@@ -105,49 +106,26 @@
 <HeaderPart {board} {title} />
 
 {#snippet paginationControls()}
-    <div class="flex justify-center items-center space-x-2">
-        <!-- First Page -->
-        <button
-            class="bg-gray-600 text-gray-200 p-2 rounded"
-            disabled={first === null}
-            onclick={() =>
-                navigate(makePathname(`/${board.key}/news/${first}`))}
-        >
-            <ChevronFirstIcon class="w-5 h-5" />
-        </button>
-
-        <!-- Prev -->
-        <button
-            class="bg-gray-600 text-gray-200 p-2 rounded"
-            disabled={prev === null}
-            onclick={() => navigate(makePathname(`/${board.key}/news/${prev}`))}
-        >
-            <ChevronLeftIcon class="w-5 h-5" />
-        </button>
-
-        <!-- Checkbox Outline (Disabled) -->
-        <button class="bg-gray-600 text-gray-200 p-2 rounded" disabled>
-            <ChevronsLeftRightEllipsisIcon class="w-5 h-5" />
-        </button>
-
-        <!-- Next -->
-        <button
-            class="bg-gray-600 text-gray-200 p-2 rounded"
-            disabled={next === null}
-            onclick={() => navigate(makePathname(`/${board.key}/news/${next}`))}
-        >
-            <ChevronRightIcon class="w-5 h-5" />
-        </button>
-
-        <!-- Last Page -->
-        <button
-            class="bg-gray-600 text-gray-200 p-2 rounded"
-            disabled={last === null}
-            onclick={() => navigate(makePathname(`/${board.key}/news/${last}`))}
-        >
-            <ChevronLastIcon class="w-5 h-5" />
-        </button>
-    </div>
+    <PaginationControlsPart
+        currentPage={0}
+        totalPages={0}
+        onFirst={() =>
+            first !== null &&
+            navigate(makePathname(`/${board.key}/news/${first}`))}
+        onPrev={() =>
+            prev !== null &&
+            navigate(makePathname(`/${board.key}/news/${prev}`))}
+        onNext={() =>
+            next !== null &&
+            navigate(makePathname(`/${board.key}/news/${next}`))}
+        onLast={() =>
+            last !== null &&
+            navigate(makePathname(`/${board.key}/news/${last}`))}
+        firstDisabled={first === null}
+        prevDisabled={prev === null}
+        nextDisabled={next === null}
+        lastDisabled={last === null}
+    />
 {/snippet}
 
 <MainPart {board}>
@@ -202,11 +180,7 @@
                 </span>
             {/if}
         </h1>
-
-        <div class="bg-gray-800 rounded-lg">
-            {@render paginationControls()}
-        </div>
-
+        {@render paginationControls()}
         <div class="flex justify-center">
             <div
                 class="text-left w-full max-w-3xl px-4 wrap-break-words whitespace-normal"
@@ -214,11 +188,7 @@
                 {@html item.content}
             </div>
         </div>
-
-        <div class="bg-gray-800 rounded-lg">
-            {@render paginationControls()}
-        </div>
-
+        {@render paginationControls()}
         <FooterLinkPart {board} />
         <HeadlinePart {board} />
         <CopyleftPart />

@@ -108,6 +108,7 @@
     import TermsConfirmPart from "../parts/TermsConfirmPart.svelte";
     import CopyleftPart from "../parts/CopyleftPart.svelte";
     import HeadlinePart from "../parts/HeadlinePart.svelte";
+    import PaginationControlsPart from "../parts/PaginationControlsPart.svelte";
 
     changeVolume();
     changeNewResSound();
@@ -1122,81 +1123,54 @@
 {/if} -->
 
 {#snippet paginationControls()}
-    <div class="flex justify-center items-center space-x-2">
-        <!-- First Page Button -->
-        <button
-            class="bg-gray-600 text-gray-200 p-2 rounded"
-            disabled={emitting || resNum < 3}
-            onclick={() => {
-                if (!thread) return;
-                navigate(makePathname(`/${board.key}/thread/${thread.id}/`));
-            }}
-        >
-            <ChevronFirstIcon class="w-5 h-5" />
-        </button>
-
-        <!-- Chevron Left Button -->
-        <button
-            class="bg-gray-600 text-gray-200 p-2 rounded"
-            disabled={emitting || resNum < 3}
-            onclick={() => {
-                if (!thread) return;
-                navigate(
-                    makePathname(
-                        `/${board.key}/thread/${thread.id}/${Math.max(resNum - queryResultLimit, 2)}`.replace(
-                            /\/2$/,
-                            "/",
-                        ),
-                    ),
-                );
-            }}
-        >
-            <ChevronLeftIcon class="w-5 h-5" />
-        </button>
-
-        <!-- Checkbox Outline (Disabled) -->
-        <button class="bg-gray-600 text-gray-200 p-2 rounded" disabled>
-            <ChevronsLeftRightEllipsisIcon class="w-5 h-5" />
-        </button>
-
-        <!-- Chevron Right Button -->
-        <button
-            class="bg-gray-600 text-gray-200 p-2 rounded"
-            disabled={emitting ||
-                (thread &&
-                    (thread.resCount < queryResultLimit ||
-                        resNum > thread.resCount - queryResultLimit))}
-            onclick={() => {
-                if (!thread) return;
-                navigate(
-                    makePathname(
-                        `/${board.key}/thread/${thread.id}/${Math.min(resNum + queryResultLimit, thread.resCount - queryResultLimit + 1)}`,
-                    ),
-                );
-            }}
-        >
-            <ChevronRightIcon class="w-5 h-5" />
-        </button>
-
-        <!-- Last Page Button -->
-        <button
-            class="bg-gray-600 text-gray-200 p-2 rounded"
-            disabled={emitting ||
-                (thread &&
-                    (thread.resCount < queryResultLimit ||
-                        resNum > thread.resCount - queryResultLimit))}
-            onclick={() => {
-                if (!thread) return;
-                navigate(
-                    makePathname(
-                        `/${board.key}/thread/${thread.id}/${thread.resCount - queryResultLimit + 1}`,
-                    ),
-                );
-            }}
-        >
-            <ChevronLastIcon class="w-5 h-5" />
-        </button>
-    </div>
+    <PaginationControlsPart
+        currentPage={0}
+        totalPages={0}
+        onFirst={() => {
+            if (!thread) return;
+            navigate(makePathname(`/${board.key}/thread/${thread.id}/`));
+        }}
+        onPrev={() => {
+            if (!thread) return;
+            navigate(
+                makePathname(
+                    `/${board.key}/thread/${thread.id}/${Math.max(
+                        resNum - queryResultLimit,
+                        2,
+                    )}`.replace(/\/2$/, "/"),
+                ),
+            );
+        }}
+        onNext={() => {
+            if (!thread) return;
+            navigate(
+                makePathname(
+                    `/${board.key}/thread/${thread.id}/${Math.min(
+                        resNum + queryResultLimit,
+                        thread.resCount - queryResultLimit + 1,
+                    )}`,
+                ),
+            );
+        }}
+        onLast={() => {
+            if (!thread) return;
+            navigate(
+                makePathname(
+                    `/${board.key}/thread/${thread.id}/${thread.resCount - queryResultLimit + 1}`,
+                ),
+            );
+        }}
+        firstDisabled={emitting || resNum < 3}
+        prevDisabled={emitting || resNum < 3}
+        nextDisabled={emitting ||
+            (thread &&
+                (thread.resCount < queryResultLimit ||
+                    resNum > thread.resCount - queryResultLimit))}
+        lastDisabled={emitting ||
+            (thread &&
+                (thread.resCount < queryResultLimit ||
+                    resNum > thread.resCount - queryResultLimit))}
+    />
 {/snippet}
 
 <MainPart {board}>
@@ -1295,9 +1269,7 @@
                 </div>
             </div>
         </div>
-        <div class="bg-gray-800 rounded-lg">
-            {@render paginationControls()}
-        </div>
+        {@render paginationControls()}
         <div class="res-list">
             {#if !ignoreList?.has(thread.ccUserId)}
                 <div id={makeUnjResNumId(1)}>
@@ -1403,9 +1375,7 @@
                 isAlreadyScrollEnd = visible;
             }}
         ></div>
-        <div class="bg-gray-800 rounded-lg">
-            {@render paginationControls()}
-        </div>
+        {@render paginationControls()}
         <Paper>
             <Content>
                 <div class="flex flex-col items-center">

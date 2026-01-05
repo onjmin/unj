@@ -29,7 +29,7 @@
     import { ObjectStorage } from "../mylib/object-storage.js";
     import { type ResHistory } from "../mylib/res-history.js";
     import ImagePreviewModal from "../parts/ImagePreviewPart.svelte";
-    import PaginationControls from "../parts/PaginationControls.svelte";
+    import PaginatedArrayViewPart from "../parts/PaginatedArrayViewPart.svelte";
 
     // boardに加えて、すべての板の情報であるboardsを受け取るように変更
     let { board }: { board: Board } = $props();
@@ -201,7 +201,7 @@
                             {/if}
                         </h3>
 
-                        <PaginationControls list={group.histories}>
+                        <PaginatedArrayViewPart list={group.histories}>
                             {#snippet children(resHistory: ResHistory)}
                                 {@const newResponses =
                                     resHistory.resCount - resHistory.resNum}
@@ -245,7 +245,7 @@
                                     </div>
                                 </Link>
                             {/snippet}
-                        </PaginationControls>
+                        </PaginatedArrayViewPart>
                     </div>
                 {/each}
             {/if}
@@ -262,7 +262,7 @@
                         <div>画像うｐしてから出直してね。</div>
                     </div>
                 {:else}
-                    <PaginationControls list={uploadList}>
+                    <PaginatedArrayViewPart list={uploadList}>
                         {#snippet children(uploadResponse: UploadResponse)}
                             <div
                                 class="flex items-center py-2 border-b last:border-b-0 border-gray-500/40"
@@ -333,7 +333,7 @@
                                 </div>
                             </div>
                         {/snippet}
-                    </PaginationControls>
+                    </PaginatedArrayViewPart>
                 {/if}
             </div>
         </div>
@@ -349,7 +349,7 @@
                         <div>お絵描きうｐしてから出直してね。</div>
                     </div>
                 {:else}
-                    <PaginationControls list={imgurList}>
+                    <PaginatedArrayViewPart list={imgurList}>
                         {#snippet children(imgurResponse: ImgurResponse)}
                             <div
                                 class="flex items-center py-2 border-b last:border-b-0 border-gray-500/40"
@@ -418,7 +418,7 @@
                                 </div>
                             </div>
                         {/snippet}
-                    </PaginationControls>
+                    </PaginatedArrayViewPart>
                 {/if}
             </div>
         </div>
