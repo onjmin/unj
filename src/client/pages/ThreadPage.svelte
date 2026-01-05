@@ -9,11 +9,6 @@
         ArrowDownIcon,
         BrushIcon,
         ChevronDownIcon,
-        ChevronFirstIcon,
-        ChevronLastIcon,
-        ChevronLeftIcon,
-        ChevronRightIcon,
-        ChevronsLeftRightEllipsisIcon,
         ChevronUpIcon,
         ExpandIcon,
     } from "@lucide/svelte";
@@ -1124,8 +1119,19 @@
 
 {#snippet paginationControls()}
     <PaginationControlsPart
-        currentPage={0}
-        totalPages={0}
+        currentPage={Math.max(
+            1,
+            Math.floor(
+                Math.min(
+                    resNum - 2 + queryResultLimit - 1,
+                    (thread?.resCount ?? 0) - 1,
+                ) / queryResultLimit,
+            ) + 1,
+        )}
+        totalPages={Math.max(
+            1,
+            Math.ceil((thread?.resCount ?? 0) / queryResultLimit),
+        )}
         onFirst={() => {
             if (!thread) return;
             navigate(makePathname(`/${board.key}/thread/${thread.id}/`));

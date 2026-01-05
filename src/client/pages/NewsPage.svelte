@@ -5,13 +5,6 @@
     import MainPart from "../parts/MainPart.svelte";
     ///////////////
 
-    import {
-        ChevronFirstIcon,
-        ChevronLastIcon,
-        ChevronLeftIcon,
-        ChevronRightIcon,
-        ChevronsLeftRightEllipsisIcon,
-    } from "@lucide/svelte";
     import { navigate } from "svelte-routing";
     import type { Board } from "../../common/request/board.js";
     import {
@@ -51,11 +44,13 @@
     let prev: string | null = $state(null);
     let next: string | null = $state(null);
     let last: string | null = $state(null);
+    let index = $state(0);
     const updatePagination = () => {
         if (!items) return;
         const lastIdx = items.length - 1;
         const idx = items.map((v) => v.id).indexOf(newsId);
         if (idx === -1) return;
+        index = idx + 1;
         const a = idx !== 0;
         first = !a ? null : items[0].id;
         prev = !a ? null : items[idx - 1].id;
@@ -107,8 +102,8 @@
 
 {#snippet paginationControls()}
     <PaginationControlsPart
-        currentPage={0}
-        totalPages={0}
+        currentPage={index}
+        totalPages={items?.length ?? 0}
         onFirst={() =>
             first !== null &&
             navigate(makePathname(`/${board.key}/news/${first}`))}
