@@ -73,11 +73,10 @@
         }
 
         isLoading = true;
-        const { promise, controller } = fetchMisskeyTimeline(
-            misskey,
+        const { promise, controller } = fetchMisskeyTimeline(misskey, {
             limit,
             untilId,
-        );
+        });
 
         try {
             const newTimeline = await promise;

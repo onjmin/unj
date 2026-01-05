@@ -59,14 +59,20 @@ misskeyList.set("news4vip", [
 		channelId: "9gh3xcht9l",
 	},
 ]);
-
 /**
  * Misskeyのタイムラインを取得する関数
  */
 export const fetchMisskeyTimeline = (
 	misskey: Misskey,
-	limit = 1,
-	untilId?: string,
+	{
+		limit = 1,
+		untilId,
+		sinceId,
+	}: {
+		limit?: number;
+		untilId?: string;
+		sinceId?: string;
+	} = {},
 ) => {
 	const controller = new AbortController();
 	const signal = controller.signal;
@@ -84,6 +90,7 @@ export const fetchMisskeyTimeline = (
 		body: JSON.stringify({
 			limit,
 			untilId,
+			sinceId,
 			...(isChannelsTimeline ? { channelId: misskey.channelId } : {}),
 		}),
 		signal,

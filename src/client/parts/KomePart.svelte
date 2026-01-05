@@ -78,7 +78,9 @@
     return unsubscribe;
   };
 
-  $effect.root(() => {
+  $effect(() => {
+    if (!room) return;
+    messages = [];
     let unsubscribe: (() => void) | null = null;
     signInAnonymously(auth)
       .then((userCredential) => {
