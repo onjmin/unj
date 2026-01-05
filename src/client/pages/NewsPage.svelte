@@ -108,7 +108,7 @@
     <div class="flex justify-center items-center space-x-2">
         <!-- First Page -->
         <button
-            class="p-2 rounded bg-gray-600 text-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            class="bg-gray-600 text-gray-200 p-2 rounded"
             disabled={first === null}
             onclick={() =>
                 navigate(makePathname(`/${board.key}/news/${first}`))}
@@ -118,7 +118,7 @@
 
         <!-- Prev -->
         <button
-            class="p-2 rounded bg-gray-600 text-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            class="bg-gray-600 text-gray-200 p-2 rounded"
             disabled={prev === null}
             onclick={() => navigate(makePathname(`/${board.key}/news/${prev}`))}
         >
@@ -132,7 +132,7 @@
 
         <!-- Next -->
         <button
-            class="p-2 rounded bg-gray-600 text-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            class="bg-gray-600 text-gray-200 p-2 rounded"
             disabled={next === null}
             onclick={() => navigate(makePathname(`/${board.key}/news/${next}`))}
         >
@@ -141,7 +141,7 @@
 
         <!-- Last Page -->
         <button
-            class="p-2 rounded bg-gray-600 text-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            class="bg-gray-600 text-gray-200 p-2 rounded"
             disabled={last === null}
             onclick={() => navigate(makePathname(`/${board.key}/news/${last}`))}
         >
@@ -203,9 +203,7 @@
             {/if}
         </h1>
 
-        <div
-            class="bg-gray-800 rounded-lg mx-auto w-full max-w-3xl px-4 mb-4 p-2"
-        >
+        <div class="bg-gray-800 rounded-lg">
             {@render paginationControls()}
         </div>
 
@@ -217,9 +215,7 @@
             </div>
         </div>
 
-        <div
-            class="bg-gray-800 rounded-lg mx-auto w-full max-w-3xl px-4 mt-4 p-2"
-        >
+        <div class="bg-gray-800 rounded-lg">
             {@render paginationControls()}
         </div>
 
