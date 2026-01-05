@@ -231,7 +231,8 @@
   let uuidsCache: ObjectStorage<string[]>;
   let activeUuidCache: ObjectStorage<string>;
 
-  $effect.root(() => {
+  $effect(() => {
+    if (!prefix) return;
     widthCache = new ObjectStorage<number>(`${prefix}###width`);
     heightCache = new ObjectStorage<number>(`${prefix}###height`);
     uuidsCache = new ObjectStorage<string[]>(`${prefix}###uuids`);

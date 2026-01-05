@@ -59,11 +59,11 @@
 
   let siteInfo: SiteInfo | null = $state(null);
 
-  $effect.root(() => {
+  $effect(() => {
     let url: URL | undefined;
     try {
       url = new URL(contentUrl);
-    } catch (err) {}
+    } catch {}
     const temp = contentTemplateMap.get(contentType) ?? [];
     siteInfo = url ? findIn(temp, url.hostname) : null;
   });

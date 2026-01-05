@@ -58,16 +58,17 @@
   let siteInfo = $state<SiteInfo | null>(null);
   let embeddable: boolean = $state(false);
 
-  $effect.root(() => {
+  $effect(() => {
+    let u: URL | undefined;
     try {
-      url = new URL(contentUrl);
-    } catch (err) {}
+      u = new URL(contentUrl);
+    } catch {}
+    url = u;
     const temp = contentTemplateMap.get(contentType) ?? [];
-    siteInfo = url ? findIn(temp, url.hostname) : null;
+    siteInfo = u ? findIn(temp, u.hostname) : null;
     embeddable =
-      (contentType !== Enum.Game ||
-        (siteInfo?.id === 6401 && url?.searchParams.has("map"))) ??
-      false;
+      contentType !== Enum.Game ||
+      (siteInfo?.id === 6401 && (u?.searchParams.has("map") ?? false));
   });
 
   $effect(() => {

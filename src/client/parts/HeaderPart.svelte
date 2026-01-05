@@ -32,7 +32,7 @@
     displayTitle = title;
   });
 
-  $effect.root(() => {
+  $effect(() => {
     $isEnabledRightMenu = children !== null;
     if (isMobile) {
       $openLeft = false;

@@ -232,6 +232,11 @@
         contentType = contentTypesBitmask & -contentTypesBitmask;
     };
 
+    $effect(() => {
+        if (!threadId) return;
+        checkedOekaki = false;
+    });
+
     let checkedOekaki = $state(false);
     $effect(() => {
         if (!thread) return;
