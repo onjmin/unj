@@ -155,32 +155,47 @@
 
     // 入力中の本文の保存
     let contentTextUnjStorage: UnjStorage;
-    $effect.root(() => {
-        contentTextUnjStorage = new UnjStorage(`contentText###${threadId}`);
-        contentText = contentTextUnjStorage.value ?? "";
+    $effect(() => {
+        if (!threadId) return;
+        const storage = new UnjStorage(`contentText###${threadId}`);
+        contentTextUnjStorage = storage;
+        contentText = storage.value ?? "";
     });
     $effect(() => {
-        contentTextUnjStorage.value = contentText === "" ? null : contentText;
+        if (!contentTextUnjStorage) return;
+        const v = contentText === "" ? null : contentText;
+        if (contentTextUnjStorage.value === v) return;
+        contentTextUnjStorage.value = v;
     });
 
     // sageチェック状態の保存
     let sageUnjStorage: UnjStorage;
-    $effect.root(() => {
-        sageUnjStorage = new UnjStorage(`sage###${threadId}`);
-        isSage = sageUnjStorage.value === "sage";
+    $effect(() => {
+        if (!threadId) return;
+        const storage = new UnjStorage(`sage###${threadId}`);
+        sageUnjStorage = storage;
+        isSage = storage.value === "sage";
     });
     $effect(() => {
-        sageUnjStorage.value = isSage ? "sage" : null;
+        if (!sageUnjStorage) return;
+        const v = isSage ? "sage" : null;
+        if (sageUnjStorage.value === v) return;
+        sageUnjStorage.value = v;
     });
 
     // 忍法帖チェック状態の保存
     let ninjaUnjStorage: UnjStorage;
-    $effect.root(() => {
-        ninjaUnjStorage = new UnjStorage(`ninja###${threadId}`);
-        isNinja = ninjaUnjStorage.value === "ninja";
+    $effect(() => {
+        if (!threadId) return;
+        const storage = new UnjStorage(`ninja###${threadId}`);
+        ninjaUnjStorage = storage;
+        isNinja = storage.value === "ninja";
     });
     $effect(() => {
-        ninjaUnjStorage.value = isNinja ? "ninja" : null;
+        if (!ninjaUnjStorage) return;
+        const v = isNinja ? "ninja" : null;
+        if (ninjaUnjStorage.value === v) return;
+        ninjaUnjStorage.value = v;
     });
 
     let online = $state(0);
@@ -231,10 +246,12 @@
 
     // 過去ログの保存
     let cache: ObjectStorage<Thread>;
-    $effect.root(() => {
+    $effect(() => {
+        if (!threadId) return;
         cache = new ObjectStorage<Thread>(`threadCache###${threadId}`);
     });
     $effect(() => {
+        if (!cache || thread) return;
         cache.get().then((v) => {
             if (v && !thread) loadThread(v);
         });

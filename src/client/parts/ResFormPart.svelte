@@ -49,33 +49,44 @@
 
   // 名前欄の保存
   let userNameUnjStorage: UnjStorage;
-  $effect.root(() => {
-    userNameUnjStorage = new UnjStorage(`userName###${board.id}`);
-    userName = userNameUnjStorage.value ?? "";
+  $effect(() => {
+    if (!board?.id) return;
+    const storage = new UnjStorage(`userName###${board.id}`);
+    userNameUnjStorage = storage;
+    userName = storage.value ?? "";
   });
   $effect(() => {
+    if (!userNameUnjStorage) return;
+    if (userNameUnjStorage.value === userName) return;
     userNameUnjStorage.value = userName;
   });
 
   // 選択中のアイコンの保存
   let userAvatarUnjStorage: UnjStorage;
-  $effect.root(() => {
-    userAvatarUnjStorage = new UnjStorage(`userAvatar###${board.id}`);
-    userAvatar = userAvatarUnjStorage.value
-      ? Number(userAvatarUnjStorage.value)
-      : 0;
+  $effect(() => {
+    if (!board?.id) return;
+    const storage = new UnjStorage(`userAvatar###${board.id}`);
+    userAvatarUnjStorage = storage;
+    userAvatar = storage.value ? Number(storage.value) : 0;
   });
   $effect(() => {
-    userAvatarUnjStorage.value = String(userAvatar);
+    if (!userAvatarUnjStorage) return;
+    const v = String(userAvatar);
+    if (userAvatarUnjStorage.value === v) return;
+    userAvatarUnjStorage.value = v;
   });
 
   // 暗号レスのパスワードの保存
   let passwordUnjStorage: UnjStorage;
-  $effect.root(() => {
-    passwordUnjStorage = new UnjStorage(`password###${board.id}`);
-    password = passwordUnjStorage.value ?? "";
+  $effect(() => {
+    if (!board?.id) return;
+    const storage = new UnjStorage(`password###${board.id}`);
+    passwordUnjStorage = storage;
+    password = storage.value ?? "";
   });
   $effect(() => {
+    if (!passwordUnjStorage) return;
+    if (passwordUnjStorage.value === password) return;
     passwordUnjStorage.value = password;
   });
 

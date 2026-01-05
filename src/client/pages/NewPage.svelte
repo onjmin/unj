@@ -70,21 +70,29 @@
 
     // 入力中のスレタイの保存
     let titleUnjStorage: UnjStorage;
-    $effect.root(() => {
-        titleUnjStorage = new UnjStorage(`title###${board.id}`);
-        title = titleUnjStorage.value ?? "";
+    $effect(() => {
+        if (!board?.id) return;
+        const storage = new UnjStorage(`title###${board.id}`);
+        titleUnjStorage = storage;
+        title = storage.value ?? "";
     });
     $effect(() => {
+        if (!titleUnjStorage) return;
+        if (titleUnjStorage.value === title) return;
         titleUnjStorage.value = title;
     });
 
     // 入力中の本文の保存
     let contentTextUnjStorage: UnjStorage;
-    $effect.root(() => {
-        contentTextUnjStorage = new UnjStorage(`contentText###${board.id}`);
-        contentText = contentTextUnjStorage.value ?? "";
+    $effect(() => {
+        if (!board?.id) return;
+        const storage = new UnjStorage(`contentText###${board.id}`);
+        contentTextUnjStorage = storage;
+        contentText = storage.value ?? "";
     });
     $effect(() => {
+        if (!contentTextUnjStorage) return;
+        if (contentTextUnjStorage.value === contentText) return;
         contentTextUnjStorage.value = contentText;
     });
 
