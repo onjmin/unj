@@ -167,9 +167,6 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			// !バルサン
 			if (!isOwner && varsanCache.get(threadId) && ninjaScore < 8) return;
 
-			const nextResNum = (resCountCache.get(threadId) ?? 0) + 1;
-			resCountCache.set(threadId, nextResNum);
-
 			// cc
 			const ccBitmask = ccBitmaskCache.get(threadId) ?? 0;
 			const ccUserId = makeCcUserId({
@@ -193,7 +190,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 				ccUserId,
 				contentText: content.output.contentText,
 				isOwner,
-				nextResNum,
+				nextResNum: (resCountCache.get(threadId) ?? 0) + 1,
 				ninjaScore,
 				socket,
 				threadId,
@@ -250,6 +247,9 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			if (rowCount === 0) return;
 			const { created_at, num } = rows[0];
 
+			const latestResNum = num;
+			resCountCache.set(threadId, latestResNum);
+
 			const query = new Map();
 
 			query.set("res_count", num);
@@ -291,7 +291,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 				contentType: content.output.contentType,
 				commandResult: parsedResult.msg,
 				// メタ情報
-				num: nextResNum,
+				num: latestResNum,
 				createdAt: created_at,
 				isOwner,
 				sage,
@@ -319,15 +319,16 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 					id: encodeThreadId(threadId) ?? "",
 					latestRes,
 					latestResAt: new Date(),
-					resCount: nextResNum,
+					resCount: latestResNum,
 					// 基本的な情報
 					title: titleCache.get(threadId) ?? "",
 					boardId: board.id,
 					// 動的なデータ
 					online: sizeOf(io, getThreadRoom(threadId)),
 					ikioi:
-						Math.floor((nextResNum * 3600_000_0) / (Date.now() - +createdAt)) /
-						10,
+						Math.floor(
+							(latestResNum * 3600_000_0) / (Date.now() - +createdAt),
+						) / 10,
 					lolCount: lolCountCache.get(threadId) ?? 0,
 					goodCount: goodCountCache.get(threadId) ?? 0,
 					badCount: badCountCache.get(threadId) ?? 0,
@@ -350,7 +351,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			// !age
 			let ageRes: Res | null;
 			const ageResNum = ageResNumCache.get(threadId) ?? 0;
-			if (ageResNum === nextResNum) {
+			if (ageResNum === latestResNum) {
 				ageRes = {
 					yours: false,
 					// 書き込み内容
@@ -362,7 +363,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 					contentType: content.output.contentType,
 					commandResult: parsedResult.msg,
 					// メタ情報
-					num: nextResNum,
+					num: latestResNum,
 					createdAt: created_at,
 					isOwner,
 					sage,
@@ -372,7 +373,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 
 			if (parsedResult.shouldUpdateMeta) {
 				// !age
-				if (ageResNum !== nextResNum) {
+				if (ageResNum !== latestResNum) {
 					if (ageResNum === 1) {
 						ageRes = {
 							yours: false,
@@ -391,7 +392,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 							sage: false,
 						};
 						ageResCache.set(threadId, ageRes);
-					} else if (ageResNum < nextResNum) {
+					} else if (ageResNum < latestResNum) {
 						const { rows, rowCount } = await poolClient.query(
 							"SELECT * FROM res WHERE thread_id = $1 AND num = $2",
 							[threadId, ageResNum],

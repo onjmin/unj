@@ -70,9 +70,6 @@ export default (router: Router, io: Server) => {
 			poolClient = await pool.connect();
 			await poolClient.query("BEGIN");
 
-			const nextResNum = (resCountCache.get(threadId) ?? 0) + 1;
-			resCountCache.set(threadId, nextResNum);
-
 			const sage = true;
 
 			// レス
@@ -111,6 +108,9 @@ export default (router: Router, io: Server) => {
 			if (rowCount === 0) return;
 			const { created_at, num } = rows[0];
 
+			const latestResNum = num;
+			resCountCache.set(threadId, latestResNum);
+
 			// スレッドの更新
 
 			const query = new Map();
@@ -137,7 +137,7 @@ export default (router: Router, io: Server) => {
 				contentType: content.output.contentType,
 				commandResult: "",
 				// メタ情報
-				num: nextResNum,
+				num: latestResNum,
 				createdAt: created_at,
 				isOwner: false,
 				sage: true,
