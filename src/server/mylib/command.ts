@@ -22,6 +22,7 @@ import {
 	varsanCache,
 } from "../mylib/cache.js";
 import { getIP, sliceIPRange } from "../mylib/ip.js";
+import { logger } from "./log.js";
 import { pool } from "../mylib/pool.js";
 import { flaky } from "./anti-debug.js";
 
@@ -39,7 +40,10 @@ const lazyUpdate = (userId: number, ip: string, ninjaScoreDiff: number) => {
 				[ip, diff, userId],
 			);
 			ninjaScoreDiffMap.delete(userId);
-		} catch {}
+		} catch (error) {
+			logger.verbose("command");
+			logger.error(error);
+		}
 	}, delay);
 	neet.set(userId, id);
 };
@@ -116,7 +120,7 @@ export const parseCommand = async ({
 			const without1 = anka.filter((v) => v !== 1);
 			if (without1.length) {
 				const { rows } = await poolClient.query(
-					`SELECT num,ip,is_owner,user_id,cc_user_id FROM res WHERE thread_id = $1 AND num IN (${without1.map((v, i) => `$${i + 2}`).join(",")})`,
+					`SELECT num,ip,is_owner,user_id,cc_user_id FROM res WHERE thread_id = $1 AND num IN (${without1.map((_, i) => `$${i + 2}`).join(",")})`,
 					[threadId, ...without1],
 				);
 				for (const record of rows) {

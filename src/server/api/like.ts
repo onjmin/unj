@@ -35,7 +35,10 @@ const lazyUpdate = (
 			);
 			goodCountDiffMap.delete(threadId);
 			badCountDiffMap.delete(threadId);
-		} catch {}
+		} catch (error) {
+			logger.verbose(api);
+			logger.error(error);
+		}
 	}, delay);
 	neet.set(threadId, id);
 };

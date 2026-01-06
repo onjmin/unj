@@ -85,7 +85,10 @@ const lazyUpdate = (userId: number, ip: string, auth: string) => {
 				"UPDATE users SET updated_at = NOW(), ip = $1, auth = $2 WHERE id = $3",
 				[ip, auth, userId],
 			);
-		} catch {}
+		} catch (error) {
+			logger.verbose("auth");
+			logger.error(error);
+		}
 	}, delay);
 	neet.set(userId, id);
 };

@@ -27,7 +27,10 @@ const lazyUpdate = (threadId: number, lolCountDiff: number) => {
 				[diff, threadId],
 			);
 			lolCountDiffMap.delete(threadId);
-		} catch {}
+		} catch (error) {
+			logger.verbose(api);
+			logger.error(error);
+		}
 	}, delay);
 	neet.set(threadId, id);
 };
