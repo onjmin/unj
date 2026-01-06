@@ -15,14 +15,18 @@ const done: Set<string> = new Set();
 
 const delay = 1000 * 60 * 4; // Glitchは5分放置でスリープする
 const neet: Map<number, NodeJS.Timeout> = new Map();
-const lazyUpdate = (threadId: number, lolCount: number) => {
+const lolCountDiffMap: Map<number, number> = new Map();
+const lazyUpdate = (threadId: number, lolCountDiff: number) => {
+	const diff = (lolCountDiffMap.get(threadId) ?? 0) + lolCountDiff;
+	lolCountDiffMap.set(threadId, diff);
 	clearTimeout(neet.get(threadId));
 	const id = setTimeout(async () => {
 		try {
-			await pool.query("UPDATE threads SET lol_count = $1 WHERE id = $2", [
-				lolCount,
-				threadId,
-			]);
+			await pool.query(
+				"UPDATE threads SET lol_count = lol_count + $1 WHERE id = $2",
+				[diff, threadId],
+			);
+			lolCountDiffMap.delete(threadId);
 		} catch {}
 	}, delay);
 	neet.set(threadId, id);
@@ -64,6 +68,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 
 			let lolCount = lolCountCache.get(threadId) ?? 0;
 			lolCountCache.set(threadId, ++lolCount);
+			lazyUpdate(threadId, 1);
 			socket.emit(api, {
 				ok: true,
 				lolCount,
@@ -74,7 +79,6 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 				lolCount,
 				yours: false,
 			});
-			lazyUpdate(threadId, lolCount);
 			logger.verbose(api);
 		} catch (error) {
 			logger.error(error);

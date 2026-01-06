@@ -15,14 +15,26 @@ const done: Set<string> = new Set();
 
 const delay = 1000 * 60 * 4; // Glitchは5分放置でスリープする
 const neet: Map<number, NodeJS.Timeout> = new Map();
-const lazyUpdate = (threadId: number, goodCount: number, badCount: number) => {
+const goodCountDiffMap: Map<number, number> = new Map();
+const badCountDiffMap: Map<number, number> = new Map();
+const lazyUpdate = (
+	threadId: number,
+	goodCountDiff: number,
+	badCountDiff: number,
+) => {
+	const diff = (goodCountDiffMap.get(threadId) ?? 0) + goodCountDiff;
+	goodCountDiffMap.set(threadId, diff);
+	const diff2 = (badCountDiffMap.get(threadId) ?? 0) + badCountDiff;
+	badCountDiffMap.set(threadId, diff2);
 	clearTimeout(neet.get(threadId));
 	const id = setTimeout(async () => {
 		try {
 			await pool.query(
-				"UPDATE threads SET good_count = $1, bad_count = $2 WHERE id = $3",
-				[goodCount, badCount, threadId],
+				"UPDATE threads SET good_count = good_count + $1, bad_count = bad_count + $2 WHERE id = $3",
+				[diff, diff2, threadId],
 			);
+			goodCountDiffMap.delete(threadId);
+			badCountDiffMap.delete(threadId);
 		} catch {}
 	}, delay);
 	neet.set(threadId, id);
@@ -66,8 +78,10 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			let badCount = badCountCache.get(threadId) ?? 0;
 			if (like.output.good) {
 				goodCountCache.set(threadId, ++goodCount);
+				lazyUpdate(threadId, 1, 0);
 			} else {
 				badCountCache.set(threadId, ++badCount);
+				lazyUpdate(threadId, 0, 1);
 			}
 			socket.emit(api, {
 				ok: true,
@@ -81,7 +95,6 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 				badCount,
 				yours: false,
 			});
-			lazyUpdate(threadId, goodCount, badCount);
 			logger.verbose(api);
 		} catch (error) {
 			logger.error(error);

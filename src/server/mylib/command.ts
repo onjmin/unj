@@ -27,13 +27,19 @@ import { flaky } from "./anti-debug.js";
 
 const delay = 1000 * 60 * 4; // Glitchは5分放置でスリープする
 const neet: Map<number, NodeJS.Timeout> = new Map();
-const lazyUpdate = (userId: number, ninjaScore: number, ip: string) => {
+const ninjaScoreDiffMap: Map<number, number> = new Map();
+const lazyUpdate = (userId: number, ip: string, ninjaScoreDiff: number) => {
+	const diff = (ninjaScoreDiffMap.get(userId) ?? 0) + ninjaScoreDiff;
+	ninjaScoreDiffMap.set(userId, diff);
 	clearTimeout(neet.get(userId));
 	const id = setTimeout(async () => {
-		await pool.query(
-			"UPDATE users SET updated_at = NOW(), ip = $1, ninja_score = $2 WHERE id = $3",
-			[ip, ninjaScore, userId],
-		);
+		try {
+			await pool.query(
+				"UPDATE users SET updated_at = NOW(), ip = $1, ninja_score = ninja_score + $2 WHERE id = $3",
+				[ip, diff, userId],
+			);
+			ninjaScoreDiffMap.delete(userId);
+		} catch {}
 	}, delay);
 	neet.set(userId, id);
 };
@@ -403,8 +409,8 @@ export const parseCommand = async ({
 	}
 
 	// コマンド実行後に反映
-	lazyUpdate(userId, next, getIP(socket));
 	ninjaScoreCache.set(userId, next);
+	lazyUpdate(userId, getIP(socket), (next - ninjaScore) | 0);
 	ninja(socket);
 
 	return { msg, shouldUpdateMeta };

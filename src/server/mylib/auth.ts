@@ -77,7 +77,7 @@ const parseClaims = (socket: Socket): Claims | null => {
 
 const delay = 1000 * 60 * 4; // Glitchは5分放置でスリープする
 const neet: Map<number, NodeJS.Timeout> = new Map();
-const lazyUpdate = (userId: number, auth: string, ip: string) => {
+const lazyUpdate = (userId: number, ip: string, auth: string) => {
 	clearTimeout(neet.get(userId));
 	const id = setTimeout(async () => {
 		try {
@@ -106,7 +106,7 @@ const updateAuthToken = (socket: Socket) => {
 		token,
 		timestamp: new Date(),
 	});
-	lazyUpdate(rawUserId, token, getIP(socket));
+	lazyUpdate(rawUserId, getIP(socket), token);
 };
 
 const tokenBucket = new TokenBucket({
