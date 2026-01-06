@@ -75,10 +75,46 @@ export default (router: Router, io: Server) => {
 
 			const sage = true;
 
+			// レス
+
+			const insertQuery = [
+				`INSERT INTO res (${[
+					"thread_id",
+					"user_id",
+					"cc_user_id",
+					"cc_user_name",
+					"cc_user_avatar",
+					"content_text",
+					"content_url",
+					"content_type",
+					"sage",
+					"ip",
+				].join(", ")})`,
+				"VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,",
+				"(SELECT COALESCE(MAX(num), 1) + 1 FROM res WHERE thread_id = $1)",
+				")",
+				"RETURNING *",
+			].join(" ");
+
+			const { rows, rowCount } = await poolClient.query(insertQuery, [
+				threadId,
+				userId,
+				result.output.ccUserId,
+				result.output.ccUserName,
+				result.output.ccUserAvatar,
+				content.output.contentText,
+				content.output.contentUrl,
+				content.output.contentType,
+				sage,
+				genTestIP(),
+			]);
+			if (rowCount === 0) return;
+			const { created_at, num } = rows[0];
+
 			// スレッドの更新
 
 			const query = new Map();
-			query.set("res_count", nextResNum);
+			query.set("res_count", num);
 			await poolClient.query(
 				[
 					`UPDATE threads SET ${sage ? "" : "latest_res_at = NOW(),"}`,
@@ -87,42 +123,6 @@ export default (router: Router, io: Server) => {
 				].join(" "),
 				[...query.values(), threadId],
 			);
-
-			// レス
-
-			const insertQuery = [
-				`INSERT INTO res (${[
-					"user_id",
-					"cc_user_id",
-					"cc_user_name",
-					"cc_user_avatar",
-					"content_text",
-					"content_url",
-					"content_type",
-					"thread_id",
-					"num",
-					"sage",
-					"ip",
-				].join(", ")})`,
-				"VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)",
-				"RETURNING *",
-			].join(" ");
-
-			const { rows, rowCount } = await poolClient.query(insertQuery, [
-				userId,
-				result.output.ccUserId,
-				result.output.ccUserName,
-				result.output.ccUserAvatar,
-				content.output.contentText,
-				content.output.contentUrl,
-				content.output.contentType,
-				threadId,
-				nextResNum,
-				sage,
-				genTestIP(),
-			]);
-			if (rowCount === 0) return;
-			const { created_at } = rows[0];
 
 			await poolClient.query("COMMIT");
 

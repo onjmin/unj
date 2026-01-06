@@ -209,6 +209,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			const { rows, rowCount } = await poolClient.query(
 				[
 					`INSERT INTO res (${[
+						"thread_id",
 						// 書き込み内容
 						"user_id",
 						"cc_user_id",
@@ -219,16 +220,18 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 						"content_type",
 						"command_result",
 						// メタ情報
-						"thread_id",
-						"num",
 						"is_owner",
 						"sage",
 						"ip",
+						"num",
 					].join(",")})`,
-					"VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)",
+					"VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12,",
+					"(SELECT COALESCE(MAX(num), 1) + 1 FROM res WHERE thread_id = $1)",
+					")",
 					"RETURNING *",
 				].join(" "),
 				[
+					threadId,
 					// 書き込み内容
 					userId,
 					ccUserId,
@@ -239,19 +242,17 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 					content.output.contentType,
 					parsedResult.msg,
 					// メタ情報
-					threadId,
-					nextResNum,
 					isOwner,
 					sage,
 					getIP(socket),
 				],
 			);
 			if (rowCount === 0) return;
-			const { created_at } = rows[0];
+			const { created_at, num } = rows[0];
 
 			const query = new Map();
 
-			query.set("res_count", nextResNum);
+			query.set("res_count", num);
 
 			if (parsedResult.shouldUpdateMeta) {
 				query.set("varsan", varsanCache.get(threadId) ?? false);

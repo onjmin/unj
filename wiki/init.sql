@@ -69,3 +69,36 @@ CREATE TABLE res (
     command_result TEXT NOT NULL DEFAULT '',
     UNIQUE (thread_id, num)  -- スレッド内でのレス番号の一意性を保証
 );
+
+-- threads 一覧（板 + 論理削除）
+CREATE INDEX idx_threads_board_deleted
+ON threads (board_id, deleted_at);
+
+-- res 採番用
+CREATE INDEX idx_res_thread_num_desc
+ON res (thread_id, num DESC);
+
+-- res 新着順
+CREATE INDEX idx_res_created_at
+ON res (created_at DESC);
+
+-- threads 新着順
+CREATE INDEX idx_threads_created_at
+ON threads (created_at DESC);
+
+-- 検索用（pg_trgm）
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+
+CREATE INDEX idx_res_search_cc_user_id
+ON res USING gin (LOWER(cc_user_id) gin_trgm_ops);
+CREATE INDEX idx_res_search_content_text
+ON res USING gin (LOWER(content_text) gin_trgm_ops);
+CREATE INDEX idx_res_search_content_url
+ON res USING gin (LOWER(content_url) gin_trgm_ops);
+
+CREATE INDEX idx_threads_search_cc_user_id
+ON threads USING gin (LOWER(cc_user_id) gin_trgm_ops);
+CREATE INDEX idx_threads_search_content_text
+ON threads USING gin (LOWER(content_text) gin_trgm_ops);
+CREATE INDEX idx_threads_search_content_url
+ON threads USING gin (LOWER(content_url) gin_trgm_ops);
