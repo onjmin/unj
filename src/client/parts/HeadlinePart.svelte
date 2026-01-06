@@ -118,9 +118,10 @@
       {:else}
         <ul class="list-none p-0 m-0">
           {#each items as thread}
+            {@const misskey = findMisskey(board.key, thread.id)}
             {@const href = makePathname(
-              findMisskey(board.key, thread.id)
-                ? `/${board.key}/misskey/${findMisskey(board.key, thread.id)?.misskeyId}`
+              misskey
+                ? `/${board.key}/misskey/${misskey.misskeyId}`
                 : `/${board.key}/thread/${thread.id}/${thread.resCount > queryResultLimit ? thread.resCount - 8 : "2"}?top`,
             )}
             <li>
@@ -160,9 +161,11 @@
                     >
                       {thread.title}
                     </a>
-                    <span class="shrink-0">
-                      ({thread.resCount})
-                    </span>
+                    {#if !misskey}
+                      <span class="shrink-0">
+                        ({thread.resCount})
+                      </span>
+                    {/if}
                   </span>
                 </div>
 

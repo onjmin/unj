@@ -18,14 +18,14 @@
     <PaginationControlsPart
         {currentPage}
         {totalPages}
-        onFirst={() => (currentPage = 1)}
-        onPrev={() => currentPage--}
-        onNext={() => currentPage++}
-        onLast={() => (currentPage = totalPages)}
         firstDisabled={currentPage === 1}
         prevDisabled={currentPage === 1}
         nextDisabled={currentPage === totalPages}
         lastDisabled={currentPage === totalPages}
+        onClickFirst={() => (currentPage = 1)}
+        onClickPrev={() => currentPage--}
+        onClickNext={() => currentPage++}
+        onClickLast={() => (currentPage = totalPages)}
     />
 {/if}
 <div class={`text-left space-y-4 ${totalPages > 1 ? "min-h-80" : ""}`}>

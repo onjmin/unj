@@ -3,51 +3,64 @@
         currentPage,
         totalPages,
 
-        onFirst,
-        onPrev,
-        onNext,
-        onLast,
-
         firstDisabled,
         prevDisabled,
         nextDisabled,
         lastDisabled,
+
+        onClickFirst,
+        onClickPrev,
+        onClickNext,
+        onClickLast,
+    }: {
+        currentPage: number;
+        totalPages: number;
+
+        firstDisabled: boolean;
+        prevDisabled: boolean;
+        nextDisabled: boolean;
+        lastDisabled: boolean;
+
+        onClickFirst: () => void;
+        onClickPrev: () => void;
+        onClickNext: () => void;
+        onClickLast: () => void;
     } = $props();
 
     const handleFirst = () => {
         if (firstDisabled) return;
-        onFirst?.();
+        onClickFirst();
     };
 
     const handlePrev = () => {
         if (prevDisabled) return;
-        onPrev?.();
+        onClickPrev();
     };
 
     const handleNext = () => {
         if (nextDisabled) return;
-        onNext?.();
+        onClickNext();
     };
 
     const handleLast = () => {
         if (lastDisabled) return;
-        onLast?.();
+        onClickLast();
     };
 </script>
 
 <div class="flex justify-center items-center mt-4 mb-4 space-x-2 text-sm">
     <button
-        onclick={handleFirst}
-        disabled={firstDisabled}
         class="border border-gray-500/60 px-3 py-1 rounded-md transition-colors disabled:opacity-40"
+        disabled={firstDisabled}
+        onclick={handleFirst}
     >
         最初へ
     </button>
 
     <button
-        onclick={handlePrev}
-        disabled={prevDisabled}
         class="border border-gray-500/60 px-3 py-1 rounded-md transition-colors disabled:opacity-40"
+        disabled={prevDisabled}
+        onclick={handlePrev}
     >
         前へ
     </button>
@@ -55,17 +68,17 @@
     <span>{currentPage} / {totalPages}</span>
 
     <button
-        onclick={handleNext}
-        disabled={nextDisabled}
         class="border border-gray-500/60 px-3 py-1 rounded-md transition-colors disabled:opacity-40"
+        disabled={nextDisabled}
+        onclick={handleNext}
     >
         次へ
     </button>
 
     <button
-        onclick={handleLast}
-        disabled={lastDisabled}
         class="border border-gray-500/60 px-3 py-1 rounded-md transition-colors disabled:opacity-40"
+        disabled={lastDisabled}
+        onclick={handleLast}
     >
         最後へ
     </button>

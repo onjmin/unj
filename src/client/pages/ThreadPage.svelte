@@ -1132,11 +1132,23 @@
             1,
             Math.ceil((thread?.resCount ?? 0) / queryResultLimit),
         )}
-        onFirst={() => {
+        firstDisabled={emitting || resNum < 3}
+        prevDisabled={emitting || resNum < 3}
+        nextDisabled={(emitting ||
+            (thread &&
+                (thread.resCount < queryResultLimit ||
+                    resNum > thread.resCount - queryResultLimit))) ??
+            false}
+        lastDisabled={(emitting ||
+            (thread &&
+                (thread.resCount < queryResultLimit ||
+                    resNum > thread.resCount - queryResultLimit))) ??
+            false}
+        onClickFirst={() => {
             if (!thread) return;
             navigate(makePathname(`/${board.key}/thread/${thread.id}/2`));
         }}
-        onPrev={() => {
+        onClickPrev={() => {
             if (!thread) return;
             navigate(
                 makePathname(
@@ -1147,7 +1159,7 @@
                 ),
             );
         }}
-        onNext={() => {
+        onClickNext={() => {
             if (!thread) return;
             navigate(
                 makePathname(
@@ -1158,7 +1170,7 @@
                 ),
             );
         }}
-        onLast={() => {
+        onClickLast={() => {
             if (!thread) return;
             navigate(
                 makePathname(
@@ -1166,16 +1178,6 @@
                 ),
             );
         }}
-        firstDisabled={emitting || resNum < 3}
-        prevDisabled={emitting || resNum < 3}
-        nextDisabled={emitting ||
-            (thread &&
-                (thread.resCount < queryResultLimit ||
-                    resNum > thread.resCount - queryResultLimit))}
-        lastDisabled={emitting ||
-            (thread &&
-                (thread.resCount < queryResultLimit ||
-                    resNum > thread.resCount - queryResultLimit))}
     />
 {/snippet}
 

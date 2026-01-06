@@ -104,22 +104,22 @@
     <PaginationControlsPart
         currentPage={index}
         totalPages={items?.length ?? 0}
-        onFirst={() =>
-            first !== null &&
-            navigate(makePathname(`/${board.key}/news/${first}`))}
-        onPrev={() =>
-            prev !== null &&
-            navigate(makePathname(`/${board.key}/news/${prev}`))}
-        onNext={() =>
-            next !== null &&
-            navigate(makePathname(`/${board.key}/news/${next}`))}
-        onLast={() =>
-            last !== null &&
-            navigate(makePathname(`/${board.key}/news/${last}`))}
         firstDisabled={first === null}
         prevDisabled={prev === null}
         nextDisabled={next === null}
         lastDisabled={last === null}
+        onClickFirst={() =>
+            first !== null &&
+            navigate(makePathname(`/${board.key}/news/${first}`))}
+        onClickPrev={() =>
+            prev !== null &&
+            navigate(makePathname(`/${board.key}/news/${prev}`))}
+        onClickNext={() =>
+            next !== null &&
+            navigate(makePathname(`/${board.key}/news/${next}`))}
+        onClickLast={() =>
+            last !== null &&
+            navigate(makePathname(`/${board.key}/news/${last}`))}
     />
 {/snippet}
 
