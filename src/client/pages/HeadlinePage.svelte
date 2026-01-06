@@ -342,7 +342,7 @@
                         {@const href = makePathname(
                             misskey
                                 ? `/${board.key}/misskey/${misskey.misskeyId}`
-                                : `/${board.key}/thread/${thread.id}/${thread.resCount > queryResultLimit ? thread.resCount - 8 : ""}?top`,
+                                : `/${board.key}/thread/${thread.id}/${thread.resCount > queryResultLimit ? thread.resCount - 8 : "2"}?top`,
                         )}
                         <li>
                             <div

@@ -1134,7 +1134,7 @@
         )}
         onFirst={() => {
             if (!thread) return;
-            navigate(makePathname(`/${board.key}/thread/${thread.id}/`));
+            navigate(makePathname(`/${board.key}/thread/${thread.id}/2`));
         }}
         onPrev={() => {
             if (!thread) return;
@@ -1143,7 +1143,7 @@
                     `/${board.key}/thread/${thread.id}/${Math.max(
                         resNum - queryResultLimit,
                         2,
-                    )}`.replace(/\/2$/, "/"),
+                    )}`,
                 ),
             );
         }}
