@@ -35,13 +35,11 @@
     };
 </script>
 
-<div
-    class="flex justify-center items-center mt-4 mb-4 space-x-2 text-sm disabled:opacity-40"
->
+<div class="flex justify-center items-center mt-4 mb-4 space-x-2 text-sm">
     <button
         onclick={handleFirst}
         disabled={firstDisabled}
-        class="border border-gray-500/40 px-3 py-1 rounded-md transition-colors"
+        class="border border-gray-500/60 px-3 py-1 rounded-md transition-colors disabled:opacity-40"
     >
         最初へ
     </button>
@@ -49,7 +47,7 @@
     <button
         onclick={handlePrev}
         disabled={prevDisabled}
-        class="border border-gray-500/40 px-3 py-1 rounded-md transition-colors"
+        class="border border-gray-500/60 px-3 py-1 rounded-md transition-colors disabled:opacity-40"
     >
         前へ
     </button>
@@ -59,7 +57,7 @@
     <button
         onclick={handleNext}
         disabled={nextDisabled}
-        class="border border-gray-500/40 px-3 py-1 rounded-md transition-colors"
+        class="border border-gray-500/60 px-3 py-1 rounded-md transition-colors disabled:opacity-40"
     >
         次へ
     </button>
@@ -67,7 +65,7 @@
     <button
         onclick={handleLast}
         disabled={lastDisabled}
-        class="border border-gray-500/40 px-3 py-1 rounded-md transition-colors"
+        class="border border-gray-500/60 px-3 py-1 rounded-md transition-colors disabled:opacity-40"
     >
         最後へ
     </button>
