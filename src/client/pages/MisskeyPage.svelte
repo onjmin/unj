@@ -31,107 +31,120 @@
     import MessageBoxPart from "../parts/MessageBoxPart.svelte";
     import HeadlinePart from "../parts/HeadlinePart.svelte";
     import CopyleftPart from "../parts/CopyleftPart.svelte";
+    import PaginationControlsPart from "../parts/PaginationControlsPart.svelte";
     import { untrack } from "svelte";
 
-    const INITIAL_LIMIT = 16;
-    const LOAD_MORE_LIMIT = 16;
+    const PAGE_LIMIT = 16;
     const misskeyEmojiRegex = /:[A-Za-z0-9_]{1,32}:/g;
 
     let { board, misskeyId }: { board: Board; misskeyId: string } = $props();
 
     let misskey: Misskey | undefined = $state();
     let misskeyTimelineCache: ObjectStorage<Note[]>;
+
     $effect(() => {
-        // このエフェクトは board.key か misskeyId が変わった時だけ実行したい
         const key = board.key;
         const id = misskeyId;
 
-        // 更新処理と関数実行を untrack で囲む
-        untrack(() => {
+        untrack(async () => {
             misskey = findMisskey(key, id);
             misskeyTimelineCache = new ObjectStorage<Note[]>(
                 `misskeyTimelineCache###${id}`,
             );
-            loadTimeline(INITIAL_LIMIT);
+            resetAndLoad();
+
+            const cachedTimeline = await misskeyTimelineCache.get();
+            if (cachedTimeline) {
+                preloadTimeline = cachedTimeline;
+            }
         });
     });
 
     const hostname = $derived(misskey?.hostname ?? "");
     const title = $derived(misskey?.title ?? "");
 
-    let timeline = $state<Note[]>([]);
+    // ---- pagination state ----
+    let pageIndex = $state(0);
+    let pages = $state<Note[][]>([]);
+    let pageAnchors = $state<string[]>([]);
     let isLoading = $state(false);
-    let lastNoteId: string | undefined;
 
-    async function loadTimeline(limit: number, untilId?: string) {
-        if (isLoading || !misskey) return;
+    function resetAndLoad() {
+        pageIndex = 0;
+        pages = [];
+        pageAnchors = [];
+        loadPage(0);
+    }
 
-        // キャッシュを最初にチェック
-        const cachedTimeline = await misskeyTimelineCache.get();
-        if (cachedTimeline && !untilId) {
-            timeline = cachedTimeline;
-        }
+    const totalPages = $derived(pages.length + 1);
+
+    const firstDisabled = $derived(pageIndex === 0);
+    const prevDisabled = $derived(pageIndex === 0);
+    const nextDisabled = $derived(isLoading || pageIndex >= pages.length);
+    const lastDisabled = $derived(isLoading || pageIndex >= pages.length);
+
+    const goToPage = (p: number) => {
+        if (p < 0) return;
+        pageIndex = p;
+        loadPage(pageIndex);
+    };
+
+    const handleFirst = () => goToPage(0);
+    const handlePrev = () => goToPage(pageIndex - 1);
+    const handleNext = () => goToPage(pageIndex + 1);
+    const handleLast = () => goToPage(pages.length);
+
+    function normalizeAscending(notes: Note[]) {
+        return [...notes].reverse();
+    }
+
+    async function loadPage(page: number) {
+        if (!misskey || isLoading) return;
+        if (pages[page]) return;
 
         isLoading = true;
+
+        const untilId = page > 0 ? pageAnchors[page - 1] : undefined;
+
         const { promise, controller } = fetchMisskeyTimeline(misskey, {
-            limit,
+            limit: PAGE_LIMIT,
             untilId,
         });
 
         try {
-            const newTimeline = await promise;
-            // 新しいデータを既存のデータに結合
-            const updatedTimeline = untilId
-                ? [...timeline, ...newTimeline]
-                : newTimeline;
+            const notes = await promise;
+            if (notes.length === 0) return;
 
-            // 投稿の重複を排除
-            const uniqueTimeline = updatedTimeline.filter(
-                (note, index, self) =>
-                    index === self.findIndex((t) => t.id === note.id),
-            );
-            timeline = uniqueTimeline;
+            pageAnchors[page] = notes[notes.length - 1].id;
+            pages[page] = normalizeAscending(notes);
 
-            if (newTimeline.length > 0) {
-                lastNoteId = newTimeline[newTimeline.length - 1].id;
-            }
-
-            // キャッシュを更新
-            misskeyTimelineCache.set(uniqueTimeline);
+            misskeyTimelineCache.set(pages.flat());
         } finally {
             isLoading = false;
             controller.abort();
         }
     }
 
-    const handleLoadMore = () => {
-        if (lastNoteId) {
-            loadTimeline(LOAD_MORE_LIMIT, lastNoteId);
-        }
-    };
+    let preloadTimeline: Note[] = $state([]);
+    const timeline = $derived(pages[pageIndex] ?? []);
 
+    // ---- text / embed helpers ----
     const formatText = (text: string) => {
         const segments: Array<{
             type: "text" | "url" | "br";
             content: string;
         }> = [];
 
-        // 1. まず改行文字 '\n' でテキスト全体を分割
         const lines = text.split("\n");
 
-        // for...of文を使用してlines配列を処理
         for (const [lineIndex, line] of lines.entries()) {
             let lastIndex = 0;
-
-            // 2. 各行をさらにURLで分割
-            // Array.from(line.matchAll(urlRegex)) を for...of文で使用
             const matches = line.matchAll(urlRegex);
 
             for (const match of matches) {
                 const url = match[0];
                 const matchIndex = match.index ?? 0;
 
-                // URLより前のテキスト部分
                 if (matchIndex > lastIndex) {
                     segments.push({
                         type: "text",
@@ -139,16 +152,10 @@
                     });
                 }
 
-                // URL部分
-                segments.push({
-                    type: "url",
-                    content: url,
-                });
-
+                segments.push({ type: "url", content: url });
                 lastIndex = matchIndex + url.length;
             }
 
-            // 最後のURLより後のテキスト部分
             if (lastIndex < line.length) {
                 segments.push({
                     type: "text",
@@ -156,7 +163,6 @@
                 });
             }
 
-            // 3. 行の終わりに改行セグメントを追加 (ただし最終行は除く)
             if (lineIndex < lines.length - 1) {
                 segments.push({ type: "br", content: "" });
             }
@@ -170,25 +176,25 @@
             let url: URL | undefined;
             try {
                 url = new URL(str);
-            } catch (err) {}
+            } catch {}
             if (!url) continue;
-            let _contentType = 0;
-            if (findIn(gif, url.hostname) && url.href.slice(-4) === ".gif") {
-                _contentType = Enum.Gif;
-            } else if (findIn(image, url.hostname)) _contentType = Enum.Image;
-            else if (findIn(video, url.hostname)) _contentType = Enum.Video;
-            else if (findIn(audio, url.hostname)) _contentType = Enum.Audio;
-            else if (findIn(game, url.hostname)) _contentType = Enum.Game;
-            else if (findIn(sns, url.hostname)) _contentType = Enum.Sns;
-            if (_contentType !== 0) return [url.href, _contentType];
+
+            let type = 0;
+            if (findIn(gif, url.hostname) && url.href.endsWith(".gif"))
+                type = Enum.Gif;
+            else if (findIn(image, url.hostname)) type = Enum.Image;
+            else if (findIn(video, url.hostname)) type = Enum.Video;
+            else if (findIn(audio, url.hostname)) type = Enum.Audio;
+            else if (findIn(game, url.hostname)) type = Enum.Game;
+            else if (findIn(sns, url.hostname)) type = Enum.Sns;
+
+            if (type !== 0) return [url.href, type];
         }
     };
 
     let laaaaaaaag = $state(false);
     $effect(() => {
-        const id = setTimeout(() => {
-            laaaaaaaag = true;
-        }, 4096);
+        const id = setTimeout(() => (laaaaaaaag = true), 4096);
         return () => clearTimeout(id);
     });
 
@@ -210,17 +216,37 @@
                 : `https://${hostname}`}
             target="_blank"
             rel="noopener noreferrer"
-            class="flex items-center space-x-2 px-4 py-2 rounded-lg bg-gray-500/10 hover:bg-gray-500/20 transition-colors duration-200"
+            class="flex items-center px-4 py-2 rounded-lg bg-gray-500/10 hover:bg-gray-500/20"
         >
-            <span class="text-sm font-medium">Misskeyを開く</span>
+            Misskeyを開く
         </a>
     </div>
     <br />
     <KomePart online={0} room={misskeyId} />
 </HeaderPart>
 
+{#snippet paginationControls()}
+    <PaginationControlsPart
+        currentPage={pageIndex + 1}
+        {totalPages}
+        {firstDisabled}
+        {prevDisabled}
+        {nextDisabled}
+        {lastDisabled}
+        onClickFirst={handleFirst}
+        onClickPrev={handlePrev}
+        onClickNext={handleNext}
+        onClickLast={handleLast}
+    />
+{/snippet}
+
 <MainPart {board}>
-    {#if timeline.length === 0}
+    {@const items = timeline.length
+        ? timeline
+        : preloadTimeline.length
+          ? preloadTimeline
+          : []}
+    {#if items.length === 0}
         <p>スレ取得中…</p>
         {#if laaaaaaaag}
             <MessageBoxPart
@@ -232,189 +258,173 @@
             />
         {/if}
     {/if}
-    {#if timeline.length > 0}
-        <div class="text-left w-full mx-auto px-4 pb-4">
-            <p class="flex items-center font-bold unj-font text-gray-500">
-                <span class="w-4 h-4">
-                    <FaviconPart {hostname} />
-                </span>
+
+    {#if items.length > 0}
+        <div class="px-4 pb-2 text-left">
+            <p class="flex items-center font-bold text-gray-500">
+                <span class="w-4 h-4"><FaviconPart {hostname} /></span>
                 <span class="pl-1.5">{title}</span>
             </p>
         </div>
+
+        {@render paginationControls()}
+
         <div class="mx-auto w-full px-2">
             <div>
-                {#each timeline as note, i}
-                    {#if !note.isHidden && note.text !== null && note.userId !== "9tjlknm0fl"}
-                        {@const embeddable = findEmbeddable(note.text ?? "")}
+                {#each items as note, i}
+                    {#if !note.isHidden && note.text && note.userId !== "9tjlknm0fl"}
+                        {@const embeddable = findEmbeddable(note.text)}
                         <div class="p-4 rounded-lg shadow-inner">
-                            <div
-                                class="unj-font flex flex-wrap items-center mb-2 text-gray-500 text-sm"
-                            >
-                                <span class="mr-1">{i + 1}:</span>
+                            <div class="text-sm text-gray-500 mb-2">
+                                {i + 1}:
                                 <span class="font-bold text-teal-600"
                                     >風吹けば名無し</span
                                 >
-                                <span class="mx-1">:</span>
-                                <span
-                                    >{format(
-                                        note.createdAt,
-                                        "yy/MM/dd(EEE) HH:mm:ss",
-                                        {
-                                            locale: ja,
-                                        },
-                                    )}</span
-                                >
-                                <span class="ml-1">ID:{note.user.username}</span
-                                >
+                                {format(
+                                    note.createdAt,
+                                    "yy/MM/dd(EEE) HH:mm:ss",
+                                    {
+                                        locale: ja,
+                                    },
+                                )}
+                                ID:{note.user.username}
                             </div>
-                            <div class="flex items-start">
-                                <div class="w-8"></div>
 
+                            <div class="flex items-start whitespace-pre-wrap">
+                                <div class="w-8"></div>
                                 <div class="flex-1 min-w-0">
                                     <div
                                         class="text-left overflow-wrap break-word whitespace-pre-wrap mb-2"
                                     >
-                                        {#each formatText(note.text) as segment}
-                                            {#if segment.type === "url"}
+                                        {#each formatText(note.text) as seg}
+                                            {#if seg.type === "url"}
                                                 <a
-                                                    href={segment.content}
+                                                    href={seg.content}
                                                     target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    class="text-blue-500 hover:underline break-all"
+                                                    class="text-blue-500 hover:underline"
                                                 >
-                                                    {segment.content}
+                                                    {seg.content}
                                                 </a>
-                                            {:else if segment.type === "br"}
+                                            {:else if seg.type === "br"}
                                                 <br />
                                             {:else}
-                                                <span
-                                                    class="unj-font whitespace-pre-wrap"
-                                                    >{segment.content.replace(
-                                                        misskeyEmojiRegex,
-                                                        "",
-                                                    )}</span
-                                                >
+                                                {seg.content.replace(
+                                                    misskeyEmojiRegex,
+                                                    "",
+                                                )}
                                             {/if}
                                         {/each}
                                     </div>
-
-                                    {#if note.files && note.files.length > 0}
-                                        <div
-                                            class="mt-2 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3"
-                                        >
-                                            {#each note.files as file (file.id)}
-                                                {#if file.type.startsWith("image/")}
-                                                    <button
-                                                        class="w-full h-auto rounded-lg object-cover cursor-pointer bg-gray-500/10 hover:bg-gray-500/20"
-                                                        onclick={() => {
-                                                            src = file.url;
-                                                            open = true;
-                                                        }}
-                                                        aria-label={`View enlarged version of ${file.name}`}
-                                                    >
-                                                        <img
-                                                            src={file.thumbnailUrl}
-                                                            alt={file.name}
-                                                            loading="lazy"
-                                                        />
-                                                    </button>
-                                                {:else if file.type.startsWith("audio/")}
-                                                    <div
-                                                        class="w-full"
-                                                        class:sm:col-span-2={note
-                                                            .files.length === 1}
-                                                    >
-                                                        <p
-                                                            class="text-sm text-gray-500 truncate"
-                                                        >
-                                                            {file.name}
-                                                        </p>
-                                                        <audio
-                                                            controls
-                                                            class="w-full mt-1"
-                                                        >
-                                                            <source
-                                                                src={file.url}
-                                                                type={file.type}
-                                                            />
-                                                            ブラウザが音声再生に対応していません。
-                                                        </audio>
-                                                    </div>
-                                                {:else if file.type.startsWith("video/")}
-                                                    <div
-                                                        class="w-full"
-                                                        class:sm:col-span-2={note
-                                                            .files.length === 1}
-                                                    >
-                                                        <p
-                                                            class="text-sm text-gray-500 truncate"
-                                                        >
-                                                            {file.name}
-                                                        </p>
-                                                        <video
-                                                            controls
-                                                            class="w-full mt-1 rounded-lg"
-                                                            preload="metadata"
-                                                        >
-                                                            <source
-                                                                src={file.url}
-                                                                type={file.type}
-                                                            />
-                                                            <track
-                                                                kind="captions"
-                                                                src=""
-                                                                srclang="ja"
-                                                                label="キャプション"
-                                                            />
-                                                            ブラウザが動画再生に対応していません。
-                                                        </video>
-                                                    </div>
-                                                {:else}
-                                                    <div class="w-full">
-                                                        <p
-                                                            class="text-sm text-gray-500 truncate"
-                                                        >
-                                                            {file.name}
-                                                        </p>
-                                                        <a
-                                                            href={file.url}
-                                                            class="text-blue-500 hover:underline"
-                                                            download={file.name}
-                                                        >
-                                                            ダウンロード
-                                                        </a>
-                                                    </div>
-                                                {/if}
-                                            {/each}
-                                        </div>
-                                    {/if}
-
-                                    {#if embeddable}
-                                        <div class="text-left">
-                                            <EmbedPart
-                                                ccUserAvatar={1}
-                                                contentUrl={embeddable[0]}
-                                                contentType={embeddable[1]}
-                                            />
-                                        </div>
-                                    {/if}
                                 </div>
                             </div>
+
+                            {#if note.files && note.files.length > 0}
+                                <div
+                                    class="mt-2 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3"
+                                >
+                                    {#each note.files as file (file.id)}
+                                        {#if file.type.startsWith("image/")}
+                                            <button
+                                                class="w-full h-auto rounded-lg object-cover cursor-pointer bg-gray-500/10 hover:bg-gray-500/20"
+                                                onclick={() => {
+                                                    src = file.url;
+                                                    open = true;
+                                                }}
+                                                aria-label={`View enlarged version of ${file.name}`}
+                                            >
+                                                <img
+                                                    src={file.thumbnailUrl}
+                                                    alt={file.name}
+                                                    loading="lazy"
+                                                />
+                                            </button>
+                                        {:else if file.type.startsWith("audio/")}
+                                            <div
+                                                class="w-full"
+                                                class:sm:col-span-2={note.files
+                                                    .length === 1}
+                                            >
+                                                <p
+                                                    class="text-sm text-gray-500 truncate"
+                                                >
+                                                    {file.name}
+                                                </p>
+                                                <audio
+                                                    controls
+                                                    class="w-full mt-1"
+                                                >
+                                                    <source
+                                                        src={file.url}
+                                                        type={file.type}
+                                                    />
+                                                    ブラウザが音声再生に対応していません。
+                                                </audio>
+                                            </div>
+                                        {:else if file.type.startsWith("video/")}
+                                            <div
+                                                class="w-full"
+                                                class:sm:col-span-2={note.files
+                                                    .length === 1}
+                                            >
+                                                <p
+                                                    class="text-sm text-gray-500 truncate"
+                                                >
+                                                    {file.name}
+                                                </p>
+                                                <video
+                                                    controls
+                                                    class="w-full mt-1 rounded-lg"
+                                                    preload="metadata"
+                                                >
+                                                    <source
+                                                        src={file.url}
+                                                        type={file.type}
+                                                    />
+                                                    <track
+                                                        kind="captions"
+                                                        src=""
+                                                        srclang="ja"
+                                                        label="キャプション"
+                                                    />
+                                                    ブラウザが動画再生に対応していません。
+                                                </video>
+                                            </div>
+                                        {:else}
+                                            <div class="w-full">
+                                                <p
+                                                    class="text-sm text-gray-500 truncate"
+                                                >
+                                                    {file.name}
+                                                </p>
+                                                <a
+                                                    href={file.url}
+                                                    class="text-blue-500 hover:underline"
+                                                    download={file.name}
+                                                >
+                                                    ダウンロード
+                                                </a>
+                                            </div>
+                                        {/if}
+                                    {/each}
+                                </div>
+                            {/if}
+
+                            {#if embeddable}
+                                <div class="text-left">
+                                    <EmbedPart
+                                        ccUserAvatar={1}
+                                        contentUrl={embeddable[0]}
+                                        contentType={embeddable[1]}
+                                    />
+                                </div>
+                            {/if}
                         </div>
                     {/if}
                 {/each}
             </div>
         </div>
 
-        <div class="flex justify-center my-4">
-            <button
-                onclick={handleLoadMore}
-                class="bg-gray-500/10 hover:bg-gray-500/20 font-bold py-2 px-4 rounded"
-                disabled={isLoading}
-            >
-                {isLoading ? "読み込み中..." : "続きを読む"}
-            </button>
-        </div>
+        {@render paginationControls()}
 
         <FooterLinkPart {board} />
         <HeadlinePart {board} />
@@ -423,5 +433,4 @@
 </MainPart>
 
 <FooterPart {board} />
-
 <ImagePreviewModal bind:open bind:src />
