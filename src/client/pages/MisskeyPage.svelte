@@ -260,14 +260,14 @@
     {/if}
 
     {#if items.length > 0}
+        {@render paginationControls()}
+
         <div class="px-4 pb-2 text-left">
             <p class="flex items-center font-bold text-gray-500">
                 <span class="w-4 h-4"><FaviconPart {hostname} /></span>
                 <span class="pl-1.5">{title}</span>
             </p>
         </div>
-
-        {@render paginationControls()}
 
         <div class="mx-auto w-full px-2 text-left">
             <div>
@@ -304,7 +304,7 @@
                                                 <a
                                                     href={seg.content}
                                                     target="_blank"
-                                                    class="text-blue-500 hover:underline"
+                                                    class="text-blue-500 hover:underline break-all"
                                                 >
                                                     {seg.content}
                                                 </a>

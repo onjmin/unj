@@ -1219,6 +1219,7 @@
                 </div>
             </div>
         </div>
+        {@render paginationControls()}
         <div class="thread-header">
             <p class="flex items-center font-bold unj-font text-gray-500">
                 <span class="w-4 h-4">
@@ -1277,7 +1278,6 @@
                 </div>
             </div>
         </div>
-        {@render paginationControls()}
         <div class="res-list">
             {#if !ignoreList?.has(thread.ccUserId)}
                 <div id={makeUnjResNumId(1)}>

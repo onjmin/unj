@@ -144,6 +144,7 @@
             />
         {/if}
     {:else if item}
+        {@render paginationControls()}
         <h1
             class="text-base text-left opacity-60 font-bold mb-2 mx-auto w-full max-w-3xl px-4 wrap-break-words whitespace-normal"
         >
@@ -175,7 +176,6 @@
                 </span>
             {/if}
         </h1>
-        {@render paginationControls()}
         <div class="flex justify-center">
             <div
                 class="text-left w-full max-w-3xl px-4 wrap-break-words whitespace-normal"
