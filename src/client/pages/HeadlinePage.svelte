@@ -254,6 +254,11 @@
         };
     });
 
+    $effect(() => {
+        if (!board) return;
+        pagination = false;
+    });
+
     let pagination = $state(false);
     let emitting = $state(false);
     const cursorBasedPagination = async () => {
