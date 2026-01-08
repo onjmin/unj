@@ -28,19 +28,18 @@
             items: officialLinks,
         },
         {
-            title: "おんJボカロ制作スレ",
+            title: "おんJ民作ボカロ",
             items: vocaloidLinks,
         },
         {
-            title: "おんJ民製の掲示板（避難所・レンタル）",
+            title: "おんJ民作BBS（レンタル掲示板）",
             items: rentalBbsLinks,
         },
         {
-            title: "おんJ民製の掲示板（個人開発）",
+            title: "おんJ民作BBS（自作）",
             items: indieBbsLinks,
         },
         {
-            id: 1,
             title: "おんJまとめサイト",
             items: mediaLinks,
         },

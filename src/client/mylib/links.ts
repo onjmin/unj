@@ -163,18 +163,6 @@ export const mediaLinks = [
 		src: "https://sapparipiman.com/",
 	}),
 	new SiteInfo({
-		name: "なんJ PRIDE",
-		description:
-			"2ちゃんねるの「なんでも実況ジュピター」より主に野球ニュースをまとめています。",
-		src: "https://nanjpride.blog.jp/",
-	}),
-	new SiteInfo({
-		name: "なんじぇいスタジアム＠なんJまとめ",
-		description:
-			"2chのなんJ（なんでも実況(ジュピター)）の野球の記事のまとめサイトです。",
-		src: "http://blog.livedoor.jp/nanjstu/",
-	}),
-	new SiteInfo({
 		name: "おんじぇいスタジアム＠おんJまとめ",
 		description: "全員が執筆者や",
 		src: "https://onjstu.livedoor.blog/",
