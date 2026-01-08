@@ -66,7 +66,7 @@
     } from "../mylib/imgur.js";
     import { ObjectStorage } from "../mylib/object-storage.js";
     import type { ResHistory } from "../mylib/res-history.js";
-    import { makeUnjResNumId, scrollToAnka } from "../mylib/scroll.js";
+    import { makeUnjResNumId, scrollToResNum } from "../mylib/scroll.js";
     import { goodbye, hello, ok, socket } from "../mylib/socket.js";
     import {
         changeNewResSound,
@@ -320,7 +320,7 @@
         loadThread(data.thread);
         cache.set(data.thread);
         if (!new URLSearchParams(location.search).has("top"))
-            setTimeout(() => scrollToAnka(resNum));
+            setTimeout(() => scrollToResNum(resNum));
     };
 
     let openNewResNotice = $state(false);
@@ -369,7 +369,7 @@
             }
             uploadedImgur = null;
             await sleep(512);
-            scrollToAnka(newResNum);
+            scrollToResNum(newResNum);
             resHistories?.unshift({
                 latestRes: data.new.contentText || data.new.contentUrl,
                 resNum: newResNum,
@@ -1011,7 +1011,7 @@
         <Label>{newResCount}件の新着レス</Label>
     {/snippet}
     {#snippet actions()}
-        <Button onclick={() => scrollToAnka(newResNum)}>見に行く</Button>
+        <Button onclick={() => scrollToResNum(newResNum)}>見に行く</Button>
         <Button>却下</Button>
     {/snippet}
 </Banner>
@@ -1205,14 +1205,14 @@
                     <button
                         class="bg-gray-500/80 hover:bg-gray-500/40 text-white p-2 rounded-full shadow-lg transition"
                         onclick={() =>
-                            scrollToAnka(thread?.resList.at(0)?.num ?? 0)}
+                            scrollToResNum(thread?.resList.at(0)?.num ?? 0)}
                     >
                         <ChevronUpIcon class="w-5 h-5" />
                     </button>
                     <button
                         class="bg-gray-500/80 hover:bg-gray-500/40 text-white p-2 rounded-full shadow-lg transition"
                         onclick={() =>
-                            scrollToAnka(thread?.resList.at(-1)?.num ?? 0)}
+                            scrollToResNum(thread?.resList.at(-1)?.num ?? 0)}
                     >
                         <ChevronDownIcon class="w-5 h-5" />
                     </button>

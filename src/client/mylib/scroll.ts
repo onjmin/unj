@@ -10,7 +10,7 @@ export const scrollToEnd = () => {
 
 export const makeUnjResNumId = (resNum: number) => `unj-res-num-${resNum}`;
 
-export const scrollToAnka = (resNum: number): boolean => {
+export const scrollToResNum = (resNum: number): boolean => {
 	const main = document.querySelector(".unj-main-part") ?? document.body;
 	const ankaRes = document.getElementById(makeUnjResNumId(resNum));
 	if (ankaRes) {

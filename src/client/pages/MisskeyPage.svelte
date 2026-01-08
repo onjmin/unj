@@ -34,6 +34,12 @@
     import PaginationControlsPart from "../parts/PaginationControlsPart.svelte";
     import { untrack } from "svelte";
     import { queryResultLimit } from "../../common/request/schema.js";
+    import {
+        makeUnjResNumId,
+        scrollToEnd,
+        scrollToTop,
+    } from "../mylib/scroll.js";
+    import { ChevronDownIcon, ChevronUpIcon } from "@lucide/svelte";
 
     const misskeyEmojiRegex = /:[A-Za-z0-9_]{1,32}:/g;
 
@@ -260,6 +266,28 @@
     {/if}
 
     {#if items.length > 0}
+        <!-- 画面右端に上下スクロールボタンを固定配置 -->
+        <div class="sticky top-1/2 -translate-y-1/2 ml-auto mr-2 w-fit z-8">
+            <div class="h-0 w-0 relative" style="pointer-events: none;">
+                <div
+                    class="absolute right-0 top-0 flex flex-col items-center gap-8"
+                    style="transform: translateY(-50%); pointer-events: auto;"
+                >
+                    <button
+                        class="bg-gray-500/80 hover:bg-gray-500/40 text-white p-2 rounded-full shadow-lg transition"
+                        onclick={() => scrollToTop()}
+                    >
+                        <ChevronUpIcon class="w-5 h-5" />
+                    </button>
+                    <button
+                        class="bg-gray-500/80 hover:bg-gray-500/40 text-white p-2 rounded-full shadow-lg transition"
+                        onclick={() => scrollToEnd()}
+                    >
+                        <ChevronDownIcon class="w-5 h-5" />
+                    </button>
+                </div>
+            </div>
+        </div>
         {@render paginationControls()}
 
         <div class="px-4 pb-2 text-left">
@@ -272,14 +300,16 @@
         <div class="mx-auto w-full px-2 text-left">
             <div>
                 {#each items as note, i}
+                    {@const resNum =
+                        i + 1 + (1000 - queryResultLimit * (pageIndex + 1))}
                     {#if !note.isHidden && note.text && note.userId !== "9tjlknm0fl"}
                         {@const embeddable = findEmbeddable(note.text)}
-                        <div class="p-4 rounded-lg shadow-inner">
+                        <div
+                            id={makeUnjResNumId(resNum)}
+                            class="p-4 rounded-lg shadow-inner"
+                        >
                             <div class="text-sm text-gray-500 mb-2">
-                                {i +
-                                    1 +
-                                    (1000 -
-                                        queryResultLimit * (pageIndex + 1))}:
+                                {resNum}:
                                 <span class="font-bold text-teal-600"
                                     >風吹けば名無し</span
                                 >
