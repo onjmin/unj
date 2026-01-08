@@ -41,6 +41,8 @@
     import MessageBoxPart from "../parts/MessageBoxPart.svelte";
     import NewsPart from "../parts/NewsPart.svelte";
     import CopyleftPart from "../parts/CopyleftPart.svelte";
+    import { ChevronDownIcon, ChevronUpIcon } from "@lucide/svelte";
+    import { scrollToEnd, scrollToTop } from "../mylib/scroll.js";
 
     let { board }: { board: Board } = $props();
 
@@ -334,6 +336,31 @@
             この板にまだスレッドが建てられてないみたい。。。
         </p>
     {:else}
+        {@const isHeadlineLong = threadList.length > 8}
+        {#if isHeadlineLong}
+            <!-- 画面右端に上下スクロールボタンを固定配置 -->
+            <div class="sticky top-1/2 -translate-y-1/2 ml-auto mr-2 w-fit z-8">
+                <div class="h-0 w-0 relative" style="pointer-events: none;">
+                    <div
+                        class="absolute right-0 top-0 flex flex-col items-center gap-8"
+                        style="transform: translateY(-50%); pointer-events: auto;"
+                    >
+                        <button
+                            class="bg-gray-500/80 hover:bg-gray-500/40 text-white p-2 rounded-full shadow-lg transition"
+                            onclick={() => scrollToTop()}
+                        >
+                            <ChevronUpIcon class="w-5 h-5" />
+                        </button>
+                        <button
+                            class="bg-gray-500/80 hover:bg-gray-500/40 text-white p-2 rounded-full shadow-lg transition"
+                            onclick={() => scrollToEnd()}
+                        >
+                            <ChevronDownIcon class="w-5 h-5" />
+                        </button>
+                    </div>
+                </div>
+            </div>
+        {/if}
         <div class="text-left w-full mx-auto">
             <ul class="list-none p-0 m-0">
                 {#each threadList as thread}
@@ -449,18 +476,20 @@
                     {/if}
                 {/each}
             </ul>
-            <center class="mt-8">
-                <Button
-                    onclick={cursorBasedPagination}
-                    variant="raised"
-                    disabled={emitting}
-                    class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-md shadow-sm"
-                    >続きを読む</Button
-                >
-            </center>
+            {#if isHeadlineLong}
+                <center class="mt-8">
+                    <Button
+                        onclick={cursorBasedPagination}
+                        variant="raised"
+                        disabled={emitting}
+                        class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-md shadow-sm"
+                        >続きを読む</Button
+                    >
+                </center>
+            {/if}
         </div>
 
-        {#if threadList.length > 8}
+        {#if isHeadlineLong}
             <CopyleftPart />
         {/if}
     {/if}

@@ -233,14 +233,14 @@
   <div class="flex px-1 py-1 border-t border-gray-300 bg-gray-200 text-black">
     <input
       type="text"
-      class="flex-1 border rounded-md px-1 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-green-600"
+      class="flex-1 min-w-0 border rounded-md px-1 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-green-600"
       placeholder="めっせーじ入力"
       bind:value={input}
       maxlength={128}
       onkeydown={handleKey}
     />
     <button
-      class="ml-1 bg-gray-300 hover:bg-gray-400 text-xs px-3 rounded-md transition-colors"
+      class="ml-1 bg-gray-300 hover:bg-gray-400 text-xs px-2 rounded-md transition-colors"
       onclick={sendMessage}
     >
       送信
