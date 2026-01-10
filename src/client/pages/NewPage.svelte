@@ -527,6 +527,35 @@
 <TermsConfirmPart {openConfirm} />
 
 <MainPart {board}>
+    <div
+        class={`${board.banner ? "" : "aspect-49/12"} w-[490px] max-w-full mx-auto border border-gray-500/40 flex items-center justify-center`}
+    >
+        {#if board.banner}
+            <img
+                src={board.banner}
+                alt={`${board.name} バナー`}
+                class="w-full h-full object-cover"
+            />
+        {:else}
+            <span class="opacity-50 text-lg font-semibold"
+                >バナーはまだぬい</span
+            >
+        {/if}
+    </div>
+
+    <div class="p-1 sm:p-2">
+        <div class="text-left sm:mb-2">
+            <h1
+                class="opacity-40 text-base sm:text-2xl font-semibold leading-tight"
+            >
+                {board.name}
+            </h1>
+            <p class="text-xs leading-snug">
+                {board.description}
+            </p>
+        </div>
+    </div>
+
     <div class="px-4 pb-8 flex flex-col gap-2">
         <Textfield
             disabled={emitting || isRef}
