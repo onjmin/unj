@@ -1222,14 +1222,20 @@
         {@render paginationControls()}
         <div class="thread-header">
             <p class="flex items-center font-bold unj-font text-gray-500">
-                <span class="w-4 h-4">
+                <span class="w-4 h-4 shrink-0">
                     <TwemojiPart emoji={makeEmojiByThreadId(thread.id)} />
                 </span>
-                <span class="pl-1.5 min-w-0 truncate">{thread.title}</span>
-                <span class="inline-block shrink-0 ml-1"
-                    >({thread.resCount})</span
+
+                <span
+                    class="pl-1.5 min-w-0 wrap-break-word whitespace-normal leading-snug"
                 >
+                    {thread.title}
+                    <span class="ml-1 whitespace-nowrap"
+                        >({thread.resCount})</span
+                    >
+                </span>
             </p>
+
             <ChipSet {chips} nonInteractive>
                 {#snippet chip(chip: string)}
                     <Chip {chip}>
