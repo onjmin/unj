@@ -21,11 +21,6 @@ export const officialLinks = [
 		src: "https://w.atwiki.jp/openj3/",
 	}),
 	new SiteInfo({
-		name: "おんJ陣取り",
-		description: "【てすとちゅ】onj陣取り",
-		src: "https://hayabusa.open2ch.net/lib/game/zin/",
-	}),
-	new SiteInfo({
 		name: "eピアノ",
 		description: "ピアノ演奏を共有できるWebサービス",
 		src: "https://epiano.jp/",

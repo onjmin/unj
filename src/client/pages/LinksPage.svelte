@@ -24,23 +24,23 @@
     // ===== カテゴリ定義 =====
     const sections = [
         {
-            title: "さとる関連",
+            title: "おんJ公式リンク",
             items: officialLinks,
         },
         {
-            title: "おんJ民作ボカロ",
+            title: "おんJ民が作ったボカロ",
             items: vocaloidLinks,
         },
         {
-            title: "おんJ民作BBS（レンタル掲示板）",
+            title: "おんJ避難所（レンタル掲示板）",
             items: rentalBbsLinks,
         },
         {
-            title: "おんJ民作BBS（自作）",
+            title: "おんJ避難所（個人開発）",
             items: indieBbsLinks,
         },
         {
-            title: "おんJまとめサイト",
+            title: "おんJ専門まとめサイト",
             items: mediaLinks,
         },
     ];
