@@ -8,7 +8,7 @@
 	"theme_color": "#7dd7c7",
 	"icons": [
 		{
-			"src": "loze.png",
+			"src": "favicon.png",
 			"sizes": "480x480",
 			"type": "image/png"
 		}

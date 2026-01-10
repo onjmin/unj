@@ -50,7 +50,7 @@
       .querySelector("head > link[rel='icon']")
       ?.setAttribute(
         "href",
-        board.favicon || makePathname("/static/favicons/loze.png"),
+        board.favicon || makePathname("/static/favicons/favicon.png"),
       );
   });
 </script>
