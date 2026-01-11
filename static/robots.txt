@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://unj.netlify.app/sitemap.xml
