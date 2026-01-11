@@ -1,4 +1,4 @@
-import { Avatar, touhouAvatars, unjAvatars } from "./avatar.js";
+import { Avatar, rozeAvatars, touhouAvatars, unjAvatars } from "./avatar.js";
 
 export const boardMap: Map<string, Board> = new Map();
 export const boardIdMap: Map<number, Board> = new Map();
@@ -82,6 +82,7 @@ export const touhouBoard = new Board({
 	name: "東方なりきり板",
 	description: "好きな東方キャラになりきって雑談しよう！オリキャラも参加OK！",
 });
+for (const v of touhouAvatars) touhouBoard.avatarMap.set(v.id, v);
 export const unchiBoard = new Board({
 	id: 5,
 	key: "unchi",
@@ -94,12 +95,12 @@ export const rozeBoard = new Board({
 	name: "束音ロゼ板",
 	description: "ロゼにまつわるエトセトラ",
 });
+for (const v of rozeAvatars) rozeBoard.avatarMap.set(v.id, v);
 export const news4vipBoard = new Board({
 	id: 7,
 	key: "news4vip",
 	name: "ニュー速VIP",
 	description: "特別な板、ニュー速VIPへようこそ",
 });
-for (const v of touhouAvatars) touhouBoard.avatarMap.set(v.id, v);
 
 export const publicBoards = [...boardMap.values()].filter((v) => v.id);

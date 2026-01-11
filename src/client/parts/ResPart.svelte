@@ -73,7 +73,7 @@
   let showBlockButtons: boolean = $state(false);
 
   const ankaRegex2 = new RegExp(ankaRegex.source); // 分類チェック用に g なしで生成
-  const discordEmojiRegex = /:[A-Za-z0-9_]{1,32}:/;
+  const discordEmojiRegex = /:[A-Za-z0-9_~]{1,32}:/;
   const combinedRegex = new RegExp(
     `\n|${ankaRegex.source}|${discordEmojiRegex.source}`,
     "g",

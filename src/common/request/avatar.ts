@@ -25,19 +25,12 @@ export class Avatar {
 	}
 }
 
-export const unjAvatars = [
-	new Avatar({
-		id: 1,
-		name: "阿部寛",
-		description: "阿部寛のホームページ",
-		src: "https://i.imgur.com/g0yKai6.jpg",
-		href: "https://ja.wikipedia.org/wiki/%E9%98%BF%E9%83%A8%E5%AF%9B%E3%81%AE%E3%83%9B%E3%83%BC%E3%83%A0%E3%83%9A%E3%83%BC%E3%82%B8",
-	}),
+export const rozeAvatars = [
 	new Avatar({
 		id: 101,
 		name: "束音ロゼ",
 		description: "アル？ナイ！アル？ナイ！×2",
-		src: "https://avatars.githubusercontent.com/u/88383494",
+		src: "https://i.imgur.com/ZLNiE7T.png",
 		href: "https://w.atwiki.jp/openj3/pages/641.html",
 	}),
 	new Avatar({
@@ -51,9 +44,20 @@ export const unjAvatars = [
 		id: 103,
 		name: "革命シヨ",
 		description: "息くせーぞジジイ",
-		src: "https://i.imgur.com/kx2FuN5.png",
+		src: "https://i.imgur.com/XoLGk4v.png",
 		href: "https://kakumeisiyo.1my.jp",
 	}),
+];
+
+export const unjAvatars = [
+	new Avatar({
+		id: 1,
+		name: "阿部寛",
+		description: "阿部寛のホームページ",
+		src: "https://i.imgur.com/g0yKai6.jpg",
+		href: "https://ja.wikipedia.org/wiki/%E9%98%BF%E9%83%A8%E5%AF%9B%E3%81%AE%E3%83%9B%E3%83%BC%E3%83%A0%E3%83%9A%E3%83%BC%E3%82%B8",
+	}),
+	...rozeAvatars,
 	new Avatar({
 		id: 201,
 		name: "フェリス",
@@ -86,7 +90,7 @@ export const unjAvatars = [
 		id: 205,
 		name: "おんJマン",
 		description: "おんJのマスコットキャラクター",
-		src: "https://i.imgur.com/uMdNy0s.png",
+		src: "https://pub-d049c945dab44db6b75372fdf9cb8401.r2.dev/a670d724.png",
 		href: "https://w.atwiki.jp/openj3/pages/26.html",
 	}),
 	new Avatar({
@@ -107,7 +111,7 @@ export const unjAvatars = [
 		id: 208,
 		name: "ミャウミャウ",
 		description: "おんJを侵略するぷ！",
-		src: "https://i.imgur.com/RysAWyK.png",
+		src: "https://pub-d049c945dab44db6b75372fdf9cb8401.r2.dev/33708f60.png",
 		href: "https://w.atwiki.jp/openj3/pages/667.html",
 	}),
 	new Avatar({
@@ -116,6 +120,13 @@ export const unjAvatars = [
 		description: "あ！今日日曜日だニィ！",
 		src: "https://i.imgur.com/84csWAs.png",
 		href: "https://w.atwiki.jp/openj3/pages/46.html",
+	}),
+	new Avatar({
+		id: 210,
+		name: "ムッジェ",
+		description: "ホゲェ",
+		src: "https://i.imgur.com/nctHZ66.png",
+		href: "https://w.atwiki.jp/openj3/pages/105.html",
 	}),
 ];
 
@@ -313,7 +324,7 @@ const touhouList = [
 export const touhouAvatars = touhouList.map(
 	(v, i) =>
 		new Avatar({
-			id: i + 1,
+			id: i + 1 + 300,
 			name: v.name,
 			description: v.description,
 			src: v.src,

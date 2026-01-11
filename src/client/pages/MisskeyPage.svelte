@@ -41,7 +41,7 @@
     } from "../mylib/scroll.js";
     import { ChevronDownIcon, ChevronUpIcon } from "@lucide/svelte";
 
-    const misskeyEmojiRegex = /:[A-Za-z0-9_]{1,32}:/g;
+    const misskeyEmojiRegex = /:[A-Za-z0-9_~]{1,32}:/g;
 
     let { board, misskeyId }: { board: Board; misskeyId: string } = $props();
 
