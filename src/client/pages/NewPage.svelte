@@ -375,7 +375,7 @@
             <label for="sage" class="text-sm">強制sage進行</label>
         </div>
         <div class="space-y-4">
-            <div class="bg-gray-500/10 rounded-lg shadow">
+            <div class="border border-gray-500/40 rounded-lg shadow">
                 <div
                     tabindex="0"
                     role="button"
@@ -414,7 +414,7 @@
                 {/if}
             </div>
 
-            <div class="bg-gray-500/10 rounded-lg shadow">
+            <div class="border border-gray-500/40 rounded-lg shadow">
                 <div
                     tabindex="0"
                     role="button"
@@ -454,7 +454,7 @@
                 {/if}
             </div>
 
-            <div class="bg-gray-500/10 rounded-lg shadow">
+            <div class="border border-gray-500/40 rounded-lg shadow">
                 <div
                     tabindex="0"
                     role="button"
@@ -484,7 +484,7 @@
                 {/if}
             </div>
 
-            <div class="bg-gray-500/10 rounded-lg shadow">
+            <div class="border border-gray-500/40 rounded-lg shadow">
                 <div
                     tabindex="0"
                     role="button"
