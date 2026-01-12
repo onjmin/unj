@@ -93,7 +93,7 @@
             {:else if pathname2 === "config"}
               忍法帖
             {:else if pathname2 === "history"}
-              履歴操作
+              履歴編集
             {:else}
               kome
             {/if}
