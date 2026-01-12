@@ -87,7 +87,7 @@
           >
           <div class="label-overlay">
             {#if pathname2 === "terms"}
-              質問
+              FAQ
             {:else if pathname2 === "make-thread"}
               コマンド
             {:else if pathname2 === "config"}
