@@ -23,25 +23,25 @@
 
 <HeaderPart {board} title="うんｊ利用規約">
     <p>よくある質問</p>
-    <div class="space-y-4">
+    <div class="space-y-2">
         {#each faq as [q, a], i}
             <div class="border border-gray-500/10 rounded-lg shadow">
                 <div
                     tabindex="0"
                     role="button"
                     onkeydown={() => {}}
-                    class="flex justify-between items-center p-4 cursor-pointer"
+                    class="flex justify-between items-center p-1 cursor-pointer"
                     onclick={() => toggleQuestion(i)}
                 >
-                    <h3 class="font-bold text-lg">{q}</h3>
+                    <h3 class="text-xs">{q}</h3>
                     {#if openQuestion === i}
-                        <ChevronDownIcon class="h-6 w-6" />
+                        <ChevronDownIcon class="h-4 w-4" />
                     {:else}
-                        <ChevronRightIcon class="h-6 w-6" />
+                        <ChevronRightIcon class="h-4 w-4" />
                     {/if}
                 </div>
                 {#if openQuestion === i}
-                    <div class="p-4 border-t border-gray-500">
+                    <div class="p-1 border-t border-gray-500/20">
                         {a}
                     </div>
                 {/if}

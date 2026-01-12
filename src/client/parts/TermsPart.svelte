@@ -83,11 +83,13 @@
   </div>
 {:else}
   <div>
-    <h1 class="opacity-50 text-3xl font-bold mb-6 text-center">利用規約</h1>
-
     {#each parsedElements as element}
       <div class="text-left">
-        {#if element.type === "h2"}
+        {#if element.type === "h1"}
+          <h2 class="opacity-50 text-3xl font-semibold mt-2 mb-1">
+            {element.content[0].text}
+          </h2>
+        {:else if element.type === "h2"}
           <h2 class="opacity-50 text-xl font-semibold mt-2 mb-1">
             {element.content[0].text}
           </h2>
