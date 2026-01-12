@@ -19,7 +19,7 @@
 
   // パースされたブロック要素（段落、見出し、リストなど）の型
   type MarkdownElement =
-    | { type: "h1" | "h2" | "p" | "li"; content: InlineElement[] }
+    | { type: "h1" | "h2" | "h3" | "p" | "li"; content: InlineElement[] }
     | { type: "hr" };
 
   function* processInlineFormatting(text: string): Generator<InlineElement> {
@@ -53,13 +53,16 @@
 
       if (trimmedLine.startsWith("---")) {
         yield { type: "hr" };
-      } else if (trimmedLine.startsWith("## ")) {
-        const content = trimmedLine.substring(3).trim();
-        yield { type: "h2", content: [{ text: content, isBold: false }] };
       } else if (trimmedLine.startsWith("# ")) {
         const content = trimmedLine.substring(2).trim();
         yield { type: "h1", content: [{ text: content, isBold: false }] };
-      } else if (trimmedLine.startsWith("- ")) {
+      } else if (trimmedLine.startsWith("## ")) {
+        const content = trimmedLine.substring(3).trim();
+        yield { type: "h2", content: [{ text: content, isBold: false }] };
+      } else if (trimmedLine.startsWith("### ")) {
+        const content = trimmedLine.substring(4).trim();
+        yield { type: "h3", content: [{ text: content, isBold: false }] };
+      } else if (trimmedLine.startsWith("* ")) {
         const content = trimmedLine.substring(2).trim();
         yield { type: "li", content: [{ text: content, isBold: false }] };
       } else if (trimmedLine.length > 0) {
@@ -86,15 +89,25 @@
     {#each parsedElements as element}
       <div class="text-left">
         {#if element.type === "h1"}
-          <h2 class="opacity-50 text-3xl font-semibold mt-2 mb-1">
+          <h1
+            class="text-xl font-semibold text-gray-500 border-b-2 border-gray-500/50 pb-0.5 mt-2 mb-1 leading-tight"
+          >
             {element.content[0].text}
-          </h2>
+          </h1>
         {:else if element.type === "h2"}
-          <h2 class="opacity-50 text-xl font-semibold mt-2 mb-1">
+          <h2
+            class="text-lg font-semibold text-gray-500 bg-gray-500/10 border-l-[5px] border-gray-500 border-b-[3px] border-b-gray-500/40 px-2 py-1.5 mt-2 mb-1 leading-tight"
+          >
             {element.content[0].text}
           </h2>
+        {:else if element.type === "h3"}
+          <h3
+            class="text-base font-semibold text-gray-500 border-l-2 border-b border-gray-500/30 pl-2 pb-0.5 mt-3 mb-0.5 leading-tight"
+          >
+            {element.content[0].text}
+          </h3>
         {:else if element.type === "p"}
-          <p class="leading-normal my-1">
+          <p class="ml-2 leading-normal my-1">
             {#each element.content as part}
               {#if part.isBold}
                 <strong class="font-bold">{part.text}</strong>
@@ -104,7 +117,7 @@
             {/each}
           </p>
         {:else if element.type === "li"}
-          <li class="list-disc ml-6 leading-normal my-1">
+          <li class="ml-2 list-disc list-inside leading-normal my-1">
             {element.content[0].text}
           </li>
         {:else if element.type === "hr"}
