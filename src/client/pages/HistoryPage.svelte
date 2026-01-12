@@ -176,7 +176,7 @@
                     </p>
                     <p class="text-sm">
                         なんかついでに<Link
-                            to={makePathname(`/${board.key}/new`)}
+                            to={makePathname(`/${board.key}/make-thread`)}
                             class="font-medium text-blue-500 hover:underline"
                             >投稿</Link
                         >したり「あとで読む」をしてみてね。

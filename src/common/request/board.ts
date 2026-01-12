@@ -4,7 +4,7 @@ export const boardMap: Map<string, Board> = new Map();
 export const boardIdMap: Map<number, Board> = new Map();
 export class Board {
 	readonly id: number;
-	readonly key: string; // URL 用キー (例: 'news', 'bts')
+	readonly key: string; // URL 用キー
 	readonly name: string; // 板の表示名
 	readonly description: string; // 板の説明文
 	readonly banner: string;

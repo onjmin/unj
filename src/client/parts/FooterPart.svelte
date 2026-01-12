@@ -38,7 +38,7 @@
           <IconButton
             class="material-icons"
             aria-label="edit_note"
-            onclick={() => navigate(makePathname(`/${board.key}/new`))}
+            onclick={() => navigate(makePathname(`/${board.key}/make-thread`))}
             >edit_note</IconButton
           >
           <div class="label-overlay">スレ作成</div>
@@ -88,7 +88,7 @@
           <div class="label-overlay">
             {#if pathname2 === "terms"}
               質問
-            {:else if pathname2 === "new"}
+            {:else if pathname2 === "make-thread"}
               コマンド
             {:else if pathname2 === "config"}
               忍法帖

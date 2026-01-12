@@ -10,15 +10,19 @@
   </url>
 
   <url>
+    <loc>https://unj.netlify.app/unj/make-thread</loc>
+  </url>
+
+  <url>
+    <loc>https://unj.netlify.app/unj/config</loc>
+  </url>
+
+  <url>
     <loc>https://unj.netlify.app/unj/search</loc>
   </url>
 
   <url>
-    <loc>https://unj.netlify.app/unj/art</loc>
-  </url>
-
-  <url>
-    <loc>https://unj.netlify.app/unj/links</loc>
+    <loc>https://unj.netlify.app/unj/history</loc>
   </url>
 
   <url>
@@ -27,6 +31,14 @@
 
   <url>
     <loc>https://unj.netlify.app/unj/contact</loc>
+  </url>
+
+  <url>
+    <loc>https://unj.netlify.app/unj/art</loc>
+  </url>
+
+  <url>
+    <loc>https://unj.netlify.app/unj/links</loc>
   </url>
 
   <url>

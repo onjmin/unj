@@ -13,7 +13,7 @@
   import HomePage from "./pages/HomePage.svelte";
   import LinksPage from "./pages/LinksPage.svelte";
   import MisskeyPage from "./pages/MisskeyPage.svelte";
-  import NewPage from "./pages/NewPage.svelte";
+  import MakeThreadPage from "./pages/MakeThreadPage.svelte";
   import NewsPage from "./pages/NewsPage.svelte";
   import NotFoundPage from "./pages/NotFoundPage.svelte";
   import SearchPage from "./pages/SearchPage.svelte";
@@ -68,11 +68,11 @@
   </Route>
 
   <!-- スレ立て -->
-  <Route path={makePathname("/:board/new")} let:params>
-    <NewPage board={b(params.board)} />
+  <Route path={makePathname("/:board/make-thread")} let:params>
+    <MakeThreadPage board={b(params.board)} />
   </Route>
-  <Route path={makePathname("/:board/new/next")} let:params>
-    <NewPage board={b(params.board)} isRef />
+  <Route path={makePathname("/:board/make-thread/next")} let:params>
+    <MakeThreadPage board={b(params.board)} isRef />
   </Route>
   <!-- 検索 -->
   <Route path={makePathname("/:board/search")} let:params>
