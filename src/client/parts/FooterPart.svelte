@@ -3,7 +3,7 @@
   import IconButton from "@smui/icon-button";
   import { navigate } from "svelte-routing";
   import { undefinedBoard } from "../../common/request/board.js";
-  import { makePathname } from "../mylib/env.js";
+  import { makePathname, pathname } from "../mylib/env.js";
   import {
     isEnabledRightMenu,
     isMobile,
@@ -12,21 +12,26 @@
   } from "../mylib/store.js";
 
   let { board = undefinedBoard, menu = true } = $props();
+
+  const pathname2 = pathname().split("/")[2] ?? "";
 </script>
 
 <footer class="unj-footer-part">
   {#if menu}
     <BottomAppBar variant="static">
       <Section align="start" toolbar>
-        <IconButton
-          class="material-icons"
-          onclick={() => {
-            if (isMobile) {
-              $openRight = false;
-            }
-            $openLeft = !$openLeft;
-          }}>menu</IconButton
-        >
+        <div class="icon-container pl-2.5">
+          <IconButton
+            class="material-icons"
+            onclick={() => {
+              if (isMobile) {
+                $openRight = false;
+              }
+              $openLeft = !$openLeft;
+            }}>menu</IconButton
+          >
+          <div class="label-overlay">板一覧</div>
+        </div>
       </Section>
       <Section>
         <div class="icon-container">
@@ -67,16 +72,33 @@
         </div>
       </Section>
       <Section align="end" toolbar>
-        <IconButton
-          class="material-icons"
+        <div
+          class="icon-container"
           style="visibility:{$isEnabledRightMenu ? 'visible' : 'hidden'};"
-          onclick={() => {
-            if (isMobile) {
-              $openLeft = false;
-            }
-            $openRight = !$openRight;
-          }}>menu</IconButton
         >
+          <IconButton
+            class="material-icons"
+            onclick={() => {
+              if (isMobile) {
+                $openLeft = false;
+              }
+              $openRight = !$openRight;
+            }}>menu</IconButton
+          >
+          <div class="label-overlay">
+            {#if pathname2 === "terms"}
+              質問
+            {:else if pathname2 === "new"}
+              コマンド
+            {:else if pathname2 === "config"}
+              忍法帖
+            {:else if pathname2 === "history"}
+              履歴操作
+            {:else}
+              kome
+            {/if}
+          </div>
+        </div>
       </Section>
     </BottomAppBar>
   {:else}

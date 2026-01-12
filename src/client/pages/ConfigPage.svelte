@@ -166,65 +166,6 @@
             </div>
         </div>
     </section>
-
-    <section class="border border-gray-500/40 p-6 rounded-lg shadow-md">
-        <h2 class="text-xl font-semibold mb-4 border-b pb-2">移行用トークン</h2>
-
-        <div class="space-y-4">
-            <div class="flex flex-col space-y-2">
-                {#if isEditing}
-                    <textarea
-                        bind:value={token}
-                        placeholder="新しいトークンを入力してください"
-                        rows="4"
-                        class="bg-gray-100/0 w-full p-2 border-2 border-indigo-500 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 resize-y"
-                    ></textarea>
-                    <button
-                        onclick={() => {
-                            isEditing = false;
-                            authToken.value = token.trim();
-                        }}
-                        class="w-full px-4 py-2 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-600 transition duration-150 shadow-md"
-                    >
-                        保存
-                    </button>
-                {:else}
-                    <textarea
-                        value={token}
-                        readonly
-                        rows="4"
-                        class="opacity-50 bg-gray-500/10 w-full p-2 border rounded-lg cursor-default resize-y"
-                    ></textarea>
-                    <button
-                        onclick={() => {
-                            isEditing = true;
-                        }}
-                        class="w-full px-4 py-2 bg-indigo-500 text-white font-semibold rounded-lg hover:bg-indigo-600 transition duration-150 shadow-md"
-                    >
-                        編集
-                    </button>
-                {/if}
-            </div>
-
-            <div
-                class="p-3 bg-green-100 border-l-4 border-green-500 text-green-800 rounded-lg flex flex-col space-y-1"
-            >
-                <div class="flex items-center">
-                    <LightbulbIcon
-                        class="w-5 h-5 shrink-0 text-green-600 mr-2"
-                    />
-                    <p class="font-bold text-sm">ヒント</p>
-                </div>
-                <div class="text-xs">
-                    <p>
-                        このトークンは<strong>最大4日</strong
-                        >で失効します。<strong>端末の引っ越し</strong
-                        >にお使いください。
-                    </p>
-                </div>
-            </div>
-        </div>
-    </section>
 </HeaderPart>
 
 <MainPart {board}>
