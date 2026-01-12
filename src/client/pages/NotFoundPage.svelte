@@ -6,7 +6,6 @@
     ///////////////
 
     import { navigate } from "svelte-routing";
-    import { randArray } from "../../common/util.js";
     import { makePathname } from "../mylib/env.js";
 
     $effect(() => {
@@ -15,13 +14,6 @@
         }, 4096);
         return () => clearTimeout(id);
     });
-
-    const illusts = [
-        "https://i.imgur.com/O01c9cc.png",
-        "https://lohas.nicoseiga.jp//thumb/11535907i",
-        "https://lohas.nicoseiga.jp/thumb/11539312i",
-    ];
-    const randomIllust = randArray(illusts);
 </script>
 
 <HeaderPart menu={false} title="Not Found" />
@@ -29,7 +21,11 @@
 <MainPart menu={false}>
     <p>The requested URL was not found on this server.</p>
     <p>ページは（ナイ！）</p>
-    <img class="unj-img" alt="404絵" src={randomIllust} />
+    <img
+        class="unj-img"
+        alt="NotFound絵"
+        src="https://i.imgur.com/DvKG1ey.png"
+    />
     <p>「すご」「これガチでいけるんちゃうか？」「あくしろ　楽しみすぎる」</p>
     <p>これ、なんだったの？</p>
 </MainPart>
