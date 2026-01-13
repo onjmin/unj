@@ -20,7 +20,8 @@
   // パースされたブロック要素（段落、見出し、リストなど）の型
   type MarkdownElement =
     | { type: "h1" | "h2" | "h3" | "p" | "li"; content: InlineElement[] }
-    | { type: "hr" };
+    | { type: "hr" }
+    | { type: "br" };
 
   function* processInlineFormatting(text: string): Generator<InlineElement> {
     const regex = /\*\*(.*?)\*\*/g;
@@ -48,28 +49,48 @@
 
   export function* parseMarkdown(markdown: string): Generator<MarkdownElement> {
     const lines = markdown.split("\n");
+    let prevWasEmpty = false;
+
     for (const line of lines) {
       const trimmedLine = line.trim();
+
+      // 空行 → br
+      if (trimmedLine === "") {
+        if (!prevWasEmpty) {
+          yield { type: "br" };
+          prevWasEmpty = true;
+        }
+        continue;
+      }
+
+      prevWasEmpty = false;
 
       if (trimmedLine.startsWith("---")) {
         yield { type: "hr" };
       } else if (trimmedLine.startsWith("# ")) {
-        const content = trimmedLine.substring(2).trim();
-        yield { type: "h1", content: [{ text: content, isBold: false }] };
+        yield {
+          type: "h1",
+          content: [{ text: trimmedLine.substring(2).trim(), isBold: false }],
+        };
       } else if (trimmedLine.startsWith("## ")) {
-        const content = trimmedLine.substring(3).trim();
-        yield { type: "h2", content: [{ text: content, isBold: false }] };
+        yield {
+          type: "h2",
+          content: [{ text: trimmedLine.substring(3).trim(), isBold: false }],
+        };
       } else if (trimmedLine.startsWith("### ")) {
-        const content = trimmedLine.substring(4).trim();
-        yield { type: "h3", content: [{ text: content, isBold: false }] };
+        yield {
+          type: "h3",
+          content: [{ text: trimmedLine.substring(4).trim(), isBold: false }],
+        };
       } else if (trimmedLine.startsWith("* ")) {
-        const content = trimmedLine.substring(2).trim();
-        yield { type: "li", content: [{ text: content, isBold: false }] };
-      } else if (trimmedLine.length > 0) {
-        const content = trimmedLine;
+        yield {
+          type: "li",
+          content: [{ text: trimmedLine.substring(2).trim(), isBold: false }],
+        };
+      } else {
         yield {
           type: "p",
-          content: Array.from(processInlineFormatting(content)),
+          content: Array.from(processInlineFormatting(trimmedLine)),
         };
       }
     }
@@ -122,6 +143,8 @@
           </li>
         {:else if element.type === "hr"}
           <hr class="opacity-10 my-4" />
+        {:else if element.type === "br"}
+          <div class="h-2"></div>
         {/if}
       </div>
     {/each}
