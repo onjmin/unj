@@ -57,10 +57,8 @@
 <HeaderPart {board} title="リンク集" />
 
 <MainPart {board}>
-    <p class="mb-2">おんJ発の掲示板・文化・派生サイト集です。</p>
-    <p class="mb-6 opacity-70">
-        暇なときにでも、ふらっと立ち寄ってみてください。
-    </p>
+    <p>おんJ発の掲示板・文化・派生サイト集です。</p>
+    <p>暇なときにでも、ふらっと立ち寄ってみてください。</p>
 
     <div class="space-y-8 max-w-lg mx-auto">
         {#each sections as section}
