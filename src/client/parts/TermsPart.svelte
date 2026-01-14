@@ -128,7 +128,7 @@
             {element.content[0].text}
           </h3>
         {:else if element.type === "p"}
-          <p class="ml-4 leading-normal my-1">
+          <p class="ml-2 leading-normal">
             {#each element.content as part}
               {#if part.isBold}
                 <strong class="font-bold">{part.text}</strong>
@@ -138,13 +138,13 @@
             {/each}
           </p>
         {:else if element.type === "li"}
-          <li class="ml-4 list-disc list-inside leading-normal my-1">
+          <li class="ml-5 list-disc list-inside leading-normal">
             {element.content[0].text}
           </li>
         {:else if element.type === "hr"}
           <hr class="opacity-10 my-4" />
         {:else if element.type === "br"}
-          <div class="h-2"></div>
+          <div class="h-4"></div>
         {/if}
       </div>
     {/each}
