@@ -111,7 +111,7 @@ export const makeCcUserName = ({
 };
 
 const capList = new Map([
-	["2853d762556dee5d", "カン・ニリン"],
+	["2853d762556dee5d", "開発者"],
 	["93cd0aba6b362647", "電撃少女"],
 	["07139d4ce3c06b56", "ひろゆき"],
 ]);
