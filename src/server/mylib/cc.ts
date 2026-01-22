@@ -111,9 +111,10 @@ export const makeCcUserName = ({
 };
 
 const capList = new Map([
-	["2853d762556dee5d", "開発者"],
+	["2853d762556dee5d", "管理人"],
 	["93cd0aba6b362647", "電撃少女"],
 	["07139d4ce3c06b56", "ひろゆき"],
+	["d410440f501dc573", "wiki編集者"],
 ]);
 
 export const makeCcUserAvatar = ({
