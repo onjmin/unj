@@ -305,8 +305,9 @@
             oekakiCollab = contentUrl;
             bindContentType = Enum.Oekaki;
             scrollToEnd();
+            const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
             bindContentText = bindContentText
-              .replace(ankaRegex, "")
+              .replace(ankaMatchAllRegex, "")
               .replace(/^[^\S]*/, `>>${resNum}\n`);
             focus();
           }}

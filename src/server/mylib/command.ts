@@ -142,6 +142,7 @@ export const parseCommand = async ({
 	})();
 
 	const isValidRangeAnka = (n: number) => !Number.isNaN(n) && n > 0 && n < 1024;
+	const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
 
 	// コマンドの解釈
 	let msg = "";
@@ -153,7 +154,7 @@ export const parseCommand = async ({
 	if (cmds && cmds.length < 8) {
 		const results = [];
 		const multiAnka = str
-			.match(ankaRegex)
+			.match(ankaMatchAllRegex)
 			?.map((v) => v.slice(2))
 			.map(Number)
 			.filter(isValidRangeAnka);

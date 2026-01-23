@@ -72,7 +72,6 @@
   const ignoreListCache = new ObjectStorage<string[]>("ignoreListCache");
   let showBlockButtons: boolean = $state(false);
 
-  const ankaRegex2 = new RegExp(ankaRegex.source); // 分類チェック用に g なしで生成
   const discordEmojiRegex = /:[A-Za-z0-9_~]{1,32}:/;
   const combinedRegex = new RegExp(
     `\n|${ankaRegex.source}|${discordEmojiRegex.source}`,
@@ -101,7 +100,7 @@
         };
       }
 
-      if (ankaRegex2.test(token)) {
+      if (ankaRegex.test(token)) {
         yield {
           type: "anka" as const,
           value: token.slice(2), // >>1234 → "1234"
@@ -157,8 +156,9 @@
         ? 'underline sage'
         : ''}"
       onclick={() => {
+        const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
         bindContentText = bindContentText
-          .replace(ankaRegex, "")
+          .replace(ankaMatchAllRegex, "")
           .replace(/^[^\S]*/, `>>${num}\n`);
         focus();
       }}

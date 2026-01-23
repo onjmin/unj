@@ -400,8 +400,9 @@
             newResCount++;
         }
 
+        const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
         const multiAnka = data.new.contentText
-            .match(ankaRegex)
+            .match(ankaMatchAllRegex)
             ?.map((v) => v.slice(2))
             .map(Number);
         for (const n of multiAnka ?? []) {

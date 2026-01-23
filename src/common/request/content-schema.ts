@@ -13,8 +13,8 @@ import { findIn } from "./whitelist/site-info.js";
 import whitelistSns from "./whitelist/sns.js";
 import whitelistVideo from "./whitelist/video.js";
 
-export const ankaRegex = />>(?:[1-9][0-9]{0,3})(?![0-9])/g; // >>1-9999
-export const urlRegex = /https?:\/\/[A-Za-z0-9\-._~:/?#[\]@!$&'()*+,;=%]+/gi;
+export const ankaRegex = />>(?:[1-9][0-9]{0,3})(?![0-9])/; // >>1-9999
+export const urlRegex = /https?:\/\/[A-Za-z0-9\-._~:/?#[\]@!$&'()*+,;=%]+/;
 
 const SAFE_TEXT = v.pipe(
 	v.string(),

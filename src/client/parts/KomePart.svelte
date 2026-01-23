@@ -121,12 +121,14 @@
     if (e.key === "Enter") sendMessage();
   };
 
+  const urlMatchAllRegex = new RegExp(urlRegex.source, "g");
+
   const formatText = (text: string) => {
     const segments: Array<{ type: "text" | "url"; content: string }> = [];
     let lastIndex = 0;
 
     // matchAllのイテレータを for...of で直接処理
-    const matches = text.matchAll(urlRegex);
+    const matches = text.matchAll(urlMatchAllRegex);
 
     for (const match of matches) {
       const url = match[0];

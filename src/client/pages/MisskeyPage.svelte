@@ -133,6 +133,7 @@
 
     let preloadTimeline: Note[] = $state([]);
     const timeline = $derived(pages[pageIndex] ?? []);
+    const urlMatchAllRegex = new RegExp(urlRegex.source, "g");
 
     // ---- text / embed helpers ----
     const formatText = (text: string) => {
@@ -145,7 +146,7 @@
 
         for (const [lineIndex, line] of lines.entries()) {
             let lastIndex = 0;
-            const matches = line.matchAll(urlRegex);
+            const matches = line.matchAll(urlMatchAllRegex);
 
             for (const match of matches) {
                 const url = match[0];
@@ -178,7 +179,7 @@
     };
 
     const findEmbeddable = (text: string): [string, number] | undefined => {
-        for (const str of text.match(urlRegex) ?? []) {
+        for (const str of text.match(urlMatchAllRegex) ?? []) {
             let url: URL | undefined;
             try {
                 url = new URL(str);
