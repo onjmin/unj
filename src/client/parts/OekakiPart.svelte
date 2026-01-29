@@ -335,7 +335,7 @@
       const contentRatio = isPortrait ? 16 / 9 : 9 / 16;
 
       const main = document.querySelector(".unj-main-part") ?? document.body;
-      const targetWidth = main.clientWidth * 0.8;
+      const targetWidth = Math.min(main.clientWidth * 0.8, 1024); // @onjmin/oekaki側の都合により最大1024に制限
       const targetHeight = targetWidth * contentRatio;
 
       width = targetWidth | 0;
