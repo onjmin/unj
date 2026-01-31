@@ -7,10 +7,22 @@ CREATE TABLE users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     ip INET NOT NULL DEFAULT '0.0.0.0',
-    auth TEXT NOT NULL DEFAULT '', -- JWT風トークン
     ninja_pokemon SMALLINT NOT NULL DEFAULT 0, -- 忍法帖ポケモンのID「■忍【LV38,ピカチュウ,9S】◆KOSOVO//9k」
     ninja_score SMALLINT NOT NULL DEFAULT 0 -- 忍法帖スコア
 );
+
+-- ========== auth_tokens テーブル ==========
+CREATE TABLE auth_tokens (
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    token TEXT NOT NULL,
+    ip INET NOT NULL DEFAULT '0.0.0.0'
+);
+
+-- 検索効率向上のためのインデックス
+CREATE INDEX idx_auth_tokens_user_id ON auth_tokens(user_id);
+CREATE INDEX idx_auth_tokens_token ON auth_tokens(token);
 
 -- ========== threads テーブル ==========
 CREATE TABLE threads (

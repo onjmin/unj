@@ -86,7 +86,7 @@ export const hello = (callback: (() => void) | null = null) => {
 			}
 		});
 		socket.on(
-			"updateAuthToken",
+			"issueAuthToken",
 			(data: { ok: boolean; token: string; timestamp: Date }) => {
 				if (!data.ok || !data.token) return;
 				if (

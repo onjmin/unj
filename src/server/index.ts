@@ -194,21 +194,37 @@ io.on("connection", async (socket) => {
 
 	setIP(socket, ip);
 
+	let needsRegister = false;
+	const token = auth.getTokenParam(socket);
 	const claims = auth.parseClaims(socket);
-	if (claims) {
-		logger.verbose(`🪪 ${JSON.stringify(claims)}`);
+
+	if (!claims) {
+		// 【ケース1】トークンなし or 破損
+		logger.verbose(token ? `🚫 Invalid` : `✨ New Guest`);
+		needsRegister = true;
+	} else {
+		// 【ケース2】形式は正しい
 		const userId = claims.userId;
 		verifyUserId(socket, userId);
+
 		if (isBefore(new Date(), claims.expiryDate)) {
-			logger.verbose(`✅ ${JSON.stringify(claims)}`);
+			// A. 期限内ならそのままOK
+			logger.verbose(`✅ ${userId}`);
 			auth.grant(socket, userId, claims.expiryDate);
 		} else {
-			logger.verbose(`🗑️ ${JSON.stringify(claims)}`);
-			await auth.init(socket);
+			// B. 期限切れなら再試行
+			logger.verbose(`⌛ ${userId}`);
+			const success = await auth.relogin(socket, userId);
+			if (!success) {
+				logger.verbose(`♻️ ${userId} -> Reset`);
+				needsRegister = true;
+			}
 		}
-	} else {
-		logger.verbose(`✨ ${JSON.stringify(claims)}`);
-		await auth.init(socket);
+	}
+
+	// 最後に、新規登録が必要になった場合だけ実行
+	if (needsRegister) {
+		await auth.register(socket);
 	}
 
 	nonce.init(socket);
@@ -218,7 +234,7 @@ io.on("connection", async (socket) => {
 		verifyIP(socket, getIP(socket));
 		verifyUserId(socket, auth.getUserId(socket));
 		if (auth.isAuthExpired(socket)) {
-			auth.updateAuthToken(socket);
+			auth.issueAuthToken(socket);
 		}
 		next();
 	});

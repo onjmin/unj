@@ -77,13 +77,16 @@ const parseClaims = (socket: Socket): Claims | null => {
 
 const delay = 1000 * 60 * 4; // Glitchは5分放置でスリープする
 const neet: Map<number, NodeJS.Timeout> = new Map();
-const lazyUpdate = (userId: number, ip: string, auth: string) => {
+const lazyUpdate = (userId: number, ip: string, token: string) => {
 	clearTimeout(neet.get(userId));
 	const id = setTimeout(async () => {
 		try {
 			await pool.query(
-				"UPDATE users SET updated_at = NOW(), ip = $1, auth = $2 WHERE id = $3",
-				[ip, auth, userId],
+				"WITH ins AS (" +
+					"INSERT INTO auth_tokens (user_id, token, ip) VALUES ($1, $2, $3)" +
+					") " +
+					"UPDATE users SET updated_at = NOW(), ip = $3 WHERE id = $1",
+				[userId, token, ip],
 			);
 		} catch (error) {
 			logger.verbose("auth");
@@ -93,7 +96,7 @@ const lazyUpdate = (userId: number, ip: string, auth: string) => {
 	neet.set(userId, id);
 };
 
-const updateAuthToken = (socket: Socket) => {
+const issueAuthToken = (socket: Socket) => {
 	const rawUserId = getUserId(socket);
 	const userId = encodeUserId(rawUserId, unjBeginDate);
 	if (!userId) return;
@@ -104,7 +107,7 @@ const updateAuthToken = (socket: Socket) => {
 	const sign = signAuth(userId, limit);
 	const token = [sign, userId, limit].join(".");
 	grant(socket, rawUserId, expiryDate);
-	socket.emit("updateAuthToken", {
+	socket.emit("issueAuthToken", {
 		ok: true,
 		token,
 		timestamp: new Date(),
@@ -113,16 +116,16 @@ const updateAuthToken = (socket: Socket) => {
 };
 
 const tokenBucket = new TokenBucket({
-	capacity: 3,
-	refillRate: 1 / 60, // 60秒で1回復
+	capacity: 16, // 8人が「relogin失敗→register」の2枚消費ルートを通っても耐えられる
+	refillRate: 1 / 60, // 回復は1分に1枚。Neonの長期的な接続負荷はしっかり抑える
 	costPerAction: 1,
 });
 
 /**
- * userの探索と新規発行
+ * 期限切れ再ログイン
  */
-const init = async (socket: Socket): Promise<boolean> => {
-	// 実質誰でも叩けるので制限を設ける
+const relogin = async (socket: Socket, userId: number): Promise<boolean> => {
+	// レート制限
 	if (!tokenBucket.attempt()) {
 		logger.verbose(`⌛ ${tokenBucket.getCooldownSeconds().toFixed(1)}`);
 		kick(socket, "newUsersRateLimit");
@@ -130,49 +133,79 @@ const init = async (socket: Socket): Promise<boolean> => {
 		return false;
 	}
 
-	// 危険な処理
 	try {
-		// 既存ユーザー照合
 		const token = getTokenParam(socket);
 		if (token) {
-			const { rows, rowCount } = await pool.query(
-				"SELECT id, ninja_pokemon, ninja_score FROM users WHERE auth = $1",
-				[token],
+			const { rows } = await pool.query(
+				"SELECT u.id, u.ninja_pokemon, u.ninja_score " +
+					"FROM users u " +
+					"WHERE u.id = $1 AND EXISTS (" +
+					"SELECT 1 FROM auth_tokens t WHERE t.user_id = $1 AND t.token = $2 ORDER BY t.id DESC LIMIT 4" +
+					")",
+				[userId, token],
 			);
-			if (rowCount) {
+
+			if (rows.length) {
 				const record = rows[0];
 				const userId = record.id;
+
 				setUserId(socket, userId);
-				updateAuthToken(socket);
+				issueAuthToken(socket);
+
 				userCached.set(userId, true);
 				userIPCache.set(userId, getIP(socket));
 				ninjaPokemonCache.set(userId, record.ninja_pokemon);
 				ninjaScoreCache.set(userId, record.ninja_score);
+
 				ninja(socket);
 				return true;
 			}
 		}
-		// 新規ユーザー発行
+	} catch (error) {
+		logger.error(error);
+	}
+
+	return false;
+};
+
+/**
+ * 新規発行
+ */
+const register = async (socket: Socket): Promise<boolean> => {
+	// レート制限
+	if (!tokenBucket.attempt()) {
+		logger.verbose(`⌛ ${tokenBucket.getCooldownSeconds().toFixed(1)}`);
+		kick(socket, "newUsersRateLimit");
+		socket.disconnect();
+		return false;
+	}
+
+	try {
 		const ninjaPokemon = randInt(1, 151);
-		const { rows, rowCount } = await pool.query(
+
+		const { rows } = await pool.query(
 			"INSERT INTO users (ip, ninja_pokemon) VALUES ($1, $2) RETURNING id",
 			[getIP(socket), ninjaPokemon],
 		);
-		if (rowCount) {
-			const record = rows[0];
-			const userId = record.id;
+
+		if (rows.length) {
+			const userId = rows[0].id;
+
 			setUserId(socket, userId);
-			updateAuthToken(socket);
+			issueAuthToken(socket);
+
 			userCached.set(userId, true);
 			userIPCache.set(userId, getIP(socket));
 			ninjaPokemonCache.set(userId, ninjaPokemon);
 			ninjaScoreCache.set(userId, 0);
+
 			ninja(socket);
 			return true;
 		}
 	} catch (error) {
 		logger.error(error);
 	}
+
 	return false;
 };
 
@@ -216,9 +249,11 @@ const kick = (socket: Socket, reason: string) =>
 	});
 
 export default {
+	getTokenParam,
 	parseClaims,
-	updateAuthToken,
-	init,
+	issueAuthToken,
+	relogin,
+	register,
 	grant,
 	getUserId,
 	isAuthExpired,
