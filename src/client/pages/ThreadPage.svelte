@@ -1119,67 +1119,69 @@
 {/if} -->
 
 {#snippet paginationControls()}
-    <PaginationControlsPart
-        currentPage={Math.max(
-            1,
-            Math.floor(
-                Math.min(
-                    resNum - 2 + queryResultLimit - 1,
-                    (thread?.resCount ?? 0) - 1,
-                ) / queryResultLimit,
-            ) + 1,
-        )}
-        totalPages={Math.max(
-            1,
-            Math.ceil((thread?.resCount ?? 0) / queryResultLimit),
-        )}
-        firstDisabled={emitting || resNum < 3}
-        prevDisabled={emitting || resNum < 3}
-        nextDisabled={(emitting ||
-            (thread &&
-                (thread.resCount < queryResultLimit ||
-                    resNum > thread.resCount - queryResultLimit))) ??
-            false}
-        lastDisabled={(emitting ||
-            (thread &&
-                (thread.resCount < queryResultLimit ||
-                    resNum > thread.resCount - queryResultLimit))) ??
-            false}
-        onClickFirst={() => {
-            if (!thread) return;
-            navigate(makePathname(`/${board.key}/thread/${thread.id}/2`));
-        }}
-        onClickPrev={() => {
-            if (!thread) return;
-            navigate(
-                makePathname(
-                    `/${board.key}/thread/${thread.id}/${Math.max(
-                        resNum - queryResultLimit,
-                        2,
-                    )}`,
-                ),
-            );
-        }}
-        onClickNext={() => {
-            if (!thread) return;
-            navigate(
-                makePathname(
-                    `/${board.key}/thread/${thread.id}/${Math.min(
-                        resNum + queryResultLimit,
-                        thread.resCount - queryResultLimit + 1,
-                    )}`,
-                ),
-            );
-        }}
-        onClickLast={() => {
-            if (!thread) return;
-            navigate(
-                makePathname(
-                    `/${board.key}/thread/${thread.id}/${thread.resCount - queryResultLimit + 1}`,
-                ),
-            );
-        }}
-    />
+    {#if (thread?.resCount ?? 0) > queryResultLimit}
+        <PaginationControlsPart
+            currentPage={Math.max(
+                1,
+                Math.floor(
+                    Math.min(
+                        resNum - 2 + queryResultLimit - 1,
+                        (thread?.resCount ?? 0) - 1,
+                    ) / queryResultLimit,
+                ) + 1,
+            )}
+            totalPages={Math.max(
+                1,
+                Math.ceil((thread?.resCount ?? 0) / queryResultLimit),
+            )}
+            firstDisabled={emitting || resNum < 3}
+            prevDisabled={emitting || resNum < 3}
+            nextDisabled={(emitting ||
+                (thread &&
+                    (thread.resCount < queryResultLimit ||
+                        resNum > thread.resCount - queryResultLimit))) ??
+                false}
+            lastDisabled={(emitting ||
+                (thread &&
+                    (thread.resCount < queryResultLimit ||
+                        resNum > thread.resCount - queryResultLimit))) ??
+                false}
+            onClickFirst={() => {
+                if (!thread) return;
+                navigate(makePathname(`/${board.key}/thread/${thread.id}/2`));
+            }}
+            onClickPrev={() => {
+                if (!thread) return;
+                navigate(
+                    makePathname(
+                        `/${board.key}/thread/${thread.id}/${Math.max(
+                            resNum - queryResultLimit,
+                            2,
+                        )}`,
+                    ),
+                );
+            }}
+            onClickNext={() => {
+                if (!thread) return;
+                navigate(
+                    makePathname(
+                        `/${board.key}/thread/${thread.id}/${Math.min(
+                            resNum + queryResultLimit,
+                            thread.resCount - queryResultLimit + 1,
+                        )}`,
+                    ),
+                );
+            }}
+            onClickLast={() => {
+                if (!thread) return;
+                navigate(
+                    makePathname(
+                        `/${board.key}/thread/${thread.id}/${thread.resCount - queryResultLimit + 1}`,
+                    ),
+                );
+            }}
+        />
+    {/if}
 {/snippet}
 
 <MainPart {board}>
@@ -1220,7 +1222,6 @@
                 </div>
             </div>
         </div>
-        {@render paginationControls()}
         <div class="thread-header">
             <p class="flex items-center font-bold unj-font text-gray-500">
                 <span class="w-4 h-4 shrink-0">
@@ -1353,6 +1354,7 @@
                     </ResPart>
                 </div>
             {/if}
+            {@render paginationControls()}
             {#each thread.resList as res}
                 {#if !ignoreList?.has(res.ccUserId)}
                     <div id={makeUnjResNumId(res.num)}>
