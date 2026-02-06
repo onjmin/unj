@@ -90,6 +90,11 @@ export const rentalBbsLinks = [
  * ========================= */
 export const indieBbsLinks = [
 	new SiteInfo({
+		name: "なんL",
+		description: "掲示板作ったからなんか書き込んでくれ",
+		src: "https://openlive.pages.dev/",
+	}),
+	new SiteInfo({
 		name: "なんI",
 		description: "掲示板作ったんやが",
 		src: "https://openlive2ch.pages.dev/",
