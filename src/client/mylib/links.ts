@@ -10,6 +10,11 @@ export const officialLinks = [
 		src: "https://hayabusa.open2ch.net/livejupiter/",
 	}),
 	new SiteInfo({
+		name: "おんJ 新UI",
+		description: "新UIへようこそ！ﾃｰﾏは変更できるよ!",
+		src: "https://new.open2ch.net/livejupiter",
+	}),
+	new SiteInfo({
 		name: "おーぷんwiki（仮）",
 		description: "ここはおーぷん２ちゃんねるの事を色々と決めるWikiです。",
 		src: "https://wiki.open2ch.net/Top",
