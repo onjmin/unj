@@ -1094,6 +1094,7 @@
                     bind:oekakiCollab
                     bind:bindContentText={contentText}
                     bind:bindContentType={contentType}
+                    threadId={thread.id}
                     {...thread.ageRes}
                 />
             {:else}
@@ -1105,6 +1106,7 @@
                     bind:oekakiCollab
                     bind:bindContentText={contentText}
                     bind:bindContentType={contentType}
+                    threadId={thread.id}
                     {...thread.resList.find(
                         (v) => v.num === floating?.resNum,
                     ) ?? {}}
