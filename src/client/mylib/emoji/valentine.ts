@@ -1,9 +1,7 @@
 import { seededRandArray } from "../../../common/util.js";
 
 export const makeValentineEmojiSuffix = (seed: string) =>
-	[...Array(3).keys()]
-		.map((v) => seededRandArray(emojiArray, `${v}###${seed}`))
-		.join("");
+	seededRandArray(emojiArray, seed);
 
 const emojiArray = [
 	"🍫",
