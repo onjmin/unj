@@ -110,6 +110,12 @@
         aria-hidden="true"
       />
     </div>
+  {:else if isAnniversary([Anniversary.VALENTINE])}
+    <div
+      class="absolute inset-0 z-0 opacity-40"
+      style="background-image: url('https://i.imgur.com/MuGvBdL.png'); background-repeat: repeat; background-size: auto;"
+      aria-hidden="true"
+    ></div>
   {:else if isAnniversary([Anniversary.HALLOWEEN])}
     <div class="absolute inset-0 z-0">
       <img
