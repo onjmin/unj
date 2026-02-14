@@ -67,6 +67,11 @@ export const vocaloidLinks = [
 		description: "重音テトみたいなものが作りたいので安価で設定決める",
 		src: "https://kakumeisiyo.1my.jp/",
 	}),
+	new SiteInfo({
+		name: "春音リノ",
+		description: "心に届く。美味しい歌声",
+		src: "https://hatenakun1.github.io/halunelino/",
+	}),
 ];
 
 /* =========================
