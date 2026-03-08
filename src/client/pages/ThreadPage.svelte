@@ -1038,6 +1038,8 @@
             sage={thread?.ageRes.sage}
             createdAt={thread?.ageRes.createdAt}
             threadId={thread.id}
+            resList={thread?.resList ?? []}
+            ageRes={thread?.ageRes ?? null}
             backgroundEmbedControls={(siteInfo?.id === 1601 ||
                 siteInfo?.id === 1602 ||
                 siteInfo?.id === 3201) &&
@@ -1084,6 +1086,8 @@
                     contentType={thread.contentType}
                     createdAt={thread.createdAt}
                     threadId={thread.id}
+                    resList={thread.resList ?? []}
+                    ageRes={thread.ageRes ?? null}
                 />
             {:else if thread.ageRes?.num === floating.resNum}
                 <ResPart
@@ -1095,6 +1099,8 @@
                     bind:bindContentText={contentText}
                     bind:bindContentType={contentType}
                     threadId={thread.id}
+                    resList={thread.resList ?? []}
+                    ageRes={thread.ageRes ?? null}
                     {...thread.ageRes}
                 />
             {:else}
@@ -1107,6 +1113,8 @@
                     bind:bindContentText={contentText}
                     bind:bindContentType={contentType}
                     threadId={thread.id}
+                    resList={thread.resList ?? []}
+                    ageRes={thread.ageRes ?? null}
                     {...thread.resList.find(
                         (v) => v.num === floating?.resNum,
                     ) ?? {}}
@@ -1310,6 +1318,8 @@
                         isOwner={true}
                         createdAt={thread.createdAt}
                         threadId={thread.id}
+                        resList={thread.resList ?? []}
+                        ageRes={thread.ageRes ?? null}
                     >
                         <div
                             class="unj-like-vote-container flex justify-end gap-2 p-2"
@@ -1380,6 +1390,8 @@
                             sage={res.sage}
                             createdAt={res.createdAt}
                             threadId={thread.id}
+                            resList={thread.resList ?? []}
+                            ageRes={thread.ageRes ?? null}
                         >
                             {#if res.num === thread.balsResNum}
                                 <BalsPart {threadId} />

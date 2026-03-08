@@ -4,7 +4,7 @@
   import IconButton from "@smui/icon-button";
   import { format } from "date-fns";
   import { ja } from "date-fns/locale";
-  import { Link } from "svelte-routing";
+  import { Link, navigate } from "svelte-routing";
   import {
     Enum,
     ankaRegex,
@@ -18,6 +18,7 @@
   import { activeController } from "../mylib/background-embed.js";
   import { makePathname } from "../mylib/env.js";
   import { ObjectStorage } from "../mylib/object-storage.js";
+  import { makeUnjResNumId, scrollToResNum } from "../mylib/scroll.js";
   import DecryptPart from "./DecryptPart.svelte";
   import EmbedPart from "./EmbedPart.svelte";
   import {
@@ -28,6 +29,20 @@
   import { makeHalloweenEmojiSuffix } from "../mylib/emoji/halloween.js";
   import { Anniversary, isAnniversary } from "../mylib/anniversary.js";
   import { makeValentineEmojiSuffix } from "../mylib/emoji/valentine.js";
+
+  type ResData = {
+    num: number;
+    ccUserId: string;
+    ccUserName: string;
+    ccUserAvatar: number;
+    contentText: string;
+    contentUrl: string;
+    contentType: number;
+    commandResult?: string;
+    isOwner?: boolean;
+    sage?: boolean;
+    createdAt: Date;
+  };
 
   let {
     onRequestFloating = () => {},
@@ -55,6 +70,9 @@
     createdAt = new Date(),
     // メタ情報
     threadId = "",
+    // 安価展開用
+    resList = [],
+    ageRes = null,
   } = $props();
 
   let siteInfo: SiteInfo | null = $state(null);
@@ -302,17 +320,37 @@
             {:else if part.type === "br"}
               <br />
             {:else if part.type === "anka"}
+              {@const ankaNum = Number(part.value)}
+              {@const ankaRes = (
+                ageRes?.num === ankaNum
+                  ? ageRes
+                  : resList.find((r) => r.num === ankaNum)
+              ) as ResData | undefined}
+              {@const ankaContent = ankaRes?.contentText ?? ""}
+              {@const displayText = ankaContent
+                ? ankaContent.slice(0, 50) +
+                  (ankaContent.length > 50 ? "..." : "")
+                : ""}
               <span
                 tabindex="0"
                 role="button"
                 onkeydown={() => {}}
                 class="cursor-pointer text-blue-500 hover:underline"
-                onmouseenter={(e) =>
-                  onRequestFloating?.(Number(part.value), e, false)}
-                onclick={(e) =>
-                  onRequestFloating?.(Number(part.value), e, true)}
+                onmouseenter={(e) => onRequestFloating?.(ankaNum, e, false)}
+                onclick={(e) => {
+                  onRequestFloating?.(ankaNum, e, true);
+                  if (ankaRes) {
+                    scrollToResNum(ankaNum);
+                  } else {
+                    navigate(
+                      makePathname(
+                        `/${board.key}/thread/${threadId}/${ankaNum}`,
+                      ),
+                    );
+                  }
+                }}
               >
-                &gt;&gt;{part.value}
+                {`> ${displayText}` || `>>${part.value}`}
               </span>
             {:else if part.type === "customEmoji"}
               <CustomEmojiPart
