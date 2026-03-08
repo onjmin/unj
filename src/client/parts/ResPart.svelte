@@ -326,16 +326,11 @@
                   ? ageRes
                   : resList.find((r) => r.num === ankaNum)
               ) as ResData | undefined}
-              {@const ankaContent = ankaRes?.contentText ?? ""}
-              {@const displayText = ankaContent
-                ? ankaContent.slice(0, 50) +
-                  (ankaContent.length > 50 ? "..." : "")
-                : ""}
               <span
                 tabindex="0"
                 role="button"
                 onkeydown={() => {}}
-                class="cursor-pointer text-blue-500 hover:underline"
+                class="cursor-pointer text-blue-500 hover:underline truncate block max-w-full"
                 onmouseenter={(e) => onRequestFloating?.(ankaNum, e, false)}
                 onclick={(e) => {
                   onRequestFloating?.(ankaNum, e, true);
@@ -350,7 +345,7 @@
                   }
                 }}
               >
-                {`> ${displayText}` || `>>${part.value}`}
+                {`> ${ankaRes?.contentText}` || `>>${part.value}`}
               </span>
             {:else if part.type === "customEmoji"}
               <CustomEmojiPart
