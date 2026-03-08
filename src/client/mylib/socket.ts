@@ -58,6 +58,14 @@ export const hello = (callback: (() => void) | null = null) => {
 		window.addEventListener("beforeunload", () => {
 			socket?.disconnect();
 		});
+		const handleVisibilityChange = () => {
+			if (document.visibilityState === "hidden") {
+				socket?.disconnect();
+			} else if (document.visibilityState === "visible" && !socket?.connected) {
+				socket?.connect();
+			}
+		};
+		document.addEventListener("visibilitychange", handleVisibilityChange);
 		socket.on("kicked", (data: { ok: boolean; reason: string }) => {
 			if (!data.ok || !data.reason) return;
 			errorReason = data.reason;
