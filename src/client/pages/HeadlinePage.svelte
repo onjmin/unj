@@ -226,6 +226,21 @@
         reactiveTasks.push(f);
     };
 
+    const handleVisibilityChange = () => {
+        if (document.visibilityState === "visible") {
+            socket?.emit("joinHeadline", {
+                boardId: board.id,
+            });
+            socket?.emit("headline", {
+                boardId: board.id,
+                nonce: genNonce(nonceKey.value ?? ""),
+                limit: queryResultLimit,
+                sinceDate: null,
+                untilDate: null,
+            });
+        }
+    };
+
     $effect(() => {
         hello(() => {
             socket?.emit("joinHeadline", {
@@ -239,6 +254,7 @@
                 untilDate: null,
             });
         });
+        document.addEventListener("visibilitychange", handleVisibilityChange);
         socket?.on("joinHeadline", handleJoinHeadline);
         socket?.on("headline", handleHeadline);
         socket?.on("newHeadline", handleNewHeadline);
@@ -247,6 +263,10 @@
             ?.map((v) => fetchMisskey(v, board));
         return () => {
             goodbye();
+            document.removeEventListener(
+                "visibilitychange",
+                handleVisibilityChange,
+            );
             socket?.off("joinHeadline", handleJoinHeadline);
             socket?.off("headline", handleHeadline);
             socket?.off("newHeadline", handleNewHeadline);

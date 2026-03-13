@@ -415,23 +415,6 @@
         }
     };
 
-    const handleVisibilityChange = () => {
-        if (document.visibilityState === "visible" && thread) {
-            const latestResNum =
-                thread.resList.length > 0
-                    ? thread.resList[thread.resList.length - 1].num
-                    : 0;
-            socket?.emit("joinThread", { threadId });
-            socket?.emit("readThread", {
-                nonce: genNonce(nonceKey.value ?? ""),
-                limit: queryResultLimit,
-                sinceResNum: latestResNum,
-                untilResNum: null,
-                threadId,
-            });
-        }
-    };
-
     const handleUpdateMeta = async (data: { ok: boolean; new: Meta }) => {
         if (!data.ok || !thread) return;
         thread.varsan = data.new.varsan;
@@ -474,6 +457,23 @@
         goodRatio = (goodVotes / denominator) * 100;
         badRatio = (badVotes / denominator) * 100;
     });
+
+    const handleVisibilityChange = () => {
+        if (document.visibilityState === "visible" && thread) {
+            const latestResNum =
+                thread.resList.length > 0
+                    ? thread.resList[thread.resList.length - 1].num
+                    : 0;
+            socket?.emit("joinThread", { threadId });
+            socket?.emit("readThread", {
+                nonce: genNonce(nonceKey.value ?? ""),
+                limit: queryResultLimit,
+                sinceResNum: latestResNum,
+                untilResNum: null,
+                threadId,
+            });
+        }
+    };
 
     let remaining = $state("");
     const countdown = (date: Date): string => {
