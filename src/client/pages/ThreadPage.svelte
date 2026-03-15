@@ -293,16 +293,29 @@
     let goodRatio = $state(0);
     let badRatio = $state(0);
     let activeLayer = $state(null);
+    let isFromVisibilityChange = false;
 
     const loadThread = async (_thread: Thread) => {
-        thread = _thread;
-        if (!thread) return;
-        title = thread.title;
-        lolCount = thread.lolCount;
-        goodVotes = thread.goodCount;
-        badVotes = thread.badCount;
-        updateChips();
-        updateContentType();
+        if (isFromVisibilityChange && thread) {
+            const existingNums = new Set(thread.resList.map((r) => r.num));
+            const newResList = _thread.resList.filter(
+                (r) => !existingNums.has(r.num),
+            );
+            if (newResList.length > 0) {
+                thread.resList = thread.resList.concat(newResList);
+                thread.resCount = _thread.resCount;
+            }
+            isFromVisibilityChange = false;
+        } else {
+            thread = _thread;
+            if (!thread) return;
+            title = thread.title;
+            lolCount = thread.lolCount;
+            goodVotes = thread.goodCount;
+            badVotes = thread.badCount;
+            updateChips();
+            updateContentType();
+        }
     };
 
     const handleReadThread = async (data: { ok: boolean; thread: Thread }) => {
@@ -464,6 +477,7 @@
                 thread.resList.length > 0
                     ? thread.resList[thread.resList.length - 1].num
                     : 0;
+            isFromVisibilityChange = true;
             socket?.emit("joinThread", { threadId });
             socket?.emit("readThread", {
                 nonce: genNonce(nonceKey.value ?? ""),
