@@ -345,7 +345,9 @@
                   }
                 }}
               >
-                {`> ${ankaRes?.contentText}` || `>>${part.value}`}
+                {ankaRes?.contentText
+                  ? `> ${ankaRes.contentText}`
+                  : `>>${part.value}`}
               </span>
             {:else if part.type === "customEmoji"}
               <CustomEmojiPart
