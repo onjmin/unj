@@ -117,7 +117,7 @@
     const handleHeadline = (data: { ok: boolean; list: HeadlineThread[] }) => {
         if (!data.ok) return;
         ok();
-        if (!pagination) {
+        if (!pagination && !isFromVisibilityChange) {
             threadList = data.list;
             for (const f of reactiveTasks) f();
             cache.set(threadList);
@@ -135,8 +135,16 @@
                 }
             }
             resHistoryCache.set(resHistories);
+            isFromVisibilityChange = false;
         } else {
-            if (threadList) threadList = threadList.concat(data.list);
+            if (threadList) {
+                const existingIds = new Set(threadList.map((t) => t.id));
+                const newThreads = data.list.filter((t) => !existingIds.has(t.id));
+                if (newThreads.length > 0) {
+                    threadList = threadList.concat(newThreads);
+                }
+            }
+            isFromVisibilityChange = false;
         }
     };
 
@@ -228,6 +236,7 @@
 
     const handleVisibilityChange = () => {
         if (document.visibilityState === "visible") {
+            isFromVisibilityChange = true;
             socket?.emit("joinHeadline", {
                 boardId: board.id,
             });
@@ -280,6 +289,7 @@
     });
 
     let pagination = $state(false);
+    let isFromVisibilityChange = $state(false);
     let emitting = $state(false);
     const cursorBasedPagination = async () => {
         if (emitting) return;
