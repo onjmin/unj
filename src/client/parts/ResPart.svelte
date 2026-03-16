@@ -330,7 +330,7 @@
                 tabindex="0"
                 role="button"
                 onkeydown={() => {}}
-                class="cursor-pointer text-blue-500 hover:underline truncate block max-w-full"
+                class="cursor-pointer text-blue-500 hover:underline truncate inline-block align-middle max-w-full"
                 onmouseenter={(e) => onRequestFloating?.(ankaNum, e, false)}
                 onclick={(e) => {
                   onRequestFloating?.(ankaNum, e, true);
