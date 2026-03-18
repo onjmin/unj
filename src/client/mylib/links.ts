@@ -100,6 +100,11 @@ export const rentalBbsLinks = [
  * ========================= */
 export const indieBbsLinks = [
 	new SiteInfo({
+		name: "かまぼこ掲示板",
+		description: "かまぼこ掲示板",
+		src: "https://kamaboko.kesug.com/",
+	}),
+	new SiteInfo({
 		name: "なんL",
 		description: "掲示板作ったからなんか書き込んでくれ",
 		src: "https://openlive.pages.dev/",
