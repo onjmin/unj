@@ -10,11 +10,6 @@ export const officialLinks = [
 		src: "https://hayabusa.open2ch.net/livejupiter/",
 	}),
 	new SiteInfo({
-		name: "おんJ 新UI",
-		description: "新UIへようこそ！ﾃｰﾏは変更できるよ!",
-		src: "https://new.open2ch.net/livejupiter",
-	}),
-	new SiteInfo({
 		name: "おーぷんwiki（仮）",
 		description: "ここはおーぷん２ちゃんねるの事を色々と決めるWikiです。",
 		src: "https://wiki.open2ch.net/Top",
@@ -26,25 +21,9 @@ export const officialLinks = [
 		src: "https://w.atwiki.jp/openj3/",
 	}),
 	new SiteInfo({
-		name: "eピアノ",
-		description: "ピアノ演奏を共有できるWebサービス",
-		src: "https://epiano.jp/",
-	}),
-	new SiteInfo({
-		name: "ひろゆき村",
-		description:
-			"「ぺんぎん村」に入りたいけど金がないという人向けの底辺の村です。。",
-		src: "https://hiroyuki.net/",
-	}),
-	new SiteInfo({
 		name: "雑談たぬき",
 		description: "v系以外の雑談はこちらで。。",
 		src: "https://b.2ch2.net/zatsudan/i/",
-	}),
-	new SiteInfo({
-		name: "おんたこ",
-		description: "たこ焼き・お好み焼き・その他(仮)＠おーぷん",
-		src: "https://ikura.open2ch.net/konamono/",
 	}),
 ];
 
@@ -99,6 +78,11 @@ export const rentalBbsLinks = [
  * おんJ系掲示板（個人開発・自作BBS）
  * ========================= */
 export const indieBbsLinks = [
+	new SiteInfo({
+		name: "Jeegle!",
+		description: "おんjの検索サイト作った🥺",
+		src: "https://wakawakatnt.github.io/Jeegle/",
+	}),
 	new SiteInfo({
 		name: "かまぼこ掲示板",
 		description: "かまぼこ掲示板",
