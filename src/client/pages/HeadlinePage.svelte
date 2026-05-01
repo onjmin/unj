@@ -24,12 +24,6 @@
     import { genNonce } from "../mylib/anti-debug.js";
     import { makeEmojiByThreadId } from "../mylib/emoji/thread-id.js";
     import { makePathname } from "../mylib/env.js";
-    import {
-        fetchMisskeyTimeline,
-        findMisskey,
-        type Misskey,
-        misskeyList,
-    } from "../mylib/misskey.js";
     import { ObjectStorage } from "../mylib/object-storage.js";
     import type { ResHistory } from "../mylib/res-history.js";
     import { goodbye, hello, ok, socket } from "../mylib/socket.js";
@@ -139,7 +133,9 @@
         } else {
             if (threadList) {
                 const existingIds = new Set(threadList.map((t) => t.id));
-                const newThreads = data.list.filter((t) => !existingIds.has(t.id));
+                const newThreads = data.list.filter(
+                    (t) => !existingIds.has(t.id),
+                );
                 if (newThreads.length > 0) {
                     threadList = threadList.concat(newThreads);
                 }
@@ -167,72 +163,7 @@
         // TODO: レス履歴の更新
     };
 
-    const fetchMisskey = (misskey: Misskey, misskeyBoard: Board) => {
-        const { controller, promise } = fetchMisskeyTimeline(misskey);
-        promise.then((timeline) => {
-            if (!timeline.length) return;
-            const [note] = timeline;
-            registerReactiveHeadline({
-                id: misskey.misskeyId,
-                title: misskey.title,
-                latestRes: note.text ?? "",
-                latestResAt: new Date(note.createdAt),
-                misskeyBoard,
-            });
-        });
-        return () => controller.abort();
-    };
-
     const reactiveTasks: (() => void)[] = [];
-
-    /**
-     * 任意のデータソースからヘッドライン形式のオブジェクトを生成し、
-     * リストに即時挿入するとともに、リアクティブタスクとして登録します。
-     */
-    const registerReactiveHeadline = ({
-        id,
-        title,
-        latestRes,
-        latestResAt,
-        misskeyBoard,
-    }: {
-        id: string;
-        title: string;
-        latestRes: string;
-        latestResAt: Date;
-        misskeyBoard: Board;
-    }) => {
-        const new1: HeadlineThread = {
-            ccUserId: "",
-            id,
-            latestRes,
-            latestResAt,
-            resCount: 0,
-            title,
-            boardId: board.id,
-            online: 0,
-            ikioi: 0,
-            lolCount: 0,
-            goodCount: 0,
-            badCount: 0,
-        };
-        const f = () => {
-            if (!threadList) return;
-            if (board !== misskeyBoard) return;
-            if (threadList.find((v) => v.id === id)) return;
-            const idx = threadList.findIndex((v) =>
-                isBefore(v.latestResAt, new1.latestResAt),
-            );
-            if (idx === -1) {
-                threadList.push(new1);
-            } else {
-                threadList.splice(idx, 0, new1);
-            }
-            threadList = [...threadList];
-        };
-        f();
-        reactiveTasks.push(f);
-    };
 
     const handleVisibilityChange = () => {
         if (document.visibilityState === "visible") {
@@ -267,9 +198,6 @@
         socket?.on("joinHeadline", handleJoinHeadline);
         socket?.on("headline", handleHeadline);
         socket?.on("newHeadline", handleNewHeadline);
-        const aborts = misskeyList
-            .get(board.key)
-            ?.map((v) => fetchMisskey(v, board));
         return () => {
             goodbye();
             document.removeEventListener(
@@ -279,7 +207,6 @@
             socket?.off("joinHeadline", handleJoinHeadline);
             socket?.off("headline", handleHeadline);
             socket?.off("newHeadline", handleNewHeadline);
-            aborts?.map((func) => func());
         };
     });
 
@@ -400,11 +327,8 @@
             <ul class="list-none p-0 m-0">
                 {#each threadList as thread}
                     {#if !ignoreList?.has(thread.ccUserId)}
-                        {@const misskey = findMisskey(board.key, thread.id)}
                         {@const href = makePathname(
-                            misskey
-                                ? `/${board.key}/misskey/${misskey.misskeyId}`
-                                : `/${board.key}/thread/${thread.id}/${thread.resCount > queryResultLimit ? thread.resCount - 8 : "2"}?top`,
+                            `/${board.key}/thread/${thread.id}/${thread.resCount > queryResultLimit ? thread.resCount - 8 : "2"}?top`,
                         )}
                         <li>
                             <div
@@ -422,17 +346,11 @@
                                     <div class="mr-2 shrink-0 relative top-0.5">
                                         {#key thread.id}
                                             <div class="w-4 h-4">
-                                                {#if misskey}
-                                                    <FaviconPart
-                                                        hostname={misskey.hostname}
-                                                    />
-                                                {:else}
-                                                    <TwemojiPart
-                                                        emoji={makeEmojiByThreadId(
-                                                            thread.id,
-                                                        )}
-                                                    />
-                                                {/if}
+                                                <TwemojiPart
+                                                    emoji={makeEmojiByThreadId(
+                                                        thread.id,
+                                                    )}
+                                                />
                                             </div>
                                         {/key}
                                     </div>
@@ -454,13 +372,11 @@
                                                         {thread.title}
                                                     </a>
                                                 </span>
-                                                {#if !misskey}
-                                                    <span
-                                                        class="inline-block shrink-0 ml-1 whitespace-nowrap"
-                                                    >
-                                                        ({thread.resCount})
-                                                    </span>
-                                                {/if}
+                                                <span
+                                                    class="inline-block shrink-0 ml-1 whitespace-nowrap"
+                                                >
+                                                    ({thread.resCount})
+                                                </span>
                                             </div>
                                             <div
                                                 class="opacity-50 shrink-0 ml-2 mt-0"
@@ -482,27 +398,19 @@
                                                 {/if}
                                             </div>
 
-                                            {#if misskey}
-                                                <div
-                                                    class="shrink-0 text-purple-500"
-                                                >
-                                                    @misskey
-                                                </div>
-                                            {:else}
-                                                <div
-                                                    class="transition-all duration-200 ease-in shrink-0"
-                                                    class:text-gray-500={thread.online ===
-                                                        0}
-                                                    class:text-blue-500={thread.online ===
-                                                        1}
-                                                    class:text-orange-500={thread.online ===
-                                                        2}
-                                                    class:text-red-500={thread.online >=
-                                                        3}
-                                                >
-                                                    {thread.online}人閲覧中
-                                                </div>
-                                            {/if}
+                                            <div
+                                                class="transition-all duration-200 ease-in shrink-0"
+                                                class:text-gray-500={thread.online ===
+                                                    0}
+                                                class:text-blue-500={thread.online ===
+                                                    1}
+                                                class:text-orange-500={thread.online ===
+                                                    2}
+                                                class:text-red-500={thread.online >=
+                                                    3}
+                                            >
+                                                {thread.online}人閲覧中
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

@@ -12,7 +12,6 @@
   import HistoryPage from "./pages/HistoryPage.svelte";
   import HomePage from "./pages/HomePage.svelte";
   import LinksPage from "./pages/LinksPage.svelte";
-  import MisskeyPage from "./pages/MisskeyPage.svelte";
   import MakeThreadPage from "./pages/MakeThreadPage.svelte";
   import NewsPage from "./pages/NewsPage.svelte";
   import NotFoundPage from "./pages/NotFoundPage.svelte";
@@ -61,10 +60,6 @@
       threadId={params.threadId}
       resNum={Number(params.resNum)}
     />
-  </Route>
-  <!-- Misskey -->
-  <Route path={makePathname("/:board/misskey/:misskeyId")} let:params>
-    <MisskeyPage board={b(params.board)} misskeyId={params.misskeyId} />
   </Route>
 
   <!-- スレ立て -->

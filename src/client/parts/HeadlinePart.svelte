@@ -15,7 +15,6 @@
   } from "date-fns";
   import MessageBoxPart from "./MessageBoxPart.svelte";
   import { RssIcon } from "@lucide/svelte";
-  import { findMisskey } from "../mylib/misskey.js";
   import { queryResultLimit } from "../../common/request/schema.js";
   import { socket } from "../mylib/socket.js";
   import { scrollToTop } from "../mylib/scroll.js";
@@ -118,11 +117,8 @@
       {:else}
         <ul class="list-none p-0 m-0">
           {#each items as thread}
-            {@const misskey = findMisskey(board.key, thread.id)}
             {@const href = makePathname(
-              misskey
-                ? `/${board.key}/misskey/${misskey.misskeyId}`
-                : `/${board.key}/thread/${thread.id}/${thread.resCount > queryResultLimit ? thread.resCount - 8 : "2"}?top`,
+              `/${board.key}/thread/${thread.id}/${thread.resCount > queryResultLimit ? thread.resCount - 8 : "2"}?top`,
             )}
             <li>
               <div
@@ -161,11 +157,9 @@
                     >
                       {thread.title}
                     </a>
-                    {#if !misskey}
-                      <span class="shrink-0">
-                        ({thread.resCount})
-                      </span>
-                    {/if}
+                    <span class="shrink-0">
+                      ({thread.resCount})
+                    </span>
                   </span>
                 </div>
 
