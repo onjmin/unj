@@ -301,7 +301,12 @@
             contentType = Enum.Text;
         }
 
-        if (!contentUrl) contentType = Enum.Text;
+        if (
+            !contentUrl &&
+            contentType !== Enum.Dtm &&
+            contentType !== Enum.Encrypt
+        )
+            contentType = Enum.Text;
         const data = {
             boardId: board.id,
             nonce: genNonce(nonceKey.value ?? ""),
@@ -590,7 +595,7 @@
             />
         {/if}
         {#if contentType === Enum.Dtm}
-            <DtmPart />
+            <DtmPart bind:contentText />
         {/if}
         <div class="flex items-center space-x-2 mt-4">
             <input

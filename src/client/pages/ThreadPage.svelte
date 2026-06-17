@@ -36,6 +36,7 @@
         contentSchemaMap,
         contentTemplateMap,
         Enum,
+        makeLatestResPreview,
     } from "../../common/request/content-schema.js";
     import {
         myConfig,
@@ -384,7 +385,7 @@
             await sleep(512);
             scrollToResNum(newResNum);
             resHistories?.unshift({
-                latestRes: data.new.contentText || data.new.contentUrl,
+                latestRes: makeLatestResPreview(data.new),
                 resNum: newResNum,
                 createdAt: new Date(data.new.createdAt),
                 threadId: threadId,
@@ -901,7 +902,7 @@
         />
     {/if}
     {#if contentType === Enum.Dtm && !menu}
-        <DtmPart />
+        <DtmPart bind:contentText />
     {/if}
     <div class="w-full max-w-xs">
         <Button disabled={emitting} onclick={tryRes} variant="raised"

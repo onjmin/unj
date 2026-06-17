@@ -3,7 +3,10 @@ import { addHours } from "date-fns";
 import type { Server, Socket } from "socket.io";
 import * as v from "valibot";
 import { boardIdMap, noharaBoard } from "../../common/request/board.js";
-import { contentSchemaMap } from "../../common/request/content-schema.js";
+import {
+	contentSchemaMap,
+	makeLatestResPreview,
+} from "../../common/request/content-schema.js";
 import { MakeThreadSchema, myConfig } from "../../common/request/schema.js";
 import type { HeadlineThread } from "../../common/response/schema.js";
 import { encodeThreadId } from "../mylib/anti-debug.js";
@@ -94,7 +97,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 
 			await poolClient.query("BEGIN"); // トランザクション開始
 
-			const latestRes = content.output.contentText || content.output.contentUrl;
+			const latestRes = makeLatestResPreview(content.output);
 
 			// スレッドの作成
 			const { rows, rowCount } = await poolClient.query(

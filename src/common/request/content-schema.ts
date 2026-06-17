@@ -182,6 +182,23 @@ export const EncryptSchema = v.object({
 });
 
 /**
+ * スレ一覧・ヘッドラインに出す最終レスのプレビュー文字列を作る。
+ * DTMのようにそのまま表示しても意味をなさない本文はラベルへ置換する。
+ */
+export const makeLatestResPreview = ({
+	contentType,
+	contentText,
+	contentUrl,
+}: {
+	contentType: number;
+	contentText: string;
+	contentUrl: string;
+}): string => {
+	if (contentType === Enum.Dtm) return "♪DTM";
+	return contentText || contentUrl;
+};
+
+/**
  * content_typeに対応するスキーマ
  */
 export const contentSchemaMap = new Map(

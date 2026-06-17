@@ -2,10 +2,13 @@ import type { PoolClient } from "@neondatabase/serverless";
 import type { Server, Socket } from "socket.io";
 import * as v from "valibot";
 import { boardIdMap } from "../../common/request/board.js";
-import { contentSchemaMap } from "../../common/request/content-schema.js";
 import {
-	ResSchema,
+	contentSchemaMap,
+	makeLatestResPreview,
+} from "../../common/request/content-schema.js";
+import {
 	myConfig,
+	ResSchema,
 	unjBeginDate,
 } from "../../common/request/schema.js";
 import type {
@@ -267,7 +270,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 				query.set("bals_res_num", balsResNumCache.get(threadId) ?? 0);
 			}
 
-			const latestRes = content.output.contentText || content.output.contentUrl;
+			const latestRes = makeLatestResPreview(content.output);
 			query.set("latest_res", latestRes);
 
 			// スレッドの更新

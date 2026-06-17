@@ -20,6 +20,7 @@
   import { ObjectStorage } from "../mylib/object-storage.js";
   import { makeUnjResNumId, scrollToResNum } from "../mylib/scroll.js";
   import DecryptPart from "./DecryptPart.svelte";
+  import DtmPlayerPart from "./DtmPlayerPart.svelte";
   import EmbedPart from "./EmbedPart.svelte";
   import {
     customAnimeEmojiMap,
@@ -428,7 +429,7 @@
 
       {#if contentType === Enum.Dtm}
         <div class="text-red-500">※DTM機能</div>
-        <DecryptPart bind:contentText bind:contentType />
+        <DtmPlayerPart mml={contentText} />
       {/if}
 
       {#if contentType === Enum.Encrypt}

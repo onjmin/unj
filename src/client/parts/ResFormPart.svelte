@@ -189,7 +189,8 @@
   {/snippet}
 </Textfield>
 
-<Textfield
+{#if contentType !== Enum.Dtm}
+  <Textfield
   {disabled}
   textarea
   label="本文"
@@ -239,7 +240,8 @@
   {#snippet helper()}
     <CharacterCounter />
   {/snippet}
-</Textfield>
+  </Textfield>
+{/if}
 
 {#if openEmojiPicker}
   <EmojiPickerPart bind:contentText />
