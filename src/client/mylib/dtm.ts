@@ -1,24 +1,16 @@
 /**
- * @onjmin/dtm 用の音声合成・再生ユーティリティ。
+ * @onjmin/dtm 用の音声合成ユーティリティ。
  *
  * ライブラリ本体は発音を行わず onPlayNote / onPlayDrum へ委譲する設計なので、
  * ここで Web Audio を用いた自己完結型のシンセ（外部SoundFont非依存）を実装する。
- * 投稿フォーム（DtmPart）の試聴と、レス表示（DtmPlayerPart）の再生で共有する。
+ * 投稿フォーム（DtmPart）の試聴で mountDAW のコールバックとして使用する。
+ * レス表示の再生はライブラリの mountMmlPlayer（内蔵synth）を使う。
  */
 import {
-	createSequencer,
 	DRUM_KEYS,
-	type Note,
 	type PlayDrumEvent,
 	type PlayNoteEvent,
-	parseMML,
-	type Sequencer,
-	type SequencerTrack,
-	TRACKS_SIMPLE,
 } from "@onjmin/dtm";
-
-/** 1小節あたりのステップ数（ライブラリ既定値に合わせる） */
-const STEPS_PER_BAR = 192;
 
 let ctx: AudioContext | null = null;
 let masterGain: GainNode | null = null;
@@ -162,42 +154,4 @@ export const playDrum = (e: PlayDrumEvent): void => {
 	}
 };
 
-/**
- * MML文字列から再生用シーケンサを生成する。
- * メロディックトラック（melody/submelody/bass/chord）のみ。ドラムはMMLに含まれない。
- * 再生可能なノートが無い場合は null を返す。
- */
-export const createMmlSequencer = (
-	mml: string,
-	onEnd: () => void,
-): Sequencer | null => {
-	const { placements, bpm } = parseMML(mml, { stepsPerBar: STEPS_PER_BAR });
-	if (placements.length === 0) return null;
 
-	const tracks: SequencerTrack[] = TRACKS_SIMPLE.map((track, index) => {
-		const notes: Note[] = placements
-			.filter((p) => p.trackIndex === index)
-			.map((p, id) => ({
-				id,
-				startStep: p.startStep,
-				durationSteps: p.durationSteps,
-				pitch: p.pitch,
-			}));
-		return { id: track.id, volume: track.volume, notes };
-	});
-
-	const { ctx } = getAudio();
-	return createSequencer({
-		getTracks: () => tracks,
-		getBpm: () => bpm ?? 120,
-		getPlayStartStep: () => 0,
-		getDrumPattern: () => null,
-		getSoloTrackId: () => null,
-		getAudioTime: () => ctx.currentTime,
-		onPlayNote: playNote,
-		onPlayDrum: playDrum,
-		onTick: () => {},
-		onEnd,
-		stepsPerBar: STEPS_PER_BAR,
-	});
-};

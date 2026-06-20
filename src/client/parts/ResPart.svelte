@@ -302,7 +302,7 @@
 
     <!-- 右側のコンテンツ領域 -->
     <div class="flex flex-col flex-1 min-w-0 w-3xl max-w-full">
-      {#if contentText !== ""}
+      {#if contentText !== "" && contentType !== Enum.Dtm}
         {@const parts = [...parseContent(contentText)]}
         {@const isAllEmoji = parts.every(
           (v) =>

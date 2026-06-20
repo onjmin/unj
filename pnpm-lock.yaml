@@ -35,8 +35,8 @@ importers:
         specifier: 1.0.12
         version: 1.0.12
       '@onjmin/dtm':
-        specifier: 0.1.0
-        version: 0.1.0
+        specifier: 0.1.1
+        version: 0.1.1
       '@onjmin/oekaki':
         specifier: 1.0.59
         version: 1.0.59
@@ -1086,8 +1086,12 @@ packages:
   '@onjmin/cors-killer@1.0.12':
     resolution: {integrity: sha512-sW2FIfPMiOebw0cOCHhJpKtSDqk8YwAvFdZokz6Wh3H2wtqUEPs1hUVSmeZTr1ajayIrrNfWEbMS6d+Mm2BlWw==}
 
-  '@onjmin/dtm@0.1.0':
-    resolution: {integrity: sha512-dX7HMoY5RWcZ4vLSNvA0IsmrMPc4ua3b5roDIDYt7Yl3nz/UczDccbdlA4ONquU62GpbCS9IgOIHVbjQlQAicA==}
+  '@onjmin/dtm@0.1.1':
+    resolution: {integrity: sha512-mpVVcMSSYvp5wSGxxSyMaffDrX8jGirovV5LUtOTS0wt9rlO8yUkjCmxoWm7zWLY8ZlbADxnibBC8WFffYDXZA==}
+
+  '@onjmin/koe@1.0.3':
+    resolution: {integrity: sha512-qxBtIKPcbtWJPo0jhi/pzfneOkE1s+Ok5DvCXpjI/NR8bbXEHM77XCn18buENe5eIZMdfUHEprIDuIp5eARONA==}
+    hasBin: true
 
   '@onjmin/oekaki@1.0.59':
     resolution: {integrity: sha512-p+2M8FuySg1tTZQpKi1YWqV1hFoRyba52vScjnYg3Epz9YzNTC5Z9uHiqJ0C++UbyhKum0bahsrC3STcEB6S5A==}
@@ -4320,7 +4324,11 @@ snapshots:
 
   '@onjmin/cors-killer@1.0.12': {}
 
-  '@onjmin/dtm@0.1.0': {}
+  '@onjmin/dtm@0.1.1':
+    dependencies:
+      '@onjmin/koe': 1.0.3
+
+  '@onjmin/koe@1.0.3': {}
 
   '@onjmin/oekaki@1.0.59': {}
 
