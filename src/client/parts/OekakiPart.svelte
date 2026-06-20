@@ -814,6 +814,7 @@
         class="palette"
         style="background-color:{_color};"
         onclick={() => {
+          setErasable(false);
           $color = _color;
         }}
       ></button>
