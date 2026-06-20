@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { type DawInstance, injectStyles, mountDAW } from "@onjmin/dtm";
+  import type { DawInstance } from "@onjmin/dtm";
   import { onMount } from "svelte";
-  import { getAudio, playDrum, playNote, resumeAudio } from "../mylib/dtm.js";
+  import { getStudio } from "../mylib/dtm.js";
 
   let { contentText = $bindable("") }: { contentText: string } = $props();
 
@@ -10,25 +10,28 @@
   let mmlLength = $state(contentText.length);
 
   onMount(() => {
-    injectStyles();
-    const { ctx } = getAudio();
-    daw = mountDAW(container, {
-      getAudioTime: () => ctx.currentTime,
-      onResumeAudio: () => resumeAudio(),
-      onPlayNote: playNote,
-      onPlayDrum: playDrum,
-      initialMML: contentText || undefined,
+    let pollId: ReturnType<typeof setInterval> | null = null;
+    let disposed = false;
+
+    // 共有スタジオ経由でマウントすると、音源・歌声・録音・MIDI・コードが一式そろう。
+    // スタイル注入や AudioContext 配線もスタジオ/ライブラリ側が担うため、ここでは不要。
+    getStudio().then((studio) => {
+      if (disposed) return;
+      daw = studio.mountEditor(container, {
+        initialMML: contentText || undefined,
+      });
+
+      // ライブラリにMML変更イベントが無いため、生成MMLをポーリングで本文へ同期する。
+      pollId = setInterval(() => {
+        const mml = daw?.getMML().minified ?? "";
+        mmlLength = mml.length;
+        if (mml !== contentText) contentText = mml;
+      }, 500);
     });
 
-    // ライブラリにMML変更イベントが無いため、生成MMLをポーリングで本文へ同期する。
-    const pollId = setInterval(() => {
-      const mml = daw?.getMML().minified ?? "";
-      mmlLength = mml.length;
-      if (mml !== contentText) contentText = mml;
-    }, 500);
-
     return () => {
-      clearInterval(pollId);
+      disposed = true;
+      if (pollId) clearInterval(pollId);
       daw?.destroy();
       daw = null;
     };
