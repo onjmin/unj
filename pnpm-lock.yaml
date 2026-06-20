@@ -35,8 +35,8 @@ importers:
         specifier: 1.0.12
         version: 1.0.12
       '@onjmin/dtm':
-        specifier: 0.1.1
-        version: 0.1.1
+        specifier: 0.1.4
+        version: 0.1.4
       '@onjmin/oekaki':
         specifier: 1.0.59
         version: 1.0.59
@@ -1086,8 +1086,8 @@ packages:
   '@onjmin/cors-killer@1.0.12':
     resolution: {integrity: sha512-sW2FIfPMiOebw0cOCHhJpKtSDqk8YwAvFdZokz6Wh3H2wtqUEPs1hUVSmeZTr1ajayIrrNfWEbMS6d+Mm2BlWw==}
 
-  '@onjmin/dtm@0.1.1':
-    resolution: {integrity: sha512-mpVVcMSSYvp5wSGxxSyMaffDrX8jGirovV5LUtOTS0wt9rlO8yUkjCmxoWm7zWLY8ZlbADxnibBC8WFffYDXZA==}
+  '@onjmin/dtm@0.1.4':
+    resolution: {integrity: sha512-IRid+gZDyJM81GKuVdMokX8jJHalq2WYLSUawWXFQ7wPRnQ5i3WR7gIxD5uRXq23mgFq2nE6xTVrKDXug7jGKw==}
 
   '@onjmin/koe@1.0.3':
     resolution: {integrity: sha512-qxBtIKPcbtWJPo0jhi/pzfneOkE1s+Ok5DvCXpjI/NR8bbXEHM77XCn18buENe5eIZMdfUHEprIDuIp5eARONA==}
@@ -4324,7 +4324,7 @@ snapshots:
 
   '@onjmin/cors-killer@1.0.12': {}
 
-  '@onjmin/dtm@0.1.1':
+  '@onjmin/dtm@0.1.4':
     dependencies:
       '@onjmin/koe': 1.0.3
 
