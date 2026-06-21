@@ -3,5 +3,6 @@ minimumReleaseAgeExclude:
   - "@onjmin/oekaki"
   - "@onjmin/dtm"
   - "@onjmin/koe"
+  - "@onjmin/chord-parser"
   - "@onjmin/cors-killer"
   - "@rpgja/rpgen-map"
