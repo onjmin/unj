@@ -18,7 +18,7 @@
   import { activeController } from "../mylib/background-embed.js";
   import { makePathname } from "../mylib/env.js";
   import { ObjectStorage } from "../mylib/object-storage.js";
-  import { makeUnjResNumId, scrollToResNum } from "../mylib/scroll.js";
+  import { makeUnjResNumId, scrollToResNum, scrollToEnd } from "../mylib/scroll.js";
   import DecryptPart from "./DecryptPart.svelte";
   import DtmPlayerPart from "./DtmPlayerPart.svelte";
   import EmbedPart from "./EmbedPart.svelte";
@@ -428,7 +428,26 @@
       {/if}
 
       {#if contentType === Enum.Dtm}
-        <div class="text-red-500">※DTM機能</div>
+        <div class="flex items-center gap-2 mb-1">
+          <div class="text-red-500 font-bold">※DTM機能</div>
+          <button
+            class="text-blue-500 hover:text-blue-700 font-bold transition duration-300 text-sm"
+            onclick={() => {
+              if (
+                !confirm(
+                  "DTMコラボしますか？（編集中のDTMデータは消えます）",
+                )
+              )
+                return;
+              bindContentText = contentText;
+              bindContentType = Enum.Dtm;
+              scrollToEnd();
+              focus();
+            }}
+          >
+            DTMコラボ
+          </button>
+        </div>
         <DtmPlayerPart mml={contentText} />
       {/if}
 

@@ -40,8 +40,8 @@
 
 <div class="w-full" bind:this={container}></div>
 
-{#if mmlLength > 1024}
+{#if mmlLength > 5000}
   <p class="text-red-500 text-xs mt-1">
-    MMLが長すぎます（{mmlLength}/1024）。小節数を減らすか音符を整理してください。
+    MMLが長すぎます（{mmlLength}/5000）。小節数を減らすか音符を整理してください。
   </p>
 {/if}

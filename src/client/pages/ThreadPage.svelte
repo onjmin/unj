@@ -11,6 +11,7 @@
         ChevronDownIcon,
         ChevronUpIcon,
         ExpandIcon,
+        Music,
     } from "@lucide/svelte";
     import { Switch } from "@skeletonlabs/skeleton-svelte";
     import Banner, { Icon, Label } from "@smui/banner";
@@ -231,18 +232,11 @@
 
     $effect(() => {
         if (!threadId) return;
-        checkedOekaki = false;
+        contentType = Enum.Text;
     });
 
-    let checkedOekaki = $state(false);
-    $effect(() => {
-        if (!thread) return;
-        const { contentTypesBitmask } = thread;
-        if (checkedOekaki && (contentTypesBitmask & Enum.Oekaki) !== 0)
-            contentType = Enum.Oekaki;
-        else if (!checkedOekaki && (contentTypesBitmask & Enum.Text) !== 0)
-            contentType = Enum.Text;
-    });
+    const checkedOekaki = $derived(contentType === Enum.Oekaki);
+    const checkedDtm = $derived(contentType === Enum.Dtm);
 
     let thread: Thread | null = $state(null);
 
@@ -375,11 +369,10 @@
             contentUrl = "";
             previewUrl = "";
             if (
-                contentType === Enum.Oekaki &&
+                (contentType === Enum.Oekaki || contentType === Enum.Dtm) &&
                 (thread.contentTypesBitmask & Enum.Text) !== 0
             ) {
                 contentType = Enum.Text;
-                checkedOekaki = false;
             }
             uploadedImgur = null;
             await sleep(512);
@@ -980,27 +973,52 @@
         >
     {/if} -->
         {#if !menu}
-            <Switch
-                checked={checkedOekaki}
-                onCheckedChange={(e) => {
-                    checkedOekaki = e.checked;
-                }}
-            >
-                <Switch.Control>
-                    <Switch.Thumb>
-                        <Switch.Context>
-                            {#snippet children(switch_)}
-                                {#if switch_().checked}
+            {#if thread && (thread.contentTypesBitmask & Enum.Oekaki) !== 0}
+                <Switch
+                    checked={checkedOekaki}
+                    onCheckedChange={(e) => {
+                        if (e.checked) {
+                            contentType = Enum.Oekaki;
+                        } else if (contentType === Enum.Oekaki && (thread.contentTypesBitmask & Enum.Text) !== 0) {
+                            contentType = Enum.Text;
+                        }
+                    }}
+                >
+                    <Switch.Control>
+                        <Switch.Thumb>
+                            <Switch.Context>
+                                {#snippet children(switch_)}
                                     <BrushIcon size="14" />
-                                {:else}
-                                    <BrushIcon size="14" />
-                                {/if}
-                            {/snippet}
-                        </Switch.Context>
-                    </Switch.Thumb>
-                </Switch.Control>
-                <Switch.HiddenInput />
-            </Switch>
+                                {/snippet}
+                            </Switch.Context>
+                        </Switch.Thumb>
+                    </Switch.Control>
+                    <Switch.HiddenInput />
+                </Switch>
+            {/if}
+            {#if thread && (thread.contentTypesBitmask & Enum.Dtm) !== 0}
+                <Switch
+                    checked={checkedDtm}
+                    onCheckedChange={(e) => {
+                        if (e.checked) {
+                            contentType = Enum.Dtm;
+                        } else if (contentType === Enum.Dtm && (thread.contentTypesBitmask & Enum.Text) !== 0) {
+                            contentType = Enum.Text;
+                        }
+                    }}
+                >
+                    <Switch.Control>
+                        <Switch.Thumb>
+                            <Switch.Context>
+                                {#snippet children(switch_)}
+                                    <Music size="14" />
+                                {/snippet}
+                            </Switch.Context>
+                        </Switch.Thumb>
+                    </Switch.Control>
+                    <Switch.HiddenInput />
+                </Switch>
+            {/if}
         {/if}
         <Switch
             checked={isExpand}

@@ -44,6 +44,33 @@ export const SAFE_TEXT_SINGLELINE = v.pipe(
 	v.check((input) => !regexLf.test(input)),
 	v.check((input) => !urlRegex.test(input)),
 );
+const SAFE_DTM_TEXT = v.pipe(
+	v.string(),
+	v.trim(),
+	v.maxLength(5000),
+	// 制御文字
+	v.check(
+		(input) =>
+			// biome-ignore lint/suspicious/noControlCharactersInRegex: <explanation>]
+			!/[\u0000-\u0008\u000B-\u000C\u000E-\u001F\u007F-\u009F]/u.test(input),
+	),
+	// 双方向テキスト制御
+	v.check((input) => !/[\u202A-\u202E\u2066-\u2069\uFFF9-\uFFFB]/u.test(input)),
+	// ゼロ幅・不可視・プライベートユースエリア
+	v.check(
+		(input) =>
+			!/[\u200B-\u200F\u202A-\u202E\u2060-\u2064\uFEFF\u180E\uE000-\uF8FF]/u.test(
+				input,
+			),
+	),
+	// サロゲートペア全排除
+	v.check((input) => !/[\uD800-\uDFFF]/u.test(input)),
+);
+export const SAFE_DTM_MML = v.pipe(
+	SAFE_DTM_TEXT,
+	v.check((input) => !regexLf.test(input)),
+	v.check((input) => !urlRegex.test(input)),
+);
 const SAFE_TEXT_MULTILINE = v.pipe(
 	SAFE_TEXT,
 	v.check((input) => !urlRegex.test(input)),
@@ -171,7 +198,7 @@ export const oekakiSchema = v.object({
 
 export const DtmSchema = v.object({
 	contentType: v.pipe(v.number(), v.value(Enum.Dtm)),
-	contentText: SAFE_TEXT_SINGLELINE,
+	contentText: SAFE_DTM_MML,
 	contentUrl: v.pipe(v.string(), v.length(0)),
 });
 
