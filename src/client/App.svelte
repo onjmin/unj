@@ -1,8 +1,10 @@
 <script lang="ts">
   import "./global.css";
+  import { Toast } from "@skeletonlabs/skeleton-svelte";
   import { Route, Router } from "svelte-routing";
   import { boardMap, undefinedBoard } from "../common/request/board.js";
   import { makePathname } from "./mylib/env.js";
+  import { sharedToaster } from "./mylib/toaster.js";
   import ArtPage from "./pages/ArtPage.svelte";
   import BannedPage from "./pages/BannedPage.svelte";
   import ConfigPage from "./pages/ConfigPage.svelte";
@@ -103,3 +105,16 @@
     <LinksPage board={b(params.board)} />
   </Route>
 </Router>
+
+<!-- アプリ全体で共有する単一トースター（ResPart のバツポチ通知などで使用） -->
+<Toast.Group toaster={sharedToaster}>
+  {#snippet children(toast)}
+    <Toast {toast}>
+      <Toast.Message>
+        <Toast.Title>{toast.title}</Toast.Title>
+        <Toast.Description>{toast.description}</Toast.Description>
+      </Toast.Message>
+      <Toast.CloseTrigger />
+    </Toast>
+  {/snippet}
+</Toast.Group>

@@ -1,6 +1,5 @@
 <script lang="ts">
   import { BanIcon, XIcon } from "@lucide/svelte";
-  import { Toast, createToaster } from "@skeletonlabs/skeleton-svelte";
   import IconButton from "@smui/icon-button";
   import List, {
     Item,
@@ -38,6 +37,7 @@
   import { makeHalloweenEmojiSuffix } from "../mylib/emoji/halloween.js";
   import { Anniversary, isAnniversary } from "../mylib/anniversary.js";
   import { makeValentineEmojiSuffix } from "../mylib/emoji/valentine.js";
+  import { sharedToaster } from "../mylib/toaster.js";
 
   type ResData = {
     num: number;
@@ -106,7 +106,6 @@
     siteInfo = url ? findIn(temp, url.hostname) : null;
   });
 
-  const toaster = createToaster();
   const ignoreListCache = new ObjectStorage<string[]>("ignoreListCache");
   let showBlockButtons: boolean = $state(false);
 
@@ -251,7 +250,9 @@
             class="p-0.5 rounded text-red-500 hover:bg-gray-100"
             onclick={() => {
               if (ccUserId && ignoreList) {
-                toaster.success({ title: `ID:${ccUserId}をバツポチしました` });
+                sharedToaster.success({
+                  title: `ID:${ccUserId}をバツポチしました`,
+                });
                 ignoreList.add(ccUserId);
                 ignoreList = new Set(ignoreList);
                 ignoreListCache.set([...ignoreList]);
@@ -502,18 +503,6 @@
 
   {@render children?.()}
 </div>
-
-<Toast.Group {toaster}>
-  {#snippet children(toast)}
-    <Toast {toast}>
-      <Toast.Message>
-        <Toast.Title>{toast.title}</Toast.Title>
-        <Toast.Description>{toast.description}</Toast.Description>
-      </Toast.Message>
-      <Toast.CloseTrigger />
-    </Toast>
-  {/snippet}
-</Toast.Group>
 
 <style>
   .sage:before {
