@@ -41,6 +41,7 @@
   import ImagePreviewModal from "../parts/ImagePreviewPart.svelte";
   import EmbedXPart from "./EmbedXPart.svelte";
   import MessageBoxPart from "./MessageBoxPart.svelte";
+  import { activeHeavyId } from "../mylib/store.js";
 
   let {
     ccUserId = "",
@@ -57,6 +58,20 @@
   let url: URL | undefined;
   let siteInfo = $state<SiteInfo | null>(null);
   let embeddable: boolean = $state(false);
+
+  const myHeavyId = {};
+
+  $effect(() => {
+    const unsub = activeHeavyId.subscribe((id) => {
+      if (embedding && id !== myHeavyId) {
+        const isHeavy = videoEmbedYouTube || videoEmbedNicovideo || audioEmbedSoundCloud || audioEmbedSpotify || audioEmbedSuno || gameEmbedRPGEN;
+        if (isHeavy) {
+          embedding = false;
+        }
+      }
+    });
+    return unsub;
+  });
 
   $effect(() => {
     let u: URL | undefined;
@@ -215,6 +230,10 @@
           imageEmbed = true;
           embedUrl = url.href;
           break;
+      }
+      const isHeavy = [1601, 1602, 1616, 3201, 3202, 3203, 6401].includes(siteInfo.id);
+      if (isHeavy) {
+        activeHeavyId.set(myHeavyId);
       }
       if (!embedUrl) throw 114514;
     } catch (err) {

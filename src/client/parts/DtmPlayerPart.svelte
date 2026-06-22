@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { MmlPlayerInstance } from "@onjmin/dtm";
+  import { decodeMml, type MmlPlayerInstance } from "@onjmin/dtm";
   import { onMount } from "svelte";
   import { getStudio } from "../mylib/dtm.js";
 
@@ -12,9 +12,11 @@
     let disposed = false;
     // 共有スタジオ経由でマウントすると、楽器・ドラム・歌声がすべて鳴る。
     // volume:50 は編集UI（DAW）の既定マスタ音量に合わせる係数。
-    getStudio().then((studio) => {
+    getStudio().then(async (studio) => {
       if (disposed) return;
-      player = studio.mountPlayer(container, mml, { volume: 50 });
+      const rawMml = await decodeMml(mml);
+      if (disposed) return;
+      player = studio.mountPlayer(container, rawMml, { volume: 50 });
     });
     return () => {
       disposed = true;

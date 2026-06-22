@@ -1,5 +1,7 @@
 <script lang="ts">
   import {
+    decodeMml,
+    encodeMml,
     type DawInstance,
     type DawMode,
     type DtmStudio,
@@ -18,23 +20,59 @@
   let pollId: ReturnType<typeof setInterval> | null = null;
   let disposed = false;
 
+  let currentRawMml = "";
+  let encoding = false;
+  let pendingRawMml: string | null = null;
+
+  async function updateCompressedMml(rawMml: string) {
+    if (encoding) {
+      pendingRawMml = rawMml;
+      return;
+    }
+    encoding = true;
+    try {
+      const compressed = await encodeMml(rawMml);
+      if (disposed) return;
+      contentText = compressed;
+      mmlLength = compressed.length;
+    } catch (e) {
+      console.error("[dtm] Failed to encode MML", e);
+    } finally {
+      encoding = false;
+      if (pendingRawMml !== null) {
+        const next = pendingRawMml;
+        pendingRawMml = null;
+        if (next !== currentRawMml) {
+          currentRawMml = next;
+          updateCompressedMml(next);
+        }
+      }
+    }
+  }
+
   onMount(() => {
-    getStudio().then((s) => {
+    getStudio().then(async (s) => {
       if (disposed) return;
       studio = s;
+
+      const rawMml = await decodeMml(contentText);
+      if (disposed) return;
+      currentRawMml = rawMml;
 
       modeSwitch = studio.mountModeSwitch(container, {
         editorTarget: container,
         mode: "simple",
         position: "prepend",
         editorOptions: {
-          initialMML: contentText || undefined,
+          initialMML: rawMml || undefined,
         },
         onMount: (dawInstance) => {
           pollId = setInterval(() => {
             const mml = dawInstance.getMML().minified ?? "";
-            mmlLength = mml.length;
-            if (mml !== contentText) contentText = mml;
+            if (mml !== currentRawMml) {
+              currentRawMml = mml;
+              updateCompressedMml(mml);
+            }
           }, 500);
         },
         onUnmount: () => {

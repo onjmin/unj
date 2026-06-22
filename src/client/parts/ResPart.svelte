@@ -2,6 +2,13 @@
   import { BanIcon, XIcon } from "@lucide/svelte";
   import { Toast, createToaster } from "@skeletonlabs/skeleton-svelte";
   import IconButton from "@smui/icon-button";
+  import List, {
+    Item,
+    Graphic,
+    Text,
+    PrimaryText,
+    SecondaryText,
+  } from "@smui/list";
   import { format } from "date-fns";
   import { ja } from "date-fns/locale";
   import { Link, navigate } from "svelte-routing";
@@ -22,6 +29,7 @@
   import DecryptPart from "./DecryptPart.svelte";
   import DtmPlayerPart from "./DtmPlayerPart.svelte";
   import EmbedPart from "./EmbedPart.svelte";
+  import { activeHeavyId } from "../mylib/store.js";
   import {
     customAnimeEmojiMap,
     customEmojiMap,
@@ -77,6 +85,17 @@
   } = $props();
 
   let siteInfo: SiteInfo | null = $state(null);
+  let showDtm = $state(false);
+  const myDtmHeavyId = {};
+
+  $effect(() => {
+    const unsub = activeHeavyId.subscribe((id) => {
+      if (showDtm && id !== myDtmHeavyId) {
+        showDtm = false;
+      }
+    });
+    return unsub;
+  });
 
   $effect(() => {
     let url: URL | undefined;
@@ -448,7 +467,30 @@
             DTMコラボ
           </button>
         </div>
-        <DtmPlayerPart mml={contentText} />
+        {#if !showDtm}
+          <List twoLine>
+            <Item
+              onclick={() => {
+                showDtm = true;
+                activeHeavyId.set(myDtmHeavyId);
+              }}
+            >
+              <Graphic class="material-icons">music_note</Graphic>
+              <Text>
+                <PrimaryText>DTMプレイヤー</PrimaryText>
+                <SecondaryText>タップして展開</SecondaryText>
+              </Text>
+              <IconButton class="material-icons">touch_app</IconButton>
+            </Item>
+          </List>
+        {:else}
+          <div class="flex items-center">
+            <IconButton class="material-icons" onclick={() => (showDtm = false)}
+              >close</IconButton
+            >
+          </div>
+          <DtmPlayerPart mml={contentText} />
+        {/if}
       {/if}
 
       {#if contentType === Enum.Encrypt}

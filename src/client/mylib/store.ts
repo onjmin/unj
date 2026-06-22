@@ -52,3 +52,4 @@ customBackgroundOpacity.subscribe((value) => {
 });
 
 export const backgroundEmbedding = writable(false);
+export const activeHeavyId = writable<any>(null);
