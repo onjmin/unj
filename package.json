@@ -74,7 +74,7 @@
 		"@mdi/js": "7.4.47",
 		"@neondatabase/serverless": "^1.0.2",
 		"@onjmin/cors-killer": "1.0.12",
-		"@onjmin/dtm": "0.1.29",
+		"@onjmin/dtm": "0.1.30",
 		"@onjmin/oekaki": "1.0.59",
 		"@rpgja/rpgen-map": "1.0.0",
 		"@sveltejs/vite-plugin-svelte": "^6.2.1",
