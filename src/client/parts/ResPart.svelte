@@ -39,6 +39,8 @@
   import { makeValentineEmojiSuffix } from "../mylib/emoji/valentine.js";
   import { sharedToaster } from "../mylib/toaster.js";
 
+const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
+
   type ResData = {
     num: number;
     ccUserId: string;
@@ -183,6 +185,24 @@
       };
     }
   };
+
+  let parts = $derived(
+    contentText !== "" && contentType !== Enum.Dtm
+      ? [...parseContent(contentText)]
+      : [],
+  );
+  let isAllEmoji = $derived(
+    parts.length > 0 &&
+      parts.every(
+        (v) =>
+          v.type === "br" ||
+          v.type === "customEmoji" ||
+          v.type === "customAnimeEmoji",
+      ),
+  );
+  let showValentine = $derived(isAnniversary([Anniversary.VALENTINE]));
+  let showHalloween = $derived(isAnniversary([Anniversary.HALLOWEEN]));
+  let showChristmas = $derived(isAnniversary([Anniversary.CHRISTMAS]));
 </script>
 
 <div class="bg-transparent p-2 sm:p-4 rounded-lg shadow-inner">
@@ -193,7 +213,6 @@
         ? 'underline sage'
         : ''}"
       onclick={() => {
-        const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
         bindContentText = bindContentText
           .replace(ankaMatchAllRegex, "")
           .replace(/^[^\S]*/, `>>${num}\n`);
@@ -307,7 +326,7 @@
           style="background-image:url({board.avatarMap.get(ccUserAvatar)
             ?.src});"
         ></div>
-        {#if isAnniversary([Anniversary.CHRISTMAS])}
+        {#if showChristmas}
           <img
             src="https://cdn-icons-png.flaticon.com/32/17010/17010575.png"
             alt=""
@@ -322,14 +341,7 @@
 
     <!-- 右側のコンテンツ領域 -->
     <div class="flex flex-col flex-1 min-w-0 w-3xl max-w-full">
-      {#if contentText !== "" && contentType !== Enum.Dtm}
-        {@const parts = [...parseContent(contentText)]}
-        {@const isAllEmoji = parts.every(
-          (v) =>
-            v.type === "br" ||
-            v.type === "customEmoji" ||
-            v.type === "customAnimeEmoji",
-        )}
+      {#if parts.length > 0}
         <div class="unj-font text-base leading-[1.2]">
           {#each parts as part}
             {#if part.type === "text"}
@@ -386,13 +398,13 @@
             {/if}
           {/each}
 
-          {#if isAnniversary([Anniversary.VALENTINE])}
+          {#if showValentine}
             <span>{makeValentineEmojiSuffix(createdAt.toString())}</span>
           {/if}
-          {#if isAnniversary([Anniversary.HALLOWEEN])}
+          {#if showHalloween}
             <span>{makeHalloweenEmojiSuffix(createdAt.toString())}</span>
           {/if}
-          {#if isAnniversary([Anniversary.CHRISTMAS])}
+          {#if showChristmas}
             <span class="text-rainbow"
               >{seededRandArray(["★", "☆"], createdAt.toString())}</span
             >

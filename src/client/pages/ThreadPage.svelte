@@ -107,6 +107,8 @@
     import HeadlinePart from "../parts/HeadlinePart.svelte";
     import PaginationControlsPart from "../parts/PaginationControlsPart.svelte";
 
+    const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
+
     changeVolume();
     changeNewResSound();
     changeReplyResSound();
@@ -407,7 +409,6 @@
             newResCount++;
         }
 
-        const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
         const multiAnka = data.new.contentText
             .match(ankaMatchAllRegex)
             ?.map((v) => v.slice(2))
@@ -515,7 +516,7 @@
             if (!thread) return;
             if (!thread.deletedAt) return;
             remaining = countdown(thread.deletedAt);
-        }, 512);
+        }, 10000);
         hello(() => {
             socket?.emit("joinThread", {
                 threadId,
@@ -1422,7 +1423,7 @@
                 </div>
             {/if}
             {@render paginationControls()}
-            {#each thread.resList as res}
+            {#each thread.resList as res (res.num)}
                 {#if !ignoreList?.has(res.ccUserId)}
                     <div id={makeUnjResNumId(res.num)}>
                         <ResPart

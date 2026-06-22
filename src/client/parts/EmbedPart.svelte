@@ -43,6 +43,8 @@
   import MessageBoxPart from "./MessageBoxPart.svelte";
   import { activeHeavyId } from "../mylib/store.js";
 
+  const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
+
   let {
     ccUserId = "",
     ccUserAvatar = 0,
@@ -324,7 +326,6 @@
             oekakiCollab = contentUrl;
             bindContentType = Enum.Oekaki;
             scrollToEnd();
-            const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
             bindContentText = bindContentText
               .replace(ankaMatchAllRegex, "")
               .replace(/^[^\S]*/, `>>${resNum}\n`);
