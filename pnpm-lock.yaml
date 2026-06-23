@@ -34,6 +34,9 @@ importers:
       '@onjmin/cors-killer':
         specifier: 1.0.12
         version: 1.0.12
+      '@onjmin/dtm':
+        specifier: 0.1.32
+        version: 0.1.32
       '@onjmin/oekaki':
         specifier: 1.0.59
         version: 1.0.59
@@ -260,6 +263,10 @@ packages:
   2ch-trip@4.0.0:
     resolution: {integrity: sha512-4zM6DZR99aVNpZ0ACuQLcsEWoOr8MoeoJ64F/w2+Ipsi5kulr8VOHcAOAJWhqxr9+LhAM91Du27s8gF84DoEig==}
     engines: {node: '>=14'}
+
+  '@babel/runtime@7.29.7':
+    resolution: {integrity: sha512-Nq8OhGWiZIZGV6hLHoyAKLLcJihP/xFeBMGJoUrxTX2psI8dCifzLhZISFb+VWS3wFMRDmCGw5R+dOySCqPLhw==}
+    engines: {node: '>=6.9.0'}
 
   '@biomejs/biome@2.3.8':
     resolution: {integrity: sha512-Qjsgoe6FEBxWAUzwFGFrB+1+M8y/y5kwmg5CHac+GSVOdmOIqsAiXM5QMVGZJ1eCUCLlPZtq4aFAQ0eawEUuUA==}
@@ -1080,8 +1087,21 @@ packages:
     resolution: {integrity: sha512-I5sbpSIAHiB+b6UttofhrN/UJXII+4tZPAq1qugzwCwLIL8EZLV7F/JyHUrEIiGgQpEXzpnjlJ+zwcEhheGvCw==}
     engines: {node: '>=19.0.0'}
 
+  '@onjmin/chord-parser@1.0.2':
+    resolution: {integrity: sha512-dkx7CY0sSwCZH7QlVpBVCKCGZI7lJZUjriUrIIT4rcbyPJhPnkinCXkNHohZ5oKMFgE8J5ziB+WFSr4D5y/86g==}
+
   '@onjmin/cors-killer@1.0.12':
     resolution: {integrity: sha512-sW2FIfPMiOebw0cOCHhJpKtSDqk8YwAvFdZokz6Wh3H2wtqUEPs1hUVSmeZTr1ajayIrrNfWEbMS6d+Mm2BlWw==}
+
+  '@onjmin/dtm@0.1.14':
+    resolution: {integrity: sha512-4sgVlv2X0uc4kd0qT+CxdZnRkV/RrK8nIqg6yvD/qYobKPj2I1OvGbzlG+73Nheiw64VSekP3MCKptvMq7+VZg==}
+
+  '@onjmin/dtm@0.1.32':
+    resolution: {integrity: sha512-GQtOlej14M9hIzfBi/vFivvcA0M+NHq5ljNp6Y+sRK4YP9hBWZoXs/ZaklAgWtcRyeBibqxlFvATLD2u3yiDAg==}
+
+  '@onjmin/koe@1.0.3':
+    resolution: {integrity: sha512-qxBtIKPcbtWJPo0jhi/pzfneOkE1s+Ok5DvCXpjI/NR8bbXEHM77XCn18buENe5eIZMdfUHEprIDuIp5eARONA==}
+    hasBin: true
 
   '@onjmin/oekaki@1.0.59':
     resolution: {integrity: sha512-p+2M8FuySg1tTZQpKi1YWqV1hFoRyba52vScjnYg3Epz9YzNTC5Z9uHiqJ0C++UbyhKum0bahsrC3STcEB6S5A==}
@@ -1828,6 +1848,9 @@ packages:
   brace-expansion@1.1.11:
     resolution: {integrity: sha512-iCuPHDFgrHX7H2vEI/5xpz07zSHB00TpugqhmYtVmMO6518mCuRMoOYFldEBl0g187ufozdaHgWKcYFb61qGiA==}
 
+  broker-factory@3.1.15:
+    resolution: {integrity: sha512-ko+aWvgNuP49meGrdjUu7rC+Y+Wai3cCPxP3xWwHsHfehFjOh5ZQM2yC4gEB2UddeZ/YXhm0K1eG/L6fxym2Og==}
+
   browserslist@4.28.1:
     resolution: {integrity: sha512-ZC5Bd0LgJXgwGqUknZY/vkUQ04r8NXnJZ3yYi4vDmSiZmC/pdSN0NbNRPxZpbtO4uAfDUAFffO8IZoM3Gj8IkA==}
     engines: {node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7}
@@ -2144,6 +2167,10 @@ packages:
 
   fast-levenshtein@2.0.6:
     resolution: {integrity: sha512-DCXu6Ifhqcks7TZKY3Hxp3y6qphY5SJZmrWMDrKcERSOXWQdMhU9Ig/PYrzyw/ul9jOIyh0N4M0tbC5hodg8dw==}
+
+  fast-unique-numbers@9.0.27:
+    resolution: {integrity: sha512-nDA9ADeINN8SA2u2wCtU+siWFTTDqQR37XvgPIDDmboWQeExz7X0mImxuaN+kJddliIqy2FpVRmnvRZ+j8i1/A==}
+    engines: {node: '>=18.2.0'}
 
   fast-uri@3.1.0:
     resolution: {integrity: sha512-iPeeDKJSWf4IEOasVVrknXpaBV0IApz/gp7S2bb7Z4Lljbl2MGJRqInZiUrQwV16cpzw/D3S5j5Julj/gT52AA==}
@@ -2475,6 +2502,15 @@ packages:
   merge-descriptors@2.0.0:
     resolution: {integrity: sha512-Snk314V5ayFLhp3fkUREub6WtjBfPdCPY1Ln8/8munuLuiYhsABgBVWsozAG+MWMbVEvcdcpbi9R7ww22l9Q3g==}
     engines: {node: '>=18'}
+
+  midi-json-parser-broker@4.0.132:
+    resolution: {integrity: sha512-1SD9wR7SP8p3T3w6H0fH4f/rJMtaAgLATLT5k3VedAwfeJqlEHY3bvym4ek+v97Li1zm6273qgg3leB8yM01Hw==}
+
+  midi-json-parser-worker@8.1.66:
+    resolution: {integrity: sha512-xdFxGv97gRMpTtEshEY/5/AHxzisEUIcLyQbgZc/7FNiAXHo37sQkvwOyZWbrbokQZ9kAqvyR2vnz+umx81O0Q==}
+
+  midi-json-parser@8.1.74:
+    resolution: {integrity: sha512-kY/jf4vtaWB59xdFjDHUGxWoUtqp0T7lkl5558IPMaAtWxPfB2LVTEI+YFlOxqq52Zkt2k/ZiiAqyDyoMCB4MQ==}
 
   mime-db@1.52.0:
     resolution: {integrity: sha512-sPU4uV7dYlvtWJxwwxHD0PuihVNiE7TyAbQ5SWxDCB9mUYvOgroQOwYQQOKPJ8CIbE+1ETVlOoK1UC2nU3gYvg==}
@@ -3103,6 +3139,9 @@ packages:
     resolution: {integrity: sha512-BN22B5eaMMI9UMtjrGd5g5eCYPpCPDUy0FJXbYsaT5zYxjFOckS53SQDE3pWkVoWpHXVb3BrYcEN4Twa55B5cA==}
     engines: {node: '>=0.10.0'}
 
+  worker-factory@7.0.50:
+    resolution: {integrity: sha512-hhwc0G+sFwM4qBuhJIUBn2p1Jf8v/FwmLUANBf/Q+Lt2uI8mfIZQhXaZQACodQD4R7Zp6cn/6702bIvNn2puJQ==}
+
   wrap-ansi@7.0.0:
     resolution: {integrity: sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==}
     engines: {node: '>=10'}
@@ -3167,6 +3206,8 @@ snapshots:
     dependencies:
       encoding-japanese: 2.0.0
       unix-crypt-td-js: 1.1.4
+
+  '@babel/runtime@7.29.7': {}
 
   '@biomejs/biome@2.3.8':
     optionalDependencies:
@@ -4312,7 +4353,23 @@ snapshots:
       '@types/node': 22.19.2
       '@types/pg': 8.15.6
 
+  '@onjmin/chord-parser@1.0.2': {}
+
   '@onjmin/cors-killer@1.0.12': {}
+
+  '@onjmin/dtm@0.1.14':
+    dependencies:
+      '@onjmin/chord-parser': 1.0.2
+      '@onjmin/koe': 1.0.3
+
+  '@onjmin/dtm@0.1.32':
+    dependencies:
+      '@onjmin/chord-parser': 1.0.2
+      '@onjmin/dtm': 0.1.14
+      '@onjmin/koe': 1.0.3
+      midi-json-parser: 8.1.74
+
+  '@onjmin/koe@1.0.3': {}
 
   '@onjmin/oekaki@1.0.59': {}
 
@@ -5367,6 +5424,13 @@ snapshots:
       balanced-match: 1.0.2
       concat-map: 0.0.1
 
+  broker-factory@3.1.15:
+    dependencies:
+      '@babel/runtime': 7.29.7
+      fast-unique-numbers: 9.0.27
+      tslib: 2.8.1
+      worker-factory: 7.0.50
+
   browserslist@4.28.1:
     dependencies:
       baseline-browser-mapping: 2.9.6
@@ -5729,6 +5793,11 @@ snapshots:
 
   fast-levenshtein@2.0.6: {}
 
+  fast-unique-numbers@9.0.27:
+    dependencies:
+      '@babel/runtime': 7.29.7
+      tslib: 2.8.1
+
   fast-uri@3.1.0: {}
 
   faye-websocket@0.11.4:
@@ -6072,6 +6141,26 @@ snapshots:
   media-typer@1.1.0: {}
 
   merge-descriptors@2.0.0: {}
+
+  midi-json-parser-broker@4.0.132:
+    dependencies:
+      '@babel/runtime': 7.29.7
+      broker-factory: 3.1.15
+      midi-json-parser-worker: 8.1.66
+      tslib: 2.8.1
+
+  midi-json-parser-worker@8.1.66:
+    dependencies:
+      '@babel/runtime': 7.29.7
+      tslib: 2.8.1
+      worker-factory: 7.0.50
+
+  midi-json-parser@8.1.74:
+    dependencies:
+      '@babel/runtime': 7.29.7
+      midi-json-parser-broker: 4.0.132
+      midi-json-parser-worker: 8.1.66
+      tslib: 2.8.1
 
   mime-db@1.52.0: {}
 
@@ -6781,6 +6870,12 @@ snapshots:
       winston-transport: 4.9.0
 
   word-wrap@1.2.5: {}
+
+  worker-factory@7.0.50:
+    dependencies:
+      '@babel/runtime': 7.29.7
+      fast-unique-numbers: 9.0.27
+      tslib: 2.8.1
 
   wrap-ansi@7.0.0:
     dependencies:
