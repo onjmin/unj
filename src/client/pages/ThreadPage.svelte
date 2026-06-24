@@ -132,6 +132,8 @@
     let contentText = $state("");
     let contentUrl = $state("");
     let contentType = $state(0);
+    let contentData = $state("");
+    let encryptPlaintext = $state("");
     let previewUrl = $state("");
     let oekakiCollab = $state("");
     let isSage = $state(false);
@@ -671,9 +673,9 @@
         }
 
         // 暗号レス
-        const _contentText = contentText;
+        const _contentData = contentData;
         if (contentType === Enum.Encrypt) {
-            contentText = await encrypt(contentText, password);
+            contentData = await encrypt(encryptPlaintext, password);
         }
 
         if (
@@ -692,6 +694,7 @@
             contentText,
             contentUrl,
             contentType,
+            contentData,
             sage: isSage,
             ninja: isNinja,
         };
@@ -707,7 +710,7 @@
             return res.output;
         })();
         if (!result) {
-            if (contentType === Enum.Encrypt) contentText = _contentText;
+            if (contentType === Enum.Encrypt) contentData = _contentData;
             await sleep(1024);
             emitting = false;
             return;
@@ -880,6 +883,8 @@
         bind:contentText
         bind:contentUrl
         bind:contentType
+        bind:contentData
+        bind:encryptPlaintext
         contentTypesBitmask={thread?.contentTypesBitmask ?? 0}
         bind:activeLayer
         {tryRes}
@@ -896,7 +901,7 @@
         />
     {/if}
     {#if contentType === Enum.Dtm && !menu}
-        <DtmPart bind:contentText />
+        <DtmPart bind:contentData />
     {/if}
     <div class="w-full max-w-xs">
         <Button disabled={emitting} onclick={tryRes} variant="raised"
@@ -1082,6 +1087,7 @@
             bind:oekakiCollab
             bind:bindContentText={contentText}
             bind:bindContentType={contentType}
+        bind:bindContentData={contentData}
             {focus}
             ccUserId={thread?.ageRes.ccUserId}
             ccUserName={thread?.ageRes.ccUserName}
@@ -1089,6 +1095,7 @@
             contentText={thread?.ageRes.contentText}
             contentUrl={thread?.ageRes.contentUrl}
             contentType={Enum.Text}
+            contentData={thread?.ageRes.contentData ?? ""}
             num={thread?.ageRes.num}
             isOwner={thread?.ageRes.isOwner}
             sage={thread?.ageRes.sage}
@@ -1132,6 +1139,7 @@
                     bind:oekakiCollab
                     bind:bindContentText={contentText}
                     bind:bindContentType={contentType}
+        bind:bindContentData={contentData}
                     num={1}
                     isOwner={true}
                     ccUserId={thread.ccUserId}
@@ -1140,6 +1148,7 @@
                     contentText={thread.contentText}
                     contentUrl={thread.contentUrl}
                     contentType={thread.contentType}
+                    contentData={thread.contentData}
                     createdAt={thread.createdAt}
                     threadId={thread.id}
                     resList={thread.resList ?? []}
@@ -1154,6 +1163,7 @@
                     bind:oekakiCollab
                     bind:bindContentText={contentText}
                     bind:bindContentType={contentType}
+        bind:bindContentData={contentData}
                     threadId={thread.id}
                     resList={thread.resList ?? []}
                     ageRes={thread.ageRes ?? null}
@@ -1168,6 +1178,7 @@
                     bind:oekakiCollab
                     bind:bindContentText={contentText}
                     bind:bindContentType={contentType}
+        bind:bindContentData={contentData}
                     threadId={thread.id}
                     resList={thread.resList ?? []}
                     ageRes={thread.ageRes ?? null}
@@ -1363,12 +1374,14 @@
                         bind:oekakiCollab
                         bind:bindContentText={contentText}
                         bind:bindContentType={contentType}
+        bind:bindContentData={contentData}
                         ccUserId={thread.ccUserId}
                         ccUserName={thread.ccUserName}
                         ccUserAvatar={thread.ccUserAvatar}
                         contentText={thread.contentText}
                         contentUrl={thread.contentUrl}
                         contentType={thread.contentType}
+                        contentData={thread.contentData}
                         ps={thread.ps}
                         num={1}
                         isOwner={true}
@@ -1434,12 +1447,14 @@
                             bind:oekakiCollab
                             bind:bindContentText={contentText}
                             bind:bindContentType={contentType}
+        bind:bindContentData={contentData}
                             ccUserId={res.ccUserId}
                             ccUserName={res.ccUserName}
                             ccUserAvatar={res.ccUserAvatar}
                             contentText={res.contentText}
                             contentUrl={res.contentUrl}
                             contentType={res.contentType}
+                            contentData={res.contentData}
                             commandResult={res.commandResult}
                             num={res.num}
                             isOwner={res.isOwner}

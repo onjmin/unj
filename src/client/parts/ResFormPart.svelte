@@ -33,6 +33,8 @@
     contentText = $bindable(""),
     contentUrl = $bindable(""),
     contentType = $bindable(0),
+    contentData = $bindable(""),
+    encryptPlaintext = $bindable(""),
     contentTypesBitmask = 0,
     activeLayer = $bindable(null),
     tryRes,
@@ -189,11 +191,10 @@
   {/snippet}
 </Textfield>
 
-{#if contentType !== Enum.Dtm}
-  <Textfield
+<Textfield
   {disabled}
   textarea
-  label="本文"
+  label={contentType === Enum.Dtm || contentType === Enum.Encrypt ? "コメント（任意）" : "本文"}
   bind:this={textarea}
   bind:value={contentText}
   input$rows={Math.max(contentText.split("\n").length, 2)}
@@ -240,8 +241,7 @@
   {#snippet helper()}
     <CharacterCounter />
   {/snippet}
-  </Textfield>
-{/if}
+</Textfield>
 
 {#if openEmojiPicker}
   <EmojiPickerPart bind:contentText />
@@ -303,7 +303,7 @@
     <ImageUploaderPart bind:fileName bind:previewUrl bind:contentUrl {menu} />
   {/if}
   {#if contentType === Enum.Encrypt}
-    <EncryptPart bind:password />
+    <EncryptPart bind:plaintext={encryptPlaintext} bind:password />
   {/if}
 {/key}
 

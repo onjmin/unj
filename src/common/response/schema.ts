@@ -40,6 +40,7 @@ export type Res = {
 	contentText: string;
 	contentUrl: string;
 	contentType: number;
+	contentData: string;
 	commandResult: string;
 	// メタ情報
 	num: number;
@@ -57,6 +58,7 @@ export type Thread = {
 	contentText: string;
 	contentUrl: string;
 	contentType: number;
+	contentData: string;
 	// メタ情報
 	id: string;
 	createdAt: Date;

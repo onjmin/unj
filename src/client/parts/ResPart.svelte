@@ -49,6 +49,7 @@ const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
     contentText: string;
     contentUrl: string;
     contentType: number;
+    contentData: string;
     commandResult?: string;
     isOwner?: boolean;
     sage?: boolean;
@@ -65,6 +66,7 @@ const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
     oekakiCollab = $bindable(""),
     bindContentText = $bindable(""),
     bindContentType = $bindable(0),
+    bindContentData = $bindable(""),
     // 書き込み内容
     ccUserId = "",
     ccUserName = "",
@@ -72,6 +74,7 @@ const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
     contentText = "",
     contentUrl = "",
     contentType = 0,
+    contentData = "",
     commandResult = "",
     ps = "",
     // メタ情報
@@ -187,7 +190,7 @@ const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
   };
 
   let parts = $derived(
-    contentText !== "" && contentType !== Enum.Dtm
+    contentText !== ""
       ? [...parseContent(contentText)]
       : [],
   );
@@ -471,7 +474,7 @@ const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
                 )
               )
                 return;
-              bindContentText = contentText;
+              bindContentData = contentData;
               bindContentType = Enum.Dtm;
               scrollToEnd();
               focus();
@@ -502,13 +505,13 @@ const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
               >close</IconButton
             >
           </div>
-          <DtmPlayerPart mml={contentText} />
+          <DtmPlayerPart mml={contentData} />
         {/if}
       {/if}
 
       {#if contentType === Enum.Encrypt}
         <div class="text-red-500">※暗号レス</div>
-        <DecryptPart bind:contentText bind:contentType />
+        <DecryptPart bind:contentData />
       {/if}
     </div>
   </div>

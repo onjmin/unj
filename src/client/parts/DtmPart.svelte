@@ -2,18 +2,16 @@
   import {
     decodeMml,
     encodeMml,
-    type DawInstance,
-    type DawMode,
     type DtmStudio,
     type ModeSwitchInstance,
   } from "@onjmin/dtm";
   import { onMount } from "svelte";
   import { getStudio } from "../mylib/dtm.js";
 
-  let { contentText = $bindable("") }: { contentText: string } = $props();
+  let { contentData = $bindable("") }: { contentData: string } = $props();
 
   let container: HTMLDivElement;
-  let mmlLength = $state(contentText.length);
+  let mmlLength = $state(contentData.length);
 
   let studio: DtmStudio | null = null;
   let modeSwitch: ModeSwitchInstance | null = null;
@@ -33,7 +31,7 @@
     try {
       const compressed = await encodeMml(rawMml);
       if (disposed) return;
-      contentText = compressed;
+      contentData = compressed;
       mmlLength = compressed.length;
     } catch (e) {
       console.error("[dtm] Failed to encode MML", e);
@@ -55,7 +53,7 @@
       if (disposed) return;
       studio = s;
 
-      const rawMml = await decodeMml(contentText);
+      const rawMml = await decodeMml(contentData);
       if (disposed) return;
       currentRawMml = rawMml;
 

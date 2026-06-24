@@ -159,6 +159,7 @@ export const MakeThreadSchema = v.strictObject({
 		SMALLINT,
 		v.check<number>((n) => (n & (n - 1)) === 0),
 	),
+	contentData: v.string(), // この段階では簡易的にしか見ない
 });
 
 /**
@@ -176,6 +177,7 @@ export const ResSchema = v.strictObject({
 		SMALLINT,
 		v.check<number>((n) => (n & (n - 1)) === 0),
 	),
+	contentData: v.string(), // この段階では簡易的にしか見ない
 	sage: v.boolean(),
 	ninja: v.boolean(),
 });

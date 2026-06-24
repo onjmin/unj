@@ -33,6 +33,7 @@ const requestSchema = v.strictObject({
 	ccUserAvatar: SMALLINT,
 	contentText: v.string(), // この段階では簡易的にしか見ない
 	contentUrl: v.string(), // この段階では簡易的にしか見ない
+	contentData: v.string(), // この段階では簡易的にしか見ない
 	contentType: v.pipe(
 		SMALLINT,
 		v.check<number>((n) => (n & (n - 1)) === 0),
@@ -84,10 +85,11 @@ export default (router: Router, io: Server) => {
 					"content_text",
 					"content_url",
 					"content_type",
+					"content_data",
 					"sage",
 					"ip",
 				].join(", ")})`,
-				"VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,",
+				"VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,",
 				"(SELECT COALESCE(MAX(num), 1) + 1 FROM res WHERE thread_id = $1)",
 				")",
 				"RETURNING *",
@@ -102,6 +104,7 @@ export default (router: Router, io: Server) => {
 				content.output.contentText,
 				content.output.contentUrl,
 				content.output.contentType,
+				content.output.contentData ?? "",
 				sage,
 				genTestIP(),
 			]);
@@ -135,6 +138,7 @@ export default (router: Router, io: Server) => {
 				contentText: content.output.contentText,
 				contentUrl: content.output.contentUrl,
 				contentType: content.output.contentType,
+				contentData: content.output.contentData ?? "",
 				commandResult: "",
 				// メタ情報
 				num: latestResNum,

@@ -11,6 +11,7 @@ export const ccUserAvatarCache: Map<number, number> = new Map();
 export const contentTextCache: Map<number, string> = new Map();
 export const contentUrlCache: Map<number, string> = new Map();
 export const contentTypeCache: Map<number, number> = new Map();
+export const contentDataCache: Map<number, string> = new Map();
 // メタ情報
 export const createdAtCache: Map<number, Date> = new Map();
 export const userIdCache: Map<number, number> = new Map();

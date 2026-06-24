@@ -58,7 +58,8 @@ CREATE TABLE threads (
     cc_user_avatar SMALLINT NOT NULL DEFAULT 0,
     content_text TEXT NOT NULL DEFAULT '',
     content_url TEXT NOT NULL DEFAULT '',
-    content_type SMALLINT NOT NULL DEFAULT 1
+    content_type SMALLINT NOT NULL DEFAULT 1,
+    content_data TEXT NOT NULL DEFAULT ''
 );
 
 -- ========== res テーブル ==========
@@ -78,6 +79,7 @@ CREATE TABLE res (
     content_text TEXT NOT NULL DEFAULT '',
     content_url TEXT NOT NULL DEFAULT '',
     content_type SMALLINT NOT NULL DEFAULT 1,
+    content_data TEXT NOT NULL DEFAULT '',
     command_result TEXT NOT NULL DEFAULT '',
     UNIQUE (thread_id, num)  -- スレッド内でのレス番号の一意性を保証
 );

@@ -111,6 +111,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 						"content_text",
 						"content_url",
 						"content_type",
+						"content_data",
 						// 基本的な情報
 						"title",
 						"board_id",
@@ -125,7 +126,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 						"latest_res",
 						"ip",
 					].join(",")})`,
-					"VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)",
+					"VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)",
 					"RETURNING *",
 				].join(" "),
 				[
@@ -137,6 +138,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 					content.output.contentText,
 					content.output.contentUrl,
 					content.output.contentType,
+					content.output.contentData ?? "",
 					// 基本的な情報
 					makeThread.output.title,
 					board.id,

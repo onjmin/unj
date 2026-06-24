@@ -36,6 +36,7 @@ import {
 	ccUserAvatarCache,
 	ccUserIdCache,
 	ccUserNameCache,
+	contentDataCache,
 	contentTextCache,
 	contentTypeCache,
 	contentTypesBitmaskCache,
@@ -218,6 +219,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 						"content_text",
 						"content_url",
 						"content_type",
+						"content_data",
 						"command_result",
 						// メタ情報
 						"is_owner",
@@ -225,7 +227,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 						"ip",
 						"num",
 					].join(",")})`,
-					"VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12,",
+					"VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13,",
 					"(SELECT COALESCE(MAX(num), 1) + 1 FROM res WHERE thread_id = $1)",
 					")",
 					"RETURNING *",
@@ -240,6 +242,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 					content.output.contentText,
 					content.output.contentUrl,
 					content.output.contentType,
+					content.output.contentData ?? "",
 					parsedResult.msg,
 					// メタ情報
 					isOwner,
@@ -292,6 +295,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 				contentText: content.output.contentText,
 				contentUrl: content.output.contentUrl,
 				contentType: content.output.contentType,
+				contentData: content.output.contentData ?? "",
 				commandResult: parsedResult.msg,
 				// メタ情報
 				num: latestResNum,
@@ -364,6 +368,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 					contentText: content.output.contentText,
 					contentUrl: content.output.contentUrl,
 					contentType: content.output.contentType,
+					contentData: content.output.contentData ?? "",
 					commandResult: parsedResult.msg,
 					// メタ情報
 					num: latestResNum,
@@ -387,6 +392,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 							contentText: contentTextCache.get(threadId) ?? "",
 							contentUrl: contentUrlCache.get(threadId) ?? "",
 							contentType: contentTypeCache.get(threadId) ?? 0,
+							contentData: contentDataCache.get(threadId) ?? "",
 							commandResult: "",
 							// メタ情報
 							num: 1,
@@ -411,6 +417,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 								contentText: record.content_text,
 								contentUrl: record.content_url,
 								contentType: record.content_type,
+								contentData: record.content_data,
 								commandResult: record.command_result,
 								// メタ情報
 								num: record.num,

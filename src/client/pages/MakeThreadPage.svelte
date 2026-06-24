@@ -65,6 +65,8 @@
     let contentText = $state("");
     let contentUrl = $state("");
     let contentType: EnumType = $state(Enum.Text);
+    let contentData = $state("");
+    let encryptPlaintext = $state("");
     let previewUrl = $state("");
     let activeLayer = $state(null);
 
@@ -288,9 +290,9 @@
         }
 
         // 暗号レス
-        const _contentText = contentText;
+        const _contentData = contentData;
         if (contentType === Enum.Encrypt) {
-            contentText = await encrypt(contentText, password);
+            contentData = await encrypt(encryptPlaintext, password);
         }
 
         if (
@@ -301,12 +303,6 @@
             contentType = Enum.Text;
         }
 
-        if (
-            !contentUrl &&
-            contentType !== Enum.Dtm &&
-            contentType !== Enum.Encrypt
-        )
-            contentType = Enum.Text;
         const data = {
             boardId: board.id,
             nonce: genNonce(nonceKey.value ?? ""),
@@ -316,6 +312,7 @@
             contentText,
             contentUrl,
             contentType,
+            contentData,
             varsan,
             sage,
             ccBitmask: bits2Int(ccBitmask),
@@ -335,7 +332,7 @@
             return makeThread.output;
         })();
         if (!result) {
-            if (contentType === Enum.Encrypt) contentText = _contentText;
+            if (contentType === Enum.Encrypt) contentData = _contentData;
             await sleep(1024);
             emitting = false;
             return;
@@ -581,6 +578,8 @@
             bind:contentText
             bind:contentUrl
             bind:contentType
+            bind:contentData
+            bind:encryptPlaintext
             contentTypesBitmask={bits2Int(contentTypesBitmask)}
             bind:activeLayer
             tryRes={tryMakeThread}
@@ -595,7 +594,7 @@
             />
         {/if}
         {#if contentType === Enum.Dtm}
-            <DtmPart bind:contentText />
+            <DtmPart bind:contentData />
         {/if}
         <div class="flex items-center space-x-2 mt-4">
             <input

@@ -16,6 +16,7 @@ import {
 	ccUserAvatarCache,
 	ccUserIdCache,
 	ccUserNameCache,
+	contentDataCache,
 	contentTextCache,
 	contentTypeCache,
 	contentTypesBitmaskCache,
@@ -83,6 +84,7 @@ export default ({ socket }: { socket: Socket }) => {
 				contentTextCache.set(threadId, threadRecord.content_text);
 				contentUrlCache.set(threadId, threadRecord.content_url);
 				contentTypeCache.set(threadId, threadRecord.content_type);
+				contentDataCache.set(threadId, threadRecord.content_data);
 				// メタ情報
 				createdAtCache.set(threadId, new Date(threadRecord.created_at));
 				userIdCache.set(threadId, threadRecord.user_id);
@@ -129,6 +131,7 @@ export default ({ socket }: { socket: Socket }) => {
 						contentText: contentTextCache.get(threadId) ?? "",
 						contentUrl: contentUrlCache.get(threadId) ?? "",
 						contentType: contentTypeCache.get(threadId) ?? 0,
+						contentData: contentDataCache.get(threadId) ?? "",
 						commandResult: "",
 						// メタ情報
 						num: 1,
@@ -153,6 +156,7 @@ export default ({ socket }: { socket: Socket }) => {
 							contentText: record.content_text,
 							contentUrl: record.content_url,
 							contentType: record.content_type,
+							contentData: record.content_data,
 							commandResult: record.command_result,
 							// メタ情報
 							num: record.num,
@@ -199,6 +203,7 @@ export default ({ socket }: { socket: Socket }) => {
 					contentText: record.content_text,
 					contentUrl: record.content_url,
 					contentType: record.content_type,
+					contentData: record.content_data,
 					commandResult: record.command_result,
 					// メタ情報
 					num: record.num,
@@ -217,6 +222,7 @@ export default ({ socket }: { socket: Socket }) => {
 				contentText: contentTextCache.get(threadId) ?? "",
 				contentUrl: contentUrlCache.get(threadId) ?? "",
 				contentType: contentTypeCache.get(threadId) ?? 0,
+				contentData: contentDataCache.get(threadId) ?? "",
 				// 基本的な情報
 				title: titleCache.get(threadId) ?? "",
 				boardId: boardIdCache.get(threadId) ?? 0,
