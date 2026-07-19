@@ -1,6 +1,7 @@
 <script lang="ts">
   import {
     mdiBrush,
+    mdiContentCopy,
     mdiContentSaveOutline,
     mdiEraser,
     mdiEraserVariant,
@@ -11,6 +12,8 @@
     mdiHandBackRight,
     mdiPen,
     mdiRedo,
+    mdiSelectionDrag,
+    mdiSelectionOff,
     mdiTrashCanOutline,
     mdiUndo,
   } from "@mdi/js";
@@ -81,6 +84,10 @@
         e.preventDefault();
         choiced = tool.translate;
         break;
+      case "7":
+        e.preventDefault();
+        choiced = tool.select;
+        break;
       case "e":
         e.preventDefault();
         setErasable(!erasable);
@@ -110,6 +117,11 @@
       case "c": // クリップボードにコピー
         {
           e.preventDefault();
+          if (activeLayer?.selection) {
+            const copy = activeLayer.copySelection();
+            if (copy) internalClipboard = copy;
+            break;
+          }
           let visible = false;
           const bgLayer = oekaki
             .getLayers()
@@ -130,6 +142,16 @@
             "text/plain": new Blob([MAGIC_STRING], { type: "text/plain" }),
           });
           await navigator.clipboard.write([item]);
+        }
+        break;
+      case "x": // 選択範囲の切り取り
+        {
+          if (!activeLayer?.editable || !activeLayer.selection) break;
+          e.preventDefault();
+          const copy = activeLayer.copySelection();
+          if (copy) internalClipboard = copy;
+          activeLayer.deleteSelection();
+          fin();
         }
         break;
     }
@@ -156,6 +178,93 @@
 
   const MAGIC_STRING = "レイヤーコピー";
 
+  // 範囲選択用の状態
+  let internalClipboard: HTMLCanvasElement | null = null;
+  let selectDragMode: "new" | "move" | "resize" | null = null;
+  let selectStartX = 0;
+  let selectStartY = 0;
+  let selectAnchorX = 0;
+  let selectAnchorY = 0;
+  let selectAccDx = 0;
+  let selectAccDy = 0;
+  let selectSnappedDx = 0;
+  let selectSnappedDy = 0;
+
+  // 範囲選択のハンドル描画・判定
+  const SELECTION_HANDLE_SIZE = 8;
+  const SELECTION_HANDLE_HIT = 10;
+  const drawSelectionHandle = () => {
+    const sel = activeLayer?.selection;
+    const ctx = upperLayer?.ctx;
+    if (!sel || !ctx) return;
+    const hx = sel.x + sel.w;
+    const hy = sel.y + sel.h;
+    ctx.save();
+    ctx.fillStyle = "#ffffff";
+    ctx.strokeStyle = "#000000";
+    ctx.lineWidth = 1;
+    ctx.fillRect(
+      hx - SELECTION_HANDLE_SIZE / 2,
+      hy - SELECTION_HANDLE_SIZE / 2,
+      SELECTION_HANDLE_SIZE,
+      SELECTION_HANDLE_SIZE,
+    );
+    ctx.strokeRect(
+      hx - SELECTION_HANDLE_SIZE / 2,
+      hy - SELECTION_HANDLE_SIZE / 2,
+      SELECTION_HANDLE_SIZE,
+      SELECTION_HANDLE_SIZE,
+    );
+    ctx.restore();
+  };
+  const isNearSelectionHandle = (
+    sel: oekaki.SelectionRect,
+    x: number,
+    y: number,
+  ) => {
+    const hx = sel.x + sel.w;
+    const hy = sel.y + sel.h;
+    return (
+      Math.abs(x - hx) <= SELECTION_HANDLE_HIT &&
+      Math.abs(y - hy) <= SELECTION_HANDLE_HIT
+    );
+  };
+  const isInsideSelection = (sel: oekaki.SelectionRect, x: number, y: number) =>
+    x >= sel.x && x <= sel.x + sel.w && y >= sel.y && y <= sel.y + sel.h;
+
+  /**
+   * 選択範囲用のショートカット（Ctrl不要）
+   */
+  const handleSelectionKey = (e: KeyboardEvent) => {
+    if (!activeLayer?.editable || !activeLayer.selection) return;
+    if (e.key === "Delete" || e.key === "Backspace") {
+      e.preventDefault();
+      activeLayer.deleteSelection();
+      fin();
+    } else if (e.key === "Escape") {
+      e.preventDefault();
+      activeLayer.deselect();
+    } else if (
+      ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)
+    ) {
+      e.preventDefault();
+      const step = isGrid ? oekaki.getDotSize() : e.shiftKey ? 10 : 1;
+      const dx =
+        e.key === "ArrowLeft" ? -step : e.key === "ArrowRight" ? step : 0;
+      const dy =
+        e.key === "ArrowUp" ? -step : e.key === "ArrowDown" ? step : 0;
+      activeLayer.moveSelection(dx, dy);
+      fin();
+      drawSelectionHandle();
+    }
+  };
+  $effect(() => {
+    if (!upperLayer) return;
+    window.removeEventListener("keydown", handleSelectionKey);
+    window.addEventListener("keydown", handleSelectionKey);
+    return () => window.removeEventListener("keydown", handleSelectionKey);
+  });
+
   /**
    * PC版ショートカット
    */
@@ -168,16 +277,23 @@
       if (v.kind === "file" && v.type.startsWith("image/")) imageItem = v;
       if (v.kind === "string" && v.type === "text/plain") textItem = v;
     }
-    if (!imageItem || !textItem) return;
-    const blob = imageItem.getAsFile();
-    if (!blob) return;
-    // レイヤー以外からのコピーを弾く（※画像のハッシュと比較すれば更にセキュアに）
-    const text = await new Promise<string>((resolve) =>
-      textItem.getAsString(resolve),
-    );
-    if (!text.includes(MAGIC_STRING)) return;
-    // クリップボードから画像を取得
-    const bitmap = await createImageBitmap(blob);
+    let bitmap: ImageBitmap | HTMLCanvasElement | null = null;
+    if (imageItem && textItem) {
+      const blob = imageItem.getAsFile();
+      if (!blob) return;
+      // レイヤー以外からのコピーを弾く（※画像のハッシュと比較すれば更にセキュアに）
+      const text = await new Promise<string>((resolve) =>
+        textItem.getAsString(resolve),
+      );
+      if (!text.includes(MAGIC_STRING)) return;
+      // クリップボードから画像を取得
+      bitmap = await createImageBitmap(blob);
+    } else if (internalClipboard) {
+      // OSクリップボードに画像がない場合は内部クリップボード（選択範囲コピー）を貼り付け
+      bitmap = internalClipboard;
+    } else {
+      return;
+    }
     activeLayer.paste(bitmap);
     activeLayer.trace();
   };
@@ -399,6 +515,15 @@
     })();
   });
 
+  const fin = () => {
+    if (activeLayer?.modified()) {
+      activeLayer.trace();
+      addRecent();
+      saveData();
+    }
+  };
+  let dropping = false;
+
   // 描画イベント登録
   $effect(() => {
     if (!upperLayer) return;
@@ -419,6 +544,67 @@
           } else {
             activeLayer?.translate(x - prevX, y - prevY);
           }
+        } else if (choiced.label === tool.select.label) {
+          if (!activeLayer?.editable) {
+            prevX = x;
+            prevY = y;
+            return;
+          }
+          if (selectDragMode === null) {
+            const sel = activeLayer.selection;
+            if (sel && isNearSelectionHandle(sel, x, y)) {
+              selectDragMode = "resize";
+              selectAnchorX = sel.x;
+              selectAnchorY = sel.y;
+            } else if (sel && isInsideSelection(sel, x, y)) {
+              selectDragMode = "move";
+              selectAccDx = 0;
+              selectAccDy = 0;
+              selectSnappedDx = 0;
+              selectSnappedDy = 0;
+            } else {
+              selectDragMode = "new";
+              selectStartX = x;
+              selectStartY = y;
+            }
+          }
+          if (selectDragMode === "move") {
+            if (isGrid) {
+              const size = oekaki.getDotSize();
+              selectAccDx += x - prevX;
+              selectAccDy += y - prevY;
+              const snappedDx = Math.round(selectAccDx / size) * size;
+              const snappedDy = Math.round(selectAccDy / size) * size;
+              const dx = snappedDx - selectSnappedDx;
+              const dy = snappedDy - selectSnappedDy;
+              if (dx !== 0 || dy !== 0) {
+                activeLayer.moveSelection(dx, dy);
+                selectSnappedDx = snappedDx;
+                selectSnappedDy = snappedDy;
+              }
+            } else {
+              activeLayer.moveSelection(x - prevX, y - prevY);
+            }
+          } else if (selectDragMode === "resize") {
+            let w = x - selectAnchorX;
+            let h = y - selectAnchorY;
+            if (isGrid) {
+              const size = oekaki.getDotSize();
+              w = Math.round(w / size) * size;
+              h = Math.round(h / size) * size;
+              w = Math.max(size, w);
+              h = Math.max(size, h);
+            }
+            activeLayer.resizeSelection(w, h);
+          } else {
+            activeLayer.select(
+              selectStartX,
+              selectStartY,
+              x - selectStartX,
+              y - selectStartY,
+            );
+          }
+          drawSelectionHandle();
         } else {
           const lerps = oekaki.lerp(x, y, prevX, prevY);
           switch (choiced.label) {
@@ -448,23 +634,42 @@
       prevX = x;
       prevY = y;
     });
-    const fin = () => {
-      if (activeLayer?.modified()) {
-        activeLayer.trace();
-        addRecent();
-        saveData();
-      }
-    };
-    let dropping = false;
     oekaki.onDrawn((x, y, buttons) => {
       prevX = null;
       prevY = null;
+      if (choiced.label === tool.select.label && selectDragMode !== null) {
+        selectDragMode = null;
+      }
       if (!activeLayer?.editable) return;
       if (choiced.label === tool.fill.label && !dropping) fill(x, y);
       dropping = false;
       fin();
     });
     oekaki.onClick((x, y, buttons) => {});
+
+    // 選択ツールのカーソル切替＆ハンドル表示（ドラッグしていない時）
+    upperLayer.canvas.addEventListener("pointermove", (e) => {
+      if (
+        choiced.label !== tool.select.label ||
+        selectDragMode !== null ||
+        e.buttons !== 0
+      )
+        return;
+      const sel = activeLayer?.selection;
+      if (!sel) {
+        upperLayer.canvas.style.cursor = `url('${mdi2DataUrl(tool.select.icon)}') 3 21, auto`;
+        return;
+      }
+      const [x, y] = oekaki.getXY(e);
+      if (isNearSelectionHandle(sel, x, y)) {
+        upperLayer.canvas.style.cursor = "nwse-resize";
+      } else if (isInsideSelection(sel, x, y)) {
+        upperLayer.canvas.style.cursor = "move";
+      } else {
+        upperLayer.canvas.style.cursor = `url('${mdi2DataUrl(tool.select.icon)}') 3 21, auto`;
+      }
+      drawSelectionHandle();
+    });
   });
 
   // activeLayerが変わったときにstateを同期する
@@ -560,6 +765,7 @@
     dropper: { label: "カラーピッカー", icon: mdiEyedropper },
     fill: { label: "塗りつぶし", icon: mdiFormatColorFill },
     translate: { label: "ハンドツール", icon: mdiHandBackRight },
+    select: { label: "範囲選択", icon: mdiSelectionDrag },
     // 切り替え系
     erasable: { label: "常に消しゴム", icon: mdiEraserVariant },
     flip: { label: "左右反転", icon: mdiFlipHorizontal },
@@ -569,6 +775,8 @@
     redo: { label: "進む", icon: mdiRedo },
     save: { label: "画像を保存", icon: mdiContentSaveOutline },
     clear: { label: "全消し", icon: mdiTrashCanOutline },
+    copySelection: { label: "選択範囲をコピー", icon: mdiContentCopy },
+    deleteSelection: { label: "選択範囲を削除", icon: mdiSelectionOff },
   } as const;
 
   let choices = [
@@ -578,6 +786,7 @@
     tool.dropper,
     tool.fill,
     tool.translate,
+    tool.select,
   ];
   let choiced: Tool = $state(
     Object.values(tool).find((v) => v.label === unjStorage.tool.value) ??
@@ -961,6 +1170,39 @@
     {:else if choiced.label === tool.dropper.label || choiced.label === tool.fill.label}
       <span class="size"></span>
       {@render palette()}
+    {:else if choiced.label === tool.select.label && activeLayer?.selection}
+      <span class="size"></span>
+      <button
+        class="select-action-btn"
+        title="選択範囲をコピー"
+        onclick={() => {
+          const copy = activeLayer?.copySelection();
+          if (copy) internalClipboard = copy;
+        }}
+      >
+        <svg
+          style="width: 1em; height: auto; pointer-events: none;"
+          viewBox="0 0 24 24"
+        >
+          <path fill="currentColor" d={tool.copySelection.icon} />
+        </svg>
+        コピー
+      </button>
+      <button
+        class="select-action-btn"
+        title="選択範囲を削除"
+        onclick={() => {
+          activeLayer?.deleteSelection();
+        }}
+      >
+        <svg
+          style="width: 1em; height: auto; pointer-events: none;"
+          viewBox="0 0 24 24"
+        >
+          <path fill="currentColor" d={tool.deleteSelection.icon} />
+        </svg>
+        削除
+      </button>
     {/if}
   </div>
 
@@ -979,6 +1221,7 @@
           <p>Ctrl + 4：カラーピッカー</p>
           <p>Ctrl + 5：塗りつぶし</p>
           <p>Ctrl + 6：ハンドツール</p>
+          <p>Ctrl + 7：範囲選択</p>
           <p>Ctrl + E：常に消しゴム</p>
           <p>Ctrl + F：左右反転</p>
           <p>Ctrl + G：グリッド表示</p>
@@ -986,7 +1229,12 @@
           <p>Ctrl + Shift + Z ：やり直す</p>
           <p>Ctrl + S：保存</p>
           <p>Ctrl + C：コピー</p>
+          <p>Ctrl + X：切り取り</p>
           <p>Ctrl + V：貼り付け</p>
+          <p>【範囲選択時】</p>
+          <p>Delete/Backspace：選択範囲を削除</p>
+          <p>Escape：選択解除</p>
+          <p>矢印キー：選択範囲を移動</p>
         </Content>
       </Tooltip>
     </Wrapper>
@@ -1053,5 +1301,20 @@
     opacity: 0.6;
     max-height: 300px;
     overflow-y: auto;
+  }
+  .select-action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.5rem;
+    border: 1px solid #666;
+    border-radius: 4px;
+    background: #444;
+    color: white;
+    cursor: pointer;
+    font-size: 0.75rem;
+  }
+  .select-action-btn:hover {
+    background: #666;
   }
 </style>
