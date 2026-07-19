@@ -35,11 +35,11 @@ importers:
         specifier: 1.0.12
         version: 1.0.12
       '@onjmin/dtm':
-        specifier: 0.1.60
-        version: 0.1.60
+        specifier: 0.1.63
+        version: 0.1.63
       '@onjmin/oekaki':
-        specifier: 1.0.59
-        version: 1.0.59
+        specifier: 1.0.60
+        version: 1.0.60
       '@rpgja/rpgen-map':
         specifier: 1.0.0
         version: 1.0.0
@@ -1096,8 +1096,8 @@ packages:
   '@onjmin/dtm@0.1.14':
     resolution: {integrity: sha512-4sgVlv2X0uc4kd0qT+CxdZnRkV/RrK8nIqg6yvD/qYobKPj2I1OvGbzlG+73Nheiw64VSekP3MCKptvMq7+VZg==}
 
-  '@onjmin/dtm@0.1.60':
-    resolution: {integrity: sha512-kM1MmAI5M3su8sgG0xcLdqoIfKHm+N4LHJuIRLS6zEg799Sr9wIZNF7RMnb5gumIGcm7BtvOAxEK3ZuJ+2I83Q==}
+  '@onjmin/dtm@0.1.63':
+    resolution: {integrity: sha512-3KdVo6K8EF8oOu/bVlafRhZIiffnWKR8sRIWmhBxns+0MGgzVSWRE0C8Hk7hXLFxJOtk6I7pZJ/Vzf/EPFpJtw==}
 
   '@onjmin/koe@1.0.3':
     resolution: {integrity: sha512-qxBtIKPcbtWJPo0jhi/pzfneOkE1s+Ok5DvCXpjI/NR8bbXEHM77XCn18buENe5eIZMdfUHEprIDuIp5eARONA==}
@@ -1107,8 +1107,8 @@ packages:
     resolution: {integrity: sha512-wMqD7iOz1VN76cc9ChKlDZD7vkhq2Aq+gQc81YU/7NjN+CoowxkRhyTVstUzSLuuDuPrRLDCklKY8JCcTqfdAg==}
     hasBin: true
 
-  '@onjmin/oekaki@1.0.59':
-    resolution: {integrity: sha512-p+2M8FuySg1tTZQpKi1YWqV1hFoRyba52vScjnYg3Epz9YzNTC5Z9uHiqJ0C++UbyhKum0bahsrC3STcEB6S5A==}
+  '@onjmin/oekaki@1.0.60':
+    resolution: {integrity: sha512-H5d4XwqMWf8DPo6dhY6u5KEsiA5ch45v3NwV8OzrevTLbCv1dhKZvQHnz0VdnSoeJphDXmKUTJMRSx5FVWS61Q==}
 
   '@protobufjs/aspromise@1.1.2':
     resolution: {integrity: sha512-j+gKExEuLmKwvz3OgROXtrJ2UG2x8Ch2YZUxahh+s1F2HZ+wAceUNLkvy6zKCPVRkU++ZWQrdxsUeQXmcg4uoQ==}
@@ -4366,7 +4366,7 @@ snapshots:
       '@onjmin/chord-parser': 1.0.2
       '@onjmin/koe': 1.0.3
 
-  '@onjmin/dtm@0.1.60':
+  '@onjmin/dtm@0.1.63':
     dependencies:
       '@onjmin/chord-parser': 1.0.2
       '@onjmin/dtm': 0.1.14
@@ -4377,7 +4377,7 @@ snapshots:
 
   '@onjmin/koe@1.0.4': {}
 
-  '@onjmin/oekaki@1.0.59': {}
+  '@onjmin/oekaki@1.0.60': {}
 
   '@protobufjs/aspromise@1.1.2': {}
 
