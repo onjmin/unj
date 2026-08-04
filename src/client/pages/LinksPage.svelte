@@ -6,52 +6,24 @@
     ///////////////
 
     import type { Board } from "../../common/request/board.js";
-    import {
-        officialLinks,
-        vocaloidLinks,
-        rentalBbsLinks,
-        indieBbsLinks,
-        mediaLinks,
-    } from "../mylib/links.js";
+    import { externalLinkGroups } from "../mylib/links.js";
 
-    import { Music, Server, Link, Globe } from "@lucide/svelte";
+    import { Music, Server, Link, Globe, Sprout } from "@lucide/svelte";
+
+    const getFaviconUrl = (src: string) => {
+        const hostname = new URL(src).hostname;
+        return `https://www.google.com/s2/favicons?domain=${hostname}`;
+    };
     import CustomEmojiPart from "../parts/emoji/CustomEmojiPart.svelte";
-    import { SiteInfo } from "../../common/request/whitelist/site-info.js";
     import CopyleftPart from "../parts/CopyleftPart.svelte";
 
     let { board }: { board: Board } = $props();
 
-    // ===== カテゴリ定義 =====
-    const sections = [
-        {
-            title: "おんJ公式リンク",
-            items: officialLinks,
-        },
-        {
-            title: "おんJ民が作ったボカロ",
-            items: vocaloidLinks,
-        },
-        {
-            title: "おんJ避難所（レンタル掲示板）",
-            items: rentalBbsLinks,
-        },
-        {
-            title: "おんJ避難所（個人開発）",
-            items: indieBbsLinks,
-        },
-        {
-            title: "おんJ専門まとめサイト",
-            items: mediaLinks,
-        },
-    ];
-
-    const iconMap: WeakMap<SiteInfo[], any> = new Map([
-        [officialLinks, null],
-        [vocaloidLinks, Music],
-        [rentalBbsLinks, Server],
-        [indieBbsLinks, Link],
-        [mediaLinks, Globe],
-    ]);
+    const sections = externalLinkGroups.map((group, index) => ({
+        title: group.title,
+        items: group.links,
+        icon: [null, Sprout, Music, Server, Link, Globe][index],
+    }));
 </script>
 
 <HeaderPart {board} title="リンク集" />
@@ -62,7 +34,7 @@
 
     <div class="space-y-8 max-w-lg mx-auto">
         {#each sections as section}
-            {@const Icon = iconMap.get(section.items)}
+            {@const Icon = section.icon}
 
             <section>
                 <h2 class="flex items-center gap-2 text-sm font-semibold mb-3">
@@ -89,7 +61,9 @@
                                 >
                                     <div
                                         class="w-3 h-3 rounded-sm bg-cover bg-center shrink-0"
-                                        style="background-image: url({site.favicon});"
+                                        style="background-image: url({getFaviconUrl(
+                                            site.src,
+                                        )});"
                                     ></div>
                                     <a
                                         href={site.src}
