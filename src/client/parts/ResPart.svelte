@@ -91,7 +91,7 @@ const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
   } = $props();
 
   let siteInfo: SiteInfo | null = $state(null);
-  let showDtm = $state(false);
+  let showDtm = $state(true);
   const myDtmHeavyId = {};
 
   $effect(() => {
