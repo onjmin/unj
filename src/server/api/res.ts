@@ -225,9 +225,10 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 						"is_owner",
 						"sage",
 						"ip",
+						"origin_type",
 						"num",
 					].join(",")})`,
-					"VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13,",
+					"VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14,",
 					"(SELECT COALESCE(MAX(num), 1) + 1 FROM res WHERE thread_id = $1)",
 					")",
 					"RETURNING *",
@@ -248,6 +249,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 					isOwner,
 					sage,
 					getIP(socket),
+					"fal_1_3",
 				],
 			);
 			if (rowCount === 0) return;

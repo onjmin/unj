@@ -125,8 +125,9 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 						// メタ情報
 						"latest_res",
 						"ip",
+						"origin_type",
 					].join(",")})`,
-					"VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)",
+					"VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)",
 					"RETURNING *",
 				].join(" "),
 				[
@@ -152,6 +153,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 					// メタ情報
 					latestRes,
 					getIP(socket),
+					"fal_1_3",
 				],
 			);
 			if (rowCount === 0) return;
