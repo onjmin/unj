@@ -15,6 +15,7 @@
     Enum,
     ankaRegex,
     contentTemplateMap,
+    urlRegex,
   } from "../../common/request/content-schema.js";
   import {
     findIn,
@@ -115,8 +116,10 @@ const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
   let showBlockButtons: boolean = $state(false);
 
   const discordEmojiRegex = /:[A-Za-z0-9_~]{1,32}:/;
+  // 本文にURLを書けるようになったので、素の文字列ではなくリンクとして描く。
+  // ankaRegex より先に置くと `>>1` を含むURLが千切れるため、順序は末尾に固定する。
   const combinedRegex = new RegExp(
-    `\n|${ankaRegex.source}|${discordEmojiRegex.source}`,
+    `\n|${ankaRegex.source}|${discordEmojiRegex.source}|${urlRegex.source}`,
     "g",
   );
 
@@ -135,21 +138,24 @@ const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
 
       const token = match[0];
 
+      // 判定は排他にする。URLは `http://x.com/a:bb:c` のように絵文字記法を
+      // 内包しうるので、非排他の if を並べると1トークンが二重にyieldされる。
       if (token === "\n") {
         yield {
           type: "br" as const,
           value: null,
         };
-      }
-
-      if (ankaRegex.test(token)) {
+      } else if (ankaRegex.test(token)) {
         yield {
           type: "anka" as const,
           value: token.slice(2), // >>1234 → "1234"
         };
-      }
-
-      if (discordEmojiRegex.test(token)) {
+      } else if (urlRegex.test(token)) {
+        yield {
+          type: "url" as const,
+          value: token,
+        };
+      } else if (discordEmojiRegex.test(token)) {
         if (emojiCount <= 0) {
           yield {
             type: "text" as const,
@@ -355,6 +361,16 @@ const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
               </span>
             {:else if part.type === "br"}
               <br />
+            {:else if part.type === "url"}
+              <a
+                href={part.value}
+                target="_blank"
+                rel="noopener noreferrer nofollow ugc"
+                class="text-blue-500 hover:underline wrap-anywhere inline-block align-middle max-w-full"
+                onclick={(e) => e.stopPropagation()}
+              >
+                {part.value}
+              </a>
             {:else if part.type === "anka"}
               {@const ankaNum = Number(part.value)}
               {@const ankaRes = (

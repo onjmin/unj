@@ -151,9 +151,9 @@
         contentType = _contentType;
         contentUrl = url.href;
       }
-      setTimeout(() => {
-        contentText = contentText.replace(m[0], "").trim();
-      });
+      // 本文からURLは抜かない。contentUrl は「本文から選ばれた代表値のレプリカ」で、
+      // 埋め込みに使う1本を指すだけ。本文にURLを複数書けるようになったので、
+      // 抜いてしまうと2本目以降との扱いが揃わなくなる。
     }
   };
 </script>
