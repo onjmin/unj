@@ -2,8 +2,17 @@
  * unj / unj-reze DB統合 STEP 5: posts と周辺テーブルの移送。
  *
  *   reze posts (id = thread_id) → unj threads（>>1）
- *   reze posts (id <> thread_id) → unj res（num は created_at 順、2始まり）
+ *   その配下の子孫（parent_post_id を根まで再帰的にたどった全世代）→ unj res
+ *     （num は created_at 順、2始まり）
  *   games / mvs / follows / blocks / mutes / notifications / messages / oshi_items → unj
+ *
+ * 【reze の thread_id は「スレッドの根」ではない】
+ * addReply が常に返信対象のID（postId）を thread_id にそのまま入れるため、
+ * レスへのレスは thread_id が根ではなく親レスのIDになる
+ * （reze自身の getReplies/getPostWithVotes も `WHERE thread_id = 根.id` の
+ * 一段階しか見ておらず、レスへのレスは reze の本番UIでも表示されない）。
+ * ここでは parent_post_id を根から再帰的にたどって全世代を回収し、
+ * reze本番より正しい形（unjの res.parent_num）で復元する。
  *
  * 2つのDBを跨ぐのでSQLでは書けない。
  *
@@ -18,7 +27,8 @@
  *   - merge_reze_02_threads_res.sql       （STEP 4）
  *   がいずれも適用済みであること。
  *
- * 何度流しても安全。reze_origin_post_id で既存行に解決する。
+ * 何度流しても安全。reze_origin_post_id で既存行に解決する
+ * （STEP5を一度実行済みでも、この修正後に再実行すれば欠落分だけ追加される）。
  */
 import { Pool, neonConfig } from "@neondatabase/serverless";
 import ws from "ws";
@@ -195,9 +205,24 @@ const migratePosts = async () => {
 		// 投稿者が解決できなかった場合は名前も空にする（＝名無し表示）
 		const name = t.author_user_id ? (t.display_name ?? "") : "";
 
+		// reze の thread_id は「スレッドの根」ではなく「直接返信した相手のID」。
+		// addReply が常に postId（返信対象）を thread_id にそのまま入れるため、
+		// レスへのレスは thread_id が根ではなく親レスのIDになり、フラットな
+		// `WHERE thread_id = 根.id` では2階層目以降が取れない
+		// （reze自身の getReplies/getPostWithVotes も同じ穴を持つ）。
+		// parent_post_id を根から再帰的にたどって全世代を集める。
 		const { rows: replies } = await reze.query<PostRow>(
-			`SELECT * FROM posts WHERE thread_id = $1 AND id <> thread_id
-			  ORDER BY created_at, id`,
+			`WITH RECURSIVE descendants AS (
+			     SELECT id FROM posts WHERE id = $1
+			     UNION ALL
+			     SELECT p.id FROM posts p
+			     JOIN descendants d ON p.parent_post_id = d.id
+			     WHERE p.id <> p.thread_id
+			 )
+			 SELECT p.* FROM posts p
+			 JOIN descendants d ON p.id = d.id
+			 WHERE p.id <> $1
+			 ORDER BY p.created_at, p.id`,
 			[t.id],
 		);
 
@@ -218,7 +243,18 @@ const migratePosts = async () => {
 			 ) VALUES ($1,'0.0.0.0'::inet,$2,$3,$4,$5,$6,1000,$7,$8,0,$9,
 			           $10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24)
 			 ON CONFLICT (reze_origin_post_id) WHERE reze_origin_post_id IS NOT NULL
-			 DO UPDATE SET title = EXCLUDED.title
+			 DO UPDATE SET
+			     title = EXCLUDED.title,
+			     -- 再実行時に反映し直す。この修正(parent_post_id再帰化)前に
+			     -- 一度移送済みの環境では、res_count/latest_res が欠落分だけ
+			     -- 古いまま残っているため
+			     res_count = EXCLUDED.res_count,
+			     latest_res = EXCLUDED.latest_res,
+			     latest_res_at = EXCLUDED.latest_res_at,
+			     good_count = EXCLUDED.good_count,
+			     bad_count = EXCLUDED.bad_count,
+			     hearts_total = EXCLUDED.hearts_total,
+			     reposts = EXCLUDED.reposts
 			 RETURNING id`,
 			[
 				toDate(t.created_at),
@@ -250,11 +286,29 @@ const migratePosts = async () => {
 		const threadId = ins.rows[0].id;
 		postMap.set(t.id, { threadId, num: 1 });
 
-		// 返信は created_at 順に num = 2.. を振る。
-		// unj の res.num は SMALLINT / UNIQUE(thread_id, num) なので、
-		// reze 側で1000レス上限（lib/thread-limits.ts）を掛けてある前提。
-		let num = 2;
+		// 既に移送済みの返信は num を再利用する（新規採番しない）。
+		// 再帰化でこのスレッドの返信集合が変わった場合、末尾から num を
+		// 単純に振り直すと、既存行が既に使っている (thread_id, num) と
+		// 衝突する（UNIQUE(thread_id, num)）。既存分は既存の num を保ち、
+		// 新規に見つかった返信だけを空いている num へ追加する。
+		const existing = await unj.query<{ reze_origin_post_id: number; num: number }>(
+			`SELECT reze_origin_post_id, num FROM res
+			  WHERE thread_id = $1 AND reze_origin_post_id IS NOT NULL`,
+			[threadId],
+		);
+		const numByRezeId = new Map(
+			existing.rows.map((r) => [Number(r.reze_origin_post_id), Number(r.num)]),
+		);
+		let nextNum =
+			existing.rows.length > 0
+				? Math.max(...existing.rows.map((r) => Number(r.num))) + 1
+				: 2;
+
 		for (const r of replies) {
+			// 既存なら既存の num を再利用。新規ならここで初めて確定する
+			const num = numByRezeId.get(r.id) ?? nextNum;
+			if (!numByRezeId.has(r.id)) nextNum++;
+
 			const rc = deriveContent(r);
 			const rAuthor = r.author_user_id ?? deletedUserId;
 			const rName = r.author_user_id ? (r.display_name ?? "") : "";
@@ -302,7 +356,6 @@ const migratePosts = async () => {
 				],
 			);
 			postMap.set(r.id, { threadId, num });
-			num++;
 		}
 	}
 	console.log(`[posts] 移送 ${postMap.size} 件`);
