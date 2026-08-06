@@ -66,7 +66,13 @@
   $effect(() => {
     const unsub = activeHeavyId.subscribe((id) => {
       if (embedding && id !== myHeavyId) {
-        const isHeavy = videoEmbedYouTube || videoEmbedNicovideo || audioEmbedSoundCloud || audioEmbedSpotify || audioEmbedSuno || gameEmbedRPGEN;
+        const isHeavy =
+          videoEmbedYouTube ||
+          videoEmbedNicovideo ||
+          audioEmbedSoundCloud ||
+          audioEmbedSpotify ||
+          audioEmbedSuno ||
+          gameEmbedRPGEN;
         if (isHeavy) {
           embedding = false;
         }
@@ -95,7 +101,7 @@
       embeddable &&
       siteInfo &&
       (auto ||
-        [401, 402, 403, 405, 411, 421, 431].includes(siteInfo.id) ||
+        [401, 402, 403, 405, 411, 421, 422, 431].includes(siteInfo.id) ||
         contentType === Enum.Oekaki)
     ) {
       tryEmbed(siteInfo);
@@ -161,6 +167,7 @@
           embedUrl = parseImageEmbedImgBB(url) ?? "";
           break;
         case 421:
+        case 422:
           imageEmbed = true;
           embedUrl = url.href;
           break;
@@ -229,11 +236,14 @@
           embedUrl = parseImageEmbedImgur(url) ?? "";
           break;
         case 102402:
+        case 102403:
           imageEmbed = true;
           embedUrl = url.href;
           break;
       }
-      const isHeavy = [1601, 1602, 1616, 3201, 3202, 3203, 6401].includes(siteInfo.id);
+      const isHeavy = [1601, 1602, 1616, 3201, 3202, 3203, 6401].includes(
+        siteInfo.id,
+      );
       if (isHeavy) {
         activeHeavyId.set(myHeavyId);
       }
