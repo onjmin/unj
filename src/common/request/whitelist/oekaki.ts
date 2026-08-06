@@ -17,4 +17,12 @@ export default [
 		href: "https://www.cloudflare.com/ja-jp/developer-platform/products/r2/",
 		favicon: "www.cloudflare.com",
 	}),
+	new SiteInfo({
+		id: 102403,
+		name: "Cloudflare R2",
+		description: "10GBまで無料のストレージ",
+		src: "https://pub-1bb6b377333b47d180596c0756cc5fe2.r2.dev/1785176594657-7su1gu.png",
+		href: "https://www.cloudflare.com/ja-jp/developer-platform/products/r2/",
+		favicon: "www.cloudflare.com",
+	}),
 ];
