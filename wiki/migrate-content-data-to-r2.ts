@@ -17,8 +17,13 @@
  */
 import { Pool, neonConfig } from "@neondatabase/serverless";
 import ws from "ws";
+import fs from "node:fs";
 
 neonConfig.webSocketConstructor = ws;
+
+if (fs.existsSync(".env")) {
+	process.loadEnvFile(".env");
+}
 
 const DRY_RUN = process.argv.includes("--dry-run");
 
