@@ -30,6 +30,7 @@
         getResizedBase64Image,
         isAvailableCloudflareR2,
         uploadCloudflareR2,
+        uploadContentData,
         uploadHistory,
     } from "../mylib/cloudflare-r2.js";
     import { makePathname } from "../mylib/env.js";
@@ -289,10 +290,26 @@
             }
         }
 
-        // 暗号レス
-        const _contentData = contentData;
-        if (contentType === Enum.Encrypt) {
-            contentData = await encrypt(encryptPlaintext, password);
+        // DTM・暗号レスの本文をR2へ。DBにはURLだけを持たせる。
+        // contentData（編集中の本文）自体は書き換えない。書き換えると投稿後に
+        // DtmPart が decodeMml(URL) を踏んで壊れる
+        let contentDataForPost = contentData;
+        if (contentType === Enum.Dtm || contentType === Enum.Encrypt) {
+            try {
+                contentDataForPost =
+                    contentType === Enum.Encrypt
+                        ? await uploadContentData(
+                              "encrypt",
+                              await encrypt(encryptPlaintext, password),
+                          )
+                        : await uploadContentData("mml", contentData);
+            } catch (error) {
+                const errorMessage =
+                    error instanceof Error ? error.message : "不明なエラー";
+                alert(`データのうｐに失敗しました。${errorMessage}`);
+                emitting = false;
+                return;
+            }
         }
 
         if (
@@ -312,7 +329,7 @@
             contentText,
             contentUrl,
             contentType,
-            contentData,
+            contentData: contentDataForPost,
             varsan,
             sage,
             ccBitmask: bits2Int(ccBitmask),
@@ -332,7 +349,6 @@
             return makeThread.output;
         })();
         if (!result) {
-            if (contentType === Enum.Encrypt) contentData = _contentData;
             await sleep(1024);
             emitting = false;
             return;

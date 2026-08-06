@@ -111,7 +111,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 						"content_text",
 						"content_url",
 						"content_type",
-						"content_data",
+						"content_data_url",
 						// 基本的な情報
 						"title",
 						"board_id",

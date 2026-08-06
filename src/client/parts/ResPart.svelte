@@ -505,7 +505,7 @@ const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
               >close</IconButton
             >
           </div>
-          <DtmPlayerPart mml={contentData} />
+          <DtmPlayerPart src={contentData} />
         {/if}
       {/if}
 

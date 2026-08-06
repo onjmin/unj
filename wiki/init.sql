@@ -59,7 +59,11 @@ CREATE TABLE threads (
     content_text TEXT NOT NULL DEFAULT '',
     content_url TEXT NOT NULL DEFAULT '',
     content_type SMALLINT NOT NULL DEFAULT 1,
-    content_data TEXT NOT NULL DEFAULT ''
+    -- DTM(2048)・暗号レス(4096) の本文の保存先URL（R2）。本文そのものは入れない。
+    -- MMLは encodeMml 後でも5000文字を超えうるのでカラムには収まらない。
+    content_data_url TEXT NOT NULL DEFAULT '',
+    CONSTRAINT threads_content_data_url_format
+        CHECK (content_data_url = '' OR content_data_url ~ '^https://[a-z0-9-]+\.r2\.dev/(mml|encrypt)/[0-9a-f]{16}\.(mml|txt)$')
 );
 
 -- ========== res テーブル ==========
@@ -79,9 +83,12 @@ CREATE TABLE res (
     content_text TEXT NOT NULL DEFAULT '',
     content_url TEXT NOT NULL DEFAULT '',
     content_type SMALLINT NOT NULL DEFAULT 1,
-    content_data TEXT NOT NULL DEFAULT '',
+    -- threads と同じくR2の保存先URL。本文そのものは入れない。
+    content_data_url TEXT NOT NULL DEFAULT '',
     command_result TEXT NOT NULL DEFAULT '',
-    UNIQUE (thread_id, num)  -- スレッド内でのレス番号の一意性を保証
+    UNIQUE (thread_id, num),  -- スレッド内でのレス番号の一意性を保証
+    CONSTRAINT res_content_data_url_format
+        CHECK (content_data_url = '' OR content_data_url ~ '^https://[a-z0-9-]+\.r2\.dev/(mml|encrypt)/[0-9a-f]{16}\.(mml|txt)$')
 );
 
 -- threads 一覧（板 + 論理削除）

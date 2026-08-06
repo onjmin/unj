@@ -84,7 +84,7 @@ export default ({ socket }: { socket: Socket }) => {
 				contentTextCache.set(threadId, threadRecord.content_text);
 				contentUrlCache.set(threadId, threadRecord.content_url);
 				contentTypeCache.set(threadId, threadRecord.content_type);
-				contentDataCache.set(threadId, threadRecord.content_data);
+				contentDataCache.set(threadId, threadRecord.content_data_url);
 				// メタ情報
 				createdAtCache.set(threadId, new Date(threadRecord.created_at));
 				userIdCache.set(threadId, threadRecord.user_id);
@@ -156,7 +156,7 @@ export default ({ socket }: { socket: Socket }) => {
 							contentText: record.content_text,
 							contentUrl: record.content_url,
 							contentType: record.content_type,
-							contentData: record.content_data,
+							contentData: record.content_data_url,
 							commandResult: record.command_result,
 							// メタ情報
 							num: record.num,
@@ -203,7 +203,7 @@ export default ({ socket }: { socket: Socket }) => {
 					contentText: record.content_text,
 					contentUrl: record.content_url,
 					contentType: record.content_type,
-					contentData: record.content_data,
+					contentData: record.content_data_url,
 					commandResult: record.command_result,
 					// メタ情報
 					num: record.num,

@@ -1,7 +1,10 @@
 <script lang="ts">
     import { Key } from "@lucide/svelte";
     import { decrypt } from "../mylib/aes-gcm.js";
+    import { fetchTextCloudflareR2 } from "../mylib/cloudflare-r2.js";
 
+    // contentData はR2のURL。暗号文本体はレス一覧には載らないので、
+    // 実際に復号するときだけ取りに行く（押すまで1バイトも運ばない）。
     let { contentData = $bindable("") }: { contentData: string } = $props();
 
     let passwordInput: string = $state("");
@@ -21,7 +24,8 @@
         isError = false;
 
         try {
-            decryptedText = await decrypt(contentData, passwordInput);
+            const cipherText = await fetchTextCloudflareR2(contentData);
+            decryptedText = await decrypt(cipherText, passwordInput);
             passwordInput = "";
         } catch (error) {
             console.error(

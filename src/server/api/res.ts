@@ -219,7 +219,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 						"content_text",
 						"content_url",
 						"content_type",
-						"content_data",
+						"content_data_url",
 						"command_result",
 						// メタ情報
 						"is_owner",
@@ -417,7 +417,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 								contentText: record.content_text,
 								contentUrl: record.content_url,
 								contentType: record.content_type,
-								contentData: record.content_data,
+								contentData: record.content_data_url,
 								commandResult: record.command_result,
 								// メタ情報
 								num: record.num,

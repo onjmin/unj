@@ -85,7 +85,7 @@ export default (router: Router, io: Server) => {
 					"content_text",
 					"content_url",
 					"content_type",
-					"content_data",
+					"content_data_url",
 					"sage",
 					"ip",
 				].join(", ")})`,

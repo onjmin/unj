@@ -117,6 +117,46 @@ async function sha256(message: string): Promise<string> {
 	return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
+/**
+ * テキストデータ（MML・暗号文）をR2へ。
+ *
+ * MMLは encodeMml 済みでも5000文字を超えうるのでDBカラムには収まらない。
+ * 本文はここでR2に逃がし、DBにはURLだけを持たせる。
+ *
+ * nonce は毎回作り直す。これが無いと、本文がバイト単位で一致する正当な投稿
+ * （編集して元に戻した再保存、同じMMLのコピペ）が Worker のリプレイ検知で
+ * 403 になる。nonce自体が署名対象なのでリプレイ防止は効いたままになる。
+ */
+export type TextKind = "mml" | "encrypt";
+
+export const uploadTextCloudflareR2 = async (kind: TextKind, text: string) => {
+	const nonce = crypto.randomUUID().replace(/-/g, "");
+	const requestHash = await sha256(
+		`${kind}\n${nonce}\n${text}` + VITE_CLOUDFLARE_UPLOAD_SECRET_PEPPER,
+	);
+	const params = new URLSearchParams({ kind, nonce });
+	return fetch(`${VITE_CLOUDFLARE_URL}/text?${params.toString()}`, {
+		method: "POST",
+		headers: {
+			"Content-Type": "text/plain; charset=utf-8",
+			Authorization: `Client-ID ${VITE_CLOUDFLARE_CLIENT_ID}`,
+			"X-Request-Hash": requestHash,
+		},
+		// mml/encrypt は既に圧縮済み・base64済みなので gzip は効かない。素で送る
+		body: text,
+	});
+};
+
+/**
+ * アップロード済みテキストの本文を取り戻す。
+ * R2は immutable で配っているので、2回目以降はブラウザキャッシュから返る。
+ */
+export const fetchTextCloudflareR2 = async (url: string): Promise<string> => {
+	const res = await fetch(url);
+	if (!res.ok) throw new Error(`データの取得に失敗しました (${res.status})`);
+	return res.text();
+};
+
 export const deleteCloudflareR2 = (deleteId: string, deleteHash: string) => {
 	const params = new URLSearchParams({
 		delete_id: deleteId,
@@ -141,3 +181,34 @@ export type UploadResponse = {
 export const uploadHistory = new ObjectStorage<UploadResponse[]>(
 	"cloudflareR2Response",
 );
+
+/**
+ * テキストデータの履歴。
+ * 画像の履歴（uploadHistory）とは分ける。HistoryPage はサムネイルを出すので、
+ * 画像でないものを混ぜると表示が壊れる。
+ *
+ * delete_hash は DELETE_SECRET_PEPPER がWorker側にしか無く後から再計算できない。
+ * ここに残しておかないと、上げたデータを二度と消せなくなる。
+ */
+export const dataUploadHistory = new ObjectStorage<UploadResponse[]>(
+	"cloudflareR2TextResponse",
+);
+
+/**
+ * DTM・暗号レスの本文をR2へ逃がし、contentData に入れるURLを返す。
+ * 失敗時は例外を投げる（呼び出し側で投稿を中止する）。
+ */
+export const uploadContentData = async (
+	kind: TextKind,
+	text: string,
+): Promise<string> => {
+	const res = await uploadTextCloudflareR2(kind, text);
+	if (res.status !== 200) throw new Error(await res.text());
+	const { link, delete_id, delete_hash } = (await res.json()).data;
+	dataUploadHistory.get().then((v) => {
+		const arr = v ? v : [];
+		arr.unshift({ link, delete_id, delete_hash });
+		dataUploadHistory.set(arr);
+	});
+	return link;
+};
