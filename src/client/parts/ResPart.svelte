@@ -96,7 +96,7 @@ const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
 
   $effect(() => {
     const unsub = activeHeavyId.subscribe((id) => {
-      if (showDtm && id !== myDtmHeavyId) {
+      if (showDtm && id !== null && id !== myDtmHeavyId) {
         showDtm = false;
       }
     });
