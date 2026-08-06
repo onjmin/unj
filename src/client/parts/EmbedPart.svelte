@@ -94,6 +94,16 @@
       (siteInfo?.id === 6401 && (u?.searchParams.has("map") ?? false));
   });
 
+  let thumbnailUrl = $derived.by(() => {
+    if (!url || !siteInfo) return null;
+    if (siteInfo.id === 1601 || siteInfo.id === 1616) {
+      const parsed = parseVideoEmbedYouTube(siteInfo.id === 1616 && siteInfo.href ? new URL(siteInfo.href) : url);
+      const m = parsed?.match(/\/embed\/([a-zA-Z0-9_-]{11})/);
+      return m ? `https://i.ytimg.com/vi/${m[1]}/hqdefault.jpg` : null;
+    }
+    return null;
+  });
+
   $effect(() => {
     // 埋め込みの自動展開
     // 負荷が少ないものだけを自動展開する
@@ -291,8 +301,10 @@
       description={["不正なURL、またはバグです。。", "ごめんよぉ…"]}
     />
   {:else if !embedding}
-    <List twoLine
-      ><Item
+    {#if thumbnailUrl}
+      <button 
+        class="relative block overflow-hidden cursor-pointer hover:opacity-90 transition-opacity my-2 bg-black group"
+        style="border-radius: 12px; {width ? `width: ${width}px; height: ${height}px;` : 'aspect-ratio: 16/9; max-width: 100%; width: 100%;'}"
         onclick={() => {
           if (embeddable && siteInfo) {
             tryEmbed(siteInfo);
@@ -300,24 +312,44 @@
             window.open(contentUrl, "_blank");
           }
         }}
+        aria-label="埋め込みを展開"
       >
-        <Graphic
-          class="embed-favicon-item-graphic {siteInfo.id === 3202
-            ? 'nicovideo'
-            : ''}"
-          style="background-image:url({siteInfo.favicon});"
-        />
-        <Text>
-          <PrimaryText>{siteInfo.name}</PrimaryText>
-          <SecondaryText
-            >{embeddable ? "タップして展開" : "タップして移動"}</SecondaryText
-          >
-        </Text>
-        <IconButton class="material-icons"
-          >{embeddable ? "touch_app" : "open_in_new"}</IconButton
+        <img src={thumbnailUrl} alt={siteInfo.name} class="w-full h-full object-cover" />
+        <div class="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/10 transition-colors">
+          <div class="bg-black/60 rounded-full w-16 h-16 flex items-center justify-center text-white backdrop-blur-sm">
+            <span class="material-icons text-4xl" style="margin-left: 4px;">play_arrow</span>
+          </div>
+        </div>
+      </button>
+    {:else}
+      <List twoLine
+        ><Item
+          onclick={() => {
+            if (embeddable && siteInfo) {
+              tryEmbed(siteInfo);
+            } else {
+              window.open(contentUrl, "_blank");
+            }
+          }}
         >
-      </Item>
-    </List>
+          <Graphic
+            class="embed-favicon-item-graphic {siteInfo.id === 3202
+              ? 'nicovideo'
+              : ''}"
+            style="background-image:url({siteInfo.favicon});"
+          />
+          <Text>
+            <PrimaryText>{siteInfo.name}</PrimaryText>
+            <SecondaryText
+              >{embeddable ? "タップして展開" : "タップして移動"}</SecondaryText
+            >
+          </Text>
+          <IconButton class="material-icons"
+            >{embeddable ? "touch_app" : "open_in_new"}</IconButton
+          >
+        </Item>
+      </List>
+    {/if}
   {:else}
     <div class="flex items-center">
       <IconButton class="material-icons" onclick={() => (embedding = false)}
