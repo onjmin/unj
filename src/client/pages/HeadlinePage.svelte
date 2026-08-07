@@ -323,27 +323,36 @@
                 </div>
             </div>
         {/if}
-        <div class="text-left w-full mx-auto">
+        <div class="text-left w-full mx-auto unj-thread-ul-wrap">
             <ul class="list-none p-0 m-0">
                 {#each threadList as thread}
                     {#if !ignoreList?.has(thread.ccUserId)}
                         {@const href = makePathname(
                             `/${board.key}/thread/${thread.id}/${thread.resCount > queryResultLimit ? thread.resCount - 8 : "2"}?top`,
                         )}
-                        <li>
+                        <li
+                            class="unj-thread-li"
+                            class:unj-iki-zero={thread.online === 0}
+                            class:unj-iki-normal={thread.online === 1}
+                            class:unj-iki-middle={thread.online === 2}
+                            class:unj-iki-high={thread.online >= 3}
+                        >
                             <div
                                 tabindex="0"
                                 role="button"
                                 onkeydown={() => {}}
-                                class="border border-gray-500/20 hover:bg-gray-500/10 block w-full text-left p-2 transition-colors duration-150 ease-in-out cursor-pointer"
+                                class="unj-thread-row block w-full text-left cursor-pointer"
                                 onclick={() => {
                                     navigate(href);
                                 }}
                             >
-                                <div
-                                    class="flex items-start text-xs sm:text-base"
-                                >
-                                    <div class="mr-2 shrink-0 relative top-0.5">
+                                <div class="flex items-start text-xs sm:text-sm">
+                                    <div
+                                        class="unj-thread-time shrink-0 text-center"
+                                    >
+                                        {formatTimeAgo(thread.latestResAt)}
+                                    </div>
+                                    <div class="mr-1 shrink-0 relative top-0.5">
                                         {#key thread.id}
                                             <div class="w-4 h-4">
                                                 <TwemojiPart
@@ -359,19 +368,17 @@
                                             class="flex items-start justify-between"
                                         >
                                             <div
-                                                class="grow leading-tight pr-2 wrap-break-words"
+                                                class="grow leading-tight pr-2 wrap-break-words unj-thread-title"
                                             >
-                                                <span class="inline">
-                                                    <a
-                                                        {href}
-                                                        onclick={(e) => {
-                                                            if (e.button === 0)
-                                                                e.preventDefault();
-                                                        }}
-                                                    >
-                                                        {thread.title}
-                                                    </a>
-                                                </span>
+                                                <a
+                                                    {href}
+                                                    onclick={(e) => {
+                                                        if (e.button === 0)
+                                                            e.preventDefault();
+                                                    }}
+                                                >
+                                                    {thread.title}
+                                                </a>
                                                 <span
                                                     class="inline-block shrink-0 ml-1 whitespace-nowrap"
                                                 >
@@ -379,39 +386,27 @@
                                                 </span>
                                             </div>
                                             <div
-                                                class="opacity-50 shrink-0 ml-2 mt-0"
-                                            >
-                                                {formatTimeAgo(
-                                                    thread.latestResAt,
-                                                )}
-                                            </div>
-                                        </div>
-
-                                        <div class="flex items-center mt-1">
-                                            <div
-                                                class="opacity-50 grow whitespace-nowrap overflow-hidden pr-2"
-                                            >
-                                                {#if thread.latestRes}
-                                                    <span class="truncate"
-                                                        >{thread.latestRes}</span
-                                                    >
-                                                {/if}
-                                            </div>
-
-                                            <div
-                                                class="transition-all duration-200 ease-in shrink-0"
+                                                class="unj-ninzu shrink-0 ml-2"
                                                 class:text-gray-500={thread.online ===
                                                     0}
-                                                class:text-blue-500={thread.online ===
+                                                class:text-blue-600={thread.online ===
                                                     1}
-                                                class:text-orange-500={thread.online ===
+                                                class:text-orange-600={thread.online ===
                                                     2}
-                                                class:text-red-500={thread.online >=
+                                                class:text-red-600={thread.online >=
                                                     3}
                                             >
-                                                {thread.online}人閲覧中
+                                                {thread.online}人
                                             </div>
                                         </div>
+
+                                        {#if thread.latestRes}
+                                            <div
+                                                class="unj-thread-preview opacity-60 whitespace-nowrap overflow-hidden text-ellipsis"
+                                            >
+                                                {thread.latestRes}
+                                            </div>
+                                        {/if}
                                     </div>
                                 </div>
                             </div>
@@ -439,3 +434,52 @@
 </MainPart>
 
 <FooterPart {board} />
+
+<style>
+    .unj-thread-li {
+        border-bottom: 1px solid #ddd;
+        background: #fff;
+    }
+    .unj-thread-li.unj-iki-zero {
+        background: #bababa;
+    }
+    .unj-thread-li.unj-iki-normal {
+        background: #fff;
+    }
+    .unj-thread-li.unj-iki-middle {
+        background: #ffffcc;
+    }
+    .unj-thread-li.unj-iki-high {
+        background: #ffbbbb;
+    }
+    .unj-thread-row {
+        padding: 8px;
+    }
+    .unj-thread-time {
+        width: 28px;
+        font-size: 9px;
+        color: #555;
+        line-height: 1.1;
+        padding-top: 2px;
+    }
+    .unj-thread-title {
+        font-size: 13px;
+    }
+    .unj-thread-title a {
+        text-decoration: none;
+    }
+    .unj-ninzu {
+        font-size: 9px;
+        text-align: right;
+        white-space: nowrap;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 3px;
+        padding: 1px 3px;
+        display: inline-block;
+        line-height: 1.4;
+    }
+    .unj-thread-preview {
+        font-size: 11px;
+        margin-top: 2px;
+    }
+</style>
