@@ -1,0 +1,40 @@
+services:
+  # Neon互換 PostgreSQL
+  # unj-reze の docker-compose (db-neon:5432, web-proxy:8080) と同時に起動できるよう
+  # ホスト側ポートは 5434 / 8081 にずらしてある（コンテナ内部は同じ5432/80のまま）。
+  # 使用時: NEON_DATABASE_URL=postgresql://neon:neon@db-neon:5432/unj?sslmode=disable
+  #        （wsProxyがlocalhost:8081に固定で転送するので、ホスト名"db-neon"はそのままでよい）
+  db-neon:
+    image: postgres:16-alpine
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_USER: neon
+      POSTGRES_PASSWORD: neon
+      POSTGRES_DB: unj
+    volumes:
+      - ./wiki/init.sql:/docker-entrypoint-initdb.d/01-init.sql
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U neon -d unj"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Neon用 WebSocket プロキシ (公式 wsproxy: https://github.com/neondatabase/wsproxy)
+  # src/server/mylib/pool.ts の Pool(@neondatabase/serverless) は DEV_MODE=true のとき
+  # このプロキシ経由で db-neon に直結する。
+  web-proxy:
+    image: ghcr.io/neondatabase/wsproxy:latest
+    ports:
+      - "8081:80"
+    environment:
+      LISTEN_PORT: ":80"
+      # db-neon はこのコンテナのネットワークからのみ名前解決できるためこれを許可
+      ALLOW_ADDR_REGEX: "^db-neon:5432$"
+    depends_on:
+      db-neon:
+        condition: service_healthy
+
+volumes:
+  pgdata:

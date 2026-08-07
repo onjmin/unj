@@ -36,7 +36,8 @@
 1. アカウントを新規登録する
 1. プロジェクトを作る
 1. forkしたGitHubリポジトリを選ぶ
-1. .envを設定する
+1. Dockerfile location を `docker/Dockerfile` に設定する（リポジトリ直下ではない）
+1. .envを設定する（`.env.production` の内容をKoyebの環境変数に入れる）
 1. デプロイ
 1. デプロイしたURLにアクセス
 1. [Netlify]のVITE_GLITCH_URLの環境変数を埋める

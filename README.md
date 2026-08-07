@@ -55,6 +55,7 @@ src/
 1. [pnpmをインストール](https://pnpm.io/ja/installation)
 1. このREADME.mdがある階層をvscodeで開く
 1. 拡張機能タブから推奨事項をインストールする
+1. `docker compose up -d`（db-neon(Postgres) + wsproxy を起動。Neonの契約が無くてもこれで動く）
 1. `.env.example`を複製して`.env`にリネーム
 1. このREADME.mdがある階層で`pnpm i`
 1. よく使うコマンド
@@ -64,6 +65,10 @@ src/
   - `pnpm run sync`: ビルド成果物を親の別ディレクトリに複製する。本番ビルド用。
 
 開発ビルドと検証ビルドは http://localhost:4545 から動作確認可能です。
+
+`.env` の `NEON_DATABASE_URL` はデフォルトで docker-compose の db-neon に向いています。本物の
+Neonを使う場合は、そこをNeonダッシュボードの接続文字列に差し替えるだけです
+（`src/server/mylib/pool.ts` が `DEV_MODE` で自動的にwsproxy経由/直結を切り替える）。
 
 ## デプロイの方法 / Deployment
 デプロイを行うには、複数の PaaS サービスにおいて無料アカウントを作成する必要があります。  
