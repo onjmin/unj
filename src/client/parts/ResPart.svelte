@@ -26,6 +26,7 @@
   import { makePathname } from "../mylib/env.js";
   import { ObjectStorage } from "../mylib/object-storage.js";
   import { makeUnjResNumId, scrollToResNum, scrollToEnd } from "../mylib/scroll.js";
+  import ChordPlayerPart from "./ChordPlayerPart.svelte";
   import DecryptPart from "./DecryptPart.svelte";
   import DtmPlayerPart from "./DtmPlayerPart.svelte";
   import EmbedPart from "./EmbedPart.svelte";
@@ -528,6 +529,21 @@ const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
       {#if contentType === Enum.Encrypt}
         <div class="text-red-500">※暗号レス</div>
         <DecryptPart bind:contentData />
+      {/if}
+
+      {#if contentType === Enum.Chord}
+        <div class="text-red-500 font-bold mb-1">♪コード進行</div>
+        <ChordPlayerPart chords={contentText} />
+      {/if}
+
+      <!--
+        8192(MV作成)・16384(ゲーム作成)はunj-reze側のみの機能で、unjでは再生・編集ができない。
+        content_typeとしては共有DBに乗ってくるので、非対応である旨だけ出して黙って崩れないようにする。
+      -->
+      {#if contentType === 8192 || contentType === 16384}
+        <div class="text-red-500">
+          ※{contentType === 8192 ? "MV作成" : "ゲーム作成"}機能（unjでは非対応です）
+        </div>
       {/if}
     </div>
   </div>

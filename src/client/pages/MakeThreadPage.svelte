@@ -114,6 +114,7 @@
         Enum.Audio,
         Enum.Game,
         Enum.Sns,
+        Enum.Chord,
         Enum.Oekaki,
         Enum.Dtm,
         Enum.Encrypt,
