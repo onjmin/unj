@@ -49,7 +49,7 @@
 </script>
 
 <div
-  class="h-[8svh] overflow-y-auto border border-gray-500/20 rounded-md scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100"
+  class="unj-news-box rainbow-border overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100"
 >
   <div class="px-2 py-1">
     <h2 class="text-xs leading-none font-semibold mb-1 flex items-center">
@@ -118,3 +118,41 @@
     {/if}
   </div>
 </div>
+
+<style>
+  /* おんJの#headline(お知らせ欄)相当。height:150pxで固定しスクロールさせる */
+  .unj-news-box {
+    height: 150px;
+    background: #f5f5f5;
+    border-radius: 5px;
+  }
+  /* おんJの.rainbow-border相当。conic-gradientをmaskで枠線化する */
+  .rainbow-border {
+    position: relative;
+    z-index: 0;
+  }
+  .rainbow-border::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    padding: 2px;
+    border-radius: inherit;
+    background: conic-gradient(
+      red,
+      orange,
+      yellow,
+      green,
+      aqua,
+      blue,
+      purple,
+      red
+    );
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: -1;
+  }
+</style>

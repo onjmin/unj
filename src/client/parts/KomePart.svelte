@@ -3,6 +3,7 @@
     ChevronsRightIcon,
     MessageCircleIcon,
     UserRoundIcon,
+    XIcon,
   } from "@lucide/svelte";
   import { format, isToday } from "date-fns";
   import { ja } from "date-fns/locale";
@@ -23,7 +24,7 @@
   import { queryResultLimit } from "../../common/request/schema.js";
   import { decodeEnv } from "../mylib/env.js";
 
-  let { online, room = "headline" } = $props();
+  let { online, room = "headline", onClose = null } = $props();
 
   const firebaseConfig = {
     apiKey: decodeEnv(import.meta.env.VITE_FIREBASE_API_KEY),
@@ -179,6 +180,15 @@
       <UserRoundIcon size={16} />
       <span>{online}人</span>
     </div>
+    {#if onClose}
+      <button
+        class="ml-1 text-white hover:opacity-70"
+        onclick={onClose}
+        aria-label="komeを閉じる"
+      >
+        <XIcon size={16} />
+      </button>
+    {/if}
   </div>
 
   <div class="relative">

@@ -5,17 +5,11 @@
   import { undefinedBoard } from "../../common/request/board.js";
   import { seededRandArray } from "../../common/util.js";
   import {
-    isEnabledRightMenu,
-    isMobile,
-    openLeft,
-    openRight,
     customBackgroundUrl,
     customBackgroundOpacity,
     isDarkMode,
     backgroundEmbedding,
   } from "../mylib/store.js";
-  import LeftMenuPart from "./LeftMenuPart.svelte";
-  import RightMenuPart from "./RightMenuPart.svelte";
   import { Anniversary, isAnniversary } from "../mylib/anniversary.js";
 
   let {
@@ -23,6 +17,17 @@
     children = null,
     title = "",
     menu = true,
+    online = null,
+    pv = null,
+    bgColor = "#000044",
+  }: {
+    board?: typeof undefinedBoard;
+    children?: unknown;
+    title?: string;
+    menu?: boolean;
+    online?: number | null;
+    pv?: number | null;
+    bgColor?: string;
   } = $props();
 
   let displayTitle = $state("");
@@ -30,14 +35,6 @@
     if (DEV_MODE) displayTitle = `DEV - ${title}`;
     if (STG_MODE) displayTitle = `STG - ${title}`;
     displayTitle = title;
-  });
-
-  $effect(() => {
-    $isEnabledRightMenu = children !== null;
-    if (isMobile) {
-      $openLeft = false;
-      $openRight = false;
-    }
   });
 
   let pathname1 = $state("");
@@ -144,7 +141,10 @@
   {/if}
 {/if}
 
-<header class="unj-header-part w-full bg-[#000044] text-white shadow-md">
+<header
+  class="unj-header-part w-full text-white shadow-md"
+  style="background-color:{bgColor};"
+>
   <div class="text-xs sm:text-sm max-w-6xl mx-auto px-2 py-1.5 flex items-center">
     {#if pathname1 === board.key}
       {#if pathname2 !== ""}
@@ -172,6 +172,14 @@
         <span>{displayTitle}</span>
       </h1>
     </div>
+    {#if online !== null}
+      <span
+        class="unj-viewer-badge shrink-0 inline-flex items-center whitespace-nowrap"
+      >
+        <span class="unj-viewer-dot" aria-hidden="true"></span>
+        {online}人{#if pv !== null}<span class="ml-1">{pv}pv</span>{/if}
+      </span>
+    {/if}
     <a
       href="https://unj.gitbook.io/unj"
       target="_blank"
@@ -183,28 +191,36 @@
   </div>
 </header>
 
-{#if menu}
-  <LeftMenuPart {board} open={$openLeft} />
-  {#if children !== null}
-    <RightMenuPart open={$openRight && $isEnabledRightMenu}>
-      {@render children?.()}
-    </RightMenuPart>
-  {/if}
-  <div
-    tabindex="0"
-    role="button"
-    onkeydown={() => {}}
-    class="unj-main-part-overlay {isMobile && ($openLeft || $openRight)
-      ? ''
-      : 'hidden'}"
-    onclick={() => {
-      $openLeft = false;
-      $openRight = false;
-    }}
-  ></div>
+{#if menu && children !== null}
+  <!-- 以前は横スライドのRightMenuPart(ドロワー)に入れていたが、
+       おんJに無いUIパターンのため廃止し、ヘッダー直下にインライン表示する -->
+  <div class="unj-header-extra">
+    {@render children?.()}
+  </div>
 {/if}
 
 <style>
+  .unj-header-extra {
+    text-align: center;
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+    background: #f5f5f5;
+  }
+  .unj-viewer-badge {
+    font-size: 10px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+    padding: 2px 6px;
+    margin-left: 6px;
+  }
+  .unj-viewer-dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #4caf50;
+    margin-right: 3px;
+  }
   .snow {
     position: absolute;
     inset: 0;

@@ -3,17 +3,9 @@
   import IconButton from "@smui/icon-button";
   import { navigate } from "svelte-routing";
   import { undefinedBoard } from "../../common/request/board.js";
-  import { makePathname, pathname } from "../mylib/env.js";
-  import {
-    isEnabledRightMenu,
-    isMobile,
-    openLeft,
-    openRight,
-  } from "../mylib/store.js";
+  import { makePathname } from "../mylib/env.js";
 
   let { board = undefinedBoard, menu = true } = $props();
-
-  const pathname2 = pathname().split("/")[2] ?? "";
 </script>
 
 <footer class="unj-footer-part">
@@ -23,12 +15,7 @@
         <div class="icon-container pl-2.5">
           <IconButton
             class="material-icons"
-            onclick={() => {
-              if (isMobile) {
-                $openRight = false;
-              }
-              $openLeft = !$openLeft;
-            }}>menu</IconButton
+            onclick={() => navigate(makePathname("/"))}>menu</IconButton
           >
           <div class="label-overlay">板一覧</div>
         </div>
@@ -71,35 +58,6 @@
           <div class="label-overlay">履歴</div>
         </div>
       </Section>
-      <Section align="end" toolbar>
-        <div
-          class="icon-container"
-          style="visibility:{$isEnabledRightMenu ? 'visible' : 'hidden'};"
-        >
-          <IconButton
-            class="material-icons"
-            onclick={() => {
-              if (isMobile) {
-                $openLeft = false;
-              }
-              $openRight = !$openRight;
-            }}>menu</IconButton
-          >
-          <div class="label-overlay">
-            {#if pathname2 === "terms"}
-              FAQ
-            {:else if pathname2 === "make-thread"}
-              コマンド
-            {:else if pathname2 === "config"}
-              忍法帖
-            {:else if pathname2 === "history"}
-              履歴編集
-            {:else}
-              kome
-            {/if}
-          </div>
-        </div>
-      </Section>
     </BottomAppBar>
   {:else}
     <div class="opacity-70 text-center">
@@ -118,7 +76,8 @@
     z-index: 64;
     overflow: hidden;
   }
-  .unj-footer-part :global(.smui-bottom-app-bar) {
+  .unj-footer-part :global(.smui-bottom-app-bar),
+  .unj-footer-part :global(.smui-bottom-app-bar__section) {
     background-color: #333 !important;
     color: #fff !important;
   }

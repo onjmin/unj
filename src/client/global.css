@@ -29,11 +29,28 @@
  */
 
 /* 全ページ共通のフレーム */
+/*
+ * おんJ(hayabusa)は板TOP(.header/.footer)とスレ表示(.globalHeader/.globalFooter)で
+ * レイアウトモデルが異なる。実機確認の結果:
+ *   - 板TOP   : header/footerが position:fixed のアプリシェル（中央だけスクロール）
+ *   - スレ表示 : header/footerが position:static でページ全体がスクロールする
+ * デフォルトは板TOP相当の固定シェルとし、スレ表示ページは
+ * body.unj-scroll-layout を付与して通常スクロールへ切り替える。
+ */
 body {
 	margin: 0;
+	/* 板TOP(HeadlinePage)相当のレンガ調壁紙背景。実機の body{background-image:url(ba.gif)} を再現。 */
+	background-image: url("https://image.open2ch.net/image/ba.gif");
+	background-repeat: repeat;
+	background-attachment: fixed;
 }
 html, body {
 	overflow: hidden;
+}
+/* スレ表示ページ(.globalHeader/.globalFooter相当)は壁紙なしの単色暗背景 */
+body.unj-scroll-layout {
+	background-image: none;
+	background-color: #222;
 }
 #app {
 	display: flex;
@@ -56,6 +73,20 @@ html, body {
 	margin: 0 auto;
 	max-width: 100svw;
 	min-width: 100%;
+}
+
+/* スレ表示ページ用: おんJの.globalHeader/.globalFooter同様、
+   ヘッダー/フッターをコンテンツと一緒に流す通常スクロールに切り替える */
+body.unj-scroll-layout {
+	overflow: visible;
+}
+body.unj-scroll-layout #app {
+	display: block;
+	height: auto;
+}
+body.unj-scroll-layout .unj-main-part {
+	flex: none;
+	overflow-y: visible;
 }
 
 @media (min-width: 1024px) {
@@ -167,4 +198,47 @@ html, body {
   0%   { background-position:   0% 50%; }
   50%  { background-position: 100% 50%; }
   100% { background-position:   0% 50%; }
+}
+
+/*
+ * おんJの.kome_option_button(右下固定40x40の丸ボタン)相当。
+ * 本家はデフォルトOFF(設定でON)だが、うんJではデフォルトONにする。
+ * HeadlinePage/ThreadPage共通で使うためグローバルに置く。
+ */
+.unj-kome-fab {
+	position: fixed;
+	right: 8px;
+	bottom: 66px;
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	background: #2e7d32;
+	color: #fff;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+	z-index: 90;
+}
+.unj-kome-float {
+	position: fixed;
+	right: 8px;
+	bottom: 66px;
+	width: min(320px, 90vw);
+	display: flex;
+	flex-direction: column;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+	z-index: 90;
+	border-radius: 6px;
+	overflow: hidden;
+}
+.unj-kome-float-header {
+	display: flex;
+	align-items: center;
+	background: #2e7d32;
+	color: #fff;
+	padding: 4px 8px;
+}
+.unj-kome-float-close {
+	color: #fff;
 }

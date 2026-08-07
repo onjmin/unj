@@ -11,8 +11,11 @@
         ChevronDownIcon,
         ChevronUpIcon,
         ExpandIcon,
+        MessageCircleIcon,
         Music,
     } from "@lucide/svelte";
+    import { cubicOut } from "svelte/easing";
+    import { scale } from "svelte/transition";
     import { Switch } from "@skeletonlabs/skeleton-svelte";
     import Banner, { Icon, Label } from "@smui/banner";
     import Button from "@smui/button";
@@ -78,7 +81,6 @@
         newResSoundHowl,
         replyResSoundHowl,
     } from "../mylib/sound.js";
-    import { openRight } from "../mylib/store.js";
     import {
         latestReadThreadId,
         nonceKey,
@@ -89,7 +91,6 @@
         UnjStorage,
     } from "../mylib/unj-storage.js";
     import { aiWebhook, oekakiLogger } from "../mylib/webhook.js";
-    import AccessCounterPart from "../parts/AccessCounterPart.svelte";
     import BackgroundEmbedPart from "../parts/BackgroundEmbedPart.svelte";
     import BalsPart from "../parts/BalsPart.svelte";
     import ColorWheelPart from "../parts/ColorWheelPart.svelte";
@@ -121,10 +122,24 @@
     }: { board: Board; threadId: string; resNum?: number } = $props();
 
     let openConfirm = $state(false);
+    let threadSearchQuery = $state("");
+    let highlightQuery = $state("");
+    // おんJ同様デフォルトOFF（設定でON、ここではボタンタップでON）
+    let showKome = $state(false);
+
+    // おんJのスレ表示(.globalHeader/.globalFooter)はヘッダー/フッターが
+    // 固定されず、ページ全体と一緒にスクロールする。板TOP(HeadlinePage)は
+    // 逆にheader/footer固定のアプリシェルなので、このページ滞在中だけ切り替える。
+    $effect(() => {
+        document.body.classList.add("unj-scroll-layout");
+        return () => {
+            document.body.classList.remove("unj-scroll-layout");
+        };
+    });
     let textarea: HTMLTextAreaElement | null = $state(null);
     const focus = () => {
+        textarea?.scrollIntoView({ behavior: "smooth", block: "center" });
         textarea?.focus();
-        $openRight = true;
     };
 
     let userName = $state("");
@@ -909,6 +924,8 @@
         {menu}
     />
     {#if contentType === Enum.Oekaki && !menu}
+        <ColorWheelPart />
+        <LayerPanelPart bind:activeLayer />
         <OekakiPart
             {threadId}
             bind:oekakiCollab
@@ -1066,17 +1083,25 @@
     </div>
 {/snippet}
 
-<HeaderPart {board} {title}>
-    <AccessCounterPart {online} {pv} />
-    <div>{@render form(true)}</div>
-    {#if contentType === Enum.Oekaki}
-        <br />
-        <ColorWheelPart />
-        <LayerPanelPart bind:activeLayer />
-    {/if}
-    <br />
-    <KomePart {online} room={threadId} />
-</HeaderPart>
+<HeaderPart {board} {title} {online} {pv} bgColor="#000000" />
+
+<!-- おんJのkomeは右下固定40x40の丸ボタン(.kome_option_button)で開閉するフロート式。デフォルトはおんJ同様OFF -->
+{#if showKome}
+    <div
+        class="unj-kome-float"
+        transition:scale={{ duration: 200, easing: cubicOut, start: 0.85 }}
+    >
+        <KomePart {online} room={threadId} onClose={() => (showKome = false)} />
+    </div>
+{:else}
+    <button
+        class="unj-kome-fab"
+        onclick={() => (showKome = true)}
+        transition:scale={{ duration: 200, easing: cubicOut, start: 0.85 }}
+    >
+        <MessageCircleIcon size={20} />
+    </button>
+{/if}
 
 <TermsConfirmPart {openConfirm} />
 <DressUpPart bind:open={openDressUp} bind:nowSAnimsId />
@@ -1118,6 +1143,7 @@
             createdAt={thread?.ageRes.createdAt}
             threadId={thread.id}
             resList={thread?.resList ?? []}
+                        {highlightQuery}
             ageRes={thread?.ageRes ?? null}
             backgroundEmbedControls={(siteInfo?.id === 1601 ||
                 siteInfo?.id === 1602 ||
@@ -1291,6 +1317,64 @@
         {/if}
     {/if}
     {#if thread}
+        <!-- おんJ同様のタブバー・スレ内検索 -->
+        <div class="unj-thread-tabs flex text-xs">
+            <button
+                class="unj-thread-tab"
+                onclick={() =>
+                    navigate(
+                        makePathname(`/${board.key}/thread/${threadId}/2`),
+                    )}
+            >
+                全部
+            </button>
+            <button
+                class="unj-thread-tab"
+                onclick={() =>
+                    navigate(
+                        makePathname(
+                            `/${board.key}/thread/${threadId}/${Math.max(2, (thread?.resCount ?? 0) - 30 + 1)}`,
+                        ),
+                    )}
+            >
+                最新30
+            </button>
+        </div>
+        <div class="unj-thread-search flex items-center gap-1">
+            <input
+                type="search"
+                placeholder="キーワード"
+                bind:value={threadSearchQuery}
+                onkeydown={(e) => {
+                    if (e.key !== "Enter") return;
+                    highlightQuery = threadSearchQuery.trim();
+                }}
+                class="unj-thread-search-input flex-1"
+            />
+            <button
+                class="unj-thread-search-btn shrink-0"
+                onclick={() => {
+                    highlightQuery = threadSearchQuery.trim();
+                }}
+            >
+                スレ内検索
+            </button>
+        </div>
+        {#if highlightQuery}
+            <div class="unj-thread-search-active flex items-center gap-1">
+                <span>スレ内検索：{highlightQuery}</span>
+                <button
+                    class="unj-thread-search-clear"
+                    onclick={() => {
+                        highlightQuery = "";
+                        threadSearchQuery = "";
+                    }}
+                >
+                    ×
+                </button>
+            </div>
+        {/if}
+
         <!-- 画面右端に上下スクロールボタンを固定配置 -->
         <div class="sticky top-1/2 -translate-y-1/2 ml-auto mr-2 w-fit z-8">
             <div class="h-0 w-0 relative" style="pointer-events: none;">
@@ -1405,6 +1489,7 @@
                         threadId={thread.id}
                         resList={thread.resList ?? []}
                         ageRes={thread.ageRes ?? null}
+                        {highlightQuery}
                     >
                         <div
                             class="unj-like-vote-container flex justify-end gap-2 p-2"
@@ -1479,6 +1564,7 @@
                             threadId={thread.id}
                             resList={thread.resList ?? []}
                             ageRes={thread.ageRes ?? null}
+                            {highlightQuery}
                         >
                             {#if res.num === thread.balsResNum}
                                 <BalsPart {threadId} />
@@ -1557,6 +1643,52 @@
 <FooterPart {board} />
 
 <style>
+    .unj-thread-tabs {
+        border-bottom: 1px solid #ddd;
+        background: #f0f0f0;
+    }
+    .unj-thread-tab {
+        flex: 1;
+        padding: 8px 0;
+        border-right: 1px solid #ddd;
+        background: transparent;
+        color: #333;
+    }
+    .unj-thread-tab:last-child {
+        border-right: none;
+    }
+    .unj-thread-search {
+        padding: 6px 8px;
+        border-bottom: 1px solid #ddd;
+        background: #fff;
+    }
+    .unj-thread-search-input {
+        font-size: 12px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        padding: 4px 8px;
+        min-width: 0;
+    }
+    .unj-thread-search-btn {
+        font-size: 11px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        padding: 4px 8px;
+        background: #f5f5f5;
+        color: #333;
+    }
+    .unj-thread-search-active {
+        font-size: 11px;
+        padding: 4px 8px;
+        border-bottom: 1px solid #ddd;
+        background: #fffbe0;
+        color: #333;
+    }
+    .unj-thread-search-clear {
+        font-weight: bold;
+        padding: 0 4px;
+    }
+    /* おんJの.kome_option_button(右下固定40x40)相当のフロート式kome */
     .ageRes {
         margin: 0 auto;
         max-width: 100svw;

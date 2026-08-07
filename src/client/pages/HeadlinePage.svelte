@@ -28,14 +28,20 @@
     import type { ResHistory } from "../mylib/res-history.js";
     import { goodbye, hello, ok, socket } from "../mylib/socket.js";
     import { nonceKey } from "../mylib/unj-storage.js";
-    import AccessCounterPart from "../parts/AccessCounterPart.svelte";
     import TwemojiPart from "../parts/emoji/TwemojiPart.svelte";
     import FaviconPart from "../parts/emoji/FaviconPart.svelte";
     import KomePart from "../parts/KomePart.svelte";
     import MessageBoxPart from "../parts/MessageBoxPart.svelte";
     import NewsPart from "../parts/NewsPart.svelte";
+    import HeadlinePart from "../parts/HeadlinePart.svelte";
     import CopyleftPart from "../parts/CopyleftPart.svelte";
-    import { ChevronDownIcon, ChevronUpIcon } from "@lucide/svelte";
+    import {
+        ChevronDownIcon,
+        ChevronUpIcon,
+        MessageCircleIcon,
+    } from "@lucide/svelte";
+    import { cubicOut } from "svelte/easing";
+    import { scale } from "svelte/transition";
     import { scrollToEnd, scrollToTop } from "../mylib/scroll.js";
 
     let { board }: { board: Board } = $props();
@@ -243,13 +249,28 @@
     });
 
     let searchQuery = $state("");
+    // おんJ同様デフォルトOFF（設定でON、ここではボタンタップでON）
+    let showKome = $state(false);
 </script>
 
-<HeaderPart {board} title={board.name}>
-    <AccessCounterPart {online} {pv} />
-    <br />
-    <KomePart {online} />
-</HeaderPart>
+<HeaderPart {board} title={board.name} {online} {pv} />
+
+{#if showKome}
+    <div
+        class="unj-kome-float"
+        transition:scale={{ duration: 200, easing: cubicOut, start: 0.85 }}
+    >
+        <KomePart {online} onClose={() => (showKome = false)} />
+    </div>
+{:else}
+    <button
+        class="unj-kome-fab"
+        onclick={() => (showKome = true)}
+        transition:scale={{ duration: 200, easing: cubicOut, start: 0.85 }}
+    >
+        <MessageCircleIcon size={20} />
+    </button>
+{/if}
 
 <MainPart {board}>
     <div
@@ -279,7 +300,11 @@
                 {board.description}
             </p>
         </div>
-        <NewsPart {board} />
+        <!-- おんJの#headline(リアルタイム更新のヘッドラインティッカー)相当。ニュースより上に来る -->
+        <HeadlinePart {board} />
+        <div class="mt-2">
+            <NewsPart {board} />
+        </div>
     </div>
 
     {#if !threadList}
@@ -330,86 +355,63 @@
                         {@const href = makePathname(
                             `/${board.key}/thread/${thread.id}/${thread.resCount > queryResultLimit ? thread.resCount - 8 : "2"}?top`,
                         )}
-                        <li
-                            class="unj-thread-li"
-                            class:unj-iki-zero={thread.online === 0}
-                            class:unj-iki-normal={thread.online === 1}
-                            class:unj-iki-middle={thread.online === 2}
-                            class:unj-iki-high={thread.online >= 3}
-                        >
-                            <div
-                                tabindex="0"
-                                role="button"
-                                onkeydown={() => {}}
-                                class="unj-thread-row block w-full text-left cursor-pointer"
-                                onclick={() => {
+                        <li class="unj-thread-li">
+                            <a
+                                {href}
+                                class="unj-thread-row block w-full text-left"
+                                onclick={(e) => {
+                                    if (e.button === 0) e.preventDefault();
                                     navigate(href);
                                 }}
                             >
-                                <div class="flex items-start text-xs sm:text-sm">
-                                    <div
-                                        class="unj-thread-time shrink-0 text-center"
-                                    >
-                                        {formatTimeAgo(thread.latestResAt)}
-                                    </div>
-                                    <div class="mr-1 shrink-0 relative top-0.5">
+                                <div class="unj-thread-sub">
+                                    <span class="mr-1 relative top-0.5 unj-thread-emoji">
                                         {#key thread.id}
-                                            <div class="w-4 h-4">
+                                            <span class="w-4 h-4 inline-block">
                                                 <TwemojiPart
                                                     emoji={makeEmojiByThreadId(
                                                         thread.id,
                                                     )}
                                                 />
-                                            </div>
+                                            </span>
                                         {/key}
-                                    </div>
-                                    <div class="grow min-w-0">
-                                        <div
-                                            class="flex items-start justify-between"
+                                    </span>
+                                    <span class="unj-thread-title-text"
+                                        >{thread.title}</span
+                                    >
+                                    <span class="unj-res-bubble"
+                                        >{thread.resCount}</span
+                                    >
+                                    <span class="unj-ninzu-wrap">
+                                        <span class="unj-ninzu unj-ninzu-sec"
+                                            >{formatTimeAgo(
+                                                thread.latestResAt,
+                                            )}</span
                                         >
-                                            <div
-                                                class="grow leading-tight pr-2 wrap-break-words unj-thread-title"
-                                            >
-                                                <a
-                                                    {href}
-                                                    onclick={(e) => {
-                                                        if (e.button === 0)
-                                                            e.preventDefault();
-                                                    }}
-                                                >
-                                                    {thread.title}
-                                                </a>
-                                                <span
-                                                    class="inline-block shrink-0 ml-1 whitespace-nowrap"
-                                                >
-                                                    ({thread.resCount})
-                                                </span>
-                                            </div>
-                                            <div
-                                                class="unj-ninzu shrink-0 ml-2"
-                                                class:text-gray-500={thread.online ===
-                                                    0}
-                                                class:text-blue-600={thread.online ===
-                                                    1}
-                                                class:text-orange-600={thread.online ===
-                                                    2}
-                                                class:text-red-600={thread.online >=
-                                                    3}
-                                            >
-                                                {thread.online}人
-                                            </div>
-                                        </div>
-
-                                        {#if thread.latestRes}
-                                            <div
-                                                class="unj-thread-preview opacity-60 whitespace-nowrap overflow-hidden text-ellipsis"
-                                            >
-                                                {thread.latestRes}
-                                            </div>
-                                        {/if}
-                                    </div>
+                                        <span
+                                            class="unj-ninzu unj-ninzu-nin"
+                                            class:unj-iki-zero={thread.online ===
+                                                0}
+                                            class:unj-iki-normal={thread.online ===
+                                                1}
+                                            class:unj-iki-middle={thread.online ===
+                                                2}
+                                            class:unj-iki-high={thread.online >=
+                                                3}
+                                            >{thread.online}<span
+                                                class="unj-nin-suffix">人</span
+                                            ></span
+                                        >
+                                    </span>
                                 </div>
-                            </div>
+                                {#if thread.latestRes}
+                                    <div
+                                        class="unj-thread-preview opacity-60 whitespace-nowrap overflow-hidden text-ellipsis"
+                                    >
+                                        {thread.latestRes}
+                                    </div>
+                                {/if}
+                            </a>
                         </li>
                     {/if}
                 {/each}
@@ -436,50 +438,76 @@
 <FooterPart {board} />
 
 <style>
+    /* おんJの.threadsパネル相当。レンガ壁紙(body)の上に敷く不透明パネル */
+    .unj-thread-ul-wrap {
+        background: #efefef;
+    }
     .unj-thread-li {
         border-bottom: 1px solid #ddd;
         background: #fff;
     }
-    .unj-thread-li.unj-iki-zero {
-        background: #bababa;
-    }
-    .unj-thread-li.unj-iki-normal {
-        background: #fff;
-    }
-    .unj-thread-li.unj-iki-middle {
-        background: #ffffcc;
-    }
-    .unj-thread-li.unj-iki-high {
-        background: #ffbbbb;
-    }
     .unj-thread-row {
+        display: block;
         padding: 8px;
-    }
-    .unj-thread-time {
-        width: 28px;
-        font-size: 9px;
-        color: #555;
-        line-height: 1.1;
-        padding-top: 2px;
-    }
-    .unj-thread-title {
-        font-size: 13px;
-    }
-    .unj-thread-title a {
+        color: inherit;
         text-decoration: none;
     }
-    .unj-ninzu {
-        font-size: 9px;
-        text-align: right;
-        white-space: nowrap;
-        border: 1px solid rgba(0, 0, 0, 0.1);
-        border-radius: 3px;
-        padding: 1px 3px;
+    .unj-thread-sub {
+        font-size: 13px;
+    }
+    .unj-thread-emoji {
         display: inline-block;
-        line-height: 1.4;
+    }
+    .unj-thread-title-text {
+        word-break: break-all;
+    }
+    /* レス数の吹き出し（おんJの.res-bubble） */
+    .unj-res-bubble {
+        display: inline-block;
+        margin-left: 2px;
+        font-size: 9px;
+        padding: 2px 6px;
+        border: 1px solid rgba(0, 0, 0, 0.3);
+        background: #fff;
+        color: rgba(0, 0, 50, 0.8);
+        border-radius: 6px;
+        white-space: nowrap;
+    }
+    .unj-ninzu-wrap {
+        float: right;
+        white-space: nowrap;
+    }
+    /* 経過時間・閲覧人数の丸角ピル（おんJの.ninzu） */
+    .unj-ninzu {
+        display: inline-block;
+        font-size: 8px;
+        color: #555;
+        text-align: right;
+        border: 1px solid #eee;
+        border-radius: 2px;
+        padding: 1px;
+    }
+    .unj-ninzu-nin {
+        color: #444;
+    }
+    .unj-ninzu-nin.unj-iki-zero {
+        background: #bababa;
+    }
+    .unj-ninzu-nin.unj-iki-normal {
+        background: transparent;
+    }
+    .unj-ninzu-nin.unj-iki-middle {
+        background: #ffffcc;
+    }
+    .unj-ninzu-nin.unj-iki-high {
+        background: #ffbbbb;
+    }
+    .unj-nin-suffix {
+        font-size: 5px;
     }
     .unj-thread-preview {
         font-size: 11px;
         margin-top: 2px;
+        clear: both;
     }
 </style>

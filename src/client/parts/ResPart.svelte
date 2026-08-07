@@ -89,6 +89,8 @@ const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
     // 安価展開用
     resList = [],
     ageRes = null,
+    // スレ内検索ハイライト（おんJの<HIT>相当）
+    highlightQuery = "",
   } = $props();
 
   let siteInfo: SiteInfo | null = $state(null);
@@ -201,6 +203,17 @@ const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
       ? [...parseContent(contentText)]
       : [],
   );
+
+  // スレ内検索ハイライト用: テキストをキーワードで分割する
+  const splitByHighlight = (text: string, query: string) => {
+    if (!query) return [{ value: text, hit: false }];
+    const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const re = new RegExp(`(${escaped})`, "gi");
+    return text
+      .split(re)
+      .filter((v) => v !== "")
+      .map((value) => ({ value, hit: value.toLowerCase() === query.toLowerCase() }));
+  };
   let isAllEmoji = $derived(
     parts.length > 0 &&
       parts.every(
@@ -231,9 +244,9 @@ const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
     >
       <span class="unj-num-badge">{num}</span>：
       <span
-        class={`font-bold ${
-          ccUserName.includes("★") ? "text-red-500" : "text-teal-600"
-        }`}
+        class="font-bold"
+        style={ccUserName.includes("★") ? "" : "color:#228811"}
+        class:text-red-500={ccUserName.includes("★")}
       >
         {ccUserName !== ""
           ? ccUserName
@@ -358,7 +371,13 @@ const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
               <span
                 class="inline-block align-middle m-0 wrap-anywhere max-w-full"
               >
-                {part.value}
+                {#each splitByHighlight(part.value, highlightQuery) as chunk}
+                  {#if chunk.hit}
+                    <span class="unj-hit">{chunk.value}</span>
+                  {:else}
+                    {chunk.value}
+                  {/if}
+                {/each}
               </span>
             {:else if part.type === "br"}
               <br />
@@ -558,11 +577,15 @@ const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
   .unj-res-part {
     background-color: var(--unj-res-bg, transparent);
   }
+  .unj-hit {
+    background: #ff0;
+    color: #000;
+  }
   .unj-num-badge {
     display: inline-block;
-    padding: 0 3px;
+    padding: 2px;
     border-radius: 3px;
-    background: rgba(150, 150, 150, 0.18);
-    border-left: 3px solid rgba(150, 150, 150, 0.5);
+    background: rgba(200, 200, 200, 0.2);
+    border-left: 10px solid rgba(200, 200, 200, 0.5);
   }
 </style>
