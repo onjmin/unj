@@ -144,12 +144,12 @@
   {/if}
 {/if}
 
-<header class="unj-header-part w-full bg-gray-800 text-gray-200 shadow-md">
-  <div class="text-xs sm:text-sm max-w-6xl mx-auto px-4 flex items-center">
+<header class="unj-header-part w-full bg-[#000044] text-white shadow-md">
+  <div class="text-xs sm:text-sm max-w-6xl mx-auto px-2 py-1.5 flex items-center">
     {#if pathname1 === board.key}
       {#if pathname2 !== ""}
         <button
-          class="flex items-center space-x-1 px-3 py-2 rounded bg-gray-600 text-gray-200 hover:opacity-80"
+          class="flex items-center space-x-1 px-2 py-1 rounded text-white hover:opacity-70"
           onclick={() => navigate(makePathname(`/${board.key}`))}
         >
           <ArrowLeftIcon class="w-4 h-4" />
@@ -157,7 +157,7 @@
         </button>
       {:else}
         <button
-          class="flex items-center space-x-1 px-3 py-2 rounded bg-gray-600 text-gray-200 hover:opacity-80"
+          class="flex items-center space-x-1 px-2 py-1 rounded text-white hover:opacity-70"
           onclick={() => navigate(makePathname("/"))}
         >
           <ArrowLeftIcon class="w-4 h-4" />
@@ -176,9 +176,9 @@
       href="https://unj.gitbook.io/unj"
       target="_blank"
       rel="noopener noreferrer"
-      class="flex items-center space-x-1 px-3 py-2 rounded bg-gray-600 text-gray-200 hover:opacity-80 ml-4"
+      class="flex items-center space-x-1 px-2 py-1 rounded text-white hover:opacity-70 ml-4"
     >
-      <MessageCircleQuestionMarkIcon class="w-5 h-5 text-gray-200" />
+      <MessageCircleQuestionMarkIcon class="w-5 h-5 text-white" />
     </a>
   </div>
 </header>

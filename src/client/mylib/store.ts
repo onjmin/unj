@@ -25,7 +25,7 @@ export const color = writable(unjStorage.color.value ?? oekaki.color.value);
 export const isDarkMode = writable(
 	isAnniversary([Anniversary.HALLOWEEN, Anniversary.CHRISTMAS]),
 );
-export const selectedTheme = writable(unjStorage.theme.value ?? "unity");
+export const selectedTheme = writable(unjStorage.theme.value ?? "material");
 selectedTheme.subscribe((value) => {
 	unjStorage.theme.value = String(value);
 	const v = (value ?? "").replace("-dark", "");

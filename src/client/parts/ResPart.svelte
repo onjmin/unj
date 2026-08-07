@@ -215,9 +215,9 @@ const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
   let showChristmas = $derived(isAnniversary([Anniversary.CHRISTMAS]));
 </script>
 
-<div class="bg-transparent p-2 sm:p-4 rounded-lg shadow-inner">
+<div class="unj-res-part bg-transparent px-2 py-1.5 border-b border-gray-200">
   <!-- 上段: 名前欄 -->
-  <div class="unj-font w-full text-gray-500 text-xs sm:text-sm">
+  <div class="unj-font w-full text-gray-500 text-[11px] sm:text-xs leading-normal">
     <button
       class="bg-transparent border-0 text-inherit cursor-pointer pr-0 hover:opacity-80 {sage
         ? 'underline sage'
@@ -229,7 +229,7 @@ const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
         focus();
       }}
     >
-      {num}:
+      <span class="unj-num-badge">{num}</span>：
       <span
         class={`font-bold ${
           ccUserName.includes("★") ? "text-red-500" : "text-teal-600"
@@ -248,7 +248,7 @@ const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
             )}
       </span>
     </button>
-    <span>:</span>
+    <span>：</span>
     <span>{format(createdAt, "yy/MM/dd(EEE) HH:mm:ss", { locale: ja })}</span>
 
     <span class="inline-flex items-baseline whitespace-nowrap gap-1">
@@ -350,9 +350,9 @@ const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
     {/if}
 
     <!-- 右側のコンテンツ領域 -->
-    <div class="flex flex-col flex-1 min-w-0 w-3xl max-w-full">
+    <div class="flex flex-col flex-1 min-w-0 w-3xl max-w-full pl-1">
       {#if parts.length > 0}
-        <div class="unj-font text-base leading-[1.2]">
+        <div class="unj-font text-sm leading-[1.35]">
           {#each parts as part}
             {#if part.type === "text"}
               <span
@@ -554,5 +554,15 @@ const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
 <style>
   .sage:before {
     content: "↓";
+  }
+  .unj-res-part {
+    background-color: var(--unj-res-bg, transparent);
+  }
+  .unj-num-badge {
+    display: inline-block;
+    padding: 0 3px;
+    border-radius: 3px;
+    background: rgba(150, 150, 150, 0.18);
+    border-left: 3px solid rgba(150, 150, 150, 0.5);
   }
 </style>

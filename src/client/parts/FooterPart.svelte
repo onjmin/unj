@@ -118,6 +118,13 @@
     z-index: 64;
     overflow: hidden;
   }
+  .unj-footer-part :global(.smui-bottom-app-bar) {
+    background-color: #333 !important;
+    color: #fff !important;
+  }
+  .unj-footer-part :global(.mdc-icon-button) {
+    color: #fff !important;
+  }
   .icon-container {
     position: relative;
     display: inline-block;
@@ -130,6 +137,7 @@
     font-size: 10px;
     padding: 2px 4px;
     border-radius: 4px;
+    color: #fff;
     pointer-events: none;
     white-space: nowrap;
   }

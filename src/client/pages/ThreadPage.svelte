@@ -1573,8 +1573,9 @@
     .res-list {
         display: flex;
         flex-direction: column;
-        gap: 2px;
+        gap: 0;
         text-align: left;
+        background: #fff;
     }
     .bals-warning {
         background-color: #e57373;
