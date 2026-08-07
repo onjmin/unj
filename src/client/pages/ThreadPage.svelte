@@ -94,6 +94,7 @@
     import BackgroundEmbedPart from "../parts/BackgroundEmbedPart.svelte";
     import BalsPart from "../parts/BalsPart.svelte";
     import ColorWheelPart from "../parts/ColorWheelPart.svelte";
+    import AccessCounterPart from "../parts/AccessCounterPart.svelte";
     import DressUpPart from "../parts/DressUpPart.svelte";
     import DtmPart from "../parts/DtmPart.svelte";
     import TwemojiPart from "../parts/emoji/TwemojiPart.svelte";
@@ -924,8 +925,7 @@
         {menu}
     />
     {#if contentType === Enum.Oekaki && !menu}
-        <ColorWheelPart />
-        <LayerPanelPart bind:activeLayer />
+
         <OekakiPart
             {threadId}
             bind:oekakiCollab
@@ -1083,7 +1083,15 @@
     </div>
 {/snippet}
 
-<HeaderPart {board} {title} {online} {pv} bgColor="#000000" />
+<HeaderPart {board} {title} {online} {pv} bgColor="#000000">
+    <AccessCounterPart {online} {pv} />
+    <div>{@render form(true)}</div>
+    {#if contentType === Enum.Oekaki}
+        <br />
+        <ColorWheelPart />
+        <LayerPanelPart bind:activeLayer />
+    {/if}
+</HeaderPart>
 
 <!-- おんJのkomeは右下固定40x40の丸ボタン(.kome_option_button)で開閉するフロート式。デフォルトはおんJ同様OFF -->
 {#if showKome}
@@ -1303,7 +1311,7 @@
     {/if}
 {/snippet}
 
-<MainPart {board}>
+<MainPart {board} transparent={true}>
     {#if thread === null}
         <p>スレ取得中…</p>
         {#if laaaaaaaag}
@@ -1691,23 +1699,24 @@
     /* おんJの.kome_option_button(右下固定40x40)相当のフロート式kome */
     .ageRes {
         margin: 0 auto;
-        max-width: 100svw;
-        min-width: 60svw;
+        width: 100%;
+        max-width: 100%;
     }
     .thread-header {
         text-align: left;
-        inline-size: 768px;
-        max-inline-size: 92%;
-        padding-bottom: 16px;
-        padding-left: 16px;
-        padding-right: 16px;
+        width: 100%;
+        max-width: 100%;
+        padding: 12px 10px;
+        background: #ffffff;
+        border-bottom: 1px solid #e5e7eb;
     }
     .res-list {
         display: flex;
         flex-direction: column;
         gap: 0;
         text-align: left;
-        background: #fff;
+        background: #ffffff;
+        border-top: 1px solid #e5e7eb;
     }
     .bals-warning {
         background-color: #e57373;

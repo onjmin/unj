@@ -5,11 +5,15 @@
   import { undefinedBoard } from "../../common/request/board.js";
   import { seededRandArray } from "../../common/util.js";
   import {
+    isMobile,
+    openLeft,
+    openRight,
     customBackgroundUrl,
     customBackgroundOpacity,
     isDarkMode,
     backgroundEmbedding,
   } from "../mylib/store.js";
+  import RightMenuPart from "./RightMenuPart.svelte";
   import { Anniversary, isAnniversary } from "../mylib/anniversary.js";
 
   let {
@@ -142,84 +146,103 @@
 {/if}
 
 <header
-  class="unj-header-part w-full text-white shadow-md"
-  style="background-color:{bgColor};"
+  class="unj-header-part w-full text-white shadow-md bg-[#000033]"
+  style={bgColor !== "#000044" && bgColor !== "#000033" ? `background-color:${bgColor};` : ""}
 >
-  <div class="text-xs sm:text-sm max-w-6xl mx-auto px-2 py-1.5 flex items-center">
-    {#if pathname1 === board.key}
-      {#if pathname2 !== ""}
-        <button
-          class="flex items-center space-x-1 px-2 py-1 rounded text-white hover:opacity-70"
-          onclick={() => navigate(makePathname(`/${board.key}`))}
-        >
-          <ArrowLeftIcon class="w-4 h-4" />
-          <span class="font-medium">板TOP</span>
-        </button>
+  <div class="text-xs max-w-6xl mx-auto px-2 py-2 flex items-center justify-between h-11">
+    <div class="flex items-center space-x-1 shrink-0">
+      {#if pathname1 === board.key}
+        {#if pathname2 !== ""}
+          <button
+            class="flex items-center space-x-1 px-1 py-0.5 text-white hover:opacity-80 font-bold text-sm"
+            onclick={() => navigate(makePathname(`/${board.key}`))}
+          >
+            <span class="text-base font-bold">&lt;</span>
+            <span class="text-base">⚾</span>
+          </button>
+        {:else}
+          <button
+            class="flex items-center space-x-1 px-1 py-0.5 text-white hover:opacity-80 font-bold text-sm"
+            onclick={() => navigate(makePathname("/"))}
+          >
+            <span class="text-base font-bold">&lt;</span>
+            <span class="text-base">⚾</span>
+          </button>
+        {/if}
       {:else}
-        <button
-          class="flex items-center space-x-1 px-2 py-1 rounded text-white hover:opacity-70"
-          onclick={() => navigate(makePathname("/"))}
-        >
-          <ArrowLeftIcon class="w-4 h-4" />
-          <span class="font-medium">板一覧</span>
-        </button>
+        <span class="text-base">⚾</span>
       {/if}
-    {:else}
-      <!-- empty -->
-    {/if}
-    <div class="flex-1 text-center">
-      <h1 class="sm:text-lg font-bold inline-flex items-center space-x-2">
-        <span>{displayTitle}</span>
+      <h1 class="text-sm sm:text-base font-bold truncate ml-1 text-white">
+        {displayTitle || "なんでも実況(ジュピター)"}
       </h1>
     </div>
-    {#if online !== null}
-      <span
-        class="unj-viewer-badge shrink-0 inline-flex items-center whitespace-nowrap"
+
+    <div class="flex items-center space-x-1 shrink-0">
+      <button
+        onclick={() => navigate(makePathname(`/${board.key}/config`))}
+        class="flex items-center space-x-1 px-1.5 py-0.5 text-white hover:opacity-80 text-xs"
+        title="設定"
       >
-        <span class="unj-viewer-dot" aria-hidden="true"></span>
-        {online}人{#if pv !== null}<span class="ml-1">{pv}pv</span>{/if}
-      </span>
-    {/if}
-    <a
-      href="https://unj.gitbook.io/unj"
-      target="_blank"
-      rel="noopener noreferrer"
-      class="flex items-center space-x-1 px-2 py-1 rounded text-white hover:opacity-70 ml-4"
-    >
-      <MessageCircleQuestionMarkIcon class="w-5 h-5 text-white" />
-    </a>
+        <span class="text-base">⚙️</span>
+        <span class="font-bold underline text-xs">設定</span>
+      </button>
+    </div>
   </div>
 </header>
 
-{#if menu && children !== null}
-  <!-- 以前は横スライドのRightMenuPart(ドロワー)に入れていたが、
-       おんJに無いUIパターンのため廃止し、ヘッダー直下にインライン表示する -->
-  <div class="unj-header-extra">
-    {@render children?.()}
-  </div>
+{#if menu}
+  {#if children !== null}
+    <RightMenuPart open={$openRight}>
+      {@render children?.()}
+    </RightMenuPart>
+    {#if !$openRight}
+      <button
+        class="unj-right-menu-fab"
+        onclick={() => ($openRight = true)}
+        title="メニューを開く"
+      >
+        <span class="text-xl">✎</span>
+      </button>
+    {/if}
+  {/if}
+  <div
+    tabindex="0"
+    role="button"
+    onkeydown={() => {}}
+    class="unj-main-part-overlay {isMobile && ($openLeft || $openRight)
+      ? ''
+      : 'hidden'}"
+    onclick={() => {
+      $openLeft = false;
+      $openRight = false;
+    }}
+  ></div>
 {/if}
 
 <style>
-  .unj-header-extra {
-    text-align: center;
-    padding: 8px;
-    border-bottom: 1px solid #ddd;
-    background: #f5f5f5;
-  }
-  .unj-viewer-badge {
-    font-size: 10px;
-    background: rgba(255, 255, 255, 0.15);
-    border-radius: 10px;
-    padding: 2px 6px;
-    margin-left: 6px;
-  }
-  .unj-viewer-dot {
-    display: inline-block;
-    width: 6px;
-    height: 6px;
+  .unj-right-menu-fab {
+    position: fixed;
+    right: 8px;
+    bottom: 120px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
-    background: #4caf50;
-    margin-right: 3px;
+    background: #1976d2;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+    z-index: 90;
+  }
+  .unj-main-part-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 60;
   }
   .snow {
     position: absolute;

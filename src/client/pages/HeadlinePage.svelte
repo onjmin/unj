@@ -272,39 +272,72 @@
     </button>
 {/if}
 
-<MainPart {board}>
-    <div
-        class={`${board.banner ? "" : "aspect-49/12"} w-[490px] max-w-full mx-auto border border-gray-500/40 flex items-center justify-center`}
-    >
+<MainPart {board} transparent={true}>
+    <div class="px-2 pt-2 pb-1">
+        <!-- バナー表示 (設定があれば画像、なければデフォルト表示) -->
         {#if board.banner}
-            <img
-                src={board.banner}
-                alt={`${board.name} バナー`}
-                class="w-full h-full object-cover"
-            />
+            <div class="mb-2 max-w-full text-center bg-white border border-gray-300 p-1 rounded-md shadow-sm">
+                <img src={board.banner} alt="板バナー" class="max-w-full h-auto inline-block rounded" />
+            </div>
         {:else}
-            <span class="opacity-50 text-lg font-semibold"
-                >バナーはまだぬい</span
-            >
+            <div class="relative bg-white border border-gray-300 rounded-md p-3 text-center shadow-sm max-w-full">
+                <button class="absolute top-1 right-2 text-gray-400 hover:text-gray-600 font-bold text-sm">✖</button>
+                <div class="flex items-center justify-center space-x-2">
+                    <span class="text-3xl font-bold text-gray-700">o'ω'n</span>
+                    <div>
+                        <h1 class="text-xl font-bold tracking-tight text-orange-600">なんでも実況J</h1>
+                        <p class="text-xs text-gray-500 font-medium">おーぷん2ch</p>
+                    </div>
+                </div>
+            </div>
         {/if}
-    </div>
 
-    <div class="p-1 sm:p-2">
-        <div class="text-left sm:mb-2">
-            <h1
-                class="opacity-40 text-base sm:text-2xl font-semibold leading-tight"
+        <!-- 4連スクウェアツールバー -->
+        <div class="flex items-center justify-between gap-1.5 my-2">
+            <button
+                onclick={() => scrollToTop()}
+                class="flex-1 bg-white hover:bg-gray-100 text-gray-700 font-bold py-1.5 px-2 border border-gray-300 rounded shadow-xs text-xs flex items-center justify-center"
+                title="トップへ"
             >
-                {board.name}
-            </h1>
-            <p class="text-xs leading-snug">
-                {board.description}
-            </p>
+                ▲
+            </button>
+            <button
+                onclick={() => (showKome = !showKome)}
+                class="flex-1 bg-white hover:bg-gray-100 text-gray-700 font-bold py-1.5 px-2 border border-gray-300 rounded shadow-xs text-xs flex items-center justify-center"
+                title="コメント表示"
+            >
+                💬
+            </button>
+            <button
+                class="flex-1 bg-white hover:bg-gray-100 text-gray-700 font-bold py-1.5 px-2 border border-gray-300 rounded shadow-xs text-xs flex items-center justify-center"
+                title="一時停止"
+            >
+                ❚❚
+            </button>
+            <button
+                onclick={() => navigate(makePathname(`/${board.key}/search`))}
+                class="flex-1 bg-white hover:bg-gray-100 text-gray-700 font-bold py-1.5 px-2 border border-gray-300 rounded shadow-xs text-xs flex items-center justify-center"
+                title="検索"
+            >
+                🔍
+            </button>
         </div>
-        <!-- おんJの#headline(リアルタイム更新のヘッドラインティッカー)相当。ニュースより上に来る -->
+
+        <!-- ヘッドライン検索入力欄 -->
+        <div class="mb-2">
+            <input
+                type="text"
+                placeholder="ヘッドライン検索"
+                bind:value={searchQuery}
+                class="w-full bg-white border border-gray-300 rounded px-2.5 py-1.5 text-xs text-gray-800 placeholder-gray-400 focus:outline-none focus:border-blue-500 shadow-inner"
+            />
+        </div>
+
+        <!-- ヘッドラインティッカー -->
         <HeadlinePart {board} />
-        <div class="mt-2">
-            <NewsPart {board} />
-        </div>
+
+        <!-- ニュースカード -->
+        <NewsPart {board} />
     </div>
 
     {#if !threadList}
@@ -440,74 +473,102 @@
 <style>
     /* おんJの.threadsパネル相当。レンガ壁紙(body)の上に敷く不透明パネル */
     .unj-thread-ul-wrap {
-        background: #efefef;
+        background: #ffffff;
+        border-top: 1px solid #e2e8f0;
+        border-bottom: 1px solid #e2e8f0;
     }
     .unj-thread-li {
-        border-bottom: 1px solid #ddd;
-        background: #fff;
+        border-bottom: 1px solid #e5e7eb;
+        background: #ffffff;
+        transition: background-color 0.15s ease;
+    }
+    .unj-thread-li:hover, .unj-thread-li:active {
+        background: #f8fafc;
     }
     .unj-thread-row {
         display: block;
-        padding: 8px;
+        padding: 8px 10px;
         color: inherit;
         text-decoration: none;
     }
     .unj-thread-sub {
-        font-size: 13px;
+        font-size: 13.5px;
+        line-height: 1.4;
     }
     .unj-thread-emoji {
         display: inline-block;
+        vertical-align: middle;
     }
     .unj-thread-title-text {
         word-break: break-all;
+        color: #0000ee;
+        font-weight: 600;
     }
     /* レス数の吹き出し（おんJの.res-bubble） */
     .unj-res-bubble {
         display: inline-block;
-        margin-left: 2px;
-        font-size: 9px;
-        padding: 2px 6px;
-        border: 1px solid rgba(0, 0, 0, 0.3);
-        background: #fff;
-        color: rgba(0, 0, 50, 0.8);
-        border-radius: 6px;
+        margin-left: 3px;
+        font-size: 10px;
+        font-weight: bold;
+        padding: 1px 5px;
+        border: 1px solid #cbd5e1;
+        background: #f8fafc;
+        color: #0f172a;
+        border-radius: 4px;
         white-space: nowrap;
+        vertical-align: middle;
     }
     .unj-ninzu-wrap {
         float: right;
         white-space: nowrap;
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+        line-height: 1;
     }
     /* 経過時間・閲覧人数の丸角ピル（おんJの.ninzu） */
     .unj-ninzu {
         display: inline-block;
-        font-size: 8px;
-        color: #555;
-        text-align: right;
-        border: 1px solid #eee;
-        border-radius: 2px;
-        padding: 1px;
+        font-size: 9px;
+        text-align: center;
+        border-radius: 3px;
+        padding: 1px 4px;
+        line-height: 1.2;
+    }
+    .unj-ninzu-sec {
+        color: #64748b;
+        background: #f1f5f9;
+        border: 1px solid #e2e8f0;
     }
     .unj-ninzu-nin {
-        color: #444;
+        font-weight: bold;
+        border: 1px solid #e2e8f0;
     }
     .unj-ninzu-nin.unj-iki-zero {
-        background: #bababa;
+        background: #cbd5e1;
+        color: #475569;
     }
     .unj-ninzu-nin.unj-iki-normal {
-        background: transparent;
+        background: #ffffff;
+        color: #334155;
     }
     .unj-ninzu-nin.unj-iki-middle {
-        background: #ffffcc;
+        background: #fef08a;
+        color: #854d0e;
     }
     .unj-ninzu-nin.unj-iki-high {
-        background: #ffbbbb;
+        background: #fca5a5;
+        color: #991b1b;
     }
     .unj-nin-suffix {
-        font-size: 5px;
+        font-size: 7px;
+        margin-left: 1px;
     }
     .unj-thread-preview {
-        font-size: 11px;
-        margin-top: 2px;
+        font-size: 11.5px;
+        color: #4b5563;
+        margin-top: 3px;
         clear: both;
+        padding-left: 2px;
     }
 </style>

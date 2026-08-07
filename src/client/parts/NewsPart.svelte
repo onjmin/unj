@@ -46,113 +46,89 @@
     }, 4096);
     return () => clearTimeout(id);
   });
+
+  let currentPage = $state(1);
+  const itemsPerPage = 2;
+  let currentItems = $derived(
+    items ? items.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage) : []
+  );
+  let totalPages = $derived(items ? Math.ceil(items.length / itemsPerPage) : 0);
 </script>
 
-<div
-  class="unj-news-box rainbow-border overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100"
->
-  <div class="px-2 py-1">
-    <h2 class="text-xs leading-none font-semibold mb-1 flex items-center">
+<div class="mt-2.5 mb-3 bg-white border-2 border-[#ffcc00] rounded-xl p-2.5 text-xs text-gray-800 shadow-xs relative">
+  <div class="flex items-center justify-between mb-1 border-b border-gray-200 pb-1">
+    <h2 class="text-xs font-bold text-gray-700 flex items-center m-0">
       <MegaphoneIcon size={12} class="mr-1 shrink-0" />
       ニュース
     </h2>
-    {#if error}
-      <MessageBoxPart
-        title="エラー発生"
-        description={[
-          "ニュース取得失敗。。",
-          "管理人に言ったら直してくれるかも。",
-        ]}
-      />
-    {:else if items === null}
-      <p class="text-gray-500">ニュース取得中…</p>
-      {#if laaaaaaaag}
-        <MessageBoxPart
-          title="まだ終わらない？"
-          description={["サーバーが落ちてるかも。。", "ページ更新してみてね。"]}
-        />
-      {/if}
-    {:else if items}
-      <div class="w-full">
-        <ul class="list-none p-0 m-0">
-          {#each items as item}
-            <li class="odd:bg-gray-500/10">
-              <div class="flex items-center px-2 py-1">
-                <div class="shrink-0 text-xs text-gray-500 mr-3 w-16">
-                  {formatDateYMDCompact(item.published)}
-                </div>
-                <div class="hidden md:flex shrink-0 mr-4 space-x-2">
-                  {#if item.labels?.length}
-                    {@const chip = item.labels.at(0) ?? ""}
-                    {@const IconComponent = getLabelIconComponent(chip)}
-                    <span
-                      class="inline-flex items-center h-5 text-xs font-medium px-2 py-0.5 rounded-full border border-gray-500/40 text-gray-500 whitespace-nowrap"
-                    >
-                      {#if IconComponent}
-                        <IconComponent
-                          size={12}
-                          class="mr-1 text-gray-500 shrink-0"
-                        />
-                      {/if}
-                      <span class="text-xs text-gray-500">
-                        {chip}
-                      </span>
-                    </span>
-                  {/if}
-                </div>
-                <div
-                  class="flex-1 overflow-hidden whitespace-nowrap text-ellipsis text-left text-xs"
-                >
-                  <Link
-                    to={makePathname(`/${board.key}/news/${item.id}`)}
-                    class="block truncate"
-                  >
-                    {item.title}
-                  </Link>
-                </div>
-              </div>
-            </li>
-          {/each}
-        </ul>
+    {#if totalPages > 1}
+      <div class="flex items-center space-x-2 text-[10px]">
+        <button
+          class="px-2 py-0.5 bg-gray-100 rounded disabled:opacity-50 border border-gray-300"
+          onclick={() => currentPage--}
+          disabled={currentPage === 1}
+        >
+          前へ
+        </button>
+        <span>{currentPage} / {totalPages}</span>
+        <button
+          class="px-2 py-0.5 bg-gray-100 rounded disabled:opacity-50 border border-gray-300"
+          onclick={() => currentPage++}
+          disabled={currentPage === totalPages}
+        >
+          次へ
+        </button>
       </div>
     {/if}
   </div>
+
+  {#if error}
+    <MessageBoxPart
+      title="エラー発生"
+      description={[
+        "ニュース取得失敗。。",
+        "管理人に言ったら直してくれるかも。",
+      ]}
+    />
+  {:else if items === null}
+    <p class="text-gray-500 py-1">ニュース取得中…</p>
+    {#if laaaaaaaag}
+      <MessageBoxPart
+        title="まだ終わらない？"
+        description={["サーバーが落ちてるかも。。", "ページ更新してみてね。"]}
+      />
+    {/if}
+  {:else if items}
+    <ul class="list-none p-0 m-0 space-y-1.5 mt-1.5">
+      {#each currentItems as item}
+        <li>
+          <span class="font-bold text-gray-700">【{formatDateYMDCompact(item.published)}】</span><br />
+          <span class="ml-1 text-gray-800 flex items-start">
+            <span class="shrink-0">・</span>
+            <Link
+              to={makePathname(`/${board.key}/news/${item.id}`)}
+              class="text-purple-700 hover:underline break-words"
+            >
+              {item.title}
+            </Link>
+          </span>
+          {#if item.labels?.length}
+            {@const chip = item.labels.at(0) ?? ""}
+            {@const IconComponent = getLabelIconComponent(chip)}
+            <div class="ml-3 mt-0.5">
+              <span class="inline-flex items-center h-4 text-[9px] font-medium px-1.5 py-0.5 rounded border border-gray-300 text-gray-500">
+                {#if IconComponent}
+                  <IconComponent size={10} class="mr-1 shrink-0" />
+                {/if}
+                {chip}
+              </span>
+            </div>
+          {/if}
+        </li>
+      {/each}
+    </ul>
+  {/if}
 </div>
 
 <style>
-  /* おんJの#headline(お知らせ欄)相当。height:150pxで固定しスクロールさせる */
-  .unj-news-box {
-    height: 150px;
-    background: #f5f5f5;
-    border-radius: 5px;
-  }
-  /* おんJの.rainbow-border相当。conic-gradientをmaskで枠線化する */
-  .rainbow-border {
-    position: relative;
-    z-index: 0;
-  }
-  .rainbow-border::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    padding: 2px;
-    border-radius: inherit;
-    background: conic-gradient(
-      red,
-      orange,
-      yellow,
-      green,
-      aqua,
-      blue,
-      purple,
-      red
-    );
-    -webkit-mask:
-      linear-gradient(#fff 0 0) content-box,
-      linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
-    z-index: -1;
-  }
 </style>
