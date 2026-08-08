@@ -364,7 +364,7 @@ const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
 
     <!-- 右側のコンテンツ領域 -->
     <div class="flex flex-col flex-1 min-w-0 w-3xl max-w-full pl-1">
-      {#if parts.length > 0}
+      {#if parts.length > 0 && contentType !== Enum.Chord}
         <div class="unj-font text-sm leading-[1.35]">
           {#each parts as part}
             {#if part.type === "text"}
@@ -472,16 +472,18 @@ const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
       {/if}
 
       {#if contentUrl !== ""}
-        <div class="mb-0.5 wrap-anywhere">
-          <a
-            href={siteInfo?.id === 1616 ? siteInfo.href : contentUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="cursor-pointer"
-          >
-            {contentUrl}
-          </a>
-        </div>
+        {#if contentType === Enum.Url}
+          <div class="mb-0.5 wrap-anywhere">
+            <a
+              href={siteInfo?.id === 1616 ? siteInfo.href : contentUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="cursor-pointer"
+            >
+              {contentUrl}
+            </a>
+          </div>
+        {/if}
 
         {#key contentUrl}
           <div class="mb-0.5">
