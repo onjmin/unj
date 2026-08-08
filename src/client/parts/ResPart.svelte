@@ -15,6 +15,7 @@
     Enum,
     ankaRegex,
     contentTemplateMap,
+    extractChordsFromContent,
     urlRegex,
   } from "../../common/request/content-schema.js";
   import {
@@ -198,9 +199,17 @@ const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
     }
   };
 
+  // コード進行は「#コード進行」マーカーより前＝コメント／後＝コード進行データの1本管理。
+  // 表示ではコメント部分だけを通常本文として扱い、コード進行部分はChordPlayerPartに渡す。
+  let chordParsed = $derived(
+    contentType === Enum.Chord ? extractChordsFromContent(contentText) : null,
+  );
+  let displayText = $derived(
+    chordParsed ? chordParsed.comment : contentText,
+  );
   let parts = $derived(
-    contentText !== ""
-      ? [...parseContent(contentText)]
+    displayText !== ""
+      ? [...parseContent(displayText)]
       : [],
   );
 
@@ -364,7 +373,7 @@ const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
 
     <!-- 右側のコンテンツ領域 -->
     <div class="flex flex-col flex-1 min-w-0 w-3xl max-w-full pl-1">
-      {#if parts.length > 0 && contentType !== Enum.Chord}
+      {#if parts.length > 0}
         <div class="unj-font text-sm leading-[1.35]">
           {#each parts as part}
             {#if part.type === "text"}
@@ -417,9 +426,15 @@ const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
                   }
                 }}
               >
-                {ankaRes?.contentText
-                  ? `> ${ankaRes.contentText}`
-                  : `>>${part.value}`}
+                {#if ankaRes?.contentText}
+                  {@const ankaParsed =
+                    ankaRes.contentType === Enum.Chord
+                      ? extractChordsFromContent(ankaRes.contentText)
+                      : null}
+                  {`> ${ankaParsed ? ankaParsed.comment || ankaParsed.chords : ankaRes.contentText}`}
+                {:else}
+                  {`>>${part.value}`}
+                {/if}
               </span>
             {:else if part.type === "customEmoji"}
               <CustomEmojiPart
@@ -552,9 +567,9 @@ const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
         <DecryptPart bind:contentData />
       {/if}
 
-      {#if contentType === Enum.Chord}
+      {#if contentType === Enum.Chord && chordParsed}
         <div class="text-red-500 font-bold mb-1">♪コード進行</div>
-        <ChordPlayerPart chords={contentText} />
+        <ChordPlayerPart chords={chordParsed.chords} />
       {/if}
 
       <!--

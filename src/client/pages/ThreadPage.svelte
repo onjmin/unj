@@ -37,8 +37,10 @@
     } from "../../common/request/board.js";
     import {
         ankaRegex,
+        CHORD_MARKER,
         contentSchemaMap,
         contentTemplateMap,
+        detectContentTypeFromText,
         Enum,
         makeLatestResPreview,
     } from "../../common/request/content-schema.js";
@@ -711,10 +713,36 @@
             }
         }
 
+        // 本文に「#コード進行」マーカーがあれば、そのスレでコード進行投稿が
+        // 許可されている場合に限り自動でcontentTypeを切り替える。
+        // 専用の選択UIは無く、マーカーの有無だけで判定する（unj-rezeと同じ方式）。
+        if (
+            contentType === Enum.Text &&
+            contentText.includes(CHORD_MARKER) &&
+            (thread.contentTypesBitmask & Enum.Chord) !== 0
+        ) {
+            contentType = Enum.Chord;
+        }
+
+        // 本文中のURLから種別を自動判定する。「画像URL用」「動画URL用」等を
+        // 手動で選ばなくても、本文にURLを貼るだけで埋め込み表示になる。
+        // 手動で種別・contentUrlを既に決めている投稿（お絵描き・画像うｐ等）には触らない。
+        if (contentType === Enum.Text && !contentUrl) {
+            const detected = detectContentTypeFromText(contentText);
+            if (
+                detected &&
+                (thread.contentTypesBitmask & detected.contentType) !== 0
+            ) {
+                contentType = detected.contentType;
+                contentUrl = detected.contentUrl;
+            }
+        }
+
         if (
             !contentUrl &&
             contentType !== Enum.Dtm &&
-            contentType !== Enum.Encrypt
+            contentType !== Enum.Encrypt &&
+            contentType !== Enum.Chord
         ) {
             contentType = Enum.Text;
         }

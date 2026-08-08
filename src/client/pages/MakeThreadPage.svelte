@@ -15,11 +15,13 @@
     import * as v from "valibot";
     import type { Board } from "../../common/request/board.js";
     import {
+        CHORD_MARKER,
+        detectContentTypeFromText,
         Enum,
         type EnumType,
         ccOptions,
         contentSchemaMap,
-        contentTypeOptions,
+        contentTypesBitmaskOptions,
     } from "../../common/request/content-schema.js";
     import { MakeThreadSchema, myConfig } from "../../common/request/schema.js";
     import type { HeadlineThread } from "../../common/response/schema.js";
@@ -313,10 +315,30 @@
             }
         }
 
+        // 本文に「#コード進行」マーカーがあれば、自分で選んだcontentTypesBitmaskに
+        // コード進行が含まれている場合に限り自動でcontentTypeを切り替える。
+        if (
+            contentType === Enum.Text &&
+            contentText.includes(CHORD_MARKER) &&
+            contentTypesBitmask.includes(Enum.Chord)
+        ) {
+            contentType = Enum.Chord;
+        }
+
+        // 本文中のURLから種別を自動判定する（ThreadPageの投稿フォームと同じ仕組み）。
+        if (contentType === Enum.Text && !contentUrl) {
+            const detected = detectContentTypeFromText(contentText);
+            if (detected && contentTypesBitmask.includes(detected.contentType)) {
+                contentType = detected.contentType;
+                contentUrl = detected.contentUrl;
+            }
+        }
+
         if (
             !contentUrl &&
             contentType !== Enum.Dtm &&
-            contentType !== Enum.Encrypt
+            contentType !== Enum.Encrypt &&
+            contentType !== Enum.Chord
         ) {
             contentType = Enum.Text;
         }
@@ -452,7 +474,7 @@
                     <div class="p-4 border-t border-gray-200">
                         <p class="opacity-50 text-sm mb-2">!nopic</p>
                         <div class="space-y-2">
-                            {#each contentTypeOptions as v}
+                            {#each contentTypesBitmaskOptions as v}
                                 <div class="flex items-center justify-between">
                                     <label
                                         for="contentType-{v.bit}"
