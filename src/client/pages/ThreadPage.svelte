@@ -13,9 +13,11 @@
         ExpandIcon,
         MessageCircleIcon,
         Music,
+        SquarePenIcon,
+        XIcon,
     } from "@lucide/svelte";
     import { cubicOut } from "svelte/easing";
-    import { scale } from "svelte/transition";
+    import { fade, fly, scale } from "svelte/transition";
     import { Switch } from "@skeletonlabs/skeleton-svelte";
     import Banner, { Icon, Label } from "@smui/banner";
     import Button from "@smui/button";
@@ -138,9 +140,30 @@
         };
     });
     let textarea: HTMLTextAreaElement | null = $state(null);
+    // ページ最下部の投稿フォームはそのまま残しつつ、どこまでスレを読み進めていても
+    // その場で投稿できるポップアップ(投稿モーダル)を追加。安価(>>N)クリック時は
+    // 従来「最下部までスクロールしてフォーカス」だったが、それ自体が読んでいた場所を
+    // 見失う原因だったため、ポップアップを開く形に変更する。
+    let openPostModal = $state(false);
+    $effect(() => {
+        if (!openPostModal) return;
+        const handleKeydown = (e: KeyboardEvent) => {
+            if (e.key === "Escape" && !emitting) {
+                openPostModal = false;
+            }
+        };
+        window.addEventListener("keydown", handleKeydown);
+        return () => window.removeEventListener("keydown", handleKeydown);
+    });
+
     const focus = () => {
-        textarea?.scrollIntoView({ behavior: "smooth", block: "center" });
-        textarea?.focus();
+        openPostModal = true;
+        // ポップアップ側のResFormPartがマウントされて bind:textarea が
+        // 差し替わるのを待ってからフォーカスする。
+        setTimeout(() => {
+            textarea?.scrollIntoView({ behavior: "smooth", block: "center" });
+            textarea?.focus();
+        }, 50);
     };
 
     let userName = $state("");
@@ -386,6 +409,7 @@
         newResSoundHowl?.play();
         if (data.yours) {
             ok();
+            openPostModal = false;
             contentTextUnjStorage.value = null;
             contentText = "";
             contentUrl = "";
@@ -1171,6 +1195,137 @@
     </button>
 {/if}
 
+<!--
+    最下部の投稿フォーム(form snippet)はそのまま残す。長いスレを読んでいる
+    途中でも都度スクロールせずに投稿できるよう、同じ状態(userName/contentText等)
+    を共有する軽量な投稿ポップアップを追加する。
+    お絵描き(OekakiPart)・DTMなど1インスタンスしか許されない編集UIは
+    form snippet側(下部フォーム)にしかないため、ここでは isExpand={false} で
+    本文形式セレクトごと隠し、二重マウントによる競合を避けている。
+-->
+<button
+    class="unj-post-fab"
+    onclick={() => (openPostModal = true)}
+    title="投稿する"
+    aria-label="投稿する"
+>
+    <SquarePenIcon size={20} />
+</button>
+
+{#if openPostModal}
+    <div
+        class="unj-post-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-label="返信を投稿"
+        tabindex="-1"
+        transition:fade={{ duration: 150 }}
+        onclick={(e) => {
+            if (e.target === e.currentTarget && !emitting) {
+                openPostModal = false;
+            }
+        }}
+        onkeydown={(e) => {
+            if (e.key === "Escape" && !emitting) {
+                openPostModal = false;
+            }
+        }}
+    >
+        <div
+            class="unj-post-modal-content"
+            transition:fly={{ y: 40, duration: 200, easing: cubicOut }}
+        >
+            <div class="unj-post-modal-header">
+                <span class="unj-post-modal-title">返信を投稿</span>
+                <button
+                    class="unj-post-modal-close"
+                    onclick={() => (openPostModal = false)}
+                    aria-label="閉じる"
+                >
+                    <XIcon size={18} />
+                </button>
+            </div>
+            <div class="unj-post-modal-body">
+                <ResFormPart
+                    {board}
+                    disabled={emitting}
+                    bind:textarea
+                    bind:userName
+                    bind:userAvatar
+                    bind:password
+                    bind:contentText
+                    bind:contentUrl
+                    bind:contentType
+                    bind:contentData
+                    bind:encryptPlaintext
+                    contentTypesBitmask={thread?.contentTypesBitmask ?? 0}
+                    bind:activeLayer
+                    {tryRes}
+                    isExpand={false}
+                    bind:previewUrl
+                    menu={true}
+                />
+                <p class="unj-post-modal-note">
+                    画像やお絵描き・DTM等への切り替えはページ下部の投稿フォームから。
+                </p>
+                <div class="unj-post-modal-actions">
+                    <div class="flex items-center gap-3">
+                        <label
+                            class="flex items-center gap-1 text-xs cursor-pointer select-none text-gray-700"
+                            title="sage投稿（スレをageない）"
+                        >
+                            <Switch
+                                checked={isSage}
+                                onCheckedChange={(e) => (isSage = e.checked)}
+                            >
+                                <Switch.Control>
+                                    <Switch.Thumb>
+                                        <Switch.Context>
+                                            {#snippet children()}
+                                                <ArrowDownIcon size="14" />
+                                            {/snippet}
+                                        </Switch.Context>
+                                    </Switch.Thumb>
+                                </Switch.Control>
+                                <Switch.HiddenInput />
+                            </Switch>
+                            <span>sage</span>
+                        </label>
+                        <label
+                            class="flex items-center gap-1 text-xs cursor-pointer select-none text-gray-700"
+                            title="忍モード"
+                        >
+                            <Switch
+                                checked={isNinja}
+                                onCheckedChange={(e) => (isNinja = e.checked)}
+                            >
+                                <Switch.Control>
+                                    <Switch.Thumb>
+                                        <Switch.Context>
+                                            {#snippet children()}
+                                                忍
+                                            {/snippet}
+                                        </Switch.Context>
+                                    </Switch.Thumb>
+                                </Switch.Control>
+                                <Switch.HiddenInput />
+                            </Switch>
+                            <span>忍</span>
+                        </label>
+                    </div>
+                    <Button
+                        disabled={emitting}
+                        onclick={tryRes}
+                        variant="raised"
+                    >
+                        投稿する
+                    </Button>
+                </div>
+            </div>
+        </div>
+    </div>
+{/if}
+
 <TermsConfirmPart {openConfirm} />
 <DressUpPart bind:open={openDressUp} bind:nowSAnimsId />
 
@@ -1716,6 +1871,109 @@
 <FooterPart {board} />
 
 <style>
+    /* 投稿ポップアップ用FAB。kome-fab(right:8px/bottom:66px/40x40)の真上に積む */
+    .unj-post-fab {
+        position: fixed;
+        right: 8px;
+        bottom: 118px;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: #1976d2;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+        z-index: 90;
+        cursor: pointer;
+        transition: transform 0.15s ease, background-color 0.15s ease;
+    }
+    .unj-post-fab:hover {
+        background: #1565c0;
+        transform: scale(1.05);
+    }
+    .unj-post-fab:active {
+        transform: scale(0.95);
+    }
+    .unj-post-modal {
+        position: fixed;
+        inset: 0;
+        z-index: 120;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        align-items: center;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(2px);
+    }
+    .unj-post-modal-content {
+        width: 100%;
+        max-width: 540px;
+        background: #ffffff;
+        border-radius: 16px 16px 0 0;
+        display: flex;
+        flex-direction: column;
+        max-height: 85vh;
+        box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.2);
+        overflow: hidden;
+    }
+    @media (min-width: 640px) {
+        .unj-post-modal {
+            justify-content: center;
+            padding: 24px;
+        }
+        .unj-post-modal-content {
+            border-radius: 12px;
+            max-height: 80vh;
+        }
+    }
+    .unj-post-modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 14px;
+        background: #1976d2;
+        color: #fff;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+    }
+    .unj-post-modal-title {
+        font-weight: bold;
+        font-size: 14px;
+    }
+    .unj-post-modal-close {
+        color: #fff;
+        display: flex;
+        align-items: center;
+        padding: 4px;
+        border-radius: 50%;
+        transition: background 0.15s ease;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+    }
+    .unj-post-modal-close:hover {
+        background: rgba(255, 255, 255, 0.2);
+    }
+    .unj-post-modal-body {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+        padding: 12px 16px;
+    }
+    .unj-post-modal-note {
+        font-size: 11px;
+        opacity: 0.6;
+        margin: 6px 0 10px;
+    }
+    .unj-post-modal-actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding-top: 8px;
+        border-top: 1px solid #eee;
+    }
     .unj-thread-tabs {
         border-bottom: 1px solid #ddd;
         background: #f0f0f0;
