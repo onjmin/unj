@@ -67,9 +67,9 @@
     };
 
     // 専ブラ(2ch専用ブラウザ)配信は unj-reze 側が board_id=1（うんでも実況J）限定で実装している。
-    // https://scrapbox.io/2chtypebbs/subject.txt
+    // "unj"は板ID(src/common/request/board.ts参照)。 https://scrapbox.io/2chtypebbs/subject.txt
     const senburaSubjectUrl =
-        "https://unj-reze.onjmin.workers.dev/bbs/subject.txt";
+        "https://unj-reze.onjmin.workers.dev/unj/subject.txt";
     let senburaCopied = $state(false);
     const copySenburaUrl = async () => {
         await navigator.clipboard.writeText(senburaSubjectUrl);
