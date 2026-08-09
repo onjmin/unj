@@ -23,33 +23,14 @@
   <link rel="manifest" href="%BASE_URL%static/favicons/manifest.json">
   <meta name="theme-color" content="#aa0000">
   <!--app-head-->
-  <!--
-    初回アクセス時の体感速度対策:
-    これら4つの外部CSSは以前 <link rel="stylesheet"> で同期読み込みしており、
-    CDN応答待ちの間ファーストペイントがブロックされていた（初回アクセスで
-    「一瞬固まる」ように見える原因）。rel="preload" にして先読みだけ行い、
-    実際に stylesheet として適用するのは app.ts 側（preload-css.ts）に任せることで
-    パース/描画をブロックしないようにする。
-    ※ CSPが script-src に unsafe-inline を許可していないため、
-    onload="..." のようなインラインイベントハンドラは使えない（ブロックされ、
-    CSSが永久に適用されなくなる）。そのため外部JSファイル側で処理する。
-    JS無効環境向けに <noscript> でフォールバックする。
-  -->
-  <link rel="preload" as="style" id="unj-theme"
+  <link id="unj-theme" rel="stylesheet"
     href="https://cdn.jsdelivr.net/npm/svelte-material-ui@8.0.0-beta.3/themes/unity.min.css" />
-  <link rel="preload" as="style"
+  <link rel="stylesheet"
     href="https://fonts.googleapis.com/icon?family=Material+Icons" />
-  <link rel="preload" as="style"
+  <link rel="stylesheet"
     href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,600,700" />
-  <link rel="preload" as="style"
+  <link rel="stylesheet"
     href="https://fonts.googleapis.com/css?family=Roboto+Mono" />
-  <noscript>
-    <link rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/svelte-material-ui@8.0.0-beta.3/themes/unity.min.css" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,600,700" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Mono" />
-  </noscript>
   <!-- Cloudflare Web Analytics -->
   <script defer src='https://static.cloudflareinsights.com/beacon.min.js'
     data-cf-beacon='{"token": "103676e19f8c4884bb3da2aee2994214"}'></script>

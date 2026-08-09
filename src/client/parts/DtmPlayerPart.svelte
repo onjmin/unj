@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { decodeMml, type MmlPlayerInstance } from "@onjmin/dtm";
+  import type { MmlPlayerInstance } from "@onjmin/dtm";
   import { onMount } from "svelte";
   import { fetchTextCloudflareR2 } from "../mylib/cloudflare-r2.js";
   import { getStudio } from "../mylib/dtm.js";
@@ -20,6 +20,7 @@
     Promise.all([getStudio(), fetchTextCloudflareR2(src)])
       .then(async ([studio, encoded]) => {
         if (disposed) return;
+        const { decodeMml } = await import("@onjmin/dtm");
         const rawMml = await decodeMml(encoded);
         if (disposed) return;
         player = studio.mountPlayer(container, rawMml, { volume: 50 });

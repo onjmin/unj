@@ -1,9 +1,7 @@
 <script lang="ts">
-  import {
-    decodeMml,
-    encodeMml,
-    type DtmStudio,
-    type ModeSwitchInstance,
+  import type {
+    DtmStudio,
+    ModeSwitchInstance,
   } from "@onjmin/dtm";
   import { onMount } from "svelte";
   import { getStudio } from "../mylib/dtm.js";
@@ -29,6 +27,7 @@
     }
     encoding = true;
     try {
+      const { encodeMml } = await import("@onjmin/dtm");
       const compressed = await encodeMml(rawMml);
       if (disposed) return;
       contentData = compressed;
@@ -53,6 +52,7 @@
       if (disposed) return;
       studio = s;
 
+      const { decodeMml } = await import("@onjmin/dtm");
       const rawMml = await decodeMml(contentData);
       if (disposed) return;
       currentRawMml = rawMml;
