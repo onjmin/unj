@@ -32,11 +32,12 @@
         const rawMml = await decodeMml(encoded);
         if (disposed) return;
         player = studio.mountPlayer(container, rawMml, {
-          volume: applyMasterVolume(50),
+          volume: 100,
+          masterVolume: applyMasterVolume(100),
           onStop: () => releaseAudioFocus(focusId),
         });
         unsubVolume = subscribeMasterVolume(() => {
-          player?.setVolume(applyMasterVolume(50));
+          player?.setVolume(applyMasterVolume(100));
         });
         let wasPlaying = false;
         poll = setInterval(() => {

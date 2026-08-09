@@ -49,7 +49,7 @@ const youTubeController = new (class implements Controller {
 		this.target?.pauseVideo();
 	}
 	updateVolume() {
-		this.target?.setVolume(applyMasterVolume(64));
+		this.target?.setVolume(applyMasterVolume(100));
 	}
 })();
 const nicovideoController = new (class implements NicovideoController {
@@ -67,7 +67,7 @@ const nicovideoController = new (class implements NicovideoController {
 	updateVolume() {
 		this.post({
 			eventName: "volumeChange",
-			data: { volume: applyMasterVolume(96) / 100 },
+			data: { volume: applyMasterVolume(100) / 100 },
 		});
 	}
 	post(data: object) {
@@ -94,7 +94,7 @@ const soundCloudController = new (class implements Controller {
 		this.target?.pause();
 	}
 	updateVolume() {
-		this.target?.setVolume(applyMasterVolume(64));
+		this.target?.setVolume(applyMasterVolume(100));
 	}
 })();
 

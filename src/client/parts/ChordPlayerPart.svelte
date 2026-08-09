@@ -25,11 +25,12 @@
       .then((studio) => {
         if (disposed) return;
         inst = studio.mountChordPlayer(container, chords, {
-          volume: applyMasterVolume(50),
+          volume: 50,
+          masterVolume: applyMasterVolume(100),
           onStop: () => releaseAudioFocus(focusId),
         });
         unsubVolume = subscribeMasterVolume(() => {
-          inst?.setVolume(applyMasterVolume(50));
+          inst?.setVolume(applyMasterVolume(100));
         });
         // 同じページに複数のコード進行埋め込みがあると、片方の再生ボタンを
         // 押しても他方が鳴りっぱなしになる（排他制御が無かった）のを防ぐ。
