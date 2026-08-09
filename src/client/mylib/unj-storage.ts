@@ -63,8 +63,6 @@ export const newResSound = new UnjStorage("newResSound");
 export const replyResSound = new UnjStorage("replyResSound");
 
 // UI
-export const openLeft = new UnjStorage("openLeft");
-export const openRight = new UnjStorage("openRight");
 export const theme = new UnjStorage("theme");
 export const customBackgroundOpacity = new UnjStorage(
 	"customBackgroundOpacity",

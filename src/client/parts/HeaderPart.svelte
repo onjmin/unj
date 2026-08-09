@@ -5,20 +5,19 @@
   import { undefinedBoard } from "../../common/request/board.js";
   import { seededRandArray } from "../../common/util.js";
   import {
-    isMobile,
-    openLeft,
-    openRight,
     customBackgroundUrl,
     customBackgroundOpacity,
     isDarkMode,
     backgroundEmbedding,
   } from "../mylib/store.js";
-  import RightMenuPart from "./RightMenuPart.svelte";
   import { Anniversary, isAnniversary } from "../mylib/anniversary.js";
 
+  // menuは今は未使用。以前は書き込みフォームや高度な設定を追いやる
+  // 横スライドパネル(RightMenuPart)の表示可否だったが、実機(hayabusaモバイル版)
+  // に合わせてそのパネル自体を廃止し、各ページの本来の場所にインライン表示するよう
+  // 移設した。呼び出し側の互換性のためpropだけ残してある。
   let {
     board = undefinedBoard,
-    children = null,
     title = "",
     menu = true,
     online = null,
@@ -26,7 +25,6 @@
     bgColor = "#000044",
   }: {
     board?: typeof undefinedBoard;
-    children?: unknown;
     title?: string;
     menu?: boolean;
     online?: number | null;
@@ -190,60 +188,7 @@
   </div>
 </header>
 
-{#if menu}
-  {#if children !== null}
-    <RightMenuPart open={$openRight}>
-      {@render children?.()}
-    </RightMenuPart>
-    {#if !$openRight}
-      <button
-        class="unj-right-menu-fab"
-        onclick={() => ($openRight = true)}
-        title="メニューを開く"
-      >
-        <span class="text-xl">✎</span>
-      </button>
-    {/if}
-  {/if}
-  <div
-    tabindex="0"
-    role="button"
-    onkeydown={() => {}}
-    class="unj-main-part-overlay {isMobile && ($openLeft || $openRight)
-      ? ''
-      : 'hidden'}"
-    onclick={() => {
-      $openLeft = false;
-      $openRight = false;
-    }}
-  ></div>
-{/if}
-
 <style>
-  .unj-right-menu-fab {
-    position: fixed;
-    right: 8px;
-    bottom: 120px;
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    background: #1976d2;
-    color: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
-    z-index: 90;
-  }
-  .unj-main-part-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 60;
-  }
   .snow {
     position: absolute;
     inset: 0;

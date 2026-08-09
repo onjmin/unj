@@ -8,6 +8,7 @@
     import {
         ChevronDownIcon,
         ChevronRightIcon,
+        CopyIcon,
         DownloadIcon,
         LightbulbIcon,
         PlayIcon,
@@ -92,6 +93,19 @@
         openAccordion = openAccordion === panelName ? null : panelName;
     };
 
+    // 専ブラ(2ch専用ブラウザ)配信は unj-reze 側が board_id=1（うんでも実況J）限定で実装している。
+    // https://scrapbox.io/2chtypebbs/subject.txt
+    const senburaSubjectUrl =
+        "https://unj-reze.onjmin.workers.dev/bbs/subject.txt";
+    let senburaCopied = $state(false);
+    const copySenburaUrl = async () => {
+        await navigator.clipboard.writeText(senburaSubjectUrl);
+        senburaCopied = true;
+        setTimeout(() => {
+            senburaCopied = false;
+        }, 1500);
+    };
+
     let ignoreList: Set<string> | null = $state(null);
     const ignoreListCache = new ObjectStorage<string[]>("ignoreListCache");
     $effect(() => {
@@ -118,59 +132,54 @@
         `https://www.pokemon.jp/special/nakigoe151/sound/m/${pokemonId.toString().padStart(3, "0")}.mp3`;
 </script>
 
-<HeaderPart {board} title="個人設定">
-    <p>高度な設定</p>
-    <section class="border border-gray-500/40 mb-8 p-6 rounded-lg shadow-md">
-        <h2 class="text-xl font-semibold mb-4 border-b pb-2">ポケモン忍法帖</h2>
-
-        <div
-            class="flex flex-col space-y-4 p-4 border border-gray-500/40 rounded-lg shadow-inner items-center sm:items-stretch"
-        >
-            <div class="w-20 h-20 shrink-0 mx-auto">
-                <img
-                    src={pokemonId === 0
-                        ? "https://archives.bulbagarden.net/media/upload/9/9e/Ghost_I.png"
-                        : `https://img.yakkun.com/poke/icon96/n${pokemonId}.gif`}
-                    alt={pokemonName}
-                    class="w-full h-full object-contain"
-                />
-            </div>
-
-            <div class="text-center pt-2 border-t border-gray-500/40">
-                <p class="text-sm font-medium">No. {pokemonId}</p>
-                <div class="flex items-center justify-center space-x-2">
-                    <p class="text-xl font-bold">
-                        <strong>{pokemonName}</strong>
-                    </p>
-                    <button
-                        onclick={() => {
-                            const sound = new Howl({
-                                src: [pokemonSound(pokemonId || 112)],
-                                html5: true,
-                            });
-                            sound.play();
-                        }}
-                        class="transition duration-150 p-1 rounded-full"
-                        aria-label="鳴き声を再生"
-                    >
-                        <Volume2Icon class="w-6 h-6" />
-                    </button>
-                </div>
-            </div>
-
-            <div class="text-center pt-2 border-t border-gray-500/40">
-                <p class="text-sm font-medium">ポケモンのレベル</p>
-                <p class="text-4xl font-extrabold">
-                    Lv.{ninjaLv}
-                </p>
-            </div>
-        </div>
-    </section>
-</HeaderPart>
-
+<HeaderPart {board} title="個人設定" />
 <MainPart {board}>
     <p>ここで設定変更できます</p>
     <div class="w-full max-w-3xl mx-auto space-y-4">
+        {#if board.id === 1}
+            <div class="border border-gray-500/40 rounded-lg shadow">
+                <div
+                    tabindex="0"
+                    role="button"
+                    onkeydown={() => {}}
+                    class="flex justify-between items-center p-4 cursor-pointer"
+                    onclick={() => toggleAccordion("senbura")}
+                >
+                    <h3 class="font-bold text-lg">専ブラ用URL</h3>
+                    {#if openAccordion === "senbura"}
+                        <ChevronDownIcon class="h-6 w-6" />
+                    {:else}
+                        <ChevronRightIcon class="h-6 w-6" />
+                    {/if}
+                </div>
+                {#if openAccordion === "senbura"}
+                    <div class="p-4 border-t border-gray-200">
+                        <p class="text-sm opacity-70">
+                            2ch専用ブラウザにはこのURLを板として登録してください。
+                        </p>
+                        <div class="flex items-center mt-2 space-x-2">
+                            <div
+                                class="flex-1 overflow-x-auto whitespace-nowrap text-sm p-2 rounded bg-black/10"
+                            >
+                                {senburaSubjectUrl}
+                            </div>
+                            <button
+                                class="p-2 rounded-full hover:text-gray-500 shrink-0"
+                                onclick={copySenburaUrl}
+                            >
+                                <CopyIcon class="h-6 w-6" />
+                            </button>
+                        </div>
+                        {#if senburaCopied}
+                            <p class="text-sm text-green-500 mt-1">
+                                コピーしました
+                            </p>
+                        {/if}
+                    </div>
+                {/if}
+            </div>
+        {/if}
+
         <div class="border border-gray-500/40 rounded-lg shadow">
             <div
                 tabindex="0"
@@ -617,6 +626,69 @@
                             {/each}
                         </div>
                     {/if}
+                </div>
+            {/if}
+        </div>
+
+        <div class="border border-gray-500/40 rounded-lg shadow">
+            <div
+                tabindex="0"
+                role="button"
+                onkeydown={() => {}}
+                class="flex justify-between items-center p-4 cursor-pointer"
+                onclick={() => toggleAccordion("pokemon")}
+            >
+                <h3 class="font-bold text-lg">ポケモン忍法帖</h3>
+                {#if openAccordion === "pokemon"}
+                    <ChevronDownIcon class="h-6 w-6" />
+                {:else}
+                    <ChevronRightIcon class="h-6 w-6" />
+                {/if}
+            </div>
+            {#if openAccordion === "pokemon"}
+                <div class="p-4 border-t border-gray-200">
+                    <div
+                        class="flex flex-col space-y-4 p-4 border border-gray-500/40 rounded-lg shadow-inner items-center sm:items-stretch"
+                    >
+                        <div class="w-20 h-20 shrink-0 mx-auto">
+                            <img
+                                src={pokemonId === 0
+                                    ? "https://archives.bulbagarden.net/media/upload/9/9e/Ghost_I.png"
+                                    : `https://img.yakkun.com/poke/icon96/n${pokemonId}.gif`}
+                                alt={pokemonName}
+                                class="w-full h-full object-contain"
+                            />
+                        </div>
+
+                        <div class="text-center pt-2 border-t border-gray-500/40">
+                            <p class="text-sm font-medium">No. {pokemonId}</p>
+                            <div class="flex items-center justify-center space-x-2">
+                                <p class="text-xl font-bold">
+                                    <strong>{pokemonName}</strong>
+                                </p>
+                                <button
+                                    onclick={() => {
+                                        const sound = new Howl({
+                                            src: [pokemonSound(pokemonId || 112)],
+                                            html5: true,
+                                        });
+                                        sound.play();
+                                    }}
+                                    class="transition duration-150 p-1 rounded-full"
+                                    aria-label="鳴き声を再生"
+                                >
+                                    <Volume2Icon class="w-6 h-6" />
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="text-center pt-2 border-t border-gray-500/40">
+                            <p class="text-sm font-medium">ポケモンのレベル</p>
+                            <p class="text-4xl font-extrabold">
+                                Lv.{ninjaLv}
+                            </p>
+                        </div>
+                    </div>
                 </div>
             {/if}
         </div>

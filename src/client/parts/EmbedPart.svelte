@@ -263,10 +263,18 @@
     }
   };
 
+  // global.css の #app { max-width: 600px } と同じ値。
+  // PC版はブラウザ幅(window.innerWidth)がそのままシェル幅にならず、
+  // 実際のコンテンツ幅は最大600pxで頭打ちになる。以前は window.innerWidth を
+  // そのまま使っていたため、PCの広いウィンドウでは埋め込み(iframe/img)が
+  // シェルの右端から突き抜けて表示されるバグがあった。
+  const APP_SHELL_MAX_WIDTH = 600;
+
   let width = $state(0);
   let height = $state(0);
   const onResize = () => {
-    const w = window.innerWidth * 0.7 - (ccUserAvatar ? 32 : 0);
+    const shellWidth = Math.min(window.innerWidth, APP_SHELL_MAX_WIDTH);
+    const w = shellWidth * 0.7 - (ccUserAvatar ? 32 : 0);
     const h = window.innerHeight * 0.7;
     let w2 = 0;
     let h2 = 0;
@@ -514,5 +522,6 @@
   }
   iframe {
     border-radius: 12px;
+    max-width: 100%; /* width算出の保険。シェル幅を超えても突き抜けさせない */
   }
 </style>

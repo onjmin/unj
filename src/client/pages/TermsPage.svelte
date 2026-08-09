@@ -21,36 +21,37 @@
     };
 </script>
 
-<HeaderPart {board} title="うんｊ利用規約">
-    <p>よくある質問</p>
-    <div class="space-y-2">
-        {#each faq as [q, a], i}
-            <div class="border border-gray-500/10 rounded-lg shadow">
-                <div
-                    tabindex="0"
-                    role="button"
-                    onkeydown={() => {}}
-                    class="flex justify-between items-center p-1 cursor-pointer"
-                    onclick={() => toggleQuestion(i)}
-                >
-                    <h3 class="text-xs">{q}</h3>
-                    {#if openQuestion === i}
-                        <ChevronDownIcon class="h-4 w-4" />
-                    {:else}
-                        <ChevronRightIcon class="h-4 w-4" />
-                    {/if}
-                </div>
-                {#if openQuestion === i}
-                    <div class="p-1 border-t border-gray-500/20">
-                        {a}
-                    </div>
-                {/if}
-            </div>
-        {/each}
-    </div>
-</HeaderPart>
+<HeaderPart {board} title="うんｊ利用規約" />
 
 <MainPart {board}>
+    <div class="max-w-2xl mx-auto p-4 text-left">
+        <p class="font-bold text-gray-500 mb-2">よくある質問</p>
+        <div class="space-y-2">
+            {#each faq as [q, a], i}
+                <div class="border border-gray-500/10 rounded-lg shadow">
+                    <div
+                        tabindex="0"
+                        role="button"
+                        onkeydown={() => {}}
+                        class="flex justify-between items-center p-1 cursor-pointer"
+                        onclick={() => toggleQuestion(i)}
+                    >
+                        <h3 class="text-xs">{q}</h3>
+                        {#if openQuestion === i}
+                            <ChevronDownIcon class="h-4 w-4" />
+                        {:else}
+                            <ChevronRightIcon class="h-4 w-4" />
+                        {/if}
+                    </div>
+                    {#if openQuestion === i}
+                        <div class="p-1 border-t border-gray-500/20">
+                            {a}
+                        </div>
+                    {/if}
+                </div>
+            {/each}
+        </div>
+    </div>
     <TermsPart />
 </MainPart>
 

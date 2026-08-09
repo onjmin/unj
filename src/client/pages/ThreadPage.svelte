@@ -960,6 +960,16 @@
             bind:toDataURL
             bind:activeLayer
         />
+        <!--
+            以前は色塗り導線(ColorWheelPart)とレイヤー一覧(LayerPanelPart)が
+            サイドメニュー(RightMenuPart)に追いやられていて、キャンバスから
+            離れた場所を開かないと色もレイヤーも変えられなかった。
+            キャンバスの直下に並べ、描画中に触りたいUIをその場に置く。
+        -->
+        <div class="flex flex-col items-center gap-2 mt-2">
+            <ColorWheelPart />
+            <LayerPanelPart bind:activeLayer />
+        </div>
     {/if}
     {#if contentType === Enum.Dtm && !menu}
         <DtmPart bind:contentData />
@@ -1111,15 +1121,20 @@
     </div>
 {/snippet}
 
-<HeaderPart {board} {title} {online} {pv} bgColor="#000000">
-    <AccessCounterPart {online} {pv} />
-    <div>{@render form(true)}</div>
-    {#if contentType === Enum.Oekaki}
-        <br />
-        <ColorWheelPart />
-        <LayerPanelPart bind:activeLayer />
-    {/if}
-</HeaderPart>
+<!--
+    以前はここ(HeaderPartのchildren=サイドメニュー)に、
+      - 書き込みフォーム一式(form(true))の複製
+      - 閲覧数(AccessCounterPart)
+      - お絵描き中の色選択(ColorWheelPart)・レイヤー一覧(LayerPanelPart)
+    をまとめて表示していた。実機(hayabusaモバイル版)には投稿フォームを開く
+    横スライドパネルは存在しないため、全て本来使う場所へ移設した:
+      - フォーム: 元々ページ下部にもあった本物のみ残す（二重表示だった）
+      - 閲覧数: MainPart側でスレタイトルの近くにインライン表示
+      - 色選択・レイヤー一覧: お絵描きキャンバス(OekakiPart)の直下にインライン表示
+    これによりHeaderPartへchildrenを渡す必要がなくなり、✎ FAB・横スライド
+    パネル自体がThreadPageからは完全になくなる。
+-->
+<HeaderPart {board} {title} {online} {pv} bgColor="#000000" />
 
 <!-- おんJのkomeは右下固定40x40の丸ボタン(.kome_option_button)で開閉するフロート式。デフォルトはおんJ同様OFF -->
 {#if showKome}
@@ -1376,6 +1391,11 @@
                 最新30
             </button>
         </div>
+        <!-- 以前はサイドメニューに隠れていた閲覧数。折りたたみでその場に表示する -->
+        <details class="unj-access-counter">
+            <summary>閲覧数</summary>
+            <AccessCounterPart {online} {pv} />
+        </details>
         <div class="unj-thread-search flex items-center gap-1">
             <input
                 type="search"
@@ -1692,6 +1712,16 @@
     }
     .unj-thread-tab:last-child {
         border-right: none;
+    }
+    .unj-access-counter {
+        padding: 2px 8px;
+        border-bottom: 1px solid #ddd;
+        background: #fff;
+        font-size: 11px;
+    }
+    .unj-access-counter summary {
+        cursor: pointer;
+        color: #666;
     }
     .unj-thread-search {
         padding: 6px 8px;

@@ -148,27 +148,28 @@
     };
 </script>
 
-<HeaderPart {board} title="履歴">
-    <button
-        class="text-xs text-red-500 font-medium px-2 py-1 rounded-full border border-red-500 hover:bg-gray-500/10"
-        onclick={() => {
-            if (confirm("本当にレス履歴を全て削除してもよろしいですか？")) {
-                resHistories = [];
-                resHistoryCache.set([]);
-                alert("削除しました");
-            }
-        }}
-    >
-        レス履歴全件削除
-    </button>
-</HeaderPart>
+<HeaderPart {board} title="履歴" />
 
 <MainPart {board}>
     <div class="max-w-2xl mx-auto p-4 space-y-4 text-left">
         <div class="border border-gray-500/40 p-4 rounded-lg space-y-4">
-            <h2 class="text-gray-500 text-xl font-bold border-b pb-2">
-                レス履歴
-            </h2>
+            <div class="flex items-center justify-between border-b pb-2">
+                <h2 class="text-gray-500 text-xl font-bold">
+                    レス履歴
+                </h2>
+                <button
+                    class="text-xs text-red-500 font-medium px-2 py-1 rounded-full border border-red-500 hover:bg-gray-500/10"
+                    onclick={() => {
+                        if (confirm("本当にレス履歴を全て削除してもよろしいですか？")) {
+                            resHistories = [];
+                            resHistoryCache.set([]);
+                            alert("削除しました");
+                        }
+                    }}
+                >
+                    レス履歴全件削除
+                </button>
+            </div>
             {#if !resHistories || resHistories.length === 0}
                 <div class="text-center p-4 rounded-lg">
                     <p class="text-lg mb-2">

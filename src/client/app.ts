@@ -1,4 +1,5 @@
 import { mount } from "svelte";
+import "./mylib/preload-css.js";
 import App from "./App.svelte";
 
 const app = mount(App, {

@@ -105,23 +105,6 @@ body.unj-scroll-layout .unj-main-part {
 		box-shadow: none;
 	}
 }
-.unj-main-part-overlay {
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	height: 100dvh;
-	background-color: rgba(0, 0, 0, 0.5);
-	transition: opacity 0.3s ease;
-	z-index: 1;
-	opacity: 1;
-	pointer-events: auto;
-}
-.unj-main-part-overlay.hidden {
-	opacity: 0;
-	pointer-events: none;
-}
-
 /* レスポンシブな画像表示 */
 .unj-img {
 	display: block;
