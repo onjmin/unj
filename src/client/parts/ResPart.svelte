@@ -17,6 +17,7 @@
     ankaRegex,
     contentTemplateMap,
     extractChordsFromContent,
+    hashtagRegex,
     urlRegex,
   } from "../../common/request/content-schema.js";
   import {
@@ -143,7 +144,7 @@ const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
   // 本文にURLを書けるようになったので、素の文字列ではなくリンクとして描く。
   // ankaRegex より先に置くと `>>1` を含むURLが千切れるため、順序は末尾に固定する。
   const combinedRegex = new RegExp(
-    `\n|${ankaRegex.source}|${discordEmojiRegex.source}|${urlRegex.source}`,
+    `\n|${ankaRegex.source}|${discordEmojiRegex.source}|${urlRegex.source}|${hashtagRegex.source}`,
     "g",
   );
 
@@ -177,6 +178,11 @@ const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
       } else if (urlRegex.test(token)) {
         yield {
           type: "url" as const,
+          value: token,
+        };
+      } else if (hashtagRegex.test(token)) {
+        yield {
+          type: "hashtag" as const,
           value: token,
         };
       } else if (discordEmojiRegex.test(token)) {
@@ -420,6 +426,22 @@ const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
               >
                 {part.value}
               </a>
+            {:else if part.type === "hashtag"}
+              <Link
+                to={makePathname(
+                  `/${board.key}/search?q=${encodeURIComponent(part.value)}`,
+                )}
+                class="text-blue-500 visited:text-blue-500 hover:underline wrap-anywhere inline-block align-middle max-w-full font-normal"
+                onclick={(e: MouseEvent) => e.stopPropagation()}
+              >
+                {#each splitByHighlight(part.value, highlightQuery) as chunk}
+                  {#if chunk.hit}
+                    <span class="unj-hit">{chunk.value}</span>
+                  {:else}
+                    {chunk.value}
+                  {/if}
+                {/each}
+              </Link>
             {:else if part.type === "anka"}
               {@const ankaNum = Number(part.value)}
               {@const ankaRes = (
@@ -588,9 +610,9 @@ const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
       {/if}
 
       {#if contentType === Enum.Chord && chordParsed}
-        <div class="font-bold mb-1">
+        <div class="mb-1">
           <Link
-            class="hover:underline"
+            class="text-blue-500 visited:text-blue-500 hover:underline font-normal"
             to={makePathname(`/${board.key}/search?q=${encodeURIComponent(CHORD_MARKER)}`)}
           >
             {CHORD_MARKER}
