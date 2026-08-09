@@ -1,4 +1,9 @@
+import { releaseAudioFocus, requestAudioFocus } from "./audio-focus.js";
+import { applyMasterVolume, subscribeMasterVolume } from "./master-volume.js";
+
 let userActionDone = false;
+
+const backgroundFocusId = Symbol("background-embed");
 
 /**
  * 初回遷移時、ユーザーの初回タップがなければ自動再生不可
@@ -17,6 +22,7 @@ const handleUserAction = (callback: () => void) => {
 
 export let activeController: Controller | null = null;
 export const clearActiveController = () => {
+	releaseAudioFocus(backgroundFocusId);
 	activeController = null;
 };
 
@@ -24,6 +30,7 @@ type Controller = {
 	target: any | null;
 	play(): void;
 	pause(): void;
+	updateVolume?(): void;
 };
 type NicovideoController = Controller & {
 	origin: string;
@@ -32,26 +39,36 @@ type NicovideoController = Controller & {
 const youTubeController = new (class implements Controller {
 	target: any | null = null;
 	play() {
-		this.target?.setVolume(64);
+		requestAudioFocus(backgroundFocusId, () => activeController?.pause());
+		this.updateVolume();
 		this.target?.playVideo();
 		this.target?.setLoop(true);
 	}
 	pause() {
+		releaseAudioFocus(backgroundFocusId);
 		this.target?.pauseVideo();
+	}
+	updateVolume() {
+		this.target?.setVolume(applyMasterVolume(64));
 	}
 })();
 const nicovideoController = new (class implements NicovideoController {
 	target: HTMLIFrameElement | null = null;
 	origin = "https://embed.nicovideo.jp";
 	play() {
-		this.post({
-			eventName: "volumeChange",
-			data: { volume: 96 / 100 },
-		});
+		requestAudioFocus(backgroundFocusId, () => activeController?.pause());
+		this.updateVolume();
 		this.post({ eventName: "play" });
 	}
 	pause() {
+		releaseAudioFocus(backgroundFocusId);
 		this.post({ eventName: "pause" });
+	}
+	updateVolume() {
+		this.post({
+			eventName: "volumeChange",
+			data: { volume: applyMasterVolume(96) / 100 },
+		});
 	}
 	post(data: object) {
 		this.target?.contentWindow?.postMessage(
@@ -68,13 +85,22 @@ const nicovideoController = new (class implements NicovideoController {
 const soundCloudController = new (class implements Controller {
 	target: any | null = null;
 	play() {
-		this.target?.setVolume(64);
+		requestAudioFocus(backgroundFocusId, () => activeController?.pause());
+		this.updateVolume();
 		this.target?.play();
 	}
 	pause() {
+		releaseAudioFocus(backgroundFocusId);
 		this.target?.pause();
 	}
+	updateVolume() {
+		this.target?.setVolume(applyMasterVolume(64));
+	}
 })();
+
+subscribeMasterVolume(() => {
+	activeController?.updateVolume?.();
+});
 
 declare global {
 	var YT: any;

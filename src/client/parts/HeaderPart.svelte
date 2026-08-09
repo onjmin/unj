@@ -11,6 +11,7 @@
     backgroundEmbedding,
   } from "../mylib/store.js";
   import { Anniversary, isAnniversary } from "../mylib/anniversary.js";
+  import VolumeControlPart from "./VolumeControlPart.svelte";
 
   // menuは今は未使用。以前は書き込みフォームや高度な設定を追いやる
   // 横スライドパネル(RightMenuPart)の表示可否だったが、実機(hayabusaモバイル版)
@@ -176,6 +177,7 @@
     </div>
 
     <div class="flex items-center space-x-1 shrink-0">
+      <VolumeControlPart />
       <button
         onclick={() => navigate(makePathname(`/${board.key}/config`))}
         class="flex items-center space-x-1 px-1.5 py-0.5 text-white hover:opacity-80 text-xs"

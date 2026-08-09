@@ -42,6 +42,7 @@
   import EmbedXPart from "./EmbedXPart.svelte";
   import MessageBoxPart from "./MessageBoxPart.svelte";
   import { activeHeavyId } from "../mylib/store.js";
+  import { releaseAudioFocus, requestAudioFocus } from "../mylib/audio-focus.js";
 
   const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
 
@@ -64,6 +65,9 @@
   const myHeavyId = {};
 
   $effect(() => {
+    if (!embedding) {
+      releaseAudioFocus(myHeavyId);
+    }
     const unsub = activeHeavyId.subscribe((id) => {
       if (embedding && id !== myHeavyId) {
         const isHeavy =
@@ -78,7 +82,10 @@
         }
       }
     });
-    return unsub;
+    return () => {
+      unsub();
+      releaseAudioFocus(myHeavyId);
+    };
   });
 
   $effect(() => {
@@ -256,6 +263,9 @@
       );
       if (isHeavy) {
         activeHeavyId.set(myHeavyId);
+        requestAudioFocus(myHeavyId, () => {
+          embedding = false;
+        });
       }
       if (!embedUrl) throw 114514;
     } catch (err) {

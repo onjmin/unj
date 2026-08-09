@@ -1,5 +1,6 @@
 import { Howler } from "howler";
 import { sha256 } from "js-sha256";
+import { applyMasterVolume, subscribeMasterVolume } from "./master-volume.js";
 import { newResSound, replyResSound, soundVolume } from "./unj-storage.js";
 
 export const soundMap: Map<string, Sound> = new Map();
@@ -84,12 +85,13 @@ new Sound({
 });
 
 /**
- * SE音量
+ * SE音量（マスタ音量を適用）
  */
 export const changeVolume = () =>
-	Howler.volume(
-		soundVolume.value === null ? 0.187 : Number.parseFloat(soundVolume.value),
-	);
+	Howler.volume(applyMasterVolume(100) / 100);
+
+subscribeMasterVolume(() => changeVolume());
+changeVolume();
 
 const make = (key: string) => {
 	const sound = soundMap.get(key);

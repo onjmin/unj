@@ -1,4 +1,10 @@
 <script lang="ts">
+    import { onMount } from "svelte";
+    import {
+        getMasterVolume,
+        setMasterVolume,
+        subscribeMasterVolume,
+    } from "../mylib/master-volume.js";
     // pages共通 //
     import FooterPart from "../parts/FooterPart.svelte";
     import HeaderPart from "../parts/HeaderPart.svelte";
@@ -58,7 +64,8 @@
     ]);
     let isBackgroundLoading = $state(false);
 
-    let soundVolumeSlider = $state([(Howler.volume() * 100) | 0]);
+    let masterVolumeVal = $state(getMasterVolume());
+    let soundVolumeSlider = $state([getMasterVolume()]);
     let selectedNewResSound: string = $state(
         newResSound.value ?? coinSound.key,
     );
@@ -66,9 +73,18 @@
         replyResSound.value ?? wafSound.key,
     );
 
+    onMount(() => {
+        const unsub = subscribeMasterVolume((v) => {
+            masterVolumeVal = v;
+            soundVolumeSlider = [v];
+        });
+        return unsub;
+    });
+
     $effect(() => {
-        soundVolume.value = String(soundVolumeSlider[0] / 100);
-        changeVolume();
+        if (soundVolumeSlider[0] !== masterVolumeVal) {
+            setMasterVolume(soundVolumeSlider[0]);
+        }
     });
     $effect(() => {
         newResSound.value = selectedNewResSound;
@@ -407,7 +423,7 @@
                 class="flex justify-between items-center p-4 cursor-pointer"
                 onclick={() => toggleAccordion("volume")}
             >
-                <h3 class="font-bold text-lg">SE音量</h3>
+                <h3 class="font-bold text-lg">マスタ音量</h3>
                 {#if openAccordion === "volume"}
                     <ChevronDownIcon class="h-6 w-6" />
                 {:else}
