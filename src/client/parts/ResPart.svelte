@@ -12,6 +12,7 @@
   import { ja } from "date-fns/locale";
   import { Link, navigate } from "svelte-routing";
   import {
+    CHORD_MARKER,
     Enum,
     ankaRegex,
     contentTemplateMap,
@@ -587,7 +588,7 @@ const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
       {/if}
 
       {#if contentType === Enum.Chord && chordParsed}
-        <div class="text-red-500 font-bold mb-1">♪コード進行</div>
+        <div class="text-red-500 font-bold mb-1">{CHORD_MARKER}</div>
         <ChordPlayerPart chords={chordParsed.chords} />
       {/if}
 
