@@ -2,8 +2,32 @@
   import { navigate } from "svelte-routing";
   import { undefinedBoard } from "../../common/request/board.js";
   import { makePathname } from "../mylib/env.js";
+  import { ObjectStorage } from "../mylib/object-storage.js";
+  import { type ResHistory } from "../mylib/res-history.js";
+  import { historyBadgeSeenTotal } from "../mylib/unj-storage.js";
 
   let { board = undefinedBoard, menu = true } = $props();
+
+  // 履歴バッジ: 監視中スレの「新着レス数」合計。
+  // 一度履歴ページを開いたら、その時点の合計を historyBadgeSeenTotal に記録し、
+  // 以後は合計がそれを上回るまでバッジ(数値)を出さない。
+  const resHistoryCache = new ObjectStorage<ResHistory[]>("resHistoryCache");
+  let unreadTotal = $state(0);
+  $effect(() => {
+    resHistoryCache.get().then((v) => {
+      unreadTotal = (v ?? []).reduce(
+        (sum, h) => sum + Math.max(0, h.resCount - h.resNum),
+        0,
+      );
+    });
+  });
+  const seenTotal = $derived(Number(historyBadgeSeenTotal.value ?? "0") || 0);
+  const showBadge = $derived(unreadTotal > 0 && unreadTotal > seenTotal);
+
+  const openHistory = () => {
+    historyBadgeSeenTotal.value = String(unreadTotal);
+    navigate(makePathname(`/${board.key}/history`));
+  };
 </script>
 
 <footer class="unj-footer-part">
@@ -47,13 +71,12 @@
         <span class="nav-label">検索</span>
       </button>
 
-      <button
-        class="nav-item relative"
-        onclick={() => navigate(makePathname(`/${board.key}/history`))}
-      >
+      <button class="nav-item relative" onclick={openHistory}>
         <div class="icon-wrap">
           <span class="nav-icon">📖</span>
-          <span class="badge">3</span>
+          {#if showBadge}
+            <span class="badge">{unreadTotal > 99 ? "99+" : unreadTotal}</span>
+          {/if}
         </div>
         <span class="nav-label">履歴</span>
       </button>
@@ -121,14 +144,15 @@
   .badge {
     position: absolute;
     top: -4px;
-    right: -8px;
+    right: -10px;
     background-color: #ef4444;
     color: #ffffff;
     font-size: 9px;
     font-weight: bold;
-    border-radius: 50%;
-    width: 14px;
+    border-radius: 999px;
+    min-width: 14px;
     height: 14px;
+    padding: 0 3px;
     display: flex;
     align-items: center;
     justify-content: center;

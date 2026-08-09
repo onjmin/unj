@@ -38,7 +38,9 @@
     import {
         ChevronDownIcon,
         ChevronUpIcon,
+        CopyIcon,
         MessageCircleIcon,
+        RadioIcon,
     } from "@lucide/svelte";
     import { cubicOut } from "svelte/easing";
     import { scale } from "svelte/transition";
@@ -62,6 +64,19 @@
         if (differenceInMinutes(now, date) > 0)
             return `${differenceInMinutes(now, date)}分`;
         return `${differenceInSeconds(now, date)}秒`;
+    };
+
+    // 専ブラ(2ch専用ブラウザ)配信は unj-reze 側が board_id=1（うんでも実況J）限定で実装している。
+    // https://scrapbox.io/2chtypebbs/subject.txt
+    const senburaSubjectUrl =
+        "https://unj-reze.onjmin.workers.dev/bbs/subject.txt";
+    let senburaCopied = $state(false);
+    const copySenburaUrl = async () => {
+        await navigator.clipboard.writeText(senburaSubjectUrl);
+        senburaCopied = true;
+        setTimeout(() => {
+            senburaCopied = false;
+        }, 1500);
     };
 
     let online = $state(0);
@@ -289,6 +304,37 @@
                         <p class="text-xs text-gray-500 font-medium">おーぷん2ch</p>
                     </div>
                 </div>
+            </div>
+        {/if}
+
+        <!-- 専ブラ導線 (board_id=1限定。unj-reze側の配信実装に対応するURL) -->
+        {#if board.id === 1}
+            <div
+                class="mb-2 bg-orange-50 border border-orange-300 rounded-md p-2 shadow-sm max-w-full"
+            >
+                <div class="flex items-center gap-1.5 text-orange-700 text-xs font-bold">
+                    <RadioIcon size={14} />
+                    <span>専ブラ対応してます</span>
+                </div>
+                <div class="flex items-center gap-1.5 mt-1">
+                    <div
+                        class="flex-1 min-w-0 overflow-x-auto whitespace-nowrap text-[11px] text-gray-600 bg-white/70 rounded px-1.5 py-1 border border-orange-200"
+                    >
+                        {senburaSubjectUrl}
+                    </div>
+                    <button
+                        class="shrink-0 p-1 rounded text-orange-600 hover:text-orange-800 hover:bg-orange-100"
+                        onclick={copySenburaUrl}
+                        title="URLをコピー"
+                    >
+                        <CopyIcon size={16} />
+                    </button>
+                </div>
+                {#if senburaCopied}
+                    <p class="text-[11px] text-green-600 mt-0.5">
+                        コピーしました
+                    </p>
+                {/if}
             </div>
         {/if}
 

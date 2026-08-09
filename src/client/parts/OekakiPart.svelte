@@ -41,11 +41,15 @@
     oekakiCollab = $bindable(""),
     toDataURL = $bindable(),
     activeLayer = $bindable(null),
+    maxHeight,
   }: {
     threadId: string;
     oekakiCollab: string;
     toDataURL: () => string;
     activeLayer: oekaki.LayeredCanvas | null;
+    /** キャンバス初期化時の高さ上限(px)。モーダル内など縦の使える幅が限られる
+     *  場面で、キャンバスがページのスクロール領域を圧迫しないよう渡す。未指定時は従来通り。 */
+    maxHeight?: number;
   } = $props();
   toDataURL = () => {
     if (oekaki.getLayers().every((v) => !v.used)) return "";
@@ -524,9 +528,17 @@
 
       const main = document.querySelector(".unj-main-part") ?? document.body;
       const targetWidth = Math.min(main.clientWidth * 0.8, 1024); // @onjmin/oekaki側の都合により最大1024に制限
-      const targetHeight = targetWidth * contentRatio;
+      let targetHeight = targetWidth * contentRatio;
 
-      width = targetWidth | 0;
+      // maxHeight指定時は縦横比を保ったまま縮める(モバイルでキャンバスが
+      // 画面を占有してスクロールしづらくなるのを防ぐ)。
+      let finalWidth = targetWidth;
+      if (maxHeight && targetHeight > maxHeight) {
+        finalWidth = targetWidth * (maxHeight / targetHeight);
+        targetHeight = maxHeight;
+      }
+
+      width = finalWidth | 0;
       height = targetHeight | 0;
 
       widthCache.set(width);

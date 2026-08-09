@@ -67,6 +67,8 @@ export const theme = new UnjStorage("theme");
 export const customBackgroundOpacity = new UnjStorage(
 	"customBackgroundOpacity",
 );
+// 履歴バッジ: 直近で確認済みの「新着レス合計数」。この値以下ならバッジを隠す。
+export const historyBadgeSeenTotal = new UnjStorage("historyBadgeSeenTotal");
 
 // RPG
 export const rpgMode = new UnjStorage("rpgMode");

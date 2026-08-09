@@ -95,16 +95,14 @@
     import { aiWebhook, oekakiLogger } from "../mylib/webhook.js";
     import BackgroundEmbedPart from "../parts/BackgroundEmbedPart.svelte";
     import BalsPart from "../parts/BalsPart.svelte";
-    import ColorWheelPart from "../parts/ColorWheelPart.svelte";
     import AccessCounterPart from "../parts/AccessCounterPart.svelte";
     import DressUpPart from "../parts/DressUpPart.svelte";
     import DtmPart from "../parts/DtmPart.svelte";
     import TwemojiPart from "../parts/emoji/TwemojiPart.svelte";
     import FooterLinkPart from "../parts/FooterLinkPart.svelte";
     import KomePart from "../parts/KomePart.svelte";
-    import LayerPanelPart from "../parts/LayerPanelPart.svelte";
     import MessageBoxPart from "../parts/MessageBoxPart.svelte";
-    import OekakiPart from "../parts/OekakiPart.svelte";
+    import OekakiModalPart from "../parts/OekakiModalPart.svelte";
     import ResFormPart from "../parts/ResFormPart.svelte";
     import ResPart from "../parts/ResPart.svelte";
     import TermsConfirmPart from "../parts/TermsConfirmPart.svelte";
@@ -155,6 +153,7 @@
     let encryptPlaintext = $state("");
     let previewUrl = $state("");
     let oekakiCollab = $state("");
+    let openOekakiModal = $state(false);
     let isSage = $state(false);
     let isNinja = $state(false);
     let isExpand = $state(resFormExpand.value === "1");
@@ -953,23 +952,36 @@
         {menu}
     />
     {#if contentType === Enum.Oekaki && !menu}
-
-        <OekakiPart
+        <!--
+            以前はキャンバス→カラーホイール→レイヤー一覧をこの場に縦に並べていたが、
+            モバイルだとキャンバス自体が縦長な上に3つとも折り返して並ぶため、
+            投稿フォームまでたどり着くのに毎回大量のスクロールが必要だった。
+            全画面モーダル(OekakiModalPart)にまとめ、ここには開くボタンだけ置く。
+        -->
+        <button
+            type="button"
+            class="w-full max-w-xs flex items-center justify-center gap-2 py-2 px-3 rounded-lg border border-gray-500/40 hover:bg-gray-500/10 transition-colors"
+            onclick={() => (openOekakiModal = true)}
+        >
+            <BrushIcon size="16" />
+            {toDataURL?.() ? "お絵描きを編集" : "お絵描きを開く"}
+        </button>
+        {#if toDataURL?.()}
+            <img
+                src={toDataURL()}
+                alt="お絵描きプレビュー"
+                class="max-w-full max-h-40 rounded border border-gray-500/40 gimp-checkered-background"
+            />
+        {/if}
+    {/if}
+    {#if openOekakiModal}
+        <OekakiModalPart
             {threadId}
             bind:oekakiCollab
             bind:toDataURL
             bind:activeLayer
+            onClose={() => (openOekakiModal = false)}
         />
-        <!--
-            以前は色塗り導線(ColorWheelPart)とレイヤー一覧(LayerPanelPart)が
-            サイドメニュー(RightMenuPart)に追いやられていて、キャンバスから
-            離れた場所を開かないと色もレイヤーも変えられなかった。
-            キャンバスの直下に並べ、描画中に触りたいUIをその場に置く。
-        -->
-        <div class="flex flex-col items-center gap-2 mt-2">
-            <ColorWheelPart />
-            <LayerPanelPart bind:activeLayer />
-        </div>
     {/if}
     {#if contentType === Enum.Dtm && !menu}
         <DtmPart bind:contentData />
@@ -1056,6 +1068,7 @@
                     onCheckedChange={(e) => {
                         if (e.checked) {
                             contentType = Enum.Oekaki;
+                            openOekakiModal = true;
                         } else if (contentType === Enum.Oekaki && (thread.contentTypesBitmask & Enum.Text) !== 0) {
                             contentType = Enum.Text;
                         }
@@ -1133,6 +1146,10 @@
       - 色選択・レイヤー一覧: お絵描きキャンバス(OekakiPart)の直下にインライン表示
     これによりHeaderPartへchildrenを渡す必要がなくなり、✎ FAB・横スライド
     パネル自体がThreadPageからは完全になくなる。
+
+    追記: 上記「キャンバスの直下にインライン表示」も、モバイルだとキャンバス自体が
+    縦長な上にカラーホイール・レイヤー一覧まで縦に並んでスクロール地獄になったため
+    OekakiModalPart(全画面モーダル、レイヤー/パレットはトグル式の引き出し)に統合した。
 -->
 <HeaderPart {board} {title} {online} {pv} bgColor="#000000" />
 

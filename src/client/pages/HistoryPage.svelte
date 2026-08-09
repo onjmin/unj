@@ -28,6 +28,7 @@
     } from "../mylib/imgur.js";
     import { ObjectStorage } from "../mylib/object-storage.js";
     import { type ResHistory } from "../mylib/res-history.js";
+    import { historyBadgeSeenTotal } from "../mylib/unj-storage.js";
     import ImagePreviewModal from "../parts/ImagePreviewPart.svelte";
     import PaginatedArrayViewPart from "../parts/PaginatedArrayViewPart.svelte";
 
@@ -59,6 +60,13 @@
             } else {
                 resHistories = [];
             }
+            // フッターの履歴バッジ: このページを開いた時点の新着レス合計を「既読」として記録する。
+            // フッター以外(直リンク・戻る操作等)から来た場合もここでバッジを消す。
+            const total = (resHistories ?? []).reduce(
+                (sum, h) => sum + Math.max(0, h.resCount - h.resNum),
+                0,
+            );
+            historyBadgeSeenTotal.value = String(total);
         });
     });
 

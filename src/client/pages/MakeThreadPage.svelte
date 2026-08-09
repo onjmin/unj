@@ -5,7 +5,7 @@
     import MainPart from "../parts/MainPart.svelte";
     ///////////////
 
-    import { ChevronDownIcon, ChevronRightIcon } from "@lucide/svelte";
+    import { BrushIcon, ChevronDownIcon, ChevronRightIcon } from "@lucide/svelte";
     import Button from "@smui/button";
     import Select, { Option } from "@smui/select";
     import Textfield from "@smui/textfield";
@@ -51,10 +51,8 @@
         termsAgreement,
     } from "../mylib/unj-storage.js";
     import { oekakiLogger } from "../mylib/webhook.js";
-    import ColorWheelPart from "../parts/ColorWheelPart.svelte";
     import DtmPart from "../parts/DtmPart.svelte";
-    import LayerPanelPart from "../parts/LayerPanelPart.svelte";
-    import OekakiPart from "../parts/OekakiPart.svelte";
+    import OekakiModalPart from "../parts/OekakiModalPart.svelte";
     import ResFormPart from "../parts/ResFormPart.svelte";
     import TermsConfirmPart from "../parts/TermsConfirmPart.svelte";
 
@@ -72,6 +70,7 @@
     let encryptPlaintext = $state("");
     let previewUrl = $state("");
     let activeLayer = $state(null);
+    let openOekakiModal = $state(false);
 
     // 入力中のスレタイの保存
     let titleUnjStorage: UnjStorage;
@@ -451,22 +450,31 @@
             bind:previewUrl
         />
         {#if contentType === Enum.Oekaki}
-            <OekakiPart
+            <!-- モバイルでのスクロール地獄対策の全画面モーダル化。詳細はThreadPage.svelte参照 -->
+            <button
+                type="button"
+                class="w-full max-w-xs flex items-center justify-center gap-2 py-2 px-3 rounded-lg border border-gray-500/40 hover:bg-gray-500/10 transition-colors"
+                onclick={() => (openOekakiModal = true)}
+            >
+                <BrushIcon size="16" />
+                {toDataURL?.() ? "お絵描きを編集" : "お絵描きを開く"}
+            </button>
+            {#if toDataURL?.()}
+                <img
+                    src={toDataURL()}
+                    alt="お絵描きプレビュー"
+                    class="max-w-full max-h-40 rounded border border-gray-500/40 gimp-checkered-background"
+                />
+            {/if}
+        {/if}
+        {#if openOekakiModal}
+            <OekakiModalPart
                 threadId="new"
                 oekakiCollab=""
                 bind:toDataURL
                 bind:activeLayer
+                onClose={() => (openOekakiModal = false)}
             />
-            <!--
-                以前は色塗り導線(ColorWheelPart)とレイヤー一覧(LayerPanelPart)が
-                サイドメニュー(RightMenuPart)に追いやられていて、キャンバスから
-                離れた場所を開かないと色もレイヤーも変えられなかった。
-                キャンバスの直下に並べ、描画中に触りたいUIをその場に置く。
-            -->
-            <div class="flex flex-col items-center gap-2 mt-2">
-                <ColorWheelPart />
-                <LayerPanelPart bind:activeLayer />
-            </div>
         {/if}
         {#if contentType === Enum.Dtm}
             <DtmPart bind:contentData />

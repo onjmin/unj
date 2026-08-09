@@ -588,7 +588,14 @@ const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
       {/if}
 
       {#if contentType === Enum.Chord && chordParsed}
-        <div class="text-red-500 font-bold mb-1">{CHORD_MARKER}</div>
+        <div class="font-bold mb-1">
+          <Link
+            class="hover:underline"
+            to={makePathname(`/${board.key}/search?q=${encodeURIComponent(CHORD_MARKER)}`)}
+          >
+            {CHORD_MARKER}
+          </Link>
+        </div>
         <ChordPlayerPart chords={chordParsed.chords} />
       {/if}
 
