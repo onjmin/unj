@@ -107,10 +107,29 @@ const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
     return unsub;
   });
 
+  // content_url が空でも、content_type が埋め込み対応種別（画像/動画/…）なら
+  // content_text 中からその種別のホワイトリストに合致するURLを探して代用する。
+  // 共有DB経由（unj-reze等）の投稿で content_url を持たないケースがあるため。
+  const embedUrlRegexGlobal = new RegExp(urlRegex.source, "g");
+  const findEmbedUrlInText = (text: string, type: number): string => {
+    const whitelist = contentTemplateMap.get(type) ?? [];
+    if (whitelist.length === 0) return "";
+    const urls = text.match(embedUrlRegexGlobal) ?? [];
+    for (const raw of urls) {
+      try {
+        if (findIn(whitelist, new URL(raw).hostname)) return raw;
+      } catch {}
+    }
+    return "";
+  };
+  let effectiveContentUrl = $derived(
+    contentUrl !== "" ? contentUrl : findEmbedUrlInText(contentText, contentType),
+  );
+
   $effect(() => {
     let url: URL | undefined;
     try {
-      url = new URL(contentUrl);
+      url = new URL(effectiveContentUrl);
     } catch {}
     const temp = contentTemplateMap.get(contentType) ?? [];
     siteInfo = url ? findIn(temp, url.hostname) : null;
@@ -486,25 +505,25 @@ const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
         </div>
       {/if}
 
-      {#if contentUrl !== ""}
+      {#if effectiveContentUrl !== ""}
         {#if contentType === Enum.Url}
           <div class="mb-0.5 wrap-anywhere">
             <a
-              href={siteInfo?.id === 1616 ? siteInfo.href : contentUrl}
+              href={siteInfo?.id === 1616 ? siteInfo.href : effectiveContentUrl}
               target="_blank"
               rel="noopener noreferrer"
               class="cursor-pointer"
             >
-              {contentUrl}
+              {effectiveContentUrl}
             </a>
           </div>
         {/if}
 
-        {#key contentUrl}
+        {#key effectiveContentUrl}
           <div class="mb-0.5">
             <EmbedPart
               {ccUserId}
-              {contentUrl}
+              contentUrl={effectiveContentUrl}
               {contentType}
               resNum={num}
               bind:oekakiCollab
