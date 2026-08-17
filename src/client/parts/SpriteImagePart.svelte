@@ -5,9 +5,14 @@
   // 歩行グラ(rows>1=複数行のシート)はまだ自動再生に対応しておらず、先頭コマ(左上のセル)
   // だけを静止画として切り出して見せる（全コマを引き伸ばして表示する崩れた見た目は避ける）。
   //
-  // コマ単体の縦横比はDBに持っていない（シート全体のURLしか無い）ため、
+  // コマ単体のサイズはDBに持っていない（シート全体のURLしか無い）ため、
   // 一度画像を読み込んで naturalWidth/Height から逆算する。測定が終わるまでは
   // 1:1のプレースホルダー比率で待つ（一瞬だけ縦横比がズレる場合がある）。
+  //
+  // <img>と同じ「自然サイズを超えて拡大表示しない」挙動に合わせるため、コマ単体の
+  // 実ピクセル幅を明示的な width として与える。これをやらないと、div+background-image
+  // には<img>のような内在サイズが無いため width:auto がブロック要素として親幅いっぱいに
+  // 広がり、小さいドット絵アニメが投稿カードの横幅まで間延びして表示されてしまう。
 
   let {
     src = "",
@@ -31,18 +36,20 @@
 
   let frames = $derived(animFrames && animFrames > 1 ? animFrames : 1);
   let fps = $derived(animFps && animFps > 0 ? animFps : 8);
-  let cellRatio = $state<number | null>(null);
+  let cell = $state<{ ratio: number; widthPx: number } | null>(null);
 
   $effect(() => {
     if (frames <= 1 || !src) {
-      cellRatio = null;
+      cell = null;
       return;
     }
     let cancelled = false;
     const img = new Image();
     img.onload = () => {
       if (!cancelled && img.naturalWidth && img.naturalHeight) {
-        cellRatio = img.naturalWidth / frames / (img.naturalHeight / rows);
+        const cellW = img.naturalWidth / frames;
+        const cellH = img.naturalHeight / rows;
+        cell = { ratio: cellW / cellH, widthPx: cellW };
       }
     };
     img.src = src;
@@ -50,6 +57,8 @@
       cancelled = true;
     };
   });
+
+  let widthStyle = $derived(cell ? `width:${cell.widthPx}px; max-width:100%;` : "");
 </script>
 
 {#if frames <= 1 || !src}
@@ -60,7 +69,7 @@
     aria-label={alt}
     class="{className} sprite-sheet"
     class:sprite-anim={rows <= 1}
-    style="background-image:url({src}); aspect-ratio:{cellRatio ?? 1}; --frames:{frames}; --rows:{rows}; --duration:{frames / fps}s;"
+    style="background-image:url({src}); aspect-ratio:{cell?.ratio ?? 1}; {widthStyle} --frames:{frames}; --rows:{rows}; --duration:{frames / fps}s;"
     {onclick}
   ></div>
 {/if}
