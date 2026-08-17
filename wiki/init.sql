@@ -155,7 +155,15 @@ CREATE TABLE threads (
     game_id BIGINT REFERENCES games(id) ON DELETE SET NULL,
     mv_id BIGINT REFERENCES mvs(id) ON DELETE SET NULL,
     dot_w SMALLINT, -- ドット絵コラボ用のグリッド横解像度（例: 16, 24, 32, 48, 64）
-    dot_h SMALLINT -- ドット絵コラボ用のグリッド縦解像度
+    dot_h SMALLINT, -- ドット絵コラボ用のグリッド縦解像度
+    -- アニメ/歩行グラ投稿（お絵描き/ドット絵エディタのアニメモード・歩行グラモード）。
+    -- content_url は横1列(歩行グラは複数行)のスプライトシートのURL(uploader経由。
+    -- 生base64は入れない)で、frames/fpsはシート単体からは復元できない自由入力値のため
+    -- 別カラムで持つ。歩行グラの方向数/コマ順はwalk_presetのラベルから
+    -- lib/walk-cycle.ts の presets を引いて一意に復元する（画素サイズからの推測はしない）。
+    anim_frames SMALLINT, -- スプライトシートのコマ数（横の列数。歩行グラは方向あたりのコマ数）
+    anim_fps SMALLINT, -- 再生fps
+    walk_preset TEXT -- 歩行グラのとき lib/walk-cycle.ts の WalkPreset.label。アニメ絵ならNULL
 );
 
 CREATE INDEX idx_threads_board_deleted ON threads (board_id, deleted_at);
@@ -202,6 +210,9 @@ CREATE TABLE res (
     mv_id BIGINT REFERENCES mvs(id) ON DELETE SET NULL,
     dot_w SMALLINT,
     dot_h SMALLINT,
+    anim_frames SMALLINT,
+    anim_fps SMALLINT,
+    walk_preset TEXT,
     UNIQUE (thread_id, num) -- スレッド内でのレス番号の一意性を保証
 );
 
