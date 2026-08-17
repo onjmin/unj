@@ -119,7 +119,12 @@ export const embedYouTube = ({
 }) => {
 	if (!iframeParentDOM) return;
 	activeController = youTubeController;
-	const videoId = embedUrl.split("/").slice(-1)[0];
+	const match = embedUrl.match(/\/embed\/([a-zA-Z0-9_-]{11})/);
+	const videoId = match
+		? match[1]
+		: embedUrl.split("/").slice(-1)[0].split("?")[0];
+	const startMatch = embedUrl.match(/[?&]start=(\d+)/);
+	const start = startMatch ? parseInt(startMatch[1], 10) : undefined;
 	const onYouTubeIframeAPIReady = () => {
 		new window.YT.Player(iframeParentDOM, {
 			width,
@@ -128,6 +133,7 @@ export const embedYouTube = ({
 			playerVars: {
 				loop: 1,
 				playlist: videoId,
+				...(start ? { start } : {}),
 			},
 			events: {
 				onReady: (event: any) => {
