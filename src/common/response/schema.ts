@@ -42,6 +42,10 @@ export type Res = {
 	contentType: number;
 	contentData: string;
 	commandResult: string;
+	// unj-reze由来のアニメ/歩行グラ投稿。contentUrlがスプライトシートのときだけ入る
+	animFrames: number | null;
+	animFps: number | null;
+	walkPreset: string | null;
 	// メタ情報
 	num: number;
 	createdAt: Date;
@@ -59,6 +63,10 @@ export type Thread = {
 	contentUrl: string;
 	contentType: number;
 	contentData: string;
+	// unj-reze由来のアニメ/歩行グラ投稿。contentUrlがスプライトシートのときだけ入る
+	animFrames: number | null;
+	animFps: number | null;
+	walkPreset: string | null;
 	// メタ情報
 	id: string;
 	createdAt: Date;

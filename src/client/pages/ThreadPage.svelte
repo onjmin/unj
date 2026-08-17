@@ -1360,6 +1360,9 @@
             contentUrl={thread?.ageRes.contentUrl}
             contentType={Enum.Text}
             contentData={thread?.ageRes.contentData ?? ""}
+            animFrames={thread?.ageRes.animFrames ?? null}
+            animFps={thread?.ageRes.animFps ?? null}
+            walkPreset={thread?.ageRes.walkPreset ?? null}
             num={thread?.ageRes.num}
             isOwner={thread?.ageRes.isOwner}
             sage={thread?.ageRes.sage}
@@ -1414,6 +1417,9 @@
                     contentUrl={thread.contentUrl}
                     contentType={thread.contentType}
                     contentData={thread.contentData}
+                    animFrames={thread.animFrames ?? null}
+                    animFps={thread.animFps ?? null}
+                    walkPreset={thread.walkPreset ?? null}
                     createdAt={thread.createdAt}
                     threadId={thread.id}
                     resList={thread.resList ?? []}
@@ -1710,6 +1716,9 @@
                         contentUrl={thread.contentUrl}
                         contentType={thread.contentType}
                         contentData={thread.contentData}
+                        animFrames={thread.animFrames ?? null}
+                        animFps={thread.animFps ?? null}
+                        walkPreset={thread.walkPreset ?? null}
                         ps={thread.ps}
                         num={1}
                         isOwner={true}
@@ -1784,6 +1793,9 @@
                             contentUrl={res.contentUrl}
                             contentType={res.contentType}
                             contentData={res.contentData}
+                            animFrames={res.animFrames ?? null}
+                            animFps={res.animFps ?? null}
+                            walkPreset={res.walkPreset ?? null}
                             commandResult={res.commandResult}
                             num={res.num}
                             isOwner={res.isOwner}

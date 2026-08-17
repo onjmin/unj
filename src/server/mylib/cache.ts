@@ -12,6 +12,10 @@ export const contentTextCache: Map<number, string> = new Map();
 export const contentUrlCache: Map<number, string> = new Map();
 export const contentTypeCache: Map<number, number> = new Map();
 export const contentDataCache: Map<number, string> = new Map();
+// アニメ/歩行グラ投稿（unj-reze由来）。imageSrcがスプライトシートのときのコマ数/fps/歩行規格ラベル
+export const animFramesCache: Map<number, number | null> = new Map();
+export const animFpsCache: Map<number, number | null> = new Map();
+export const walkPresetCache: Map<number, string | null> = new Map();
 // メタ情報
 export const createdAtCache: Map<number, Date> = new Map();
 export const userIdCache: Map<number, number> = new Map();

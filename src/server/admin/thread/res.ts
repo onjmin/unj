@@ -4,10 +4,10 @@ import type { Server } from "socket.io";
 import * as v from "valibot";
 import { contentSchemaMap } from "../../../common/request/content-schema.js";
 import {
+	myConfig,
 	SMALLINT,
 	THREAD_ID,
 	USER_NAME,
-	myConfig,
 } from "../../../common/request/schema.js";
 import type { Res } from "../../../common/response/schema.js";
 import { decodeThreadId } from "../../mylib/anti-debug.js";
@@ -139,6 +139,9 @@ export default (router: Router, io: Server) => {
 				contentUrl: content.output.contentUrl,
 				contentType: content.output.contentType,
 				contentData: content.output.contentData ?? "",
+				animFrames: null,
+				animFps: null,
+				walkPreset: null,
 				commandResult: "",
 				// メタ情報
 				num: latestResNum,

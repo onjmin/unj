@@ -7,6 +7,8 @@ import auth from "../mylib/auth.js";
 import {
 	ageResCache,
 	ageResNumCache,
+	animFpsCache,
+	animFramesCache,
 	badCountCache,
 	balsResNumCache,
 	bannedCache,
@@ -37,6 +39,7 @@ import {
 	titleCache,
 	userIdCache,
 	varsanCache,
+	walkPresetCache,
 } from "../mylib/cache.js";
 import { logger } from "../mylib/log.js";
 import nonce from "../mylib/nonce.js";
@@ -85,6 +88,9 @@ export default ({ socket }: { socket: Socket }) => {
 				contentUrlCache.set(threadId, threadRecord.content_url);
 				contentTypeCache.set(threadId, threadRecord.content_type);
 				contentDataCache.set(threadId, threadRecord.content_data_url);
+				animFramesCache.set(threadId, threadRecord.anim_frames ?? null);
+				animFpsCache.set(threadId, threadRecord.anim_fps ?? null);
+				walkPresetCache.set(threadId, threadRecord.walk_preset ?? null);
 				// メタ情報
 				createdAtCache.set(threadId, new Date(threadRecord.created_at));
 				userIdCache.set(threadId, threadRecord.user_id);
@@ -132,6 +138,9 @@ export default ({ socket }: { socket: Socket }) => {
 						contentUrl: contentUrlCache.get(threadId) ?? "",
 						contentType: contentTypeCache.get(threadId) ?? 0,
 						contentData: contentDataCache.get(threadId) ?? "",
+						animFrames: animFramesCache.get(threadId) ?? null,
+						animFps: animFpsCache.get(threadId) ?? null,
+						walkPreset: walkPresetCache.get(threadId) ?? null,
 						commandResult: "",
 						// メタ情報
 						num: 1,
@@ -157,6 +166,9 @@ export default ({ socket }: { socket: Socket }) => {
 							contentUrl: record.content_url,
 							contentType: record.content_type,
 							contentData: record.content_data_url,
+							animFrames: record.anim_frames ?? null,
+							animFps: record.anim_fps ?? null,
+							walkPreset: record.walk_preset ?? null,
 							commandResult: record.command_result,
 							// メタ情報
 							num: record.num,
@@ -204,6 +216,9 @@ export default ({ socket }: { socket: Socket }) => {
 					contentUrl: record.content_url,
 					contentType: record.content_type,
 					contentData: record.content_data_url,
+					animFrames: record.anim_frames ?? null,
+					animFps: record.anim_fps ?? null,
+					walkPreset: record.walk_preset ?? null,
 					commandResult: record.command_result,
 					// メタ情報
 					num: record.num,
@@ -223,6 +238,9 @@ export default ({ socket }: { socket: Socket }) => {
 				contentUrl: contentUrlCache.get(threadId) ?? "",
 				contentType: contentTypeCache.get(threadId) ?? 0,
 				contentData: contentDataCache.get(threadId) ?? "",
+				animFrames: animFramesCache.get(threadId) ?? null,
+				animFps: animFpsCache.get(threadId) ?? null,
+				walkPreset: walkPresetCache.get(threadId) ?? null,
 				// 基本的な情報
 				title: titleCache.get(threadId) ?? "",
 				boardId: boardIdCache.get(threadId) ?? 0,

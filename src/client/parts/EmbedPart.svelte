@@ -41,6 +41,7 @@
   import ImagePreviewModal from "../parts/ImagePreviewPart.svelte";
   import EmbedXPart from "./EmbedXPart.svelte";
   import MessageBoxPart from "./MessageBoxPart.svelte";
+  import SpriteImagePart from "./SpriteImagePart.svelte";
   import { activeHeavyId } from "../mylib/store.js";
   import { releaseAudioFocus, requestAudioFocus } from "../mylib/audio-focus.js";
 
@@ -51,12 +52,48 @@
     ccUserAvatar = 0,
     contentUrl = "",
     contentType = 0,
+    animFrames = null,
+    animFps = null,
+    walkPreset = null,
     resNum = 0,
     auto = false,
     oekakiCollab = $bindable(""),
     bindContentText = $bindable(""),
     bindContentType = $bindable(0),
+  }: {
+    ccUserId?: string;
+    ccUserAvatar?: number;
+    contentUrl?: string;
+    contentType?: number;
+    animFrames?: number | null;
+    animFps?: number | null;
+    walkPreset?: string | null;
+    resNum?: number;
+    auto?: boolean;
+    oekakiCollab?: string;
+    bindContentText?: string;
+    bindContentType?: number;
   } = $props();
+
+  // unj-reze(lib/walk-cycle.ts)の WalkPreset.label → 方向数(行数)。
+  // 歩行グラのプリセットは向こう側の投稿編集UIで固定の5規格しか無いのでここに複製する
+  // （リポジトリを跨ぐため共有コードにできない）。
+  const WALK_PRESET_ROWS: Record<string, number> = {
+    RPGEN: 4,
+    RPGツクール2000: 4,
+    RPGツクールXP: 4,
+    RPGツクールVX: 4,
+    RPGツクールMV: 4,
+  };
+  let spriteRows = $derived(
+    walkPreset ? (WALK_PRESET_ROWS[walkPreset] ?? 1) : 1,
+  );
+  // reze産のアップロード/描画画像はimgur等のホワイトリストに乗らないため、
+  // Image/Oekaki種別はホワイトリスト判定を経由せず常に直接<img>表示する。
+  let isDirectImage = $derived(
+    (contentType === Enum.Image || contentType === Enum.Oekaki) &&
+      contentUrl !== "",
+  );
 
   let url: URL | undefined;
   let siteInfo = $state<SiteInfo | null>(null);
@@ -309,7 +346,48 @@
   let src = $state("");
 </script>
 
-{#if siteInfo}
+{#if isDirectImage}
+  <button
+    class="relative cursor-pointer block"
+    aria-label="画像を拡大表示"
+    onclick={() => {
+      src = contentUrl;
+      open = true;
+    }}
+  >
+    <SpriteImagePart
+      src={contentUrl}
+      alt=""
+      class="embed-image gimp-checkered-background"
+      {animFrames}
+      {animFps}
+      rows={spriteRows}
+      onerror={() => {
+        embedError = true;
+      }}
+    />
+  </button>
+  {#if contentType === Enum.Oekaki || (contentType === Enum.Image && ccUserId === "AI")}
+    <button
+      class="ml-1 text-blue-500 hover:text-blue-700 font-bold transition duration-300 text-sm"
+      onclick={() => {
+        if (
+          !confirm("お絵描きコラボしますか？（お絵描き中のデータは消えます）")
+        )
+          return;
+        oekakiCollab = contentUrl;
+        bindContentType = Enum.Oekaki;
+        scrollToEnd();
+        bindContentText = bindContentText
+          .replace(ankaMatchAllRegex, "")
+          .replace(/^[^\S]*/, `>>${resNum}\n`);
+        focus();
+      }}
+    >
+      お絵描きコラボ
+    </button>
+  {/if}
+{:else if siteInfo}
   {#if contentType === Enum.Oekaki}
     <div class="text-red-500">※お絵描き機能</div>
   {/if}

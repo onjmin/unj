@@ -27,6 +27,8 @@ import auth from "../mylib/auth.js";
 import {
 	ageResCache,
 	ageResNumCache,
+	animFpsCache,
+	animFramesCache,
 	badCountCache,
 	balsResNumCache,
 	bannedCache,
@@ -58,6 +60,7 @@ import {
 	userCached,
 	userIPCache,
 	varsanCache,
+	walkPresetCache,
 } from "../mylib/cache.js";
 import { makeCcUserAvatar, makeCcUserId, makeCcUserName } from "../mylib/cc.js";
 import { parseCommand } from "../mylib/command.js";
@@ -298,6 +301,10 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 				contentUrl: content.output.contentUrl,
 				contentType: content.output.contentType,
 				contentData: content.output.contentData ?? "",
+				// unjの投稿フローにはアニメ/歩行グラ添付UIが無いのでnull固定
+				animFrames: null,
+				animFps: null,
+				walkPreset: null,
 				commandResult: parsedResult.msg,
 				// メタ情報
 				num: latestResNum,
@@ -371,6 +378,9 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 					contentUrl: content.output.contentUrl,
 					contentType: content.output.contentType,
 					contentData: content.output.contentData ?? "",
+					animFrames: null,
+					animFps: null,
+					walkPreset: null,
 					commandResult: parsedResult.msg,
 					// メタ情報
 					num: latestResNum,
@@ -395,6 +405,9 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 							contentUrl: contentUrlCache.get(threadId) ?? "",
 							contentType: contentTypeCache.get(threadId) ?? 0,
 							contentData: contentDataCache.get(threadId) ?? "",
+							animFrames: animFramesCache.get(threadId) ?? null,
+							animFps: animFpsCache.get(threadId) ?? null,
+							walkPreset: walkPresetCache.get(threadId) ?? null,
 							commandResult: "",
 							// メタ情報
 							num: 1,
@@ -420,6 +433,9 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 								contentUrl: record.content_url,
 								contentType: record.content_type,
 								contentData: record.content_data_url,
+								animFrames: record.anim_frames ?? null,
+								animFps: record.anim_fps ?? null,
+								walkPreset: record.walk_preset ?? null,
 								commandResult: record.command_result,
 								// メタ情報
 								num: record.num,
