@@ -2,8 +2,9 @@
   // 投稿画像の表示用。unj-reze由来のアニメ/歩行グラ投稿(スプライトシート)を再生する。
   // animFrames が無い/1以下なら素の<img>と同じ見た目・挙動になる。
   //
-  // 歩行グラ(rows>1=複数行のシート)はまだ自動再生に対応しておらず、先頭コマ(左上のセル)
-  // だけを静止画として切り出して見せる（全コマを引き伸ばして表示する崩れた見た目は避ける）。
+  // 歩行グラ(rows>1=複数行のシート)は先頭行(1方向目)固定でコマを再生する
+  // （reze側と違い方向転換UIは無いので、常に先頭行のアニメを流す）。
+  // サイズに関わらず常に再生する＝「小さい枠だから静止画にする」判断はしない。
   //
   // コマ単体のサイズはDBに持っていない（シート全体のURLしか無い）ため、
   // 一度画像を読み込んで naturalWidth/Height から逆算する。測定が終わるまでは
@@ -76,8 +77,7 @@
   <div
     role="img"
     aria-label={alt}
-    class="{className} sprite-sheet"
-    class:sprite-anim={rows <= 1}
+    class="{className} sprite-sheet sprite-anim"
     style="background-image:url({src}); aspect-ratio:{cell?.ratio ?? 1}; {widthStyle} --frames:{frames}; --rows:{rows}; --duration:{frames / fps}s;"
     {onclick}
   ></div>
