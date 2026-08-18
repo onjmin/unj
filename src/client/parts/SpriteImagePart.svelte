@@ -58,7 +58,16 @@
     };
   });
 
-  let widthStyle = $derived(cell ? `width:${cell.widthPx}px; max-width:100%;` : "");
+  // ドット絵は1ドット=1pxのネイティブ解像度でDBに置く方針（本体データはドット数が正で、
+  // 表示用に水増ししたビットマップをR2に置くと転送量/ストレージの無駄になる）ため、
+  // 実サイズが小さいコマはこの幅までCSSで拡大する（image-rendering:pixelatedで
+  // にじませずドット単位で拡大。豆粒のまま埋め込まれるのを防ぐ）。
+  const MIN_DISPLAY_PX = 200;
+  let widthStyle = $derived(
+    cell
+      ? `width:${Math.max(cell.widthPx, MIN_DISPLAY_PX)}px; max-width:100%;`
+      : "",
+  );
 </script>
 
 {#if frames <= 1 || !src}
@@ -87,12 +96,18 @@
     animation-timing-function: steps(var(--frames));
     animation-iteration-count: infinite;
   }
+  /*
+   * background-position の百分率は (コンテナ幅-画像幅)×(P/100) で解決される（CSS仕様）ため、
+   * N分割ステップの最後のコマにちょうど揃う目標値は 100% でも N×100% でもなく
+   * 100×N/(N-1)%。ここを frames×-100% にすると2コマ目以降が隣接コマ境界からズレて
+   * 半端な位置で止まる＝コマが割れて見えるバグになる。
+   */
   @keyframes sprite-anim-steps {
     from {
       background-position: 0% 0;
     }
     to {
-      background-position: calc(var(--frames) * -100%) 0;
+      background-position: calc(100% * var(--frames) / (var(--frames) - 1)) 0;
     }
   }
 </style>
