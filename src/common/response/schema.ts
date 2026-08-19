@@ -8,6 +8,8 @@ export type HeadlineThread = {
 	resCount: number;
 	// 基本的な情報
 	title: string;
+	// unj-reze発スレは title が空。一覧で見出し代わりに本文を出すためのフォールバック用。
+	contentText: string;
 	boardId: number;
 	// 動的なデータ
 	online: number;

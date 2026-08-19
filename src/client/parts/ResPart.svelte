@@ -20,10 +20,7 @@
     hashtagRegex,
     urlRegex,
   } from "../../common/request/content-schema.js";
-  import {
-    findIn,
-    SiteInfo,
-  } from "../../common/request/whitelist/site-info.js";
+  import { findIn } from "../../common/request/whitelist/site-info.js";
   import { seededRandArray } from "../../common/util.js";
   import { activeController } from "../mylib/background-embed.js";
   import { makePathname } from "../mylib/env.js";
@@ -102,7 +99,6 @@ const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
     highlightQuery = "",
   } = $props();
 
-  let siteInfo: SiteInfo | null = $state(null);
   let showDtm = $state(true);
   const myDtmHeavyId = {};
 
@@ -133,15 +129,6 @@ const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
   let effectiveContentUrl = $derived(
     contentUrl !== "" ? contentUrl : findEmbedUrlInText(contentText, contentType),
   );
-
-  $effect(() => {
-    let url: URL | undefined;
-    try {
-      url = new URL(effectiveContentUrl);
-    } catch {}
-    const temp = contentTemplateMap.get(contentType) ?? [];
-    siteInfo = url ? findIn(temp, url.hostname) : null;
-  });
 
   const ignoreListCache = new ObjectStorage<string[]>("ignoreListCache");
   let showBlockButtons: boolean = $state(false);
@@ -535,19 +522,9 @@ const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
       {/if}
 
       {#if effectiveContentUrl !== ""}
-        {#if contentType === Enum.Url}
-          <div class="mb-0.5 wrap-anywhere">
-            <a
-              href={siteInfo?.id === 1616 ? siteInfo.href : effectiveContentUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="cursor-pointer"
-            >
-              {effectiveContentUrl}
-            </a>
-          </div>
-        {/if}
-
+        <!-- URLの生テキストはEmbedPartのプレビューカードと二重表示になる
+             （どのみち埋め込まれるし、埋め込まれない種別でも本文側に同じURLが
+             既に書かれていることが多い）ため、生リンク行は出さずEmbedPartのみ表示する。 -->
         {#key effectiveContentUrl}
           <div class="mb-0.5">
             <EmbedPart

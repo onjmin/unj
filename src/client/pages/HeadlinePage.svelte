@@ -66,6 +66,13 @@
         return `${differenceInSeconds(now, date)}秒`;
     };
 
+    // unj-reze発スレは title が空（unj-reze側 lib/db/pg.ts createPost 参照）。
+    // 見出しが空欄にならないよう、その場合だけ本文1行目を代わりに表示する。
+    const firstLineOf = (text: string): string => {
+        const line = (text || "").split(/\r\n|\r|\n/)[0]?.trim() ?? "";
+        return line.length > 32 ? `${line.slice(0, 32)}…` : line || "無題";
+    };
+
     // 専ブラ(2ch専用ブラウザ)配信は unj-reze 側が board_id=1（うんでも実況J）限定で実装している。
     // "unj"は板ID(src/common/request/board.ts参照)。 https://scrapbox.io/2chtypebbs/subject.txt
     const senburaSubjectUrl =
@@ -456,7 +463,10 @@
                                         {/key}
                                     </span>
                                     <span class="unj-thread-title-text"
-                                        >{thread.title}</span
+                                        >{thread.title ||
+                                            firstLineOf(
+                                                thread.contentText,
+                                            )}</span
                                     >
                                     <span class="unj-res-bubble"
                                         >{thread.resCount}</span

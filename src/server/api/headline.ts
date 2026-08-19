@@ -66,6 +66,10 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 					resCount,
 					// 基本的な情報
 					title: record.title,
+					// unj-reze発スレは title が空文字/NULLで保存される
+					// （unj-reze側 lib/db/pg.ts createPost 参照）。一覧の見出しが空欄に
+					// ならないよう、本文をクライアント側でフォールバック表示するために渡す。
+					contentText: record.content_text ?? "",
 					boardId: board.id,
 					// 動的なデータ
 					online: sizeOf(io, getThreadRoom(record.id)),

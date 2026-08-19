@@ -1642,7 +1642,9 @@
                 <span
                     class="pl-1.5 min-w-0 wrap-break-word whitespace-normal leading-snug"
                 >
-                    {thread.title}
+                    {#if thread.title}
+                        {thread.title}
+                    {/if}
                     <span class="ml-1 whitespace-nowrap"
                         >({thread.resCount})</span
                     >
