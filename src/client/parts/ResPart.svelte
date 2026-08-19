@@ -87,6 +87,8 @@ const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
     ps = "",
     // メタ情報
     num = 0,
+    // unj-reze由来の返信関係（DBの res.parent_num）。1（スレ1番=OP）またはnullなら安価を合成しない
+    parentNum = null,
     isOwner = false,
     sage = false,
     createdAt = new Date(),
@@ -223,8 +225,18 @@ const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
   let chordParsed = $derived(
     contentType === Enum.Chord ? extractChordsFromContent(contentText) : null,
   );
-  let displayText = $derived(
+  // 返信関係にある投稿は、本文に >>レス番 の安価が入っているテイで表示する。
+  // ただしスレ1番目（OP）への返信は例外（BBSの慣習上、地の文への返信に逐一安価を付けないため）。
+  // 実データは書き換えず、表示用にのみ合成する。
+  let rawDisplayText = $derived(
     chordParsed ? chordParsed.comment : contentText,
+  );
+  let displayText = $derived(
+    parentNum &&
+      parentNum !== 1 &&
+      rawDisplayText.split("\n")[0].trim() !== `>>${parentNum}`
+      ? `>>${parentNum}\n${rawDisplayText}`
+      : rawDisplayText,
   );
   let parts = $derived(
     displayText !== ""

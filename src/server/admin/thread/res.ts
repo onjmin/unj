@@ -148,6 +148,7 @@ export default (router: Router, io: Server) => {
 				createdAt: created_at,
 				isOwner: false,
 				sage: true,
+				parentNum: null,
 			};
 
 			// Socket.IO通知

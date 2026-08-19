@@ -311,6 +311,8 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 				createdAt: created_at,
 				isOwner,
 				sage,
+				// unjの投稿フローには返信先指定UIが無いのでnull固定
+				parentNum: null,
 			};
 
 			socket.emit(api, {
@@ -387,6 +389,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 					createdAt: created_at,
 					isOwner,
 					sage,
+					parentNum: null,
 				};
 				ageResCache.set(threadId, ageRes);
 			}
@@ -414,6 +417,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 							createdAt: createdAtCache.get(threadId) ?? new Date(0),
 							isOwner: true,
 							sage: false,
+							parentNum: null,
 						};
 						ageResCache.set(threadId, ageRes);
 					} else if (ageResNum < latestResNum) {
@@ -442,6 +446,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 								createdAt: record.created_at,
 								isOwner: record.is_owner,
 								sage: record.sage,
+								parentNum: record.parent_num ?? null,
 							};
 							ageResCache.set(threadId, ageRes);
 						}

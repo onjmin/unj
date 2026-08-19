@@ -53,6 +53,9 @@ export type Res = {
 	createdAt: Date;
 	isOwner: boolean;
 	sage: boolean;
+	// unj-reze由来の返信関係。res.parent_num（DBの実カラム）をそのまま渡す。
+	// 1（スレ1番=OP）またはnullのときは通常のBBS書き込みと区別しない。
+	parentNum: number | null;
 };
 
 export type Thread = {

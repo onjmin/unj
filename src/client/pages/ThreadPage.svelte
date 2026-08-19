@@ -1366,6 +1366,7 @@
             num={thread?.ageRes.num}
             isOwner={thread?.ageRes.isOwner}
             sage={thread?.ageRes.sage}
+            parentNum={thread?.ageRes.parentNum ?? null}
             createdAt={thread?.ageRes.createdAt}
             threadId={thread.id}
             resList={thread?.resList ?? []}
@@ -1802,6 +1803,7 @@
                             num={res.num}
                             isOwner={res.isOwner}
                             sage={res.sage}
+                            parentNum={res.parentNum ?? null}
                             createdAt={res.createdAt}
                             threadId={thread.id}
                             resList={thread.resList ?? []}
