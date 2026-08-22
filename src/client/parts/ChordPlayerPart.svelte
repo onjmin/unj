@@ -3,10 +3,6 @@
   import { onMount } from "svelte";
   import { getStudio } from "../mylib/dtm.js";
   import { releaseAudioFocus, requestAudioFocus } from "../mylib/audio-focus.js";
-  import {
-    applyMasterVolume,
-    subscribeMasterVolume,
-  } from "../mylib/master-volume.js";
 
   // コード進行はDTMのMMLと違い短文なので、contentTextにそのまま入っている。
   // R2への取得待ちが無い分、DtmPlayerPartよりシンプル。
@@ -20,17 +16,14 @@
     let inst: ChordPlayerInstance | null = null;
     let disposed = false;
     let poll: ReturnType<typeof setInterval> | null = null;
-    let unsubVolume: (() => void) | null = null;
+    // サイト全体の音量（読者の好み）は getStudio() 内で studio.setMasterVolume() に
+    // 一本化済み（studio.masterGain、全プレイヤー共有の出力段）なので、ここでは volume を
+    // 指定しない。個別に適用すると studio.masterGain と二重に掛かってしまう。
     getStudio()
       .then((studio) => {
         if (disposed) return;
         inst = studio.mountChordPlayer(container, chords, {
-          volume: 50,
-          masterVolume: applyMasterVolume(100),
           onStop: () => releaseAudioFocus(focusId),
-        });
-        unsubVolume = subscribeMasterVolume(() => {
-          inst?.setVolume(applyMasterVolume(100));
         });
         // 同じページに複数のコード進行埋め込みがあると、片方の再生ボタンを
         // 押しても他方が鳴りっぱなしになる（排他制御が無かった）のを防ぐ。
@@ -54,7 +47,6 @@
       });
     return () => {
       disposed = true;
-      if (unsubVolume) unsubVolume();
       if (poll) clearInterval(poll);
       inst?.destroy();
       inst = null;
