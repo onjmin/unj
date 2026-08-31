@@ -71,7 +71,6 @@ export default ({ socket }: { socket: Socket }) => {
 
 			// キャッシュの登録
 			if (!threadCached.has(threadId)) {
-				threadCached.set(threadId, true);
 				// スレッドの取得
 				const { rows, rowCount } = await pool.query(
 					"SELECT * FROM threads WHERE id = $1",
@@ -80,6 +79,10 @@ export default ({ socket }: { socket: Socket }) => {
 				if (rowCount === 0) return;
 				const threadRecord = rows[0];
 
+				// キャッシュ済みフラグはレコードを引けてから立てる。先に立てると
+				// 存在しないスレIDを1回踏んだだけで「キャッシュ済みだが中身が空」の状態が
+				// 固定され、以降そのIDへのreadThreadが空スレをok:trueで返し続ける。
+				threadCached.set(threadId, true);
 				// 書き込み内容
 				ccUserIdCache.set(threadId, threadRecord.cc_user_id);
 				ccUserNameCache.set(threadId, threadRecord.cc_user_name);

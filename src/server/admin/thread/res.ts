@@ -108,7 +108,13 @@ export default (router: Router, io: Server) => {
 				sage,
 				genTestIP(),
 			]);
-			if (rowCount === 0) return;
+			if (rowCount === 0) {
+				// BEGIN後なので、開きっぱなしのままreleaseしないよう巻き戻してから返す
+				// （レスポンスを返さずreturnするとリクエストがタイムアウトまでぶら下がる）
+				await poolClient.query("ROLLBACK");
+				res.status(500).json({ error: "Failed to create response" });
+				return;
+			}
 			const { created_at, num } = rows[0];
 
 			const latestResNum = num;

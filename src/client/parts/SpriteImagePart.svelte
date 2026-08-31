@@ -45,13 +45,21 @@
       return;
     }
     let cancelled = false;
+    // rows はコマ寸法の計算に使うが、読むのが img.onload の中（非同期）だけだと
+    // $effect の依存として追跡されず、walkPreset 変更時に再計測されない。
+    const sheetRows = rows;
     const img = new Image();
     img.onload = () => {
       if (!cancelled && img.naturalWidth && img.naturalHeight) {
         const cellW = img.naturalWidth / frames;
-        const cellH = img.naturalHeight / rows;
+        const cellH = img.naturalHeight / sheetRows;
         cell = { ratio: cellW / cellH, widthPx: cellW };
       }
+    };
+    // スプライト側は <div background-image> なので img の error イベントが無い。
+    // 計測用の Image の失敗を親（EmbedPart の embedError 等）へ橋渡しする。
+    img.onerror = () => {
+      if (!cancelled) onerror?.();
     };
     img.src = src;
     return () => {

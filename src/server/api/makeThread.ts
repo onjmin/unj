@@ -156,7 +156,11 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 					"fal_1_3",
 				],
 			);
-			if (rowCount === 0) return;
+			if (rowCount === 0) {
+				// BEGIN後なので、開きっぱなしのままreleaseしないようここで巻き戻す
+				await poolClient.query("ROLLBACK");
+				return;
+			}
 			const { id } = rows[0];
 
 			const newThread: HeadlineThread = {
@@ -169,6 +173,8 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 				resCount: 1,
 				// 基本的な情報
 				title: makeThread.output.title,
+				// 一覧の見出しフォールバック用（HeadlineThread.contentText参照）
+				contentText: content.output.contentText,
 				boardId: board.id,
 				// 動的なデータ
 				online: 1,

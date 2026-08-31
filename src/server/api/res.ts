@@ -153,7 +153,6 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 
 			// 忍法帖の読み込み
 			if (!userCached.has(userId)) {
-				userCached.set(userId, true);
 				const { rows, rowCount } = await poolClient.query(
 					"SELECT ninja_pokemon, ninja_score FROM users WHERE id = $1",
 					[userId],
@@ -161,6 +160,10 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 				if (rowCount === 0) return;
 				const record = rows[0];
 
+				// キャッシュ済みフラグはレコードを引けてから立てる。先に立てると
+				// 取得失敗時に「キャッシュ済みだが中身が空」の状態が固定され、
+				// 以降そのユーザーの忍法帖スコアが永久に0扱いになる。
+				userCached.set(userId, true);
 				userIPCache.set(userId, getIP(socket));
 				ninjaPokemonCache.set(userId, record.ninja_pokemon);
 				ninjaScoreCache.set(userId, record.ninja_score);
@@ -255,7 +258,11 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 					"fal_1_3",
 				],
 			);
-			if (rowCount === 0) return;
+			if (rowCount === 0) {
+				// BEGIN後なので、開きっぱなしのままreleaseしないようここで巻き戻す
+				await poolClient.query("ROLLBACK");
+				return;
+			}
 			const { created_at, num } = rows[0];
 
 			const latestResNum = num;
@@ -340,6 +347,9 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 					resCount: latestResNum,
 					// 基本的な情報
 					title: titleCache.get(threadId) ?? "",
+					// unj-reze発スレはtitleが空。一覧の見出しを本文で代用させるため
+					// headline.tsと同じくスレ本文を載せる（欠けると更新後だけ見出しが消える）。
+					contentText: contentTextCache.get(threadId) ?? "",
 					boardId: board.id,
 					// 動的なデータ
 					online: sizeOf(io, getThreadRoom(threadId)),
@@ -472,6 +482,10 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			}
 
 			// RPG
+			// ここでreturnするとCOMMITに到達せず、INSERT済みのレスが闇に葬られる上に
+			// トランザクション開きっぱなしのコネクションがプールに返却される。早期returnは書かないこと。
+			// humansはユーザー単位で永続、doppelgangersはスレ単位かつ4分で期限切れ(rpgInit.ts参照)なので、
+			// 「RPG参加経験のあるユーザーが別スレ／4分後に書き込む」＝m/dが無いケースは普通に起きる。
 			if (humans.has(userId)) {
 				const human = humans.get(userId);
 				if (human) {
@@ -481,23 +495,22 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 					} else {
 						human.msg = msg;
 					}
-					const m = doppelgangers.get(threadId);
-					if (!m) return;
-					const d = m.get(userId);
-					if (!d) return;
-					const player: Player = {
-						userId: encodeUserId(userId, unjBeginDate) ?? "",
-						sAnimsId: d.human.sAnimsId,
-						msg: d.human.msg,
-						x: d.x,
-						y: d.y,
-						direction: d.direction,
-						updatedAt: d.updatedAt,
-					};
-					io.to(getThreadRoom(threadId)).emit("rpgPatch", {
-						ok: true,
-						player,
-					});
+					const d = doppelgangers.get(threadId)?.get(userId);
+					if (d) {
+						const player: Player = {
+							userId: encodeUserId(userId, unjBeginDate) ?? "",
+							sAnimsId: d.human.sAnimsId,
+							msg: d.human.msg,
+							x: d.x,
+							y: d.y,
+							direction: d.direction,
+							updatedAt: d.updatedAt,
+						};
+						io.to(getThreadRoom(threadId)).emit("rpgPatch", {
+							ok: true,
+							player,
+						});
+					}
 				}
 			}
 
