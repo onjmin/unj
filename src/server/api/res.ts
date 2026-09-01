@@ -335,8 +335,8 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 				yours: false,
 			});
 
-			// ヘッドライン更新
-			if (threadCached.has(threadId)) {
+			// ヘッドライン更新（sageの場合は最上位に浮上させないため通知をスキップ）
+			if (!sage && threadCached.has(threadId)) {
 				const createdAt = createdAtCache.get(threadId) ?? new Date(0);
 				const newHeadline: HeadlineThread = {
 					// 書き込み内容

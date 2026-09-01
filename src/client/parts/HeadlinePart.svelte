@@ -19,7 +19,13 @@
   import { socket } from "../mylib/socket.js";
   import { scrollToTop } from "../mylib/scroll.js";
 
-  let { board }: { board: Board } = $props();
+  let {
+    board,
+    initialItems = null,
+  }: {
+    board: Board;
+    initialItems?: HeadlineThread[] | null;
+  } = $props();
 
   const formatTimeAgo = (date: Date): string => {
     const now = new Date();
@@ -39,20 +45,37 @@
     return `${differenceInSeconds(now, date)}秒`;
   };
 
+  const firstLineOf = (text: string): string => {
+    const line = (text || "").split(/\r\n|\r|\n/)[0]?.trim() ?? "";
+    return line.length > 32 ? `${line.slice(0, 32)}…` : line || "無題";
+  };
+
   let items: HeadlineThread[] | null = $state(null);
   let error = $state(false);
 
   let cache: ObjectStorage<HeadlineThread[]>;
   $effect(() => {
+    if (initialItems && initialItems.length > 0) {
+      items = initialItems;
+      return;
+    }
     cache = new ObjectStorage<HeadlineThread[]>(`headlineCache###${board.id}`);
     cache
       .get()
       .then((v) => {
-        items = v ?? [];
+        if (!items || items.length === 0) {
+          items = v ?? [];
+        }
       })
       .catch(() => {
         error = true;
       });
+  });
+
+  $effect(() => {
+    if (initialItems && initialItems.length > 0) {
+      items = initialItems;
+    }
   });
 
   let laaaaaaaag = $state(false);
@@ -73,6 +96,12 @@
       items.pop();
     }
     items.unshift(data.new);
+    const set = new Set<string>();
+    items = items.filter((v) => {
+      if (set.has(v.id)) return false;
+      set.add(v.id);
+      return true;
+    });
   };
 
   $effect(() => {
@@ -147,7 +176,10 @@
                     if (e.button === 0) e.preventDefault();
                   }}
                 >
-                  {thread.title}<span class="text-[#3300cc]">({thread.resCount})</span>
+                  {thread.title ||
+                    firstLineOf(
+                      thread.contentText,
+                    )}<span class="text-[#3300cc]">({thread.resCount})</span>
                 </a>
               </div>
 

@@ -168,6 +168,7 @@
                     threadList = threadList.concat(newThreads);
                 }
             }
+            pagination = false;
             isFromVisibilityChange = false;
         }
     };
@@ -271,6 +272,19 @@
     });
 
     let searchQuery = $state("");
+    let filteredThreadList = $derived(
+        threadList?.filter((thread) => {
+            if (!searchQuery.trim()) return true;
+            const q = searchQuery.trim().toLowerCase();
+            const title = (
+                thread.title ||
+                thread.contentText ||
+                ""
+            ).toLowerCase();
+            const latest = (thread.latestRes || "").toLowerCase();
+            return title.includes(q) || latest.includes(q);
+        }),
+    );
     // おんJ同様デフォルトOFF（設定でON、ここではボタンタップでON）
     let showKome = $state(false);
 </script>
@@ -387,7 +401,7 @@
         </div>
 
         <!-- ヘッドラインティッカー -->
-        <HeadlinePart {board} />
+        <HeadlinePart {board} initialItems={threadList} />
 
         <!-- ニュースカード -->
         <NewsPart {board} />
@@ -408,8 +422,12 @@
         <p class="opacity-50 text-center py-10 text-lg">
             この板にまだスレッドが建てられてないみたい。。。
         </p>
+    {:else if filteredThreadList && filteredThreadList.length === 0}
+        <p class="opacity-50 text-center py-10 text-sm">
+            検索条件に一致するスレッドが見つかりませんでした。
+        </p>
     {:else}
-        {@const isHeadlineLong = threadList.length > 8}
+        {@const isHeadlineLong = (filteredThreadList?.length ?? 0) > 8}
         {#if isHeadlineLong}
             <!-- 画面右端に上下スクロールボタンを固定配置 -->
             <div class="sticky top-1/2 -translate-y-1/2 ml-auto mr-2 w-fit z-8">
@@ -436,7 +454,7 @@
         {/if}
         <div class="text-left w-full mx-auto unj-thread-ul-wrap">
             <ul class="list-none p-0 m-0">
-                {#each threadList as thread}
+                {#each filteredThreadList ?? [] as thread}
                     {#if !ignoreList?.has(thread.ccUserId)}
                         {@const href = makePathname(
                             `/${board.key}/thread/${thread.id}/${thread.resCount > queryResultLimit ? thread.resCount - 8 : "2"}?top`,
@@ -505,7 +523,7 @@
                     {/if}
                 {/each}
             </ul>
-            {#if isHeadlineLong}
+            {#if isHeadlineLong && !searchQuery.trim()}
                 <center class="mt-8">
                     <Button
                         onclick={cursorBasedPagination}

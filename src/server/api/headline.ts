@@ -1,4 +1,3 @@
-import { format } from "date-fns";
 import type { Server, Socket } from "socket.io";
 import * as v from "valibot";
 import { boardIdMap } from "../../common/request/board.js";
@@ -31,7 +30,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			nonce.lock(socket);
 			nonce.update(socket);
 
-			const values: (number | string)[] = [board.id];
+			const values: (number | string | Date)[] = [board.id];
 			const query = [
 				"SELECT * FROM threads",
 				"WHERE (deleted_at IS NULL OR deleted_at > CURRENT_TIMESTAMP)",
@@ -39,11 +38,11 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			];
 			const { limit, sinceDate, untilDate } = headline.output;
 			if (sinceDate !== null) {
-				values.push(format(sinceDate, "yyyy-MM-dd HH:mm:ss"));
+				values.push(sinceDate);
 				query.push(`AND latest_res_at >= $${values.length}`);
 			}
 			if (untilDate !== null) {
-				values.push(format(untilDate, "yyyy-MM-dd HH:mm:ss"));
+				values.push(untilDate);
 				query.push(`AND latest_res_at <= $${values.length}`);
 			}
 			query.push("ORDER BY latest_res_at DESC");
