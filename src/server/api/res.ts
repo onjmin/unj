@@ -66,6 +66,7 @@ import { makeCcUserAvatar, makeCcUserId, makeCcUserName } from "../mylib/cc.js";
 import { parseCommand } from "../mylib/command.js";
 import { getIP } from "../mylib/ip.js";
 import { logger } from "../mylib/log.js";
+import { maybeSpawnNextThread } from "../mylib/next-thread.js";
 import nonce from "../mylib/nonce.js";
 import { pool } from "../mylib/pool.js";
 import { doppelgangers, humans } from "../mylib/rpg.js";
@@ -515,6 +516,10 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			}
 
 			await poolClient.query("COMMIT"); // 問題なければコミット
+
+			// 次スレ誘導（1000/1001レス目到達時のみ動く。失敗してもこの投稿は失われない）
+			await maybeSpawnNextThread({ threadId, resCount: latestResNum, io });
+
 			logger.verbose(api);
 		} catch (error) {
 			await poolClient?.query("ROLLBACK"); // エラーが発生した場合はロールバック

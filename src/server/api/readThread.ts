@@ -28,6 +28,7 @@ import {
 	goodCountCache,
 	isDeleted,
 	lolCountCache,
+	nextThreadIdCache,
 	ownerIdCache,
 	ownerIpCache,
 	psCache,
@@ -116,6 +117,8 @@ export default ({ socket }: { socket: Socket }) => {
 				ageResNumCache.set(threadId, threadRecord.age_res_num);
 				ageResCache.set(threadId, null);
 				balsResNumCache.set(threadId, threadRecord.bals_res_num);
+				// 次スレ誘導（0はまだ次スレが無い状態。next-thread.tsのFOR UPDATEが権威）
+				nextThreadIdCache.set(threadId, threadRecord.next_thread_id ?? 0);
 				lolCountCache.set(threadId, threadRecord.lol_count);
 				goodCountCache.set(threadId, threadRecord.good_count);
 				badCountCache.set(threadId, threadRecord.bad_count);

@@ -1,5 +1,3 @@
-import { DEV_MODE, PROD_MODE, ROOT_PATH, STG_MODE } from "./mylib/env.js";
-
 import http from "node:http";
 import path from "node:path";
 import { isBefore } from "date-fns";
@@ -22,6 +20,7 @@ import registerEmergencyDenyAll, {
 } from "./admin/emergency/deny-all.js";
 import registerLogGrep from "./admin/log/grep.js";
 import registerLogLevel from "./admin/log/level.js";
+import registerThreadMake from "./admin/thread/make.js";
 import registerThreadOwner from "./admin/thread/owner.js";
 import registerThreadRes from "./admin/thread/res.js";
 import registerUserNinja from "./admin/user/ninja.js";
@@ -39,6 +38,7 @@ import handleRpgPatch from "./api/rpgPatch.js";
 import handleSearch from "./api/search.js";
 import { flaky } from "./mylib/anti-debug.js";
 import auth from "./mylib/auth.js";
+import { DEV_MODE, PROD_MODE, ROOT_PATH, STG_MODE } from "./mylib/env.js";
 import { detectClientIp, getIP, isBannedIP, setIP } from "./mylib/ip.js";
 import { logger } from "./mylib/log.js";
 import nonce from "./mylib/nonce.js";
@@ -119,6 +119,7 @@ registerBlacklistVpngate(router);
 registerDebugProxy(router);
 registerDebugZombie(router, io);
 registerEmergencyDenyAll(router);
+registerThreadMake(router, io);
 registerThreadOwner(router);
 registerThreadRes(router, io);
 registerUserNinja(router);

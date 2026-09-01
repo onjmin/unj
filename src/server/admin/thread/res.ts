@@ -20,6 +20,7 @@ import {
 } from "../../mylib/cache.js";
 import { genTestIP } from "../../mylib/ip.js";
 import { logger } from "../../mylib/log.js";
+import { maybeSpawnNextThread } from "../../mylib/next-thread.js";
 import { pool } from "../../mylib/pool.js";
 import { exist, getThreadRoom } from "../../mylib/socket.js";
 
@@ -41,6 +42,40 @@ const requestSchema = v.strictObject({
 });
 
 export default (router: Router, io: Server) => {
+	// unj-relay.ts（onj-minecraft）等が、人間の新着発言だけをポーリングで拾うための口。
+	// bot自身の発言（POST /thread/res。user_id=システムのuserId固定）は
+	// user_id != $3 で除外し、エコー（中継→また中継対象）を防ぐ。
+	router.get(api, async (req: Request, res: Response) => {
+		const threadId = decodeThreadId(String(req.query.threadId ?? ""));
+		if (!threadId) {
+			res.status(400).json({ error: "Invalid threadId" });
+			return;
+		}
+		const sinceNum = Number(req.query.sinceNum ?? 0);
+		if (!Number.isInteger(sinceNum) || sinceNum < 0) {
+			res.status(400).json({ error: "Invalid sinceNum" });
+			return;
+		}
+
+		try {
+			const { rows } = await pool.query(
+				"SELECT num, cc_user_name, content_text FROM res WHERE thread_id = $1 AND num > $2 AND user_id != $3 ORDER BY num LIMIT 50",
+				[threadId, sinceNum, userId],
+			);
+			res.status(200).json({
+				message: "ok",
+				list: rows.map((r) => ({
+					num: r.num,
+					ccUserName: r.cc_user_name,
+					contentText: r.content_text,
+				})),
+			});
+		} catch (e) {
+			logger.error(e);
+			res.status(500).json({ error: "Failed to fetch responses" });
+		}
+	});
+
 	router.post(api, async (req: Request, res: Response) => {
 		// レスAPI用バリデーション
 		const result = v.safeParse(requestSchema, req.body, myConfig);
@@ -135,6 +170,13 @@ export default (router: Router, io: Server) => {
 
 			await poolClient.query("COMMIT");
 
+			// 次スレ誘導（1000/1001レス目到達時のみ動く。失敗してもこの投稿は失われない）
+			const nextThreadId = await maybeSpawnNextThread({
+				threadId,
+				resCount: latestResNum,
+				io,
+			});
+
 			const newRes: Res = {
 				yours: true,
 				// 書き込み内容
@@ -167,9 +209,14 @@ export default (router: Router, io: Server) => {
 				});
 			}
 
-			res
-				.status(200)
-				.json({ message: "Response created successfully", res: newRes });
+			res.status(200).json({
+				message: "Response created successfully",
+				res: newRes,
+				// 1000/1001レス目でnext-thread.tsが次スレを立てた場合のみ入る。
+				// 呼び出し元（bot連携等）はこれが来たらこのthreadIdを使い続けず、
+				// 以後はnextThreadIdへ投稿を切り替えること。
+				nextThreadId,
+			});
 		} catch (e) {
 			await poolClient?.query("ROLLBACK");
 			logger.error(e);

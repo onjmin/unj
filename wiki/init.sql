@@ -128,6 +128,11 @@ CREATE TABLE threads (
     ps TEXT NOT NULL DEFAULT '', -- !add機能で>>1の末尾に追記する内容
     age_res_num INT NOT NULL DEFAULT 0, -- !age機能で表示するレスのID（0の場合はage無し）
     bals_res_num INT NOT NULL DEFAULT 0, -- !バルス
+    -- res_limit=1000のスレがres_count 1000/1001に達したとき自動生成される次スレ。
+    -- server/mylib/next-thread.ts が生成し、旧スレのps欄に次スレへのリンクを追記する
+    -- （新スレのcontent_textには前スレへのリンクを埋め込む）。二重生成防止は
+    -- INSERT前に本カラムをFOR UPDATEで確認することで担保する（メモリキャッシュは補助）。
+    next_thread_id INT REFERENCES threads(id) ON DELETE SET NULL,
     lol_count SMALLINT NOT NULL DEFAULT 0, -- 草ボタン
     good_count SMALLINT NOT NULL DEFAULT 0, -- ｲｲ!(・∀・)
     bad_count SMALLINT NOT NULL DEFAULT 0, -- (・Ａ・)ｲｸﾅｲ!

@@ -75,7 +75,7 @@ const AUTH_LIMIT = v.pipe(
 );
 
 export const USER_NAME = v.pipe(SAFE_TEXT_SINGLELINE, v.maxLength(32));
-const THREAD_TITLE = v.pipe(
+export const THREAD_TITLE = v.pipe(
 	SAFE_TEXT_SINGLELINE,
 	v.minLength(1),
 	v.maxLength(32),

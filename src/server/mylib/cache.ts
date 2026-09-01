@@ -35,6 +35,9 @@ export const psCache: Map<number, string> = new Map();
 export const ageResNumCache: Map<number, number> = new Map();
 export const ageResCache: Map<number, Res | null> = new Map();
 export const balsResNumCache: Map<number, number> = new Map();
+// 次スレ誘導（threads.next_thread_id のミラー）。生成済みかの高速判定用で、
+// 権威はDB側（next-thread.tsがFOR UPDATEで確認する）。
+export const nextThreadIdCache: Map<number, number> = new Map();
 export const lolCountCache: Map<number, number> = new Map();
 export const goodCountCache: Map<number, number> = new Map();
 export const badCountCache: Map<number, number> = new Map();
