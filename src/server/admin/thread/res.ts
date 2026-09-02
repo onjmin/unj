@@ -10,12 +10,13 @@ import {
 	USER_NAME,
 } from "../../../common/request/schema.js";
 import type { Res } from "../../../common/response/schema.js";
-import { decodeThreadId } from "../../mylib/anti-debug.js";
+import { decodeThreadId, encodeThreadId } from "../../mylib/anti-debug.js";
 import {
 	balsResNumCache,
 	contentTypesBitmaskCache,
 	isDeleted,
 	isMax,
+	nextThreadIdCache,
 	resCountCache,
 } from "../../mylib/cache.js";
 import { genTestIP } from "../../mylib/ip.js";
@@ -90,16 +91,47 @@ export default (router: Router, io: Server) => {
 			return;
 		}
 
-		if (isDeleted(threadId)) return;
-		if (balsResNumCache.get(threadId)) return;
-		if (isMax(threadId, false)) return;
+		// 「このスレにはもう書けない」系は必ず応答を返す。
+		//
+		// res.status()を呼ばずreturnするとレスポンスが返らず、呼び出し元は
+		// タイムアウトまで待たされた末に「通信失敗」と区別がつかなくなる。
+		// bot連携（onj-minecraftのunj-bridge.ts）は埋まったスレから次スレへ
+		// 移る判断をこの応答に頼るため、理由をreasonで機械的に読める形で返す。
+		if (isDeleted(threadId)) {
+			res.status(410).json({ error: "Thread is deleted", reason: "deleted" });
+			return;
+		}
+		if (balsResNumCache.get(threadId)) {
+			res.status(409).json({ error: "Thread is closed", reason: "bals" });
+			return;
+		}
+		if (isMax(threadId, false)) {
+			// 既に次スレがあるなら教える（自分の投稿が1000レス目にならなくても、
+			// 他人が埋めた場合はこれが唯一の乗り換え手段になる）。
+			const nextId = nextThreadIdCache.get(threadId) ?? 0;
+			res.status(409).json({
+				error: "Thread is full",
+				reason: "max",
+				nextThreadId: nextId > 0 ? encodeThreadId(nextId) : null,
+			});
+			return;
+		}
 
 		const contentTypesBitmask = contentTypesBitmaskCache.get(threadId) ?? 0;
-		if ((contentTypesBitmask & result.output.contentType) === 0) return;
+		if ((contentTypesBitmask & result.output.contentType) === 0) {
+			res.status(400).json({ error: "Invalid contentType" });
+			return;
+		}
 		const schema = contentSchemaMap.get(result.output.contentType);
-		if (!schema) return;
+		if (!schema) {
+			res.status(400).json({ error: "Invalid contentType" });
+			return;
+		}
 		const content = v.safeParse(schema, req.body, myConfig);
-		if (!content.success) return;
+		if (!content.success) {
+			res.status(400).json({ error: v.flatten(content.issues) });
+			return;
+		}
 
 		let poolClient: PoolClient | null = null;
 		try {
@@ -123,6 +155,10 @@ export default (router: Router, io: Server) => {
 					"content_data_url",
 					"sage",
 					"ip",
+					// numは最後のVALUES（MAX(num)+1のサブクエリ）に対応する。
+					// ここに書き忘れるとカラム11個・値12個になり、
+					// "INSERT has more expressions than target columns" で必ず落ちる。
+					"num",
 				].join(", ")})`,
 				"VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,",
 				"(SELECT COALESCE(MAX(num), 1) + 1 FROM res WHERE thread_id = $1)",

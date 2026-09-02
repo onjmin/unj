@@ -75,7 +75,7 @@ export async function maybeSpawnNextThread({
 
 		// 権威はDB。FOR UPDATEで行ロックし、二重生成を確実に防ぐ。
 		const { rows } = await poolClient.query(
-			"SELECT next_thread_id, title, board_id, content_types_bitmask FROM threads WHERE id = $1 FOR UPDATE",
+			"SELECT next_thread_id, title, board_id, content_types_bitmask, cc_bitmask FROM threads WHERE id = $1 FOR UPDATE",
 			[threadId],
 		);
 		if (rows.length === 0) {
@@ -99,6 +99,11 @@ export async function maybeSpawnNextThread({
 		const oldEncodedId = encodeThreadId(threadId) ?? "";
 		const prevLink = threadUrl(board.key, oldEncodedId);
 		const contentTypesBitmask = old.content_types_bitmask ?? 1;
+		// 前スレの設定を引き継ぐ。ここを固定値1にすると、前スレでコテハン・
+		// アイコンを許可していても次スレから急にコテ禁・アイコン禁止になる
+		// （content_types_bitmaskだけ引き継いでcc_bitmaskを引き継がないのは
+		// 単なる漏れ）。
+		const ccBitmask = old.cc_bitmask ?? 1;
 
 		const { rows: newRows, rowCount } = await poolClient.query(
 			[
@@ -134,7 +139,7 @@ export async function maybeSpawnNextThread({
 				"",
 				title,
 				board.id,
-				1,
+				ccBitmask,
 				contentTypesBitmask,
 				1000,
 				`前スレ: ${prevLink}`,
@@ -165,7 +170,7 @@ export async function maybeSpawnNextThread({
 		resCountCache.set(newId, 1);
 		resLimitCache.set(newId, 1000);
 		contentTypesBitmaskCache.set(newId, contentTypesBitmask);
-		ccBitmaskCache.set(newId, 1);
+		ccBitmaskCache.set(newId, ccBitmask);
 		titleCache.set(newId, title);
 
 		// 旧スレ閲覧者へps更新を通知
