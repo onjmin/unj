@@ -2,7 +2,10 @@ import type { PoolClient } from "@neondatabase/serverless";
 import type { Request, Response, Router } from "express";
 import type { Server } from "socket.io";
 import * as v from "valibot";
-import { contentSchemaMap } from "../../../common/request/content-schema.js";
+import {
+	contentSchemaMap,
+	makeLatestResPreview,
+} from "../../../common/request/content-schema.js";
 import {
 	myConfig,
 	SMALLINT,
@@ -42,6 +45,10 @@ const requestSchema = v.strictObject({
 		SMALLINT,
 		v.check<number>((n) => (n & (n - 1)) === 0),
 	),
+	// 省略時は true（従来通りスレを上げない）。呼び出し元を増やさず既存の
+	// bot連携がそのまま動くようにするための既定値。
+	// kusa鯖実況のように「実況を見てほしいので上げてよい」スレはfalseを渡す。
+	sage: v.optional(v.boolean(), true),
 });
 
 /**
@@ -176,7 +183,7 @@ export default (router: Router, io: Server) => {
 			poolClient = await pool.connect();
 			await poolClient.query("BEGIN");
 
-			const sage = true;
+			const sage = result.output.sage;
 
 			// レス
 
@@ -230,9 +237,16 @@ export default (router: Router, io: Server) => {
 			resCountCache.set(threadId, latestResNum);
 
 			// スレッドの更新
+			//
+			// latest_res（一覧に出すプレビュー文言）は sage の有無に関わらず必ず
+			// 更新する。/api/res.ts（人間の投稿口）はこれをやっているが、
+			// このAPIは以前 res_count しか更新しておらず、bot連携で投稿しても
+			// 一覧のプレビューがスレ作成時のまま古くなっていた。
+			const latestRes = makeLatestResPreview(content.output);
 
 			const query = new Map();
 			query.set("res_count", num);
+			query.set("latest_res", latestRes);
 			await poolClient.query(
 				[
 					`UPDATE threads SET ${sage ? "" : "latest_res_at = NOW(),"}`,
@@ -269,7 +283,7 @@ export default (router: Router, io: Server) => {
 				num: latestResNum,
 				createdAt: created_at,
 				isOwner: false,
-				sage: true,
+				sage,
 				parentNum: null,
 			};
 
