@@ -24,8 +24,21 @@ const SYSTEM_USER_ID = 1; // システムに使っていい実在のusers.id（a
 // これは無駄なDBラウンドトリップを削るだけの高速パス。
 const creating: Set<number> = new Set();
 
-/** 「スレタイ (2)」→「スレタイ (3)」…と番号を振る。無ければ (2) を付ける。THREAD_TITLEのmaxLength(32)に収める。 */
+/**
+ * 「スレタイ (2)」→「スレタイ (3)」…と番号を振る。無ければ (2) を付ける。
+ * THREAD_TITLEのmaxLength(32)に収める。
+ *
+ * 「スレタイ part2」形式のスレは part 形式のまま継ぐ。一覧はタイトル
+ * 末尾にレス数を (N) で出すため、(2) 形式だと「スレタイ (2) (5)」と
+ * 二重になって紛らわしい。bot連携(onj-minecraft)は part 形式で立てるので、
+ * ここで拾わないと次スレが「スレタイ part2 (2)」になる。
+ */
 function nextTitle(title: string): string {
+	const partMatch = title.match(/^(.*) part(\d+)$/);
+	if (partMatch) {
+		const suffix = ` part${Number(partMatch[2]) + 1}`;
+		return `${partMatch[1].slice(0, Math.max(0, 32 - suffix.length))}${suffix}`;
+	}
 	const m = title.match(/^(.*) \((\d+)\)$/);
 	const base = m ? m[1] : title || "無題";
 	const n = m ? Number(m[2]) + 1 : 2;

@@ -14,10 +14,12 @@ import { decodeThreadId, encodeThreadId } from "../../mylib/anti-debug.js";
 import {
 	balsResNumCache,
 	contentTypesBitmaskCache,
+	deletedAtCache,
 	isDeleted,
 	isMax,
 	nextThreadIdCache,
 	resCountCache,
+	resLimitCache,
 } from "../../mylib/cache.js";
 import { genTestIP } from "../../mylib/ip.js";
 import { logger } from "../../mylib/log.js";
@@ -41,6 +43,36 @@ const requestSchema = v.strictObject({
 		v.check<number>((n) => (n & (n - 1)) === 0),
 	),
 });
+
+/**
+ * スレのキャッシュが空なら1回だけDBから引いて温める。存在しなければfalse。
+ *
+ * admin APIはreadThreadを経由しないため、サーバー再起動やデプロイの直後は
+ * 各キャッシュが空のままになる。isMax()は resCount(??0) >= resLimit(??0) を
+ * 見るので、空だと 0>=0 が真、つまり「1000レス到達で埋まった」と誤判定して
+ * 全ての投稿を弾く。人間の閲覧はreadThreadを通るので勝手に温まるが、
+ * bot連携はこのAPIしか叩かないため、デプロイの度に投稿できなくなる。
+ */
+async function ensureThreadCache(threadId: number): Promise<boolean> {
+	if (resLimitCache.get(threadId) !== undefined) return true;
+	const { rows } = await pool.query(
+		[
+			"SELECT res_count, res_limit, deleted_at, bals_res_num,",
+			"content_types_bitmask, next_thread_id",
+			"FROM threads WHERE id = $1",
+		].join(" "),
+		[threadId],
+	);
+	if (rows.length === 0) return false;
+	const t = rows[0];
+	resCountCache.set(threadId, t.res_count);
+	resLimitCache.set(threadId, t.res_limit);
+	deletedAtCache.set(threadId, t.deleted_at);
+	balsResNumCache.set(threadId, t.bals_res_num);
+	contentTypesBitmaskCache.set(threadId, t.content_types_bitmask);
+	nextThreadIdCache.set(threadId, t.next_thread_id ?? 0);
+	return true;
+}
 
 export default (router: Router, io: Server) => {
 	// unj-relay.ts（onj-minecraft）等が、人間の新着発言だけをポーリングで拾うための口。
@@ -88,6 +120,12 @@ export default (router: Router, io: Server) => {
 		const threadId = decodeThreadId(result.output.threadId);
 		if (!threadId) {
 			res.status(400).json({ error: "Invalid threadId" });
+			return;
+		}
+
+		// キャッシュが冷えていたらDBから温める（冷えたままだとisMax()が誤判定する）。
+		if (!(await ensureThreadCache(threadId))) {
+			res.status(404).json({ error: "Thread not found" });
 			return;
 		}
 
