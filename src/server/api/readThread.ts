@@ -73,8 +73,16 @@ export default ({ socket }: { socket: Socket }) => {
 			// キャッシュの登録
 			if (!threadCached.has(threadId)) {
 				// スレッドの取得
+				//
+				// headline.tsと同じくdeleted_at条件をSQL側で見る。isDeleted()は
+				// deletedAtCacheが空だと「削除されていない」扱いになってしまい
+				// （未キャッシュ状態の削除済みスレに入れてしまう問題）、
+				// 期限切れのスレでも初回アクセスだけ素通りしてしまうため。
 				const { rows, rowCount } = await pool.query(
-					"SELECT * FROM threads WHERE id = $1",
+					[
+						"SELECT * FROM threads WHERE id = $1",
+						"AND (deleted_at IS NULL OR deleted_at > CURRENT_TIMESTAMP)",
+					].join(" "),
 					[threadId],
 				);
 				if (rowCount === 0) return;
