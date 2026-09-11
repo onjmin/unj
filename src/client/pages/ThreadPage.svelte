@@ -358,8 +358,18 @@
         }
     };
 
-    const handleReadThread = async (data: { ok: boolean; thread: Thread }) => {
-        if (!data.ok) return;
+    const handleReadThread = async (data: {
+        ok: boolean;
+        thread: Thread;
+        reason?: string;
+    }) => {
+        if (!data.ok) {
+            // サーバーが「このスレは削除済み」と明示してきた場合。
+            // 過去ログキャッシュ（threadCache###）が残っていて、サーバーから
+            // 一度も上書きされないまま表示され続けてしまう問題への対処。
+            if (data.reason === "deleted") expireThread();
+            return;
+        }
         ok();
         if (data.thread.boardId !== board.id) {
             const b = boardIdMap.get(data.thread.boardId);
@@ -528,17 +538,24 @@
         }
     };
 
+    // 削除済みスレの過去ログキャッシュを消して一覧へ戻す。
+    // countdown()（表示中に期限が来た場合）と、サーバーからok:falseで
+    // 「このスレは削除済み」と明示された場合（ページを開いた時点で既に
+    // 期限切れだった場合。過去ログキャッシュだけが残っていて見えてしまう
+    // 問題への対処）の両方から呼ばれる。
+    const expireThread = () => {
+        cache?.set(null);
+        const filtered = resHistories?.filter((v) => v.threadId !== threadId);
+        if (filtered) resHistoryCache.set(filtered);
+        navigate(makePathname(`/${board.key}`), { replace: true });
+    };
+
     let remaining = $state("");
     const countdown = (date: Date): string => {
         const now = new Date();
         const diffSeconds = differenceInSeconds(date, now);
         if (diffSeconds < 0) {
-            cache.set(null);
-            const filtered = resHistories?.filter(
-                (v) => v.threadId !== threadId,
-            );
-            if (filtered) resHistoryCache.set(filtered);
-            navigate(makePathname(`/${board.key}`), { replace: true });
+            expireThread();
             return "期限切れ";
         }
         if (diffSeconds <= 359999) {

@@ -63,7 +63,10 @@ export default ({ socket }: { socket: Socket }) => {
 		const threadId = decodeThreadId(readThread.output.threadId);
 		if (threadId === null) return;
 
-		if (isDeleted(threadId)) return;
+		if (isDeleted(threadId)) {
+			socket.emit(api, { ok: false, reason: "deleted" });
+			return;
+		}
 
 		// 危険な処理
 		try {
@@ -85,7 +88,10 @@ export default ({ socket }: { socket: Socket }) => {
 					].join(" "),
 					[threadId],
 				);
-				if (rowCount === 0) return;
+				if (rowCount === 0) {
+					socket.emit(api, { ok: false, reason: "deleted" });
+					return;
+				}
 				const threadRecord = rows[0];
 
 				// キャッシュ済みフラグはレコードを引けてから立てる。先に立てると
@@ -198,6 +204,7 @@ export default ({ socket }: { socket: Socket }) => {
 			}
 
 			if (isDeleted(threadId)) {
+				socket.emit(api, { ok: false, reason: "deleted" });
 				logger.verbose(`🪦 ${threadId}`);
 				return;
 			}
