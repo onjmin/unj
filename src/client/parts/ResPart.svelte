@@ -618,16 +618,6 @@ const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
         </div>
         <ChordPlayerPart chords={chordParsed.chords} />
       {/if}
-
-      <!--
-        8192(MV作成)・16384(ゲーム作成)はunj-reze側のみの機能で、unjでは再生・編集ができない。
-        content_typeとしては共有DBに乗ってくるので、非対応である旨だけ出して黙って崩れないようにする。
-      -->
-      {#if contentType === 8192 || contentType === 16384}
-        <div class="text-red-500">
-          ※{contentType === 8192 ? "MV作成" : "ゲーム作成"}機能（unjでは非対応です）
-        </div>
-      {/if}
     </div>
   </div>
 

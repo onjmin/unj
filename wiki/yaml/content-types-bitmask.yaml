@@ -1,3 +1,6 @@
+# res.content_type / threads.content_types_bitmask のビット定義（どちらも SMALLINT なので 16384 が最後）。
+# ゲーム作成・MV作成・かけあい動画（unj-reze）の添付は content_type ではなく
+# threads/res の外部キー列（game_id / mv_id / talk_id）で紐づく。ここにビットは持たない。
 1: テキスト
 2: 未分類URL
 4: 画像URL（R2）
@@ -11,5 +14,5 @@
 1024: お絵描きのURL（R2）
 2048: MMLのデータ（R2）
 4096: 暗号レスのデータ（R2）
-8192: MV作成のデータ（R2）
-16384: ゲーム作成のデータ（R2）
+8192: 空き枠
+16384: 空き枠
