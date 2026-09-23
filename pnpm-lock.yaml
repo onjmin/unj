@@ -35,11 +35,11 @@ importers:
         specifier: 1.0.12
         version: 1.0.12
       '@onjmin/dtm':
-        specifier: 2.1.20
-        version: 2.1.20
+        specifier: 2.1.22
+        version: 2.1.22
       '@onjmin/oekaki':
-        specifier: 1.0.64
-        version: 1.0.64
+        specifier: 1.0.66
+        version: 1.0.66
       '@rpgja/rpgen-map':
         specifier: 1.0.0
         version: 1.0.0
@@ -1093,15 +1093,15 @@ packages:
   '@onjmin/cors-killer@1.0.12':
     resolution: {integrity: sha512-sW2FIfPMiOebw0cOCHhJpKtSDqk8YwAvFdZokz6Wh3H2wtqUEPs1hUVSmeZTr1ajayIrrNfWEbMS6d+Mm2BlWw==}
 
-  '@onjmin/dtm@2.1.20':
-    resolution: {integrity: sha512-ciBnhs3SXCr7vJP+rmVSJquAkXRXHUPapoAXi8Sxvm7VceVNbUzKEcksFMQgAkLeKmpc16Ws24m50yFIZYk0Rg==}
+  '@onjmin/dtm@2.1.22':
+    resolution: {integrity: sha512-IymPowpxkaDUM7zBjuunFBMABaRAmeK8w66rMyZrbOUSLE7oeP05uNiUzgk4igHWyZOqMLv+STVqtShBBuaVCw==}
 
   '@onjmin/koe@1.0.11':
     resolution: {integrity: sha512-JGcW2Y5w8HZSlepiewgx7JHakEEboKpOUGcF76dfJUXrawTWDEx/8IoOxGfZaD5THArBUIYijU4bHx17jAjmsQ==}
     hasBin: true
 
-  '@onjmin/oekaki@1.0.64':
-    resolution: {integrity: sha512-loxRFn/mwAsxMPwJaFxxIMcOSoxTZXoM93m0D+Rb36dOD18YVQuXsY2XQPQt79LE+NZZfn/3xk1YcEBaPIMoRg==}
+  '@onjmin/oekaki@1.0.66':
+    resolution: {integrity: sha512-uwy7iydGgXzetjxPYzhckRaJNTfN3Vjs5menfZjAiWjDSJkxHpByTNzGes+n2RFUmJVWSzGAl4co3Jw8QjZT3w==}
 
   '@protobufjs/aspromise@1.1.2':
     resolution: {integrity: sha512-j+gKExEuLmKwvz3OgROXtrJ2UG2x8Ch2YZUxahh+s1F2HZ+wAceUNLkvy6zKCPVRkU++ZWQrdxsUeQXmcg4uoQ==}
@@ -4357,7 +4357,7 @@ snapshots:
 
   '@onjmin/cors-killer@1.0.12': {}
 
-  '@onjmin/dtm@2.1.20':
+  '@onjmin/dtm@2.1.22':
     dependencies:
       '@onjmin/chord-parser': 1.1.1
       '@onjmin/koe': 1.0.11
@@ -4367,7 +4367,7 @@ snapshots:
     dependencies:
       fflate: 0.8.3
 
-  '@onjmin/oekaki@1.0.64': {}
+  '@onjmin/oekaki@1.0.66': {}
 
   '@protobufjs/aspromise@1.1.2': {}
 
