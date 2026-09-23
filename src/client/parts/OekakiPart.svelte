@@ -129,6 +129,20 @@
         e.preventDefault();
         doAction(tool.save);
         break;
+      case "a": // キャンバス全体を選択（全選択→コピー→貼り付けの入口）
+        {
+          if (!activeLayer?.editable) break;
+          e.preventDefault();
+          choiced = tool.select;
+          const { width, height } = activeLayer.canvas;
+          if (isGrid) {
+            activeLayer.selectByDot(0, 0, width, height);
+          } else {
+            activeLayer.select(0, 0, width, height);
+          }
+          drawSelectionHandle();
+        }
+        break;
       case "c": // 選択範囲をクリップボードにコピー（選択が無ければ何もしない）
         {
           const copy = activeLayer?.copySelection();
