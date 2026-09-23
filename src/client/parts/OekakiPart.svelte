@@ -33,6 +33,10 @@
   import oekakiWhitelist from "../../common/request/whitelist/oekaki.js";
   import { findIn } from "../../common/request/whitelist/site-info.js";
   import { ObjectStorage } from "../mylib/object-storage.js";
+  import {
+    copyToClipboard,
+    readPasteImage,
+  } from "../mylib/oekaki-clipboard.js";
   import { color } from "../mylib/store.js";
   import * as unjStorage from "../mylib/unj-storage.js";
 
@@ -125,34 +129,12 @@
         e.preventDefault();
         doAction(tool.save);
         break;
-      case "c": // クリップボードにコピー
+      case "c": // 選択範囲をクリップボードにコピー（選択が無ければ何もしない）
         {
+          const copy = activeLayer?.copySelection();
+          if (!copy) break;
           e.preventDefault();
-          if (activeLayer?.selection) {
-            const copy = activeLayer.copySelection();
-            if (copy) internalClipboard = copy;
-            break;
-          }
-          let visible = false;
-          const bgLayer = oekaki
-            .getLayers()
-            .find((v) => v.name.includes("背景"));
-          if (bgLayer) {
-            visible = bgLayer.visible;
-            bgLayer.visible = false;
-          }
-          const blob = await new Promise<Blob | null>((resolve) =>
-            oekaki.render().toBlob(resolve),
-          );
-          if (!blob) return;
-          if (bgLayer) {
-            bgLayer.visible = visible;
-          }
-          const item = new ClipboardItem({
-            [blob.type]: blob,
-            "text/plain": new Blob([MAGIC_STRING], { type: "text/plain" }),
-          });
-          await navigator.clipboard.write([item]);
+          copyToClipboard(copy);
         }
         break;
       case "x": // 選択範囲の切り取り
@@ -160,7 +142,7 @@
           if (!activeLayer?.editable || !activeLayer.selection) break;
           e.preventDefault();
           const copy = activeLayer.copySelection();
-          if (copy) internalClipboard = copy;
+          if (copy) copyToClipboard(copy);
           activeLayer.deleteSelection();
           fin();
         }
@@ -187,10 +169,7 @@
     );
   };
 
-  const MAGIC_STRING = "レイヤーコピー";
-
   // 範囲選択用の状態
-  let internalClipboard: HTMLCanvasElement | null = null;
   let selectDragMode: "new" | "move" | "resize" | "rotate" | null = null;
   let selectStartX = 0;
   let selectStartY = 0;
@@ -347,29 +326,8 @@
   const handlePaste = async (e: ClipboardEvent) => {
     if (notDrawing(e)) return;
     if (!activeLayer?.editable) return;
-    let imageItem: DataTransferItem | null = null;
-    let textItem: DataTransferItem | null = null;
-    for (const v of e.clipboardData?.items ?? []) {
-      if (v.kind === "file" && v.type.startsWith("image/")) imageItem = v;
-      if (v.kind === "string" && v.type === "text/plain") textItem = v;
-    }
-    let bitmap: ImageBitmap | HTMLCanvasElement | null = null;
-    if (imageItem && textItem) {
-      const blob = imageItem.getAsFile();
-      if (!blob) return;
-      // レイヤー以外からのコピーを弾く（※画像のハッシュと比較すれば更にセキュアに）
-      const text = await new Promise<string>((resolve) =>
-        textItem.getAsString(resolve),
-      );
-      if (!text.includes(MAGIC_STRING)) return;
-      // クリップボードから画像を取得
-      bitmap = await createImageBitmap(blob);
-    } else if (internalClipboard) {
-      // OSクリップボードに画像がない場合は内部クリップボード（選択範囲コピー）を貼り付け
-      bitmap = internalClipboard;
-    } else {
-      return;
-    }
+    const bitmap = await readPasteImage(e, false);
+    if (!bitmap) return;
     activeLayer.paste(bitmap);
     activeLayer.trace();
   };
@@ -1326,7 +1284,7 @@
         title="選択範囲をコピー"
         onclick={() => {
           const copy = activeLayer?.copySelection();
-          if (copy) internalClipboard = copy;
+          if (copy) copyToClipboard(copy);
         }}
       >
         <svg
