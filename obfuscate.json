@@ -11,7 +11,9 @@
 	"selfDefending": true,
 	"splitStrings": false,
 	"stringArray": true,
-	"stringArrayEncoding": ["none"],
+	"stringArrayEncoding": [
+		"none"
+	],
 	"stringArrayShuffle": true,
 	"stringArrayThreshold": 0,
 	"transformObjectKeys": false
