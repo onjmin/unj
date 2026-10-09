@@ -1,0 +1,18 @@
+# docker/Dockerfile は COPY . . するので、秘密や不要物をイメージに入れない
+# env は Koyeb のダッシュボード（docker run なら --env-file）で渡す
+.env
+.env.*
+!.env.example
+
+# 実行時に作られる・ビルドし直すもの（node_modules はイメージ内で pnpm install する）
+logs
+*.log
+dist
+node_modules
+
+# ローカル専用
+.git
+.github
+.vscode
+.history
+.claude

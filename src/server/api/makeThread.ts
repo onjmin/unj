@@ -163,6 +163,10 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			}
 			const { id } = rows[0];
 
+			// 通知はコミットが成功してから（コミット前に通知すると、直後のreadThreadが
+			// 別コネクションからまだ見えないスレを引きに行ったり、失敗時に幻のスレが残る）
+			await poolClient.query("COMMIT");
+
 			const newThread: HeadlineThread = {
 				// 書き込み内容
 				ccUserId,
@@ -204,10 +208,10 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 				});
 			}
 
-			await poolClient.query("COMMIT"); // 問題なければコミット
 			logger.verbose(api);
 		} catch (error) {
-			await poolClient?.query("ROLLBACK"); // エラーが発生した場合はロールバック
+			// エラーが発生した場合はロールバック（ROLLBACK自体の失敗でプロセスを落とさない）
+			await poolClient?.query("ROLLBACK").catch(() => {});
 			logger.error(error);
 		} finally {
 			poolClient?.release();

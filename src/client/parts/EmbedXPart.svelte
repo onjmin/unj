@@ -7,10 +7,17 @@
     width = 550,
   } = $props();
 
-  // x.com URL を twitter.com に正規化
-  const normalizedUrl = $derived(
-    url.replace(/^https:\/\/x\.com\//, "https://twitter.com/"),
-  );
+  // x.com URL を twitter.com に正規化（https の x.com・twitter.com 以外は描画しない）
+  const normalizedUrl = $derived.by(() => {
+    try {
+      const { protocol, hostname } = new URL(url);
+      if (protocol !== "https:") return "";
+      if (!/^(www\.|mobile\.)?(x|twitter)\.com$/.test(hostname)) return "";
+    } catch {
+      return "";
+    }
+    return url.replace(/^https:\/\/x\.com\//, "https://twitter.com/");
+  });
 
   let containerEl: HTMLDivElement | undefined = $state();
   let widgetsLoaded = $state(!!window.twttr);
@@ -22,20 +29,22 @@
 </script>
 
 {#key normalizedUrl}
-  <div
-    bind:this={containerEl}
-    class="[&_.twitter-tweet]:my-0! [&_.twitter-tweet]:mt-0! [&_.twitter-tweet]:mb-0!"
-  >
-    <blockquote
-      class="twitter-tweet"
-      data-theme={theme}
-      data-align={align}
-      data-lang={lang}
-      data-width={width}
+  {#if normalizedUrl}
+    <div
+      bind:this={containerEl}
+      class="[&_.twitter-tweet]:my-0! [&_.twitter-tweet]:mt-0! [&_.twitter-tweet]:mb-0!"
     >
-      <a href={normalizedUrl} target="_blank" rel="noreferrer noopener">{""}</a>
-    </blockquote>
-  </div>
+      <blockquote
+        class="twitter-tweet"
+        data-theme={theme}
+        data-align={align}
+        data-lang={lang}
+        data-width={width}
+      >
+        <a href={normalizedUrl} target="_blank" rel="noreferrer noopener">{""}</a>
+      </blockquote>
+    </div>
+  {/if}
 {/key}
 
 <svelte:head>

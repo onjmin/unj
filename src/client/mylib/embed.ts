@@ -9,7 +9,60 @@ export const parseImageEmbedAlu = (url: URL): string | undefined => {
 	const parts = url.pathname.split("/").filter(Boolean);
 	if (parts.length !== 4 || parts[0] !== "series" || parts[2] !== "crop")
 		return;
-	return `https://alu.jp/oembed?url=${url.href}`;
+	return `https://alu.jp/oembed?url=${encodeURIComponent(url.href)}`;
+};
+
+/** alu.jp（とそのサブドメイン）の https URL なら正規化して返す */
+const toAluHttpsUrl = (raw: string | null | undefined): string | undefined => {
+	if (!raw) return;
+	try {
+		const u = new URL(raw);
+		if (u.protocol !== "https:") return;
+		if (u.hostname !== "alu.jp" && !u.hostname.endsWith(".alu.jp")) return;
+		return u.href;
+	} catch {}
+};
+
+export type AluEmbed = {
+	tag: "iframe" | "img";
+	src: string;
+	width: number;
+	height: number;
+	linkHref: string;
+	linkText: string;
+};
+
+/**
+ * alu.jp の oEmbed レスポンスから表示に要る値だけを抜く。
+ *
+ * 返ってくる html を {@html} でそのまま描くと、向こうが乗っ取られた・改ざんされた時に
+ * こちらのオリジンで任意のスクリプトが動く。DOMParser で読むだけならスクリプトも
+ * 画像も実行・読み込みされないので、iframe（今の形式）か img の src とリンクだけを拾い、
+ * 自前の要素で描き直す。
+ */
+export const parseAluOembed = (json: unknown): AluEmbed | undefined => {
+	if (!json || typeof json !== "object") return;
+	const { html, width, height } = json as Record<string, unknown>;
+	if (typeof html !== "string") return;
+	const doc = new DOMParser().parseFromString(html, "text/html");
+	const el = doc.querySelector("iframe, img");
+	if (!el) return;
+	const src = toAluHttpsUrl(el.getAttribute("src"));
+	if (!src) return;
+	const size = (n: unknown, fallback: number) =>
+		typeof n === "number" && Number.isFinite(n) && n > 0 && n <= 2048
+			? n
+			: fallback;
+	const a = doc.querySelector("a[href]");
+	const linkHref = toAluHttpsUrl(a?.getAttribute("href")) ?? "";
+	return {
+		tag: el.tagName === "IFRAME" ? "iframe" : "img",
+		src,
+		width: size(width, 424),
+		height: size(height, 346),
+		linkHref,
+		linkText: linkHref ? (a?.textContent ?? "").trim() || "alu.jp" : "",
+	};
 };
 export const parseImageEmbedYonet = (url: URL): string | undefined => {
 	const id = url.pathname.slice(1).match(/i\/(.+)\.(.+)/)?.[1];
@@ -193,5 +246,5 @@ export const parseAudioEmbedSuno = (url: URL): string | undefined => {
 export const parseGameEmbedRPGEN = (url: URL): string | undefined => {
 	const id = url?.searchParams.get("map");
 	if (!id) return;
-	return `https://rpgen.org/dq/?map=${id}`;
+	return `https://rpgen.org/dq/?map=${encodeURIComponent(id)}`;
 };

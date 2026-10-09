@@ -1,18 +1,23 @@
-import { differenceInSeconds } from "date-fns";
 import { randInt } from "../../common/util.js";
+
+type Bucket = { tokens: number; lastRefill: Date };
+
+const sweepInterval = 1000 * 60; // 満タンのバケツを掃除する間隔
 
 /**
  * 一般的なトークンバケットアルゴリズム。
  * capacity: バケツの最大容量（保持できるトークン数）
  * refillRate: 秒あたりのトークン回復速度
  * costPerAction: 1操作で消費するトークン数
+ *
+ * キーはユーザーIDのほか、IPなどの文字列も使える。
  */
 export class TokenBucket {
-	private buckets: Map<number, { tokens: number; lastRefill: Date }> =
-		new Map();
+	private buckets: Map<number | string, Bucket> = new Map();
 	private capacity: number;
 	private refillRate: number;
 	private costPerAction: number;
+	private lastSweep = Date.now();
 
 	constructor(options: {
 		capacity: number;
@@ -23,23 +28,43 @@ export class TokenBucket {
 		this.refillRate = options.refillRate;
 		this.costPerAction = options.costPerAction;
 	}
+
+	/**
+	 * 経過時間ぶん回復した現在のトークン数
+	 */
+	private currentTokens(bucket: Bucket, now: Date): number {
+		const elapsed = (now.getTime() - bucket.lastRefill.getTime()) / 1000; // 秒（小数込み。1秒未満の間隔でも回復させる）
+		return Math.min(this.capacity, bucket.tokens + elapsed * this.refillRate);
+	}
+
+	/**
+	 * 満タンまで回復したバケツは未作成と同じなので捨てる（Mapが増え続けないように）
+	 */
+	private sweep(now: Date): void {
+		if (now.getTime() - this.lastSweep < sweepInterval) return;
+		this.lastSweep = now.getTime();
+		for (const [key, bucket] of this.buckets) {
+			if (this.currentTokens(bucket, now) >= this.capacity) {
+				this.buckets.delete(key);
+			}
+		}
+	}
+
 	/**
 	 * トークンバケットを更新し、操作可能かチェックする。
-	 * @param userId ユーザーID
+	 * @param userId ユーザーID（またはIPなどのキー）
 	 * @returns 操作できる場合 true、制限中なら false
 	 */
-	public attempt(userId = 0): boolean {
+	public attempt(userId: number | string = 0): boolean {
 		const now = new Date();
+		this.sweep(now);
 		const bucket = this.buckets.get(userId) ?? {
 			tokens: this.capacity,
 			lastRefill: now,
 		};
 
 		// 経過時間に応じてトークンを回復
-		const elapsed = differenceInSeconds(now, bucket.lastRefill);
-		const refillAmount = elapsed * this.refillRate;
-
-		bucket.tokens = Math.min(this.capacity, bucket.tokens + refillAmount);
+		bucket.tokens = this.currentTokens(bucket, now);
 		bucket.lastRefill = now;
 
 		// トークンが足りるか確認
@@ -56,10 +81,10 @@ export class TokenBucket {
 
 	/**
 	 * 次に投稿可能になるまでの秒数を返す
-	 * @param userId ユーザーID
+	 * @param userId ユーザーID（またはIPなどのキー）
 	 * @returns 残り秒数（投稿可能なら0）
 	 */
-	public getCooldownSeconds(userId = 0): number {
+	public getCooldownSeconds(userId: number | string = 0): number {
 		const now = new Date();
 		const bucket = this.buckets.get(userId);
 
@@ -69,11 +94,7 @@ export class TokenBucket {
 		}
 
 		// 経過時間に応じて回復トークン数を計算
-		const elapsed = (now.getTime() - bucket.lastRefill.getTime()) / 1000; // 秒
-		const currentTokens = Math.min(
-			this.capacity,
-			bucket.tokens + elapsed * this.refillRate,
-		);
+		const currentTokens = this.currentTokens(bucket, now);
 
 		// トークンが足りていれば即投稿可能
 		if (currentTokens >= this.costPerAction) return 0;
@@ -86,7 +107,7 @@ export class TokenBucket {
 	/**
 	 * スレ立てなどに長いクールタイムを追加（特別措置）
 	 */
-	public applyLongRandomLimit(userId = 0): void {
+	public applyLongRandomLimit(userId: number | string = 0): void {
 		// トークンをゼロにして、回復を止める代わりに一時的にlastRefillを未来に飛ばす
 		const bucket = this.buckets.get(userId) ?? {
 			tokens: this.capacity,

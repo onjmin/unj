@@ -4,10 +4,11 @@ services:
   # ホスト側ポートは 5434 / 8081 にずらしてある（コンテナ内部は同じ5432/80のまま）。
   # 使用時: NEON_DATABASE_URL=postgresql://neon:neon@db-neon:5432/unj?sslmode=disable
   #        （wsProxyがlocalhost:8081に固定で転送するので、ホスト名"db-neon"はそのままでよい）
+  # 認証情報が neon/neon 固定なので、ホスト側は 127.0.0.1 にだけ公開する（LANに晒さない）。
   db-neon:
     image: postgres:16-alpine
     ports:
-      - "5434:5432"
+      - "127.0.0.1:5434:5432"
     environment:
       POSTGRES_USER: neon
       POSTGRES_PASSWORD: neon
@@ -27,7 +28,7 @@ services:
   web-proxy:
     image: ghcr.io/neondatabase/wsproxy:latest
     ports:
-      - "8081:80"
+      - "127.0.0.1:8081:80"
     environment:
       LISTEN_PORT: ":80"
       # db-neon はこのコンテナのネットワークからのみ名前解決できるためこれを許可

@@ -12,6 +12,7 @@ import {
 	resCountCache,
 	resLimitCache,
 	titleCache,
+	touchThreadCache,
 } from "./cache.js";
 import { genTestIP } from "./ip.js";
 import { logger } from "./log.js";
@@ -185,6 +186,7 @@ export async function maybeSpawnNextThread({
 		contentTypesBitmaskCache.set(newId, contentTypesBitmask);
 		ccBitmaskCache.set(newId, ccBitmask);
 		titleCache.set(newId, title);
+		touchThreadCache(newId); // 誰にも読まれなくても pruneThreadCache の対象にする
 
 		// 旧スレ閲覧者へps更新を通知
 		const meta: Meta = {

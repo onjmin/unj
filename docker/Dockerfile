@@ -16,7 +16,7 @@ COPY package.json pnpm-lock.yaml ./
 # 依存関係のインストール
 RUN pnpm install
 
-# アプリケーションコードをコピー
+# アプリケーションコードをコピー（.env* / node_modules / logs などはリポジトリ直下の .dockerignore で除外）
 COPY . .
 
 # ポート番号（必要に応じて変更）

@@ -250,7 +250,7 @@
                     contentUrl = link;
                     uploadedImgur = { link, id, deletehash };
                     try {
-                        oekakiLogger([link, deletehash]);
+                        oekakiLogger(link, deletehash);
                     } catch (err) {}
                     if (!id) return;
                     imgurHistory.get().then((v) => {

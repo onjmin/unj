@@ -51,9 +51,8 @@ export const hello = (callback: (() => void) | null = null) => {
 	if (!socket) {
 		socket = io(uri, {
 			withCredentials: true,
-			auth: {
-				token: authToken.value,
-			},
+			// 再接続のたびに最新のトークンを送る（ページを開いた時のトークンを送り直さないように）
+			auth: (cb) => cb({ token: authToken.value }),
 		});
 		window.addEventListener("beforeunload", () => {
 			socket?.disconnect();

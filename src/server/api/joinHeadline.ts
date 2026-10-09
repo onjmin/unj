@@ -6,14 +6,32 @@ import {
 	getAccessCount,
 	getHeadlineRoom,
 	online,
-	sizeOf,
 	switchTo,
 } from "../mylib/socket.js";
+import { createThrottle } from "../mylib/ttl-throttle.js";
+import { notifyThreadRoom } from "./joinThread.js";
 
 const api = "joinHeadline";
 
+// 入退室通知はroom単位で間引く（join往復による通知の増幅対策）
+const throttle = createThrottle(2000);
+
+/**
+ * オンライン数とアクセス数を板のroom全体に通知する
+ */
+const notifyHeadlineRoom = (io: Server, room: string) => {
+	throttle(room, () => {
+		io.to(room).emit(api, {
+			ok: true,
+			size: online.size,
+			accessCount: getAccessCount(),
+		});
+	});
+};
+
 export default ({ socket, io }: { socket: Socket; io: Server }) => {
 	socket.data.prevRoom = "";
+	socket.data.prevThreadId = 0; // 0はスレ以外（ヘッドラインなど）
 	socket.on(api, async (data) => {
 		const joinHeadline = v.safeParse(joinHeadlineSchema, data);
 		if (!joinHeadline.success) return;
@@ -23,27 +41,24 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 
 		const room = getHeadlineRoom(board.id);
 		const moved = await switchTo(socket, room);
-		const { size } = online;
-		const accessCount = getAccessCount();
 		if (moved) {
-			io.to(room).emit(api, { ok: true, size, accessCount });
+			notifyHeadlineRoom(io, room);
 			// 元いたスレに退室通知
-			const { prevRoom } = socket.data;
-			if (prevRoom !== "") {
-				const size = sizeOf(io, prevRoom);
-				socket.to(prevRoom).emit("joinThread", { ok: true, size, pv: null });
-			}
+			const { prevThreadId } = socket.data;
+			if (prevThreadId) notifyThreadRoom(io, prevThreadId);
 			socket.data.prevRoom = room;
+			socket.data.prevThreadId = 0;
 		} else {
-			socket.emit(api, { ok: true, size, accessCount });
+			socket.emit(api, {
+				ok: true,
+				size: online.size,
+				accessCount: getAccessCount(),
+			});
 		}
 	});
 	socket.on("disconnect", () => {
-		const { prevRoom } = socket.data;
-		const { size } = online;
-		const accessCount = getAccessCount();
-		if (prevRoom !== "") {
-			socket.to(prevRoom).emit(api, { ok: true, size, accessCount });
-		}
+		// スレにいた場合の退室通知はjoinThread側で送る
+		const { prevRoom, prevThreadId } = socket.data;
+		if (prevRoom !== "" && !prevThreadId) notifyHeadlineRoom(io, prevRoom);
 	});
 };

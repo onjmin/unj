@@ -16,7 +16,7 @@ if (process.env.DEV_MODE === "true") {
 	neonConfig.pipelineConnect = false;
 }
 
-export const NEON_DATABASE_URL = String(process.env.NEON_DATABASE_URL);
+export const NEON_DATABASE_URL = process.env.NEON_DATABASE_URL ?? "";
 export const pool = new Pool({ connectionString: NEON_DATABASE_URL });
 
 pool.on("error", (error: Error) => {

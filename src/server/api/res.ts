@@ -6,23 +6,14 @@ import {
 	contentSchemaMap,
 	makeLatestResPreview,
 } from "../../common/request/content-schema.js";
-import {
-	myConfig,
-	ResSchema,
-	unjBeginDate,
-} from "../../common/request/schema.js";
+import { myConfig, ResSchema } from "../../common/request/schema.js";
 import type {
 	HeadlineThread,
 	Meta,
 	Player,
 	Res,
 } from "../../common/response/schema.js";
-import {
-	decodeThreadId,
-	encodeThreadId,
-	encodeUserId,
-	flaky,
-} from "../mylib/anti-debug.js";
+import { decodeThreadId, encodeThreadId, flaky } from "../mylib/anti-debug.js";
 import auth from "../mylib/auth.js";
 import {
 	ageResCache,
@@ -69,7 +60,7 @@ import { logger } from "../mylib/log.js";
 import { maybeSpawnNextThread } from "../mylib/next-thread.js";
 import nonce from "../mylib/nonce.js";
 import { pool } from "../mylib/pool.js";
-import { doppelgangers, humans } from "../mylib/rpg.js";
+import { doppelgangers, genRpgUserId } from "../mylib/rpg.js";
 import { isSameSimhash } from "../mylib/simhash.js";
 import {
 	broadcastLimit,
@@ -213,6 +204,18 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 
 			await poolClient.query("BEGIN"); // トランザクション開始
 
+			// 同時投稿でレス番号（MAX(num)+1）が重ならないよう、先にスレの行をロックする
+			// （READ COMMITTEDなので、ロック後のINSERTは先行した投稿のコミット結果を見て採番する）
+			const { rows: lockedRows } = await poolClient.query(
+				"SELECT res_limit FROM threads WHERE id = $1 FOR UPDATE",
+				[threadId],
+			);
+			if (lockedRows.length === 0) {
+				await poolClient.query("ROLLBACK");
+				return;
+			}
+			const resLimit: number = lockedRows[0].res_limit;
+
 			// レスの作成
 			const { rows, rowCount } = await poolClient.query(
 				[
@@ -265,6 +268,14 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 				return;
 			}
 			const { created_at, num } = rows[0];
+
+			// 同時投稿でキャッシュ上の上限判定（isMax）をすり抜けた分はここで巻き戻す（isMaxと同じ式）
+			if (num > resLimit + (isOwner && resLimit === 1000 ? 5 : 0)) {
+				await poolClient.query("ROLLBACK");
+				// キャッシュがDBより遅れていた（他所からの投稿など）ので、確定済みの番号に合わせて以降はisMaxで弾く
+				resCountCache.set(threadId, num - 1);
+				return;
+			}
 
 			const latestResNum = num;
 			resCountCache.set(threadId, latestResNum);
@@ -485,34 +496,31 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			// RPG
 			// ここでreturnするとCOMMITに到達せず、INSERT済みのレスが闇に葬られる上に
 			// トランザクション開きっぱなしのコネクションがプールに返却される。早期returnは書かないこと。
-			// humansはユーザー単位で永続、doppelgangersはスレ単位かつ4分で期限切れ(rpgInit.ts参照)なので、
-			// 「RPG参加経験のあるユーザーが別スレ／4分後に書き込む」＝m/dが無いケースは普通に起きる。
-			if (humans.has(userId)) {
-				const human = humans.get(userId);
-				if (human) {
-					const msg = content.output.contentText;
-					if (msg.length > 64) {
-						human.msg = `${msg.slice(0, 64)}…`;
-					} else {
-						human.msg = msg;
-					}
-					const d = doppelgangers.get(threadId)?.get(userId);
-					if (d) {
-						const player: Player = {
-							userId: encodeUserId(userId, unjBeginDate) ?? "",
-							sAnimsId: d.human.sAnimsId,
-							msg: d.human.msg,
-							x: d.x,
-							y: d.y,
-							direction: d.direction,
-							updatedAt: d.updatedAt,
-						};
-						io.to(getThreadRoom(threadId)).emit("rpgPatch", {
-							ok: true,
-							player,
-						});
-					}
-				}
+			// doppelgangersはスレ単位かつ4分で期限切れ(rpgInit.ts参照)なので、dが無いケースは普通に起きる。
+			// 吹き出しはこのスレのドッペルゲンガーにだけ付ける（別スレの書き込みで同一人物と紐付けられないように）
+			const d = doppelgangers.get(threadId)?.get(userId);
+			if (d) {
+				const msg = content.output.contentText;
+				d.msg = msg.length > 64 ? `${msg.slice(0, 64)}…` : msg;
+				const player: Player = {
+					userId: genRpgUserId(userId, threadId),
+					sAnimsId: d.human.sAnimsId,
+					msg: d.msg,
+					x: d.x,
+					y: d.y,
+					direction: d.direction,
+					updatedAt: d.updatedAt,
+				};
+				// rpgPatch.tsと同じく、本人にはyoursで今の識別子を知らせる
+				socket.emit("rpgPatch", {
+					ok: true,
+					player,
+					yours: player.userId,
+				});
+				socket.to(getThreadRoom(threadId)).emit("rpgPatch", {
+					ok: true,
+					player,
+				});
 			}
 
 			await poolClient.query("COMMIT"); // 問題なければコミット

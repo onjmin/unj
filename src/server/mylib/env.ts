@@ -36,6 +36,44 @@ export const genEnvKey = (): string => {
 
 export const VITE_BASE_URL = PROD_MODE ? process.env.VITE_BASE_URL : "/";
 
+/**
+ * 本番で必須のenvを起動時に検証する。足りなければ起動しない
+ *
+ * 未設定のまま起動すると署名の鍵が空になり、トークンを偽造して誰にでもなりすませてしまう。
+ * サーバーの起動時（index.ts）だけ呼ぶ。vite.config.ts などのビルド処理からは呼ばない。
+ */
+export const validateEnv = () => {
+	if (!PROD_MODE) return;
+	const errors: string[] = [];
+	for (const key of [
+		"UNJ_AUTH_SECRET_PEPPER",
+		"UNJ_HASHIDS_SECRET_PEPPER",
+		"UNJ_ADMIN_API_KEY",
+	]) {
+		if (!isSecureValue(process.env[key] ?? "")) {
+			errors.push(
+				`${key} が未設定か、安全な値ではありません（英数字のみ・長さを5で割って4余る値。例: 64桁の16進数）`,
+			);
+		}
+	}
+	if (!process.env.NEON_DATABASE_URL) {
+		errors.push("NEON_DATABASE_URL が未設定です");
+	}
+	if (errors.length) {
+		for (const error of errors) console.error(chalk.bgRedWhite(error));
+		process.exit(1);
+	}
+	// 任意（未設定なら admin キーだけで従来どおり動く）
+	const bot = process.env.UNJ_BOT_API_KEY;
+	if (bot && !/^[0-9a-f]{64}$/i.test(bot)) {
+		console.warn(
+			chalk.bgYellowBlack(
+				"UNJ_BOT_API_KEY は64桁の16進数にしてください（今の値では認証が通りません）",
+			),
+		);
+	}
+};
+
 export let ROOT_PATH = "";
 // if (DEV_MODE) {
 const __filename = fileURLToPath(import.meta.url);

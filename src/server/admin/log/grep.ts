@@ -1,6 +1,5 @@
 import * as fs from "node:fs";
 import path from "node:path";
-import { format } from "date-fns";
 import type { Request, Response, Router } from "express";
 import readLastLines from "read-last-lines";
 import * as v from "valibot";
@@ -9,9 +8,14 @@ import { levels } from "../../mylib/log.js";
 
 const api = "/log/grep";
 const tooManyThreshold = 65536;
+const logDir = path.resolve(ROOT_PATH, "logs");
+
+// mylib/log.ts の命名（DD-MM-YYYY.log、サイズ超過時は .1 .2 … が付く）だけ通す
+// （アンカー無しだと logs/ の外を指す値も通ってしまうため）
+const logFileNameRegex = /^\d{2}-\d{2}-\d{4}\.log(\.\d{1,4})?$/;
 
 const schema = v.strictObject({
-	fileName: v.pipe(v.string(), v.regex(/\d{2}-\d{2}-\d{4}.log/)),
+	fileName: v.pipe(v.string(), v.regex(logFileNameRegex)),
 	level: v.pipe(
 		v.string(),
 		v.check((input) => levels.includes(input.toLocaleLowerCase())),
@@ -37,9 +41,21 @@ export default (router: Router) => {
 			});
 			return;
 		}
-		const filePath = path.resolve(ROOT_PATH, "logs", result.output.fileName);
+		const filePath = path.resolve(logDir, result.output.fileName);
 
-		if (!fs.existsSync(filePath)) {
+		// 念のため、解決後のパスが logs/ の直下であることも確かめる
+		const relativePath = path.relative(logDir, filePath);
+		if (
+			!relativePath ||
+			relativePath.startsWith("..") ||
+			path.isAbsolute(relativePath) ||
+			path.dirname(relativePath) !== "."
+		) {
+			res.status(400).json({ error: "Invalid 'fileName'." });
+			return;
+		}
+
+		if (!fs.existsSync(filePath) || !fs.statSync(filePath).isFile()) {
 			res.status(404).json({ error: "Log file not found." });
 			return;
 		}

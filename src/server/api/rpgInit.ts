@@ -2,13 +2,19 @@ import { addMinutes, isAfter } from "date-fns";
 import type { Socket } from "socket.io";
 import * as v from "valibot";
 import { RpgInitSchema } from "../../common/request/rpg-schema.js";
-import { unjBeginDate } from "../../common/request/schema.js";
 import type { Player } from "../../common/response/schema.js";
-import { decodeThreadId, encodeUserId } from "../mylib/anti-debug.js";
+import { decodeThreadId } from "../mylib/anti-debug.js";
 import auth from "../mylib/auth.js";
-import { isDeleted } from "../mylib/cache.js";
-import { Doppelganger, Human, doppelgangers, humans } from "../mylib/rpg.js";
-import { getThreadRoom } from "../mylib/socket.js";
+import { isDeleted, threadCached } from "../mylib/cache.js";
+import {
+	Doppelganger,
+	genRpgUserId,
+	Human,
+	humans,
+	limitDoppelgangersPerUser,
+	prepareDoppelgangers,
+} from "../mylib/rpg.js";
+import { getThreadRoom, joined } from "../mylib/socket.js";
 
 const api = "rpgInit";
 
@@ -23,16 +29,33 @@ export default ({ socket }: { socket: Socket }) => {
 
 		if (isDeleted(threadId)) return;
 
-		if (!doppelgangers.has(threadId)) doppelgangers.set(threadId, new Map());
-		const m = doppelgangers.get(threadId);
-		if (!m) return;
+		// 実在する（readThread済みの）スレのroomに参加しているときだけ受け付ける
+		// joinThread/readThreadより先に届くことがあるので、クライアントはok:falseを見て再送する
+		if (
+			!threadCached.has(threadId) ||
+			!joined(socket, getThreadRoom(threadId))
+		) {
+			socket.emit(api, { ok: false });
+			return;
+		}
+
+		const m = prepareDoppelgangers(threadId);
+		if (!m) {
+			socket.emit(api, { ok: false });
+			return;
+		}
 
 		const userId = auth.getUserId(socket);
-		if (!m.has(userId)) {
+		const mine = m.get(userId);
+		if (mine) {
+			// 下のループで自分だけ期限切れとして消されないように
+			mine.updatedAt = new Date();
+		} else {
 			if (!humans.has(userId)) humans.set(userId, new Human());
 			const human = humans.get(userId);
 			if (!human) return;
 			human.sAnimsId = rpgInit.output.sAnimsId;
+			limitDoppelgangersPerUser(userId, threadId);
 			m.set(userId, new Doppelganger(human));
 		}
 
@@ -49,9 +72,9 @@ export default ({ socket }: { socket: Socket }) => {
 				continue;
 			}
 			players.push({
-				userId: encodeUserId(k, unjBeginDate) ?? "",
+				userId: genRpgUserId(k, threadId),
 				sAnimsId: d.human.sAnimsId,
-				msg: d.human.msg,
+				msg: d.msg,
 				x: d.x,
 				y: d.y,
 				direction: d.direction,
@@ -59,15 +82,18 @@ export default ({ socket }: { socket: Socket }) => {
 			});
 		}
 
-		const encoded = encodeUserId(userId, unjBeginDate);
+		const encoded = genRpgUserId(userId, threadId);
 		socket.emit(api, {
 			ok: true,
 			players,
 			yours: encoded,
 		});
-		socket.to(getThreadRoom(threadId)).emit("rpgPatch", {
-			ok: true,
-			player: players.find((p) => p.userId === encoded),
-		});
+		const player = players.find((p) => p.userId === encoded);
+		if (player) {
+			socket.to(getThreadRoom(threadId)).emit("rpgPatch", {
+				ok: true,
+				player,
+			});
+		}
 	});
 };

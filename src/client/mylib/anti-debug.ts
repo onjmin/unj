@@ -7,10 +7,6 @@ const VITE_UNJ_FLAKY_RATE = Number(
 	decodeEnv(import.meta.env.VITE_UNJ_FLAKY_RATE),
 );
 
-const VITE_UNJ_AI_WEBHOOK_SECRET_PEPPER = decodeEnv(
-	import.meta.env.VITE_UNJ_AI_WEBHOOK_SECRET_PEPPER,
-);
-
 /**
  * 再現性を下げる
  */
@@ -36,21 +32,7 @@ export const genNonce = (key: string): string => {
 	return str.slice(0, nonceLength);
 };
 
-/**
- * AI Webhook不正防止用ハッシュを生成
- */
-export const genAiWebhookHash = (
-	nonce: string,
-	threadId: string,
-	resNum: number,
-): string => {
-	const str = sha256(
-		[VITE_UNJ_AI_WEBHOOK_SECRET_PEPPER, nonce, threadId, resNum].join(
-			delimiter,
-		),
-	);
-	return str.slice(0, 8); // 実用上問題ないので8文字に削減
-};
+// AI Webhook不正防止用ハッシュはサーバー側で作る（src/server/api/contact.ts）
 
 // アンチデバッグ機構
 if (

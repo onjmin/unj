@@ -31,6 +31,8 @@ import {
 	nextThreadIdCache,
 	ownerIdCache,
 	ownerIpCache,
+	pruneThreadCache,
+	pruneUserCache,
 	psCache,
 	resCountCache,
 	resLimitCache,
@@ -38,15 +40,45 @@ import {
 	subbedCache,
 	threadCached,
 	titleCache,
+	touchThreadCache,
 	userIdCache,
 	varsanCache,
 	walkPresetCache,
 } from "../mylib/cache.js";
+import { pendingNinjaUserIds } from "../mylib/command.js";
 import { logger } from "../mylib/log.js";
 import nonce from "../mylib/nonce.js";
 import { pool } from "../mylib/pool.js";
+import { getThreadRoom } from "../mylib/socket.js";
+import { hasPendingLike } from "./like.js";
+import { hasPendingLol } from "./lol.js";
 
 const api = "readThread";
+
+/**
+ * 古いキャッシュを捨てる（閲覧中のスレ・DB未反映の草があるスレ・接続中のユーザーは残す）
+ */
+const prune = (socket: Socket, threadId: number) => {
+	const { rooms } = socket.nsp.adapter;
+	pruneThreadCache(
+		(id) =>
+			id === threadId ||
+			rooms.has(getThreadRoom(id)) ||
+			hasPendingLike(id) ||
+			hasPendingLol(id),
+	);
+	pruneUserCache(() => {
+		const online: Set<number> = new Set();
+		for (const s of socket.nsp.sockets.values()) {
+			online.add(auth.getUserId(s));
+		}
+		// DB未反映の忍法帖スコアがあるユーザーも残す（読み直すと古いスコアになる）
+		for (const userId of pendingNinjaUserIds()) {
+			online.add(userId);
+		}
+		return online;
+	});
+};
 
 export default ({ socket }: { socket: Socket }) => {
 	socket.on(api, async (data) => {
@@ -94,10 +126,14 @@ export default ({ socket }: { socket: Socket }) => {
 				}
 				const threadRecord = rows[0];
 
+				// 増える前に古いキャッシュを捨てる（ここから登録まではawaitを挟まない）
+				prune(socket, threadId);
+
 				// キャッシュ済みフラグはレコードを引けてから立てる。先に立てると
 				// 存在しないスレIDを1回踏んだだけで「キャッシュ済みだが中身が空」の状態が
 				// 固定され、以降そのIDへのreadThreadが空スレをok:trueで返し続ける。
 				threadCached.set(threadId, true);
+				touchThreadCache(threadId);
 				// 書き込み内容
 				ccUserIdCache.set(threadId, threadRecord.cc_user_id);
 				ccUserNameCache.set(threadId, threadRecord.cc_user_name);
@@ -201,6 +237,8 @@ export default ({ socket }: { socket: Socket }) => {
 						ageResCache.set(threadId, ageRes);
 					}
 				}
+			} else {
+				touchThreadCache(threadId);
 			}
 
 			if (isDeleted(threadId)) {

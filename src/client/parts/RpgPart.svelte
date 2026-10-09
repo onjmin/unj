@@ -60,21 +60,49 @@
     socket?.emit("rpgPatch", data);
   };
 
-  const handleRpgInit = async (data: {
-    ok: boolean;
-    players: Player[];
-    yours: string;
-    timestamp: Date;
-  }) => {
-    if (!data.ok) return;
-    for (const p of data.players) players.set(p.userId, p);
-    yours = data.yours;
+  const emitRpgInit = () => {
+    socket?.emit("rpgInit", {
+      threadId,
+      sAnimsId: Number(sAnimsId.value ?? 2086),
+    });
   };
 
-  const handleRpgPatch = async (data: { ok: boolean; player: Player }) => {
-    if (!data.ok) return;
+  // joinThread/readThreadより先に届くとok:falseで断られるので、少し待って再送する
+  let initRetry = 0;
+  let initRetryId: ReturnType<typeof setTimeout> | undefined;
+
+  const handleRpgInit = async (data: {
+    ok: boolean;
+    players?: Player[];
+    yours?: string;
+  }) => {
+    if (!data.ok) {
+      if (initRetry < 5) {
+        initRetry++;
+        clearTimeout(initRetryId);
+        initRetryId = setTimeout(emitRpgInit, 1000);
+      }
+      return;
+    }
+    for (const p of data.players ?? []) players.set(p.userId, p);
+    yours = data.yours ?? "";
+  };
+
+  const handleRpgPatch = async (data: {
+    ok: boolean;
+    player?: Player;
+    yours?: string;
+  }) => {
+    if (!data.ok || !data.player) return;
+    // 自分の識別子はスレ・日ごとに変わるので、届いたら差し替える
+    if (data.yours && data.yours !== yours) {
+      players.delete(yours);
+      yours = data.yours;
+    }
     players.set(data.player.userId, data.player);
   };
+
+  let lastTouchAt = 0;
 
   /**
    * 全体のクリック／タッチイベントで canvas 領域内ならグリッド座標を算出して送信
@@ -96,9 +124,12 @@
     let clientY: number;
 
     if (event instanceof MouseEvent) {
+      // タップすると touchend の後に click も飛んでくるので、二重に送らない
+      if (Date.now() - lastTouchAt < 1000) return;
       clientX = event.clientX;
       clientY = event.clientY;
     } else if (event instanceof TouchEvent && event.changedTouches.length > 0) {
+      lastTouchAt = Date.now();
       clientX = event.changedTouches[0].clientX;
       clientY = event.changedTouches[0].clientY;
     } else {
@@ -149,16 +180,14 @@
 
   $effect(() => {
     setTimeout(() => {
-      socket?.emit("rpgInit", {
-        threadId,
-        sAnimsId: Number(sAnimsId.value ?? 2086),
-      });
+      emitRpgInit();
       socket?.on("rpgInit", handleRpgInit);
       socket?.on("rpgPatch", handleRpgPatch);
       document.addEventListener("click", handleGlobalClick, true);
       document.addEventListener("touchend", handleGlobalClick, true);
     });
     return () => {
+      clearTimeout(initRetryId);
       socket?.off("rpgInit", handleRpgInit);
       socket?.off("rpgPatch", handleRpgPatch);
       document.removeEventListener("click", handleGlobalClick, true);

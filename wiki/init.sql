@@ -15,6 +15,7 @@ DROP TABLE IF EXISTS game_schedule CASCADE;
 DROP TABLE IF EXISTS migration_tokens CASCADE;
 DROP TABLE IF EXISTS user_mutes CASCADE;
 DROP TABLE IF EXISTS user_blocks CASCADE;
+DROP TABLE IF EXISTS post_reposts CASCADE;
 DROP TABLE IF EXISTS user_follows CASCADE;
 DROP TABLE IF EXISTS reports CASCADE;
 DROP TABLE IF EXISTS messages CASCADE;
@@ -199,7 +200,7 @@ CREATE TABLE threads (
     has_collab_button BOOLEAN NOT NULL DEFAULT FALSE,
     is_edited BOOLEAN NOT NULL DEFAULT FALSE, -- unjには編集機能が無いが、rezeから来た投稿は編集済みでありうる
     avatar_color TEXT, -- 投稿者のアバター色。unjのcc_user_avatar(SMALLINT)はアイコン番号で意味が違うため別に持つ
-    reposted BOOLEAN NOT NULL DEFAULT FALSE,
+    reposted BOOLEAN NOT NULL DEFAULT FALSE, -- 未使用（旧・全員共通のリポストフラグ。post_reposts に移行済み、ドロップ可）
     reze_origin_post_id INTEGER, -- 移送の追跡と冪等性。reze の posts.id を控える（新規投稿では使わない）
     game_id BIGINT REFERENCES games(id) ON DELETE SET NULL,
     mv_id BIGINT REFERENCES mvs(id) ON DELETE SET NULL,
@@ -261,7 +262,7 @@ CREATE TABLE res (
     is_edited BOOLEAN NOT NULL DEFAULT FALSE,
     avatar_color TEXT,
     parent_num SMALLINT, -- 返信の親。unjは本文の>>nアンカーしか持たないため別カラムで保持
-    reposted BOOLEAN NOT NULL DEFAULT FALSE,
+    reposted BOOLEAN NOT NULL DEFAULT FALSE, -- 未使用（旧・全員共通のリポストフラグ。post_reposts に移行済み、ドロップ可）
     reze_origin_post_id INTEGER,
     game_id BIGINT REFERENCES games(id) ON DELETE SET NULL,
     mv_id BIGINT REFERENCES mvs(id) ON DELETE SET NULL,
@@ -360,6 +361,20 @@ CREATE TABLE user_follows (
 );
 
 CREATE INDEX idx_user_follows_followed ON user_follows (followed_user_id);
+
+-- ========== post_reposts テーブル（ユーザーごとのリポスト） ==========
+-- unj-reze の PUT /api/posts/[id] action=repost が書く（lib/db/pg.ts repostPost）。
+-- threads と res は id 空間が別なので post_kind で分ける（0=threads.id, 1=res.id）。
+-- threads/res.reposts はここの行数を非正規化した件数で、行が実際に増減したときだけ ±1 する。
+-- target_id に外部キーは張れない（参照先が種別で変わる）。レスもスレと同じく論理削除
+-- （本文を差し替え、行と num は残す）なので参照先は消えない。res.id は SERIAL で再利用もされない。
+CREATE TABLE post_reposts (
+    user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    post_kind SMALLINT NOT NULL, -- 0=スレ(threads.id) / 1=レス(res.id)
+    target_id INT NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (user_id, post_kind, target_id)
+);
 
 -- ========== user_blocks テーブル ==========
 CREATE TABLE user_blocks (

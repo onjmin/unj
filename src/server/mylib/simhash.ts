@@ -1,4 +1,10 @@
-const simhashCache: Map<number, number[]> = new Map();
+import { TtlMap } from "./ttl-map.js";
+
+// userId → 直近のsimhash（しばらく書き込みのないユーザーの分から捨てる）
+const simhashCache: TtlMap<number, number[]> = new TtlMap({
+	max: 10000,
+	ttl: 1000 * 60 * 60 * 24,
+});
 const allowedSameCount = 3;
 
 /**

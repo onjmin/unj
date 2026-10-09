@@ -40,9 +40,21 @@ if (VITE_BASE_URL === "/" && PROD_MODE) {
 
 const ENV_KEY = genEnvKey();
 
+// クライアントに絶対に入れないenv（サーバー側だけで使う秘密）
+// Netlifyや.env.productionに残っていてもバンドルには入らないようにする
+const isDeniedEnv = (key: string) =>
+	key.startsWith("VITE_DISCORD_WEBHOOK_URL_") ||
+	key === "VITE_UNJ_AI_WEBHOOK_SECRET_PEPPER";
+
 // envの符号化
 const env: Map<string, string | boolean> = new Map();
 for (const key in process.env) {
+	if (isDeniedEnv(key)) {
+		// Vite本体も VITE_* を平文で import.meta.env に載せるので、process.env から消しておく
+		delete process.env[key];
+		env.set(key, "");
+		continue;
+	}
 	if (key.startsWith("VITE_")) {
 		const encoded = encode(process.env[key] ?? null, ENV_KEY);
 		env.set(key, encoded ?? "");

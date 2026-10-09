@@ -10,6 +10,25 @@ import type { Server, Socket } from "socket.io";
 export const limitByIP = 2;
 
 /**
+ * 1拠点（IPv6の/48）あたりの同時接続上限
+ *
+ * 方針:
+ * - /48や/56を持っていれば/64を乗り換えて limitByIP をすり抜けられるので、2段目で抑える。
+ * - モバイル回線は近くの/64を別の契約者に配ることがあるため、limitByIP よりかなり緩くする。
+ * - IPv4には使わない（limitByIP と同じ単位になるため）。
+ */
+export const limitByIPPrefix = 8;
+
+/**
+ * 1ユーザー（userId）あたりの同時接続上限
+ *
+ * 方針:
+ * - IPを使い捨てられても、同じトークンで全体の接続枠を占有されないようにする。
+ * - 回線の切り替え（Wi-Fi⇔モバイル）で古い接続が少し残る分だけ limitByIP より1つ多い。
+ */
+export const limitByUserId = 3;
+
+/**
  * 全体 broadcast（io.emit）を許可する最大接続数
  *
  * 方針:
@@ -38,9 +57,38 @@ export const getAccessCount = () => accessCount;
 export const incrementAccessCount = () => accessCount++;
 
 /**
- * Map<IP, Set<socket.id>>
+ * Map<IP（IPv6は/64）, Set<socket.id>>
  */
 export const online: Map<string, Set<string>> = new Map();
+
+/**
+ * Map<IPv6の/48, Set<socket.id>>
+ */
+export const onlineByIPPrefix: Map<string, Set<string>> = new Map();
+
+/**
+ * Map<userId, Set<socket.id>>
+ */
+export const onlineByUserId: Map<number, Set<string>> = new Map();
+
+/**
+ * 同時接続の枠を1つ取る。上限なら null、取れたら切断時に呼ぶ解放関数を返す
+ */
+export const acquireSlot = <K>(
+	map: Map<K, Set<string>>,
+	key: K,
+	socketId: string,
+	limit: number,
+): (() => void) | null => {
+	const s = map.get(key) ?? new Set<string>();
+	if (s.size >= limit) return null;
+	s.add(socketId);
+	map.set(key, s);
+	return () => {
+		s.delete(socketId);
+		if (s.size === 0 && map.get(key) === s) map.delete(key);
+	};
+};
 
 export const getHeadlineRoom = (boardId: number) => `headline:${boardId}`;
 export const getThreadRoom = (threadId: number) => `thread:${threadId}`;

@@ -77,16 +77,32 @@
       ? `width:${Math.max(cell.widthPx, MIN_DISPLAY_PX)}px; max-width:100%;`
       : "",
   );
+
+  // style属性の url() に生の src を入れると、引用符・括弧で別のCSSを差し込める
+  // （reze産の投稿はこちらのスキーマを通らない）。https だけ受け付け、
+  // new URL で正規化したうえで url("...") の中をエスケープする。それ以外は素の<img>に落とす。
+  let bgImage = $derived.by(() => {
+    try {
+      const u = new URL(src);
+      if (u.protocol !== "https:") return "";
+      const escaped = u.href
+        .replace(/[\\"]/g, "\\$&")
+        .replace(/[\n\r\f]/g, (c) => `\\${c.charCodeAt(0).toString(16)} `);
+      return `url("${escaped}")`;
+    } catch {
+      return "";
+    }
+  });
 </script>
 
-{#if frames <= 1 || !src}
+{#if frames <= 1 || !bgImage}
   <img {src} {alt} class={className} {onclick} {onerror} />
 {:else}
   <div
     role="img"
     aria-label={alt}
     class="{className} sprite-sheet sprite-anim"
-    style="background-image:url({src}); aspect-ratio:{cell?.ratio ?? 1}; {widthStyle} --frames:{frames}; --rows:{rows}; --duration:{frames / fps}s;"
+    style="background-image:{bgImage}; aspect-ratio:{cell?.ratio ?? 1}; {widthStyle} --frames:{frames}; --rows:{rows}; --duration:{frames / fps}s;"
     {onclick}
   ></div>
 {/if}

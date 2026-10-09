@@ -23,6 +23,7 @@ import {
 	ownerIdCache,
 	resCountCache,
 	resLimitCache,
+	touchThreadCache,
 } from "../../mylib/cache.js";
 import { genTestIP } from "../../mylib/ip.js";
 import { logger } from "../../mylib/log.js";
@@ -190,6 +191,7 @@ export default (router: Router, io: Server) => {
 			contentTypesBitmaskCache.set(id, contentTypesBitmask);
 			deletedAtCache.set(id, deletedAt);
 			ownerIdCache.set(id, userId);
+			touchThreadCache(id); // 誰にも読まれなくても pruneThreadCache の対象にする
 
 			const newThread: HeadlineThread = {
 				// 書き込み内容

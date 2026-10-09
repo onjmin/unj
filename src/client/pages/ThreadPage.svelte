@@ -29,7 +29,6 @@
         differenceInSeconds,
         intervalToDuration,
     } from "date-fns";
-    import { sha256 } from "js-sha256";
     import { navigate } from "svelte-routing";
     import * as v from "valibot";
     import {
@@ -58,7 +57,7 @@
     import type { Meta, Res, Thread } from "../../common/response/schema.js";
     import { randInt, sleep } from "../../common/util.js";
     import { encrypt } from "../mylib/aes-gcm.js";
-    import { genAiWebhookHash, genNonce } from "../mylib/anti-debug.js";
+    import { genNonce } from "../mylib/anti-debug.js";
     import {
         getResizedBase64Image,
         isAvailableCloudflareR2,
@@ -444,18 +443,11 @@
             });
             resHistoryCache.set(resHistories);
 
-            // AI機能
+            // AI機能（署名と本文はサーバー側で作る）
             if (isAI(data.new.contentText) && expectedResNum === newResNum) {
                 expectedResNum = 0;
-                const nonce = sha256(Math.random().toString()).slice(0, 8);
                 try {
-                    aiWebhook([
-                        genAiWebhookHash(nonce, threadId, newResNum),
-                        nonce,
-                        threadId,
-                        String(newResNum), // レス番号
-                        data.new.contentText,
-                    ]);
+                    aiWebhook(threadId, newResNum);
                 } catch (err) {}
             }
         } else if (!isAlreadyScrollEnd) {
@@ -689,7 +681,7 @@
                     contentUrl = link;
                     uploadedImgur = { link, id, deletehash };
                     try {
-                        oekakiLogger([link, deletehash]);
+                        oekakiLogger(link, deletehash);
                     } catch (err) {}
                     if (!id) return;
                     imgurHistory.get().then((v) => {

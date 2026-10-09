@@ -25,21 +25,43 @@ import { getIP, sliceIPRange } from "../mylib/ip.js";
 import { logger } from "./log.js";
 import { pool } from "../mylib/pool.js";
 import { flaky } from "./anti-debug.js";
+import { TokenBucket } from "./token-bucket.js";
+
+// !checkの頻度制限（IP一致の総当たり対策）。1分に3回程度
+const checkTokenBucket = new TokenBucket({
+	capacity: 3,
+	refillRate: 1 / 20, // 20秒で1回分回復
+	costPerAction: 1,
+});
 
 const delay = 1000 * 60 * 4; // Glitchは5分放置でスリープする
 const neet: Map<number, NodeJS.Timeout> = new Map();
 const ninjaScoreDiffMap: Map<number, number> = new Map();
+/**
+ * DB未反映の忍法帖スコアを持つユーザー（pruneUserCacheで捨てないように）
+ */
+export const pendingNinjaUserIds = () => ninjaScoreDiffMap.keys();
 const lazyUpdate = (userId: number, ip: string, ninjaScoreDiff: number) => {
-	const diff = (ninjaScoreDiffMap.get(userId) ?? 0) + ninjaScoreDiff;
-	ninjaScoreDiffMap.set(userId, diff);
+	ninjaScoreDiffMap.set(
+		userId,
+		(ninjaScoreDiffMap.get(userId) ?? 0) + ninjaScoreDiff,
+	);
 	clearTimeout(neet.get(userId));
 	const id = setTimeout(async () => {
+		neet.delete(userId);
+		// 発火時点の差分を送る（送信中に増えた分は次回に持ち越す）
+		const diff = ninjaScoreDiffMap.get(userId) ?? 0;
 		try {
 			await pool.query(
 				"UPDATE users SET updated_at = NOW(), ip = $1, ninja_score = ninja_score + $2 WHERE id = $3",
 				[ip, diff, userId],
 			);
-			ninjaScoreDiffMap.delete(userId);
+			const rest = (ninjaScoreDiffMap.get(userId) ?? 0) - diff;
+			if (rest === 0) {
+				ninjaScoreDiffMap.delete(userId);
+			} else {
+				ninjaScoreDiffMap.set(userId, rest);
+			}
 		} catch (error) {
 			logger.verbose("command");
 			logger.error(error);
@@ -238,7 +260,9 @@ export const parseCommand = async ({
 						const banned = [];
 						for (const ref of refArray) {
 							cache1.add(ref.userId);
-							cache2.add(userIPCache.get(ref.userId) ?? "");
+							// 再起動後に未ログインのユーザーはキャッシュに無いので、そのレスの投稿元IPを使う
+							const ip = userIPCache.get(ref.userId) || ref.ip;
+							if (ip) cache2.add(ip);
 							banned.push(ref.num);
 						}
 						results.push(
@@ -264,7 +288,7 @@ export const parseCommand = async ({
 						const banned = [];
 						for (const ref of refArray) {
 							cache1.delete(ref.userId);
-							cache2.delete(userIPCache.get(ref.userId) ?? "");
+							cache2.delete(userIPCache.get(ref.userId) || ref.ip);
 							banned.push(ref.num);
 						}
 						results.push(
@@ -370,6 +394,11 @@ export const parseCommand = async ({
 				case "!check":
 					{
 						if (ninjaLv < 2) break;
+						if (!multiAnka?.length) break;
+						if (!checkTokenBucket.attempt(userId)) {
+							results.push("▼🤖連続ノ判定ハデキマセン。シバラク待ッテクダサイ");
+							break;
+						}
 						const refArray = await fetchRefArray([...new Set(multiAnka)]);
 						if (!refArray || !refArray.length) break;
 						const ref = refArray[0];

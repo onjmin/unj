@@ -1,3 +1,6 @@
+import { isHttpUrl } from "../../common/request/content-schema.js";
+import whitelistDataStore from "../../common/request/whitelist/data-store.js";
+import { findIn } from "../../common/request/whitelist/site-info.js";
 import { decodeEnv } from "./env.js";
 import { ObjectStorage } from "./object-storage.js";
 
@@ -152,6 +155,10 @@ export const uploadTextCloudflareR2 = async (kind: TextKind, text: string) => {
  * R2は immutable で配っているので、2回目以降はブラウザキャッシュから返る。
  */
 export const fetchTextCloudflareR2 = async (url: string): Promise<string> => {
+	// 他の経路（旧データ・unj-reze）のレスが任意のホストを指していても取りに行かない（閲覧者のIP漏れ対策）
+	if (!isHttpUrl(url) || !findIn(whitelistDataStore, new URL(url).hostname)) {
+		throw new Error("データの保存先が不正です");
+	}
 	const res = await fetch(url);
 	if (!res.ok) throw new Error(`データの取得に失敗しました (${res.status})`);
 	return res.text();

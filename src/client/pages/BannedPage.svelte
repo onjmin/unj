@@ -6,8 +6,10 @@
     ///////////////
 
     import { VITE_ADMIN_EMAIL, VITE_ADMIN_TWITTER } from "../mylib/env.js";
-    import { banReport, ipInfoJson } from "../mylib/unj-storage.js";
-    import { reportBanned } from "../mylib/webhook.js";
+    import { ipInfoJson } from "../mylib/unj-storage.js";
+
+    // BANの通知はサーバー側で送る（src/server/api/contact.ts の reportBanned）
+    // ここではソケットが切られているので送れない
 
     let ip = $state("");
 
@@ -28,15 +30,6 @@
                         ipInfoJson.value = null;
                         return; // 確実に改ざんされているので、以降の処理は無意味。
                     }
-                }
-                // BANの通知
-                if ("done" !== banReport.value) {
-                    const unknown = "(unknown)";
-                    banReport.value = "done";
-                    reportBanned([
-                        ipInfoJson.value ?? unknown,
-                        window.navigator.userAgent,
-                    ]);
                 }
             } catch (err) {}
         })();

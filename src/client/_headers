@@ -1,2 +1,8 @@
 /static/sitemap.xml
   Content-Type: application/xml
+
+# clickjacking: frame-ancestors in <meta> CSP is ignored, so send it as a header
+# onjmin.f5.si = Netlify の canonical ドメイン（DDNS）。フレーム転送で包まれても表示できるよう許可
+# X-Frame-Options は別オリジンを列挙できないので使わない（frame-ancestors があれば現行ブラウザは XFO を無視する）
+/*
+  Content-Security-Policy: frame-ancestors 'self' https://onjmin.f5.si

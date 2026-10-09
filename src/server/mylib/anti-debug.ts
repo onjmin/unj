@@ -1,3 +1,4 @@
+import { createHash, timingSafeEqual } from "node:crypto";
 import { differenceInDays } from "date-fns";
 import Hashids from "hashids";
 import { sha256 } from "js-sha256";
@@ -24,11 +25,21 @@ export const flaky = (func: () => void): boolean => {
 	return false;
 };
 
+/**
+ * 定数時間の文字列比較（タイミング攻撃対策）
+ *
+ * 両方を sha256 にかけて同じ長さに揃えてから timingSafeEqual で比べる。
+ */
+export const safeEqual = (a: string, b: string): boolean =>
+	timingSafeEqual(
+		createHash("sha256").update(a).digest(),
+		createHash("sha256").update(b).digest(),
+	);
+
 const delimiter = "###";
 
-const VITE_UNJ_NONCE_SECRET_PEPPER = String(
-	process.env.VITE_UNJ_NONCE_SECRET_PEPPER,
-);
+const VITE_UNJ_NONCE_SECRET_PEPPER =
+	process.env.VITE_UNJ_NONCE_SECRET_PEPPER ?? "";
 
 /**
  * Nonce値の生成
@@ -120,7 +131,7 @@ export const decodeResId = (resId: string): number | null => {
 	return isSerial(Number(n)) ? Number(n) : null;
 };
 
-const UNJ_AUTH_SECRET_PEPPER = String(process.env.UNJ_AUTH_SECRET_PEPPER);
+const UNJ_AUTH_SECRET_PEPPER = process.env.UNJ_AUTH_SECRET_PEPPER ?? ""; // 本番では起動時に検証する（env.ts）
 
 /**
  * JWT風トークンの署名

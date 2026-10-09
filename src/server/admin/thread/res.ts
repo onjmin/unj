@@ -23,6 +23,7 @@ import {
 	nextThreadIdCache,
 	resCountCache,
 	resLimitCache,
+	touchThreadCache,
 } from "../../mylib/cache.js";
 import { genTestIP } from "../../mylib/ip.js";
 import { logger } from "../../mylib/log.js";
@@ -78,6 +79,7 @@ async function ensureThreadCache(threadId: number): Promise<boolean> {
 	balsResNumCache.set(threadId, t.bals_res_num);
 	contentTypesBitmaskCache.set(threadId, t.content_types_bitmask);
 	nextThreadIdCache.set(threadId, t.next_thread_id ?? 0);
+	touchThreadCache(threadId); // 誰にも読まれなくても pruneThreadCache の対象にする
 	return true;
 }
 
@@ -182,6 +184,12 @@ export default (router: Router, io: Server) => {
 		try {
 			poolClient = await pool.connect();
 			await poolClient.query("BEGIN");
+
+			// 同時投稿でレス番号（MAX(num)+1）が重ならないよう、先にスレの行をロックする
+			await poolClient.query(
+				"SELECT id FROM threads WHERE id = $1 FOR UPDATE",
+				[threadId],
+			);
 
 			const sage = result.output.sage;
 

@@ -16,10 +16,18 @@ const tokenBucket = new TokenBucket({
 	costPerAction: 1,
 });
 
+/**
+ * LIKEのワイルドカード（% _）とエスケープ文字（\）を文字として検索させる
+ */
+const escapeLike = (str: string) => str.replace(/[\\%_]/g, (c) => `\\${c}`);
+
 export default ({ socket }: { socket: Socket }) => {
 	socket.on(api, async (data) => {
 		const search = v.safeParse(SearchSchema, data);
 		if (!search.success) return;
+
+		const keyword = search.output.keyword.trim();
+		if (keyword === "") return;
 
 		// Nonce値の完全一致チェック
 		if (!nonce.isValid(socket, search.output.nonce)) {
@@ -42,7 +50,8 @@ export default ({ socket }: { socket: Socket }) => {
 
 			// レスの取得
 			const values: (string | number)[] = [];
-			values.push(`%${search.output.keyword}%`);
+			values.push(`%${escapeLike(keyword)}%`);
+			const like = `LIKE LOWER($${values.length}) ESCAPE '\\'`;
 			const query = [
 				"SELECT * FROM (",
 				"SELECT",
@@ -61,9 +70,9 @@ export default ({ socket }: { socket: Socket }) => {
 				"FROM res",
 				"INNER JOIN threads ON res.thread_id = threads.id",
 				"WHERE (threads.deleted_at IS NULL OR threads.deleted_at > CURRENT_TIMESTAMP)",
-				`AND (LOWER(res.cc_user_id) LIKE LOWER($${values.length})`,
-				`OR LOWER(res.content_text) LIKE LOWER($${values.length})`,
-				`OR LOWER(res.content_url) LIKE LOWER($${values.length}))`,
+				`AND (LOWER(res.cc_user_id) ${like}`,
+				`OR LOWER(res.content_text) ${like}`,
+				`OR LOWER(res.content_url) ${like})`,
 				"UNION ALL",
 				"SELECT",
 				[
@@ -80,9 +89,9 @@ export default ({ socket }: { socket: Socket }) => {
 				].join(","),
 				"FROM threads",
 				"WHERE (deleted_at IS NULL OR deleted_at > CURRENT_TIMESTAMP)",
-				`AND (LOWER(cc_user_id) LIKE LOWER($${values.length})`,
-				`OR LOWER(content_text) LIKE LOWER($${values.length})`,
-				`OR LOWER(content_url) LIKE LOWER($${values.length}))`,
+				`AND (LOWER(cc_user_id) ${like}`,
+				`OR LOWER(content_text) ${like}`,
+				`OR LOWER(content_url) ${like})`,
 				") AS combined_results",
 			];
 

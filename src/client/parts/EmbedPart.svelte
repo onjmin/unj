@@ -11,12 +11,15 @@
     Enum,
     ankaRegex,
     contentTemplateMap,
+    isHttpUrl,
   } from "../../common/request/content-schema.js";
   import {
     SiteInfo,
     findIn,
   } from "../../common/request/whitelist/site-info.js";
   import {
+    type AluEmbed,
+    parseAluOembed,
     parseAudioEmbedSoundCloud,
     parseAudioEmbedSpotify,
     parseAudioEmbedSuno,
@@ -130,6 +133,8 @@
     try {
       u = new URL(contentUrl);
     } catch {}
+    // javascript: 等は展開もリンクもしない（スキーマを通っていない過去データ・reze産の保険）
+    if (u && u.protocol !== "http:" && u.protocol !== "https:") u = undefined;
     url = u;
     const temp = contentTemplateMap.get(contentType) ?? [];
     siteInfo = u ? findIn(temp, u.hostname) : null;
@@ -165,7 +170,7 @@
   let embedError = $state(false);
   let embedding = $state(false);
   let embedUrl = $state("");
-  let embedHtml = $state("");
+  let aluEmbed = $state<AluEmbed | null>(null);
   let imageEmbed = $state(false);
   let videoEmbedYouTube = $state(false);
   let videoEmbedNicovideo = $state(false);
@@ -194,11 +199,14 @@
         case 404:
           imageEmbed = true;
           embedUrl = parseImageEmbedAlu(url) ?? "";
-          embedHtml = "";
+          aluEmbed = null;
+          if (!embedUrl) break;
           fetch(embedUrl)
             .then((v) => v.json())
             .then((v) => {
-              embedHtml = v.html;
+              const parsed = parseAluOembed(v);
+              if (!parsed) throw 114514;
+              aluEmbed = parsed;
             })
             .catch((v) => {
               embedError = true;
@@ -310,6 +318,11 @@
     }
   };
 
+  // 開く直前にも http(s) か確かめる（window.open に javascript: を渡さない）
+  const openContentUrl = () => {
+    if (isHttpUrl(contentUrl)) window.open(contentUrl, "_blank");
+  };
+
   // global.css の #app { max-width: 600px } と同じ値。
   // PC版はブラウザ幅(window.innerWidth)がそのままシェル幅にならず、
   // 実際のコンテンツ幅は最大600pxで頭打ちになる。以前は window.innerWidth を
@@ -405,7 +418,7 @@
           if (embeddable && siteInfo) {
             tryEmbed(siteInfo);
           } else {
-            window.open(contentUrl, "_blank");
+            openContentUrl();
           }
         }}
         aria-label="埋め込みを展開"
@@ -424,7 +437,7 @@
             if (embeddable && siteInfo) {
               tryEmbed(siteInfo);
             } else {
-              window.open(contentUrl, "_blank");
+              openContentUrl();
             }
           }}
         >
@@ -477,9 +490,31 @@
     {#if imageEmbed}
       {#if siteInfo.id === 404}
         <div class="flex justify-start">
-          {#if embedHtml}
+          {#if aluEmbed}
+            <!-- oEmbed の html はそのまま描かず、検証済みの src だけで描き直す（見た目は向こうの html に合わせる） -->
             <div style="max-width: {width}px;">
-              {@html embedHtml}
+              {#if aluEmbed.tag === "iframe"}
+                <iframe
+                  title="embed"
+                  class="alu-embed-iframe"
+                  src={aluEmbed.src}
+                  scrolling="no"
+                  style="--alu-w: {aluEmbed.width}px; aspect-ratio: {aluEmbed.width} / {aluEmbed.height};"
+                ></iframe>
+              {:else}
+                <img class="embed-image" src={aluEmbed.src} alt="embed" />
+              {/if}
+              {#if aluEmbed.linkHref}
+                <div style="max-width: 432px; text-align: right; margin: 0 auto;">
+                  <a
+                    href={aluEmbed.linkHref}
+                    target="_blank"
+                    rel="noopener"
+                    style="margin: 0 auto; display: inline-block; padding-top: 10px; font-size: 12px; color: #787c7b; text-decoration: none; text-align: right;"
+                    >{aluEmbed.linkText}</a
+                  >
+                </div>
+              {/if}
             </div>
           {:else}
             <div class="animate-pulse">
@@ -575,12 +610,14 @@
         }}
       ></iframe>
     {:else if gameEmbedRPGEN}
+      <!-- 親ページの遷移(top navigation)等を禁止。RPGENは alert/confirm・別タブ・localStorage を使うのでその分だけ許可 -->
       <iframe
         title="embed"
         src={embedUrl}
         {width}
         {height}
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-modals"
         scrolling="no"
         onerror={() => {
           embedError = true;
@@ -611,5 +648,19 @@
   iframe {
     border-radius: 12px;
     max-width: 100%; /* width算出の保険。シェル幅を超えても突き抜けさせない */
+  }
+  /* alu.jp の oEmbed html に入っていた <style> の再現（狭い画面では3/4に縮める） */
+  .alu-embed-iframe {
+    display: block;
+    margin: auto;
+    border-width: 0;
+    border-radius: 0;
+    width: var(--alu-w);
+    height: auto;
+  }
+  @media screen and (max-width: 480px) {
+    .alu-embed-iframe {
+      width: calc(var(--alu-w) * 0.75);
+    }
   }
 </style>
