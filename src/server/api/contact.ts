@@ -21,6 +21,7 @@ import {
 	detectClientIpFromHeaders,
 	getIP,
 	ipKey,
+	ipPrefixKey,
 	isBannedIP,
 	normalizeIP,
 } from "../mylib/ip.js";
@@ -111,6 +112,9 @@ const bySocket = (socket: Socket, userId: number): string[] => [
 
 // 全体の枠は種別ごと（改善要望の連投で開示請求が止まらないように）
 const contactLimit = makeLimiter(3, 10 * MINUTE, 20); // 画面側でも1日1回に絞っている
+// /48や/56を持っていれば/64を乗り換えて個別の枠をすり抜けられるので、拠点単位でも絞る。
+// モバイル回線は近くの/64を別の契約者に配ることがあるので、/64の枠より緩くする
+const contactPrefixLimit = new WindowLimiter(6, 10 * MINUTE);
 const oekakiLimit = makeLimiter(12, 10 * MINUTE, 120);
 const aiLimit = makeLimiter(20, 10 * MINUTE, 120);
 
@@ -240,10 +244,25 @@ export const registerContactRoute = (
 					return;
 				}
 				const { type, lines } = contact.output;
+				const key = ipKey(ip);
+				const prefix = ipPrefixKey(ip);
 				if (
-					!contactLimit.local(`ip:${ipKey(ip)}`) ||
-					!contactLimit.global(type)
+					!contactLimit.local(`ip:${key}`) ||
+					(prefix !== key && !contactPrefixLimit.attempt(prefix))
 				) {
+					logger.verbose(`⌛ contact ${ip}`);
+					res.status(429).json({ ok: false });
+					return;
+				}
+				if (!contactLimit.global(type)) {
+					// 開示請求は回線を乗り換えた連投で全体の枠を潰されても失われないよう、ログに残して受け付ける
+					if (type === "police") {
+						logger.warn(
+							`📮 contact police (global limit) ${ip} ${JSON.stringify(lines)}`,
+						);
+						res.status(202).json({ ok: true });
+						return;
+					}
 					logger.verbose(`⌛ contact ${ip}`);
 					res.status(429).json({ ok: false });
 					return;

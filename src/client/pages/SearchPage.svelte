@@ -16,6 +16,7 @@
         myConfig,
         queryResultLimit,
     } from "../../common/request/schema.js";
+    import { SEARCH_KEYWORD_MAX_LENGTH } from "../../common/request/content-schema.js";
     import { type SearchResult } from "../../common/response/schema.js";
     import { sleep } from "../../common/util.js";
     import { genNonce } from "../mylib/anti-debug.js";
@@ -29,7 +30,7 @@
     try {
         currentQuery = decodeURIComponent(
             (new URLSearchParams(window.location.search).get("q") ?? "").trim(),
-        );
+        ).slice(0, SEARCH_KEYWORD_MAX_LENGTH);
     } catch (err) {}
 
     let searchQuery = $state("");
@@ -145,6 +146,7 @@
                         id="contentText"
                         type="text"
                         bind:value={searchQuery}
+                        maxlength={SEARCH_KEYWORD_MAX_LENGTH}
                         class="bg-gray-100/0 w-full p-2 pl-10 pr-10 border border-gray-500/40 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="全文検索"
                         onkeydown={(e) =>

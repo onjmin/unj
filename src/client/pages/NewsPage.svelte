@@ -5,6 +5,7 @@
     import MainPart from "../parts/MainPart.svelte";
     ///////////////
 
+    import DOMPurify from "dompurify";
     import { navigate } from "svelte-routing";
     import type { Board } from "../../common/request/board.js";
     import {
@@ -58,6 +59,15 @@
         next = !b ? null : items[idx + 1].id;
         last = !b ? null : items[lastIdx].id;
     };
+
+    /**
+     * Bloggerの本文を無害化する（記事IDの検証をすり抜けられても、偽フォームや埋め込みで悪用されないように）
+     */
+    const sanitize = (html: string) =>
+        DOMPurify.sanitize(html, {
+            FORBID_TAGS: ["style", "form", "iframe", "frame", "object", "embed"],
+            FORBID_ATTR: ["srcdoc", "formaction"],
+        });
 
     let item: BloggerItem | null = $state(null);
     let title = $state("ニュース取得中");
@@ -187,7 +197,7 @@
             <div
                 class="text-left w-full max-w-3xl px-4 wrap-break-words whitespace-normal"
             >
-                {@html item.content}
+                {@html sanitize(item.content ?? "")}
             </div>
         </div>
         {@render paginationControls()}

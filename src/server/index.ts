@@ -148,14 +148,14 @@ const io = new Server(server, {
 	maxHttpBufferSize: 64 * 1024,
 });
 
-app.use(express.json());
+// 本文を読むのは本文が要るルートだけ（認証前や /ping で大きな本文を読み込まないように）
 app.get("/ping", bannedCheckMiddleware, (req, res) => {
 	res.send("pong");
 });
 registerContactRoute(app, allowedOrigins);
 
 const router = express.Router();
-router.use(bannedCheckMiddleware, adminAuthMiddleware);
+router.use(bannedCheckMiddleware, adminAuthMiddleware, express.json());
 registerLogGrep(router);
 registerLogLevel(router);
 registerBlacklistID(router);

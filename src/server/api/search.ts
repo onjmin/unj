@@ -4,6 +4,7 @@ import { SearchSchema } from "../../common/request/schema.js";
 import type { SearchResult } from "../../common/response/schema.js";
 import { encodeThreadId } from "../mylib/anti-debug.js";
 import auth from "../mylib/auth.js";
+import { getIP, ipKey } from "../mylib/ip.js";
 import { logger } from "../mylib/log.js";
 import nonce from "../mylib/nonce.js";
 import { pool } from "../mylib/pool.js";
@@ -13,6 +14,12 @@ const api = "search";
 const tokenBucket = new TokenBucket({
 	capacity: 5, // burstあり（初回5連続検索可能）
 	refillRate: 1 / 2, // 2秒で1トークン回復
+	costPerAction: 1,
+});
+// 全文検索は毎回テーブル全体を読むので、アカウントを作り直して枠を増やせないようIP（IPv6は/64）でも絞る
+const tokenBucketByIP = new TokenBucket({
+	capacity: 10,
+	refillRate: 1 / 2,
 	costPerAction: 1,
 });
 
@@ -40,6 +47,13 @@ export default ({ socket }: { socket: Socket }) => {
 		// レートリミット
 		if (!tokenBucket.attempt(userId)) {
 			logger.verbose(`⌛ ${tokenBucket.getCooldownSeconds(userId).toFixed(1)}`);
+			return;
+		}
+		const ip = ipKey(getIP(socket));
+		if (!tokenBucketByIP.attempt(ip)) {
+			logger.verbose(
+				`⌛ IP ${tokenBucketByIP.getCooldownSeconds(ip).toFixed(1)}`,
+			);
 			return;
 		}
 

@@ -429,3 +429,12 @@ CREATE TABLE preset_opens (
     opens INT NOT NULL DEFAULT 0,
     PRIMARY KEY (preset, day)
 );
+
+-- 全文検索（search.ts の LOWER(col) LIKE '%kw%'）がテーブル全体を読まないようにする
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+CREATE INDEX IF NOT EXISTS idx_res_cc_user_id_trgm ON res USING gin (LOWER(cc_user_id) gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS idx_res_content_text_trgm ON res USING gin (LOWER(content_text) gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS idx_res_content_url_trgm ON res USING gin (LOWER(content_url) gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS idx_threads_cc_user_id_trgm ON threads USING gin (LOWER(cc_user_id) gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS idx_threads_content_text_trgm ON threads USING gin (LOWER(content_text) gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS idx_threads_content_url_trgm ON threads USING gin (LOWER(content_url) gin_trgm_ops);

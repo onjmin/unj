@@ -6,3 +6,4 @@
 # X-Frame-Options は別オリジンを列挙できないので使わない（frame-ancestors があれば現行ブラウザは XFO を無視する）
 /*
   Content-Security-Policy: frame-ancestors 'self' https://onjmin.f5.si
+  X-Content-Type-Options: nosniff

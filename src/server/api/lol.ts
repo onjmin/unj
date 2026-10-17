@@ -8,13 +8,13 @@ import { logger } from "../mylib/log.js";
 import nonce from "../mylib/nonce.js";
 import { pool } from "../mylib/pool.js";
 import { exist, getThreadRoom, joined } from "../mylib/socket.js";
-import { TtlMap } from "../mylib/ttl-map.js";
+import { OncePerThread } from "../mylib/once-per-thread.js";
 
 const api = "lol";
-const delimiter = "###";
-// userId###threadId（しばらく草されていない古いものから捨てる）
-const done: TtlMap<string, true> = new TtlMap({
-	max: 20000,
+// 1人1スレ1回（全体の件数で捨てると、別スレで数を稼いでから押し直せるのでスレ単位で持つ）
+const done = new OncePerThread({
+	maxThreads: 20000,
+	maxUsersPerThread: 4096,
 	ttl: 1000 * 60 * 60 * 24 * 30,
 });
 
@@ -84,9 +84,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 			return;
 
 		// 連投規制
-		const key = [auth.getUserId(socket), threadId].join(delimiter);
-		if (done.has(key)) return;
-		done.set(key, true);
+		if (!done.attempt(threadId, auth.getUserId(socket))) return;
 
 		// 危険な処理
 		try {

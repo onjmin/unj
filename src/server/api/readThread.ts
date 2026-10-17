@@ -46,14 +46,33 @@ import {
 	walkPresetCache,
 } from "../mylib/cache.js";
 import { pendingNinjaUserIds } from "../mylib/command.js";
+import { getIP, ipKey } from "../mylib/ip.js";
 import { logger } from "../mylib/log.js";
 import nonce from "../mylib/nonce.js";
 import { pool } from "../mylib/pool.js";
 import { getThreadRoom } from "../mylib/socket.js";
+import { TokenBucket } from "../mylib/token-bucket.js";
 import { hasPendingLike } from "./like.js";
 import { hasPendingLol } from "./lol.js";
 
 const api = "readThread";
+
+/**
+ * キャッシュに無いスレを読む（DBに触る）ときだけのレート制限
+ *
+ * getNonceKey と交互に送れば Nonce値の制限をすり抜けて、未キャッシュのスレを次々引かせられるので。
+ * スレを渡り歩く人の操作では届かない値にしてある。ユーザーを作り直して枠を増やせないようIP（IPv6は/64）でも絞る。
+ */
+const tokenBucket = new TokenBucket({
+	capacity: 10,
+	refillRate: 1 / 2, // 2秒で1回
+	costPerAction: 1,
+});
+const tokenBucketByIP = new TokenBucket({
+	capacity: 20,
+	refillRate: 1, // 1秒で1回
+	costPerAction: 1,
+});
 
 /**
  * 古いキャッシュを捨てる（閲覧中のスレ・DB未反映の草があるスレ・接続中のユーザーは残す）
@@ -107,6 +126,12 @@ export default ({ socket }: { socket: Socket }) => {
 
 			// キャッシュの登録
 			if (!threadCached.has(threadId)) {
+				const userId = auth.getUserId(socket);
+				const ip = ipKey(getIP(socket));
+				if (!tokenBucket.attempt(userId) || !tokenBucketByIP.attempt(ip)) {
+					logger.verbose(`⌛ ${api} ${userId}`);
+					return;
+				}
 				// スレッドの取得
 				//
 				// headline.tsと同じくdeleted_at条件をSQL側で見る。isDeleted()は

@@ -1,5 +1,5 @@
 import type { Socket } from "socket.io";
-import { genNonce } from "./anti-debug.js";
+import { genNonce, safeEqual } from "./anti-debug.js";
 import auth from "./auth.js";
 import { onlineByUserId } from "./socket.js";
 
@@ -57,7 +57,7 @@ export const getUnsafe = (socket: Socket): string | null =>
 export const isValid = (socket: Socket, nonce: string) =>
 	locks.get(auth.getUserId(socket))
 		? false
-		: genNonce(nonces.get(auth.getUserId(socket)) ?? "") === nonce;
+		: safeEqual(genNonce(nonces.get(auth.getUserId(socket)) ?? ""), nonce); // 一致するまでの時間で推測されないように
 
 export default {
 	lock,
