@@ -314,7 +314,8 @@ export default (router: Router, io: Server) => {
 				nextThreadId,
 			});
 		} catch (e) {
-			await poolClient?.query("ROLLBACK");
+			// ROLLBACK自体の失敗でプロセスを落とさない
+			await poolClient?.query("ROLLBACK").catch(() => {});
 			logger.error(e);
 			res.status(500).json({ error: "Failed to create response" });
 		} finally {

@@ -55,7 +55,7 @@ import {
 } from "../mylib/cache.js";
 import { makeCcUserAvatar, makeCcUserId, makeCcUserName } from "../mylib/cc.js";
 import { parseCommand } from "../mylib/command.js";
-import { getIP } from "../mylib/ip.js";
+import { getIP, ipKey } from "../mylib/ip.js";
 import { logger } from "../mylib/log.js";
 import { maybeSpawnNextThread } from "../mylib/next-thread.js";
 import nonce from "../mylib/nonce.js";
@@ -116,7 +116,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 		// アク禁チェック
 		if (!(isOwner && content.output.contentText.includes("!kaijo"))) {
 			if (bannedCache.get(threadId)?.has(userId)) return;
-			if (bannedIPCache.get(threadId)?.has(getIP(socket))) return;
+			if (bannedIPCache.get(threadId)?.has(ipKey(getIP(socket)))) return;
 		}
 
 		// roomのチェック
@@ -530,7 +530,8 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 
 			logger.verbose(api);
 		} catch (error) {
-			await poolClient?.query("ROLLBACK"); // エラーが発生した場合はロールバック
+			// エラーが発生した場合はロールバック（ROLLBACK自体の失敗でプロセスを落とさない）
+			await poolClient?.query("ROLLBACK").catch(() => {});
 			logger.error(error);
 		} finally {
 			poolClient?.release();

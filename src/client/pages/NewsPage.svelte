@@ -64,6 +64,13 @@
     let error = $state(false);
     $effect(() => {
         const _newsId = newsId;
+        // Bloggerの記事IDは数字だけ。"..%2F" などで別ブログの記事を {@html} させないため、それ以外は取りに行かない
+        if (!/^\d{1,32}$/.test(newsId)) {
+            item = null;
+            title = "ニュース取得失敗";
+            error = true;
+            return;
+        }
         const cache = new ObjectStorage<BloggerItem>(`newsCache###${newsId}`);
         cache.get().then((v) => {
             if (v) {

@@ -230,7 +230,8 @@ export async function maybeSpawnNextThread({
 		logger.verbose(`nextThread ${threadId} -> ${newId}`);
 		return newEncodedId;
 	} catch (e) {
-		await poolClient?.query("ROLLBACK");
+		// ROLLBACK自体の失敗でプロセスを落とさない
+		await poolClient?.query("ROLLBACK").catch(() => {});
 		logger.error(e);
 		return null;
 	} finally {

@@ -33,7 +33,8 @@ const lazyUpdate = (threadId: number, lolCountDiff: number) => {
 		const diff = lolCountDiffMap.get(threadId) ?? 0;
 		try {
 			await pool.query(
-				"UPDATE threads SET lol_count = lol_count + $1 WHERE id = $2",
+				// lol_count は SMALLINT。溢れると更新が毎回失敗して差分が残り続けるので頭打ちにする（like.ts と同じ）
+				"UPDATE threads SET lol_count = LEAST(lol_count + $1::int, 32767) WHERE id = $2",
 				[diff, threadId],
 			);
 			const rest = (lolCountDiffMap.get(threadId) ?? 0) - diff;

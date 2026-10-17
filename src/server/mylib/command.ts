@@ -21,7 +21,7 @@ import {
 	userIdCache,
 	varsanCache,
 } from "../mylib/cache.js";
-import { getIP, sliceIPRange } from "../mylib/ip.js";
+import { getIP, ipKey, sliceIPRange } from "../mylib/ip.js";
 import { logger } from "./log.js";
 import { pool } from "../mylib/pool.js";
 import { flaky } from "./anti-debug.js";
@@ -262,7 +262,8 @@ export const parseCommand = async ({
 							cache1.add(ref.userId);
 							// 再起動後に未ログインのユーザーはキャッシュに無いので、そのレスの投稿元IPを使う
 							const ip = userIPCache.get(ref.userId) || ref.ip;
-							if (ip) cache2.add(ip);
+							// IPv6は/64の中でいくらでもアドレスを変えられるので、ipKey の単位で入れる
+							if (ip) cache2.add(ipKey(ip));
 							banned.push(ref.num);
 						}
 						results.push(

@@ -3,6 +3,7 @@ import path from "node:path";
 import type { Request, Response, Router } from "express";
 import * as v from "valibot";
 import { ROOT_PATH } from "../../mylib/env.js";
+import { normalizeBannedIP } from "../../mylib/ip.js";
 
 const api = "/blacklist/ip";
 const tooManyThreshold = 65536;
@@ -34,11 +35,14 @@ const BlacklistIPSchema = v.union([
 
 const readBlacklist = async () => {
 	const data = await fs.readFile(filePath, "utf8");
-	return data
-		.trim()
-		.split("\n")
-		.filter((v) => v)
-		.map((v) => v.trim());
+	return (
+		data
+			.trim()
+			.split("\n")
+			.filter((v) => v.trim())
+			// 照合と同じ表記にそろえる（IPv6の "::" 省略などでワイルドカードをすり抜けられないように）
+			.map(normalizeBannedIP)
+	);
 };
 
 const writeBlacklist = () =>
@@ -90,11 +94,12 @@ export default (router: Router) => {
 				res.status(413).json({ error: "The blacklist is full." });
 				return;
 			}
-			if (blacklist.has(ip.output)) {
+			const normalized = normalizeBannedIP(ip.output);
+			if (blacklist.has(normalized)) {
 				res.status(409).json({ error: "IP already exists in the blacklist." });
 				return;
 			}
-			blacklist.add(ip.output);
+			blacklist.add(normalized);
 			await writeBlacklist();
 			res.status(200).json({
 				message: "IP added to the blacklist successfully.",
@@ -119,11 +124,12 @@ export default (router: Router) => {
 				});
 				return;
 			}
-			if (!blacklist.has(ip.output)) {
+			const normalized = normalizeBannedIP(ip.output);
+			if (!blacklist.has(normalized)) {
 				res.status(404).json({ error: "IP not found in the blacklist." });
 				return;
 			}
-			blacklist.delete(ip.output);
+			blacklist.delete(normalized);
 			await writeBlacklist();
 			res.status(200).json({
 				message: "IP removed from the blacklist successfully.",

@@ -146,12 +146,37 @@ export const isBannedIP = (ip: string): boolean => {
 			if (blacklist.has(wildcardIp)) return true;
 		}
 	} else if (ipv6.length > 1) {
-		for (let i = 1; i < ipv6.length; i++) {
-			const wildcardIp = `${ipv6.slice(0, ipv6.length - i).join(":")}${":*".repeat(i)}`;
+		// "::" で省略された表記だと区切りの数が変わり、8グループのワイルドカードに当たらなくなる。
+		// 必ず8グループに展開してから照合する（BANリスト側も normalizeBannedIP で同じ表記にそろえてある）
+		const groups = expandIPv6(ip);
+		if (!groups) return false;
+		if (blacklist.has(groups.join(":"))) return true;
+		for (let i = 1; i < groups.length; i++) {
+			const wildcardIp = `${groups.slice(0, groups.length - i).join(":")}${":*".repeat(i)}`;
 			if (blacklist.has(wildcardIp)) return true;
 		}
 	}
 	return false;
+};
+
+/**
+ * BANリストに入れるIPの表記を isBannedIP の照合と同じ形にそろえる
+ *
+ * IPv6は8グループ・小文字・先頭の0なしにする。
+ * ワイルドカードは末尾に足りないグループを "*" で埋める（"2400:4051:*" や "2400:4051::*" は "2400:4051:*:*:*:*:*:*"）。
+ */
+export const normalizeBannedIP = (ip: string): string => {
+	const s = ip.trim().toLowerCase();
+	if (!s.includes(":") || s.includes(".")) return s;
+	if (!s.includes("*")) return expandIPv6(s)?.join(":") ?? s;
+	// 途中に "::" があるワイルドカードは範囲があいまいなので、そのまま残す
+	const head = s.replace(/::\*?$/, "");
+	if (head.includes("::")) return s;
+	const groups = head
+		.split(":")
+		.map((g) => (g === "*" ? g : Number.parseInt(g, 16).toString(16)));
+	if (groups.length > 8 || groups.some((g) => g === "NaN")) return s;
+	return [...groups, ...Array(8 - groups.length).fill("*")].join(":");
 };
 
 /**
