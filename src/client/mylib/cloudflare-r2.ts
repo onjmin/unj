@@ -95,6 +95,15 @@ export const getResizedBase64Image = async (
 	return base64Image;
 };
 
+/**
+ * nsfwCheck は uploader（Workers AI で説明文を作り、排泄物・グロ・武器などの単語で弾く）を通すかどうか
+ *
+ * お絵描きは誤検出で上げられなくなるので false で送る。
+ * クライアントが送る値なので誰でも false にできるが、受け入れたリスクとしてそのままにしている。
+ * - 弾いているのは本物の排泄物・グロ写真くらいで、それは imgbb などのリンクでも貼れる（抜け道を塞いでも守れる範囲が増えない）
+ * - お絵描きは時間をかけて描くので短命の券で区別できず、検出は無料枠のモデルでは遅く誤検出も多い
+ * pepper もバンドルに入っていて秘密ではない（bot 除けの難読化にすぎない）。
+ */
 export const uploadCloudflareR2 = async (base64: string, nsfwCheck = true) => {
 	const image = base64.replace(/^[^,]+;base64,/, "");
 	const combinedString = image + VITE_CLOUDFLARE_UPLOAD_SECRET_PEPPER;
