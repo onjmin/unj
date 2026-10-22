@@ -5,7 +5,6 @@
   import { boardMap, undefinedBoard } from "../common/request/board.js";
   import { makePathname } from "./mylib/env.js";
   import { sharedToaster } from "./mylib/toaster.js";
-  import ArtPage from "./pages/ArtPage.svelte";
   import BannedPage from "./pages/BannedPage.svelte";
   import ConfigPage from "./pages/ConfigPage.svelte";
   import ContactPage from "./pages/ContactPage.svelte";
@@ -95,10 +94,6 @@
   <!-- ニュース -->
   <Route path="{makePathname('/:board/news')}/:newsId" let:params>
     <NewsPage board={b(params.board)} newsId={params.newsId} />
-  </Route>
-  <!-- TOP絵集 -->
-  <Route path={makePathname("/:board/art")} let:params>
-    <ArtPage board={b(params.board)} />
   </Route>
   <!-- リンク集 -->
   <Route path={makePathname("/:board/links")} let:params>
