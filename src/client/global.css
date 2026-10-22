@@ -22,35 +22,91 @@
 	}
 }
 
-/* 
+/*
  * 使い分けのポイント
  * + 複数のSvelteファイルで参照する必要があるCSS変数の定義
  * + Web標準のUIに対して全ページ共通で同じ装飾をしたいとき
  */
 
+/*
+ * 2ch 系の配色。昔ながらの「灰色の地・赤いスレタイ・緑の名前・青いリンク」を
+ * 色の変数にまとめ、各ページはこの変数だけを使う。ダークは html.unj-dark で切り替える
+ * （HeaderPart が isDarkMode を見て付け外しする）。
+ */
+:root {
+	--unj-shell-max: 820px;
+	--unj-bg: #efefef;
+	--unj-panel: #ffffff;
+	--unj-panel-alt: #f7f7f2;
+	--unj-border: #c8c8c8;
+	--unj-border-soft: #dddddd;
+	--unj-text: #111111;
+	--unj-text-sub: #555555;
+	--unj-text-faint: #888888;
+	--unj-title: #cc0000;
+	--unj-name: #008800;
+	--unj-cap: #cc0000;
+	--unj-link: #0000ee;
+	--unj-link-visited: #660099;
+	--unj-anka: #0000ee;
+	--unj-bar: #800000;
+	--unj-bar-text: #ffffff;
+	--unj-bar-sub: #f3d6d6;
+	--unj-menu-bg: #e4e4dc;
+	--unj-hit: #ffff66;
+	--unj-new: #ff0000;
+	--unj-font: "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, "MS PGothic", "Noto Sans JP", sans-serif;
+	/* AA(アスキーアート)がずれにくい順。無ければ通常のゴシックに落ちる */
+	--unj-font-aa: "MS PGothic", "ＭＳ Ｐゴシック", "IPAMonaPGothic", "Mona", "Saitamaar", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+}
+html.unj-dark {
+	--unj-bg: #17171a;
+	--unj-panel: #202024;
+	--unj-panel-alt: #26262b;
+	--unj-border: #3a3a40;
+	--unj-border-soft: #2e2e33;
+	--unj-text: #e6e6e6;
+	--unj-text-sub: #aaaaaa;
+	--unj-text-faint: #777777;
+	--unj-title: #ff6b6b;
+	--unj-name: #5fd35f;
+	--unj-cap: #ff6b6b;
+	--unj-link: #8ab4f8;
+	--unj-link-visited: #c58af9;
+	--unj-anka: #8ab4f8;
+	--unj-bar: #3a0d0d;
+	--unj-bar-text: #f5f5f5;
+	--unj-bar-sub: #c9a0a0;
+	--unj-menu-bg: #2a2a2f;
+	--unj-hit: #6b5d00;
+	color-scheme: dark;
+}
+
 /* 全ページ共通のフレーム */
 /*
- * おんJ(hayabusa)は板TOP(.header/.footer)とスレ表示(.globalHeader/.globalFooter)で
- * レイアウトモデルが異なる。実機確認の結果:
- *   - 板TOP   : header/footerが position:fixed のアプリシェル（中央だけスクロール）
- *   - スレ表示 : header/footerが position:static でページ全体がスクロールする
- * スマホ版デザインをPCブラウザ閲覧時も再現するため、最大幅600pxの中央寄せシェルを構築。
+ * 板TOP などは header/footer を固定したアプリシェル（中央だけスクロール）、
+ * スレ表示(body.unj-scroll-layout)はページ全体がスクロールする。
+ * PC では読みやすい幅(--unj-shell-max)で中央に寄せる。
  */
 body {
 	margin: 0;
 	padding: 0;
-	/* 板TOP(HeadlinePage)相当のレンガ調壁紙背景。実機の body{background-image:url(ba.gif)} を再現。 */
-	background-image: url("https://image.open2ch.net/image/ba.gif");
-	background-repeat: repeat;
-	background-attachment: fixed;
-	background-color: #e2e8f0;
-	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+	background-color: var(--unj-bg);
+	color: var(--unj-text);
+	font-family: var(--unj-font);
+	-webkit-text-size-adjust: 100%;
+}
+a {
+	color: var(--unj-link);
+}
+a:visited {
+	color: var(--unj-link-visited);
 }
 html, body {
 	overflow: hidden;
 	height: 100%;
 }
-/* スレ表示ページ(.globalHeader/.globalFooter相当) */
+/* スレ表示ページ */
 body.unj-scroll-layout {
 	overflow-y: auto;
 	overflow-x: hidden;
@@ -59,10 +115,11 @@ body.unj-scroll-layout {
 	display: flex;
 	flex-direction: column;
 	height: 100dvh;
-	max-width: 600px;
+	max-width: var(--unj-shell-max);
 	margin: 0 auto;
-	box-shadow: 0 0 20px rgba(0, 0, 0, 0.25);
-	background-color: transparent;
+	background-color: var(--unj-bg);
+	border-left: 1px solid var(--unj-border-soft);
+	border-right: 1px solid var(--unj-border-soft);
 	position: relative;
 }
 .unj-dialog-part {
@@ -77,34 +134,115 @@ body.unj-scroll-layout {
 	position: relative;
 	flex: 1;
 	overflow-y: auto;
-	scrollbar-gutter: stable both-edges;
 	margin: 0 auto;
 	width: 100%;
 	max-width: 100%;
+	/* 下の固定メニューに隠れないように */
+	padding-bottom: 60px;
 }
 
-/* スレ表示ページ用: ヘッダー/フッターをコンテンツと一緒に流す通常スクロール */
+/* スレ表示ページ用: ヘッダーをコンテンツと一緒に流す通常スクロール */
 body.unj-scroll-layout #app {
 	display: block;
 	height: auto;
 	min-height: 100dvh;
-	max-width: 600px;
-	margin: 0 auto;
-	box-shadow: 0 0 20px rgba(0, 0, 0, 0.25);
-	background-color: transparent;
 }
 body.unj-scroll-layout .unj-main-part {
 	flex: none;
 	overflow-y: visible;
-	padding-bottom: 52px;
 }
 
-@media (max-width: 600px) {
-	#app, body.unj-scroll-layout #app {
-		max-width: 100%;
-		box-shadow: none;
+@media (max-width: 820px) {
+	#app {
+		border-left: none;
+		border-right: none;
 	}
 }
+
+/*
+ * 2ch 風の共通部品。どのページからでも使う。
+ */
+/* 「掲示板に戻る 全部 1- 最新50」のような細いメニュー帯 */
+.unj-menubar {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 2px 0;
+	font-size: 13px;
+	background: var(--unj-menu-bg);
+	border-bottom: 1px solid var(--unj-border);
+	padding: 4px 6px;
+}
+.unj-menubar > a,
+.unj-menubar > button {
+	color: var(--unj-link);
+	background: none;
+	border: none;
+	padding: 4px 8px;
+	cursor: pointer;
+	text-decoration: underline;
+	text-underline-offset: 2px;
+	white-space: nowrap;
+}
+.unj-menubar > a:hover,
+.unj-menubar > button:hover {
+	background: rgba(0, 0, 0, 0.06);
+}
+/* 枠で囲んだ箱（ローカルルール・書き込み欄など） */
+.unj-box {
+	background: var(--unj-panel);
+	border: 1px solid var(--unj-border);
+	margin: 8px;
+	padding: 8px 10px;
+	text-align: left;
+}
+.unj-box-title {
+	font-weight: bold;
+	font-size: 14px;
+	margin: 0 0 6px;
+	color: var(--unj-text);
+}
+/* 2ch 風のボタン（灰色で四角い） */
+.unj-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 4px;
+	font-size: 14px;
+	padding: 6px 14px;
+	min-height: 36px;
+	border: 1px solid var(--unj-border);
+	border-radius: 3px;
+	background: linear-gradient(var(--unj-panel), var(--unj-panel-alt));
+	color: var(--unj-text);
+	cursor: pointer;
+}
+.unj-btn:hover {
+	filter: brightness(0.96);
+}
+.unj-btn:disabled {
+	opacity: 0.5;
+	cursor: default;
+}
+.unj-btn-primary {
+	background: var(--unj-bar);
+	border-color: var(--unj-bar);
+	color: var(--unj-bar-text);
+	font-weight: bold;
+}
+.unj-input {
+	font-size: 16px; /* iOS がズームしない大きさ */
+	border: 1px solid var(--unj-border);
+	border-radius: 2px;
+	padding: 6px 8px;
+	background: var(--unj-panel);
+	color: var(--unj-text);
+	min-width: 0;
+}
+.unj-input:focus {
+	outline: 2px solid var(--unj-link);
+	outline-offset: -1px;
+}
+
 /* レスポンシブな画像表示 */
 .unj-img {
 	display: block;
@@ -173,7 +311,7 @@ body.unj-scroll-layout .unj-main-part {
 	width: 40px;
 	height: 40px;
 	border-radius: 50%;
-	background: #2e7d32;
+	background: var(--unj-bar);
 	color: #fff;
 	display: flex;
 	align-items: center;
@@ -196,7 +334,7 @@ body.unj-scroll-layout .unj-main-part {
 .unj-kome-float-header {
 	display: flex;
 	align-items: center;
-	background: #2e7d32;
+	background: var(--unj-bar);
 	color: #fff;
 	padding: 4px 8px;
 }

@@ -1,7 +1,6 @@
 <script lang="ts">
   import { navigate } from "svelte-routing";
   import { DEV_MODE, STG_MODE, makePathname, pathname } from "../mylib/env.js";
-  import { ArrowLeftIcon, MessageCircleQuestionMarkIcon } from "@lucide/svelte";
   import { undefinedBoard } from "../../common/request/board.js";
   import { seededRandArray } from "../../common/util.js";
   import {
@@ -40,6 +39,11 @@
     displayTitle = title;
   });
 
+  // リンク色などは global.css の色の変数で決める。ダークは html に印を付けて切り替える。
+  $effect(() => {
+    document.documentElement.classList.toggle("unj-dark", $isDarkMode);
+  });
+
   let pathname1 = $state("");
   let pathname2 = $state("");
   $effect(() => {
@@ -56,27 +60,6 @@
 </script>
 
 <svelte:head>
-  <title>{displayTitle}</title>
-  {#if $isDarkMode}
-    <style>
-      a {
-        color: #8ab4f8 !important;
-      }
-      a:visited {
-        color: #c58af9 !important;
-      }
-    </style>
-  {:else}
-    <style>
-      a {
-        color: #1a73e8 !important;
-      }
-      a:visited {
-        color: #6f42c1 !important;
-      }
-    </style>
-  {/if}
-
   {#if isAnniversary([Anniversary.HALLOWEEN])}
     <link
       rel="stylesheet"
@@ -145,52 +128,96 @@
 {/if}
 
 <header
-  class="unj-header-part w-full text-white shadow-md bg-[#000033]"
-  style={bgColor !== "#000044" && bgColor !== "#000033" ? `background-color:${bgColor};` : ""}
+  class="unj-header-part unj-header"
+  style={bgColor !== "#000044" && bgColor !== "#000033" && bgColor !== "#000000"
+    ? `background-color:${bgColor};`
+    : ""}
 >
-  <div class="text-xs max-w-6xl mx-auto px-2 py-2 flex items-center justify-between h-11">
-    <div class="flex items-center space-x-1 shrink-0">
-      {#if pathname1 === board.key}
-        {#if pathname2 !== ""}
-          <button
-            class="flex items-center space-x-1 px-1 py-0.5 text-white hover:opacity-80 font-bold text-sm"
-            onclick={() => navigate(makePathname(`/${board.key}`))}
-          >
-            <span class="text-base font-bold">&lt;</span>
-            <span class="text-base">⚾</span>
-          </button>
-        {:else}
-          <button
-            class="flex items-center space-x-1 px-1 py-0.5 text-white hover:opacity-80 font-bold text-sm"
-            onclick={() => navigate(makePathname("/"))}
-          >
-            <span class="text-base font-bold">&lt;</span>
-            <span class="text-base">⚾</span>
-          </button>
-        {/if}
-      {:else}
-        <span class="text-base">⚾</span>
-      {/if}
-      <h1 class="text-sm sm:text-base font-bold truncate ml-1 text-white">
-        {displayTitle || "なんでも実況(ジュピター)"}
-      </h1>
-    </div>
-
-    <div class="flex items-center space-x-1 shrink-0">
+  <div class="unj-header-inner">
+    {#if pathname1 === board.key}
+      <button
+        class="unj-header-back"
+        title={pathname2 !== "" ? "板に戻る" : "トップに戻る"}
+        onclick={() =>
+          navigate(
+            makePathname(pathname2 !== "" ? `/${board.key}` : "/"),
+          )}
+      >
+        ＜
+      </button>
+    {/if}
+    <h1 class="unj-header-title">
+      {displayTitle || "うんｊ"}
+    </h1>
+    <div class="unj-header-tools">
       <VolumeControlPart />
       <button
         onclick={() => navigate(makePathname(`/${board.key}/config`))}
-        class="flex items-center space-x-1 px-1.5 py-0.5 text-white hover:opacity-80 text-xs"
+        class="unj-header-link"
         title="設定"
       >
-        <span class="text-base">⚙️</span>
-        <span class="font-bold underline text-xs">設定</span>
+        設定
       </button>
     </div>
   </div>
 </header>
 
 <style>
+  .unj-header {
+    background: var(--unj-bar);
+    color: var(--unj-bar-text);
+    border-bottom: 2px solid rgba(0, 0, 0, 0.25);
+    position: relative;
+  }
+  .unj-header-inner {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    height: 44px;
+    padding: 0 6px;
+  }
+  .unj-header-back {
+    flex: none;
+    color: var(--unj-bar-text);
+    font-weight: bold;
+    font-size: 16px;
+    width: 32px;
+    height: 32px;
+    border-radius: 3px;
+  }
+  .unj-header-back:hover {
+    background: rgba(255, 255, 255, 0.15);
+  }
+  .unj-header-title {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+    font-size: 15px;
+    font-weight: bold;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: left;
+    padding-left: 4px;
+  }
+  .unj-header-tools {
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+  .unj-header-link {
+    color: var(--unj-bar-text);
+    font-size: 13px;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    padding: 6px 8px;
+    border-radius: 3px;
+  }
+  .unj-header-link:hover {
+    background: rgba(255, 255, 255, 0.15);
+  }
   .snow {
     position: absolute;
     inset: 0;

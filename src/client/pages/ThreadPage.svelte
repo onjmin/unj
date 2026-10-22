@@ -6,23 +6,18 @@
     ///////////////
 
     import {
-        ArrowDownIcon,
         BrushIcon,
         ChevronDownIcon,
         ChevronUpIcon,
-        ExpandIcon,
         MessageCircleIcon,
-        Music,
         SquarePenIcon,
         XIcon,
     } from "@lucide/svelte";
     import { cubicOut } from "svelte/easing";
     import { fade, fly, scale } from "svelte/transition";
-    import { Switch } from "@skeletonlabs/skeleton-svelte";
     import Banner, { Icon, Label } from "@smui/banner";
     import Button from "@smui/button";
     import Chip, { Set as ChipSet, LeadingIcon, Text } from "@smui/chips";
-    import Paper, { Content } from "@smui/paper";
     import {
         addSeconds,
         differenceInDays,
@@ -126,6 +121,7 @@
     let openConfirm = $state(false);
     let threadSearchQuery = $state("");
     let highlightQuery = $state("");
+    let showThreadSearch = $state(false);
     // おんJ同様デフォルトOFF（設定でON、ここではボタンタップでON）
     let showKome = $state(false);
 
@@ -1019,151 +1015,63 @@
     {#if contentType === Enum.Dtm && !menu}
         <DtmPart bind:contentData />
     {/if}
-    <div class="w-full max-w-xs">
-        <Button disabled={emitting} onclick={tryRes} variant="raised"
-            >投稿する</Button
-        >
-        <Switch
-            checked={isSage}
-            onCheckedChange={(e) => {
-                isSage = e.checked;
-            }}
-            ><Switch.Control>
-                <Switch.Thumb>
-                    <Switch.Context>
-                        {#snippet children(switch_)}
-                            {#if switch_().checked}
-                                <ArrowDownIcon size="14" />
-                            {:else}
-                                <ArrowDownIcon size="14" />
-                            {/if}
-                        {/snippet}
-                    </Switch.Context>
-                </Switch.Thumb>
-            </Switch.Control>
-            <Switch.HiddenInput />
-        </Switch>
-
-        <Switch
-            checked={isNinja}
-            onCheckedChange={(e) => {
-                isNinja = e.checked;
-            }}
-            ><Switch.Control>
-                <Switch.Thumb>
-                    <Switch.Context>
-                        {#snippet children(switch_)}
-                            {#if switch_().checked}
-                                忍
-                            {:else}
-                                忍
-                            {/if}
-                        {/snippet}
-                    </Switch.Context>
-                </Switch.Thumb>
-            </Switch.Control>
-            <Switch.HiddenInput />
-        </Switch>
+    <div class="unj-form-actions">
+        <label class="unj-check" title="スレを上げずに書き込む">
+            <input type="checkbox" bind:checked={isSage} />sage
+        </label>
+        <label class="unj-check" title="忍モード">
+            <input type="checkbox" bind:checked={isNinja} />忍
+        </label>
         {#if thread?.yours}
-            <Switch disabled checked={true}>
-                <Switch.Control>
-                    <Switch.Thumb>
-                        <Switch.Context>
-                            {#snippet children(switch_)}
-                                {#if switch_().checked}
-                                    主
-                                {:else}
-                                    主
-                                {/if}
-                            {/snippet}
-                        </Switch.Context>
-                    </Switch.Thumb>
-                </Switch.Control>
-                <Switch.HiddenInput />
-            </Switch>
+            <span class="unj-check unj-check-owner" title="このスレの主">主</span>
         {/if}
-        <!-- <FormField align="end">
-        {#snippet label()}RPGMODE{/snippet}
-        <Checkbox bind:checked={isRpgMode} />
-    </FormField>
-    {#if isRpgMode}
-        <IconButton
-            class="material-icons"
-            onclick={() => {
-                openDressUp = true;
-            }}>checkroom</IconButton
-        >
-    {/if} -->
         {#if !menu}
             {#if thread && (thread.contentTypesBitmask & Enum.Oekaki) !== 0}
-                <Switch
-                    checked={checkedOekaki}
-                    onCheckedChange={(e) => {
-                        if (e.checked) {
-                            contentType = Enum.Oekaki;
-                            openOekakiModal = true;
-                        } else if (contentType === Enum.Oekaki && (thread.contentTypesBitmask & Enum.Text) !== 0) {
-                            contentType = Enum.Text;
-                        }
-                    }}
-                >
-                    <Switch.Control>
-                        <Switch.Thumb>
-                            <Switch.Context>
-                                {#snippet children(switch_)}
-                                    <BrushIcon size="14" />
-                                {/snippet}
-                            </Switch.Context>
-                        </Switch.Thumb>
-                    </Switch.Control>
-                    <Switch.HiddenInput />
-                </Switch>
+                <label class="unj-check">
+                    <input
+                        type="checkbox"
+                        checked={checkedOekaki}
+                        onchange={(e) => {
+                            if (e.currentTarget.checked) {
+                                contentType = Enum.Oekaki;
+                                openOekakiModal = true;
+                            } else if (
+                                contentType === Enum.Oekaki &&
+                                (thread.contentTypesBitmask & Enum.Text) !== 0
+                            ) {
+                                contentType = Enum.Text;
+                            }
+                        }}
+                    />お絵描き
+                </label>
             {/if}
             {#if thread && (thread.contentTypesBitmask & Enum.Dtm) !== 0}
-                <Switch
-                    checked={checkedDtm}
-                    onCheckedChange={(e) => {
-                        if (e.checked) {
-                            contentType = Enum.Dtm;
-                        } else if (contentType === Enum.Dtm && (thread.contentTypesBitmask & Enum.Text) !== 0) {
-                            contentType = Enum.Text;
-                        }
-                    }}
-                >
-                    <Switch.Control>
-                        <Switch.Thumb>
-                            <Switch.Context>
-                                {#snippet children(switch_)}
-                                    <Music size="14" />
-                                {/snippet}
-                            </Switch.Context>
-                        </Switch.Thumb>
-                    </Switch.Control>
-                    <Switch.HiddenInput />
-                </Switch>
+                <label class="unj-check">
+                    <input
+                        type="checkbox"
+                        checked={checkedDtm}
+                        onchange={(e) => {
+                            if (e.currentTarget.checked) {
+                                contentType = Enum.Dtm;
+                            } else if (
+                                contentType === Enum.Dtm &&
+                                (thread.contentTypesBitmask & Enum.Text) !== 0
+                            ) {
+                                contentType = Enum.Text;
+                            }
+                        }}
+                    />DTM
+                </label>
             {/if}
         {/if}
-        <Switch
-            checked={isExpand}
-            onCheckedChange={(e) => {
-                isExpand = e.checked;
-            }}
+        <label class="unj-check" title="本文の形式を選ぶ欄を出す">
+            <input type="checkbox" bind:checked={isExpand} />形式
+        </label>
+        <button
+            class="unj-btn unj-btn-primary unj-form-submit"
+            disabled={emitting}
+            onclick={tryRes}>書き込む</button
         >
-            <Switch.Control>
-                <Switch.Thumb>
-                    <Switch.Context>
-                        {#snippet children(switch_)}
-                            {#if switch_().checked}
-                                <ExpandIcon size="14" />
-                            {:else}
-                                <ExpandIcon size="14" />
-                            {/if}
-                        {/snippet}
-                    </Switch.Context>
-                </Switch.Thumb>
-            </Switch.Control>
-            <Switch.HiddenInput />
-        </Switch>
     </div>
 {/snippet}
 
@@ -1245,7 +1153,7 @@
             transition:fly={{ y: 40, duration: 200, easing: cubicOut }}
         >
             <div class="unj-post-modal-header">
-                <span class="unj-post-modal-title">返信を投稿</span>
+                <span class="unj-post-modal-title">書き込む</span>
                 <button
                     class="unj-post-modal-close"
                     onclick={() => (openPostModal = false)}
@@ -1275,60 +1183,22 @@
                     menu={true}
                 />
                 <p class="unj-post-modal-note">
-                    画像やお絵描き・DTM等への切り替えはページ下部の投稿フォームから。
+                    画像・お絵描き・DTM などはページ下の書き込み欄から。
                 </p>
                 <div class="unj-post-modal-actions">
-                    <div class="flex items-center gap-3">
-                        <label
-                            class="flex items-center gap-1 text-xs cursor-pointer select-none text-gray-700"
-                            title="sage投稿（スレをageない）"
-                        >
-                            <Switch
-                                checked={isSage}
-                                onCheckedChange={(e) => (isSage = e.checked)}
-                            >
-                                <Switch.Control>
-                                    <Switch.Thumb>
-                                        <Switch.Context>
-                                            {#snippet children()}
-                                                <ArrowDownIcon size="14" />
-                                            {/snippet}
-                                        </Switch.Context>
-                                    </Switch.Thumb>
-                                </Switch.Control>
-                                <Switch.HiddenInput />
-                            </Switch>
-                            <span>sage</span>
+                    <div class="flex items-center gap-1">
+                        <label class="unj-check" title="スレを上げずに書き込む">
+                            <input type="checkbox" bind:checked={isSage} />sage
                         </label>
-                        <label
-                            class="flex items-center gap-1 text-xs cursor-pointer select-none text-gray-700"
-                            title="忍モード"
-                        >
-                            <Switch
-                                checked={isNinja}
-                                onCheckedChange={(e) => (isNinja = e.checked)}
-                            >
-                                <Switch.Control>
-                                    <Switch.Thumb>
-                                        <Switch.Context>
-                                            {#snippet children()}
-                                                忍
-                                            {/snippet}
-                                        </Switch.Context>
-                                    </Switch.Thumb>
-                                </Switch.Control>
-                                <Switch.HiddenInput />
-                            </Switch>
-                            <span>忍</span>
+                        <label class="unj-check" title="忍モード">
+                            <input type="checkbox" bind:checked={isNinja} />忍
                         </label>
                     </div>
-                    <Button
+                    <button
+                        class="unj-btn unj-btn-primary"
                         disabled={emitting}
-                        onclick={tryRes}
-                        variant="raised"
+                        onclick={tryRes}>書き込む</button
                     >
-                        投稿する
-                    </Button>
                 </div>
             </div>
         </div>
@@ -1556,57 +1426,66 @@
         {/if}
     {/if}
     {#if thread}
-        <!-- おんJ同様のタブバー・スレ内検索 -->
-        <div class="unj-thread-tabs flex text-xs">
+        <!-- 2ch のスレの頭：赤いスレタイと「掲示板に戻る 全部 1- 最新」のメニュー -->
+        <h2 class="unj-thread-title unj-font">
+            <span class="unj-thread-title-emoji">
+                <TwemojiPart emoji={makeEmojiByThreadId(thread.id)} />
+            </span>
+            {thread.title || "無題"}
+            <span class="unj-thread-title-count">({thread.resCount})</span>
+        </h2>
+        <nav class="unj-menubar">
+            <a
+                href={makePathname(`/${board.key}`)}
+                onclick={(e) => {
+                    if (e.button === 0) e.preventDefault();
+                    navigate(makePathname(`/${board.key}`));
+                }}>掲示板に戻る</a
+            >
             <button
-                class="unj-thread-tab"
                 onclick={() =>
                     navigate(
                         makePathname(`/${board.key}/thread/${threadId}/2`),
-                    )}
+                    )}>全部</button
             >
-                全部
-            </button>
             <button
-                class="unj-thread-tab"
                 onclick={() =>
                     navigate(
                         makePathname(
-                            `/${board.key}/thread/${threadId}/${Math.max(2, (thread?.resCount ?? 0) - 30 + 1)}`,
+                            `/${board.key}/thread/${threadId}/${Math.max(2, (thread?.resCount ?? 0) - queryResultLimit + 1)}`,
                         ),
-                    )}
+                    )}>最新{queryResultLimit}</button
             >
-                最新30
-            </button>
-        </div>
-        <!-- 以前はサイドメニューに隠れていた閲覧数。折りたたみでその場に表示する -->
-        <details class="unj-access-counter">
-            <summary>閲覧数</summary>
-            <AccessCounterPart {online} {pv} />
-        </details>
-        <div class="unj-thread-search flex items-center gap-1">
-            <input
-                type="search"
-                placeholder="キーワード"
-                bind:value={threadSearchQuery}
-                onkeydown={(e) => {
-                    if (e.key !== "Enter") return;
-                    highlightQuery = threadSearchQuery.trim();
-                }}
-                class="unj-thread-search-input flex-1"
-            />
-            <button
-                class="unj-thread-search-btn shrink-0"
-                onclick={() => {
-                    highlightQuery = threadSearchQuery.trim();
-                }}
+            <button onclick={() => (openPostModal = true)}>書き込む</button>
+            <button onclick={() => (showThreadSearch = !showThreadSearch)}
+                >スレ内検索</button
             >
-                スレ内検索
-            </button>
-        </div>
+        </nav>
+        {#if showThreadSearch || highlightQuery}
+            <div class="unj-thread-search">
+                <input
+                    type="search"
+                    placeholder="このスレの中を探す"
+                    bind:value={threadSearchQuery}
+                    onkeydown={(e) => {
+                        if (e.key !== "Enter") return;
+                        highlightQuery = threadSearchQuery.trim();
+                    }}
+                    class="unj-input flex-1"
+                />
+                <button
+                    class="unj-btn"
+                    onclick={() => {
+                        highlightQuery = threadSearchQuery.trim();
+                    }}
+                >
+                    探す
+                </button>
+            </div>
+        {/if}
         {#if highlightQuery}
-            <div class="unj-thread-search-active flex items-center gap-1">
-                <span>スレ内検索：{highlightQuery}</span>
+            <div class="unj-thread-search-active">
+                <span>「{highlightQuery}」を黄色で表示中</span>
                 <button
                     class="unj-thread-search-clear"
                     onclick={() => {
@@ -1614,13 +1493,13 @@
                         threadSearchQuery = "";
                     }}
                 >
-                    ×
+                    解除
                 </button>
             </div>
         {/if}
 
         <!-- 画面右端に上下スクロールボタンを固定配置 -->
-        <div class="sticky top-1/2 -translate-y-1/2 ml-auto mr-2 w-fit z-8">
+        <div class="unj-scroll-arrows sticky top-1/2 -translate-y-1/2 ml-auto mr-2 w-fit z-8">
             <div class="h-0 w-0 relative" style="pointer-events: none;">
                 <div
                     class="absolute right-0 top-0 flex flex-col items-center gap-8"
@@ -1644,22 +1523,12 @@
             </div>
         </div>
         <div class="thread-header">
-            <p class="flex items-center font-bold unj-font text-gray-500">
-                <span class="w-4 h-4 shrink-0">
-                    <TwemojiPart emoji={makeEmojiByThreadId(thread.id)} />
-                </span>
-
-                <span
-                    class="pl-1.5 min-w-0 wrap-break-word whitespace-normal leading-snug"
-                >
-                    {#if thread.title}
-                        {thread.title}
-                    {/if}
-                    <span class="ml-1 whitespace-nowrap"
-                        >({thread.resCount})</span
-                    >
-                </span>
-            </p>
+            <details class="unj-access-counter">
+                <summary>
+                    {online > 0 ? `${online}人が見てます` : "閲覧数"}
+                </summary>
+                <AccessCounterPart {online} {pv} />
+            </details>
 
             <ChipSet {chips} nonInteractive>
                 {#snippet chip(chip: string)}
@@ -1833,58 +1702,46 @@
             }}
         ></div>
         {@render paginationControls()}
-        <Paper>
-            <Content>
-                <div class="flex flex-col items-center">
-                    {@render form(false)}
-                </div>
-            </Content>
-        </Paper>
+        <section class="unj-box unj-write-box">
+            <h3 class="unj-box-title">このスレに書き込む</h3>
+            {@render form(false)}
+        </section>
 
-        <div
-            class="mx-auto w-full max-w-sm flex flex-col space-y-2 p-4 bg-gray-500/10 rounded-lg"
-        >
-            <div class="flex items-center space-x-2 justify-center">
-                <span class="text-sm font-medium text-gray-500"
-                    >無視設定件数：</span
-                >
-                <span class="text-lg font-bold">
-                    {ignoreList?.size ?? 0}件
-                </span>
-            </div>
-            <div class="flex space-x-2">
-                <Button
-                    class="flex-1 bg-gray-600 hover:bg-gray-500"
-                    disabled={!ignoreList?.size}
-                    onclick={() => {
-                        if (!ignoreList) return;
-                        const newIgnoreList = new Set(
-                            [...ignoreList].slice(0, -1),
-                        );
-                        ignoreList = newIgnoreList;
-                        ignoreListCache.set([...newIgnoreList]);
-                    }}
-                >
-                    一個戻す
-                </Button>
-                <Button
-                    class="flex-1 bg-gray-600 hover:bg-gray-500"
-                    disabled={!ignoreList?.size}
-                    onclick={() => {
-                        if (!ignoreList) return;
-                        if (
-                            !confirm(
-                                "無視設定をクリアします。\nよろしいですか？",
-                            )
+        <div class="unj-box unj-ignore-box">
+            <span class="unj-ignore-label"
+                >あぼーん（無視）中のID：<b>{ignoreList?.size ?? 0}件</b></span
+            >
+            <button
+                class="unj-btn unj-resform-small"
+                disabled={!ignoreList?.size}
+                onclick={() => {
+                    if (!ignoreList) return;
+                    const newIgnoreList = new Set(
+                        [...ignoreList].slice(0, -1),
+                    );
+                    ignoreList = newIgnoreList;
+                    ignoreListCache.set([...newIgnoreList]);
+                }}
+            >
+                一個戻す
+            </button>
+            <button
+                class="unj-btn unj-resform-small"
+                disabled={!ignoreList?.size}
+                onclick={() => {
+                    if (!ignoreList) return;
+                    if (
+                        !confirm(
+                            "無視設定をクリアします。\nよろしいですか？",
                         )
-                            return;
-                        ignoreList = new Set();
-                        ignoreListCache.set([]);
-                    }}
-                >
-                    全クリア
-                </Button>
-            </div>
+                    )
+                        return;
+                    ignoreList = new Set();
+                    ignoreListCache.set([]);
+                }}
+            >
+                全クリア
+            </button>
         </div>
 
         <FooterLinkPart {board} />
@@ -1904,7 +1761,7 @@
         width: 44px;
         height: 44px;
         border-radius: 50%;
-        background: #1976d2;
+        background: var(--unj-bar);
         color: #fff;
         display: flex;
         align-items: center;
@@ -1915,7 +1772,7 @@
         transition: transform 0.15s ease, background-color 0.15s ease;
     }
     .unj-post-fab:hover {
-        background: #1565c0;
+        filter: brightness(1.15);
         transform: scale(1.05);
     }
     .unj-post-fab:active {
@@ -1934,9 +1791,10 @@
     }
     .unj-post-modal-content {
         width: 100%;
-        max-width: 540px;
-        background: #ffffff;
-        border-radius: 16px 16px 0 0;
+        max-width: 600px;
+        background: var(--unj-panel);
+        color: var(--unj-text);
+        border-radius: 8px 8px 0 0;
         display: flex;
         flex-direction: column;
         max-height: 85vh;
@@ -1949,7 +1807,7 @@
             padding: 24px;
         }
         .unj-post-modal-content {
-            border-radius: 12px;
+            border-radius: 6px;
             max-height: 80vh;
         }
     }
@@ -1957,8 +1815,8 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 10px 14px;
-        background: #1976d2;
+        padding: 8px 12px;
+        background: var(--unj-bar);
         color: #fff;
         box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
     }
@@ -1997,62 +1855,120 @@
         justify-content: space-between;
         gap: 12px;
         padding-top: 8px;
-        border-top: 1px solid #eee;
+        border-top: 1px solid var(--unj-border-soft);
     }
-    .unj-thread-tabs {
-        border-bottom: 1px solid #ddd;
-        background: #f0f0f0;
+    /* 2ch の赤いスレタイ */
+    .unj-thread-title {
+        margin: 0;
+        padding: 12px 10px 10px;
+        font-size: 18px;
+        line-height: 1.4;
+        font-weight: bold;
+        color: var(--unj-title);
+        text-align: left;
+        word-break: break-all;
+        background: var(--unj-panel);
+        border-bottom: 1px solid var(--unj-border-soft);
     }
-    .unj-thread-tab {
-        flex: 1;
-        padding: 8px 0;
-        border-right: 1px solid #ddd;
-        background: transparent;
-        color: #333;
+    .unj-thread-title-emoji {
+        display: inline-block;
+        width: 1em;
+        height: 1em;
+        vertical-align: -0.12em;
+        margin-right: 3px;
     }
-    .unj-thread-tab:last-child {
-        border-right: none;
+    .unj-thread-title-count {
+        font-size: 14px;
+        font-weight: normal;
+        color: var(--unj-text-sub);
     }
     .unj-access-counter {
-        padding: 2px 8px;
-        border-bottom: 1px solid #ddd;
-        background: #fff;
-        font-size: 11px;
+        font-size: 12px;
+        margin-bottom: 4px;
     }
     .unj-access-counter summary {
         cursor: pointer;
-        color: #666;
+        color: var(--unj-name);
+        font-weight: bold;
     }
     .unj-thread-search {
+        display: flex;
+        align-items: center;
+        gap: 6px;
         padding: 6px 8px;
-        border-bottom: 1px solid #ddd;
-        background: #fff;
-    }
-    .unj-thread-search-input {
-        font-size: 12px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        padding: 4px 8px;
-        min-width: 0;
-    }
-    .unj-thread-search-btn {
-        font-size: 11px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        padding: 4px 8px;
-        background: #f5f5f5;
-        color: #333;
+        border-bottom: 1px solid var(--unj-border-soft);
+        background: var(--unj-panel);
     }
     .unj-thread-search-active {
-        font-size: 11px;
-        padding: 4px 8px;
-        border-bottom: 1px solid #ddd;
-        background: #fffbe0;
-        color: #333;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        padding: 4px 10px;
+        border-bottom: 1px solid var(--unj-border-soft);
+        background: var(--unj-hit);
+        color: var(--unj-text);
     }
     .unj-thread-search-clear {
+        text-decoration: underline;
+        color: var(--unj-link);
+    }
+    /* スマホでは書き込みボタンなどに重なるので、上下移動ボタンは出さない */
+    @media (max-width: 640px) {
+        .unj-scroll-arrows {
+            display: none;
+        }
+    }
+    /* 書き込み欄の操作行 */
+    .unj-form-actions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 4px 2px;
+        margin-top: 6px;
+    }
+    .unj-check {
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+        font-size: 13px;
+        padding: 4px 6px;
+        color: var(--unj-text-sub);
+        cursor: pointer;
+        user-select: none;
+    }
+    .unj-check input {
+        width: 16px;
+        height: 16px;
+        accent-color: var(--unj-bar);
+    }
+    .unj-check-owner {
+        color: var(--unj-cap);
         font-weight: bold;
-        padding: 0 4px;
+        cursor: default;
+    }
+    .unj-form-submit {
+        margin-left: auto;
+        min-width: 7em;
+    }
+    .unj-write-box {
+        margin-top: 12px;
+    }
+    .unj-ignore-box {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 6px;
+        font-size: 13px;
+        color: var(--unj-text-sub);
+    }
+    .unj-ignore-label {
+        margin-right: auto;
+    }
+    .unj-resform-small {
+        font-size: 12px;
+        min-height: 30px;
+        padding: 3px 10px;
     }
     /* おんJの.kome_option_button(右下固定40x40)相当のフロート式kome */
     .ageRes {
@@ -2064,17 +1980,17 @@
         text-align: left;
         width: 100%;
         max-width: 100%;
-        padding: 12px 10px;
-        background: #ffffff;
-        border-bottom: 1px solid #e5e7eb;
+        padding: 8px 10px;
+        background: var(--unj-panel);
+        border-bottom: 1px solid var(--unj-border-soft);
     }
     .res-list {
         display: flex;
         flex-direction: column;
         gap: 0;
         text-align: left;
-        background: #ffffff;
-        border-top: 1px solid #e5e7eb;
+        background: var(--unj-panel);
+        border-bottom: 1px solid var(--unj-border);
     }
     .bals-warning {
         background-color: #e57373;

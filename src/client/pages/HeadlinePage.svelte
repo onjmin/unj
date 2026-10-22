@@ -5,7 +5,6 @@
     import MainPart from "../parts/MainPart.svelte";
     ///////////////
 
-    import Button from "@smui/button";
     import {
         differenceInDays,
         differenceInHours,
@@ -14,7 +13,6 @@
         differenceInSeconds,
         differenceInWeeks,
         differenceInYears,
-        isBefore,
     } from "date-fns";
     import { navigate } from "svelte-routing";
     import type { Board } from "../../common/request/board.js";
@@ -29,22 +27,13 @@
     import { goodbye, hello, ok, socket } from "../mylib/socket.js";
     import { nonceKey } from "../mylib/unj-storage.js";
     import TwemojiPart from "../parts/emoji/TwemojiPart.svelte";
-    import FaviconPart from "../parts/emoji/FaviconPart.svelte";
     import KomePart from "../parts/KomePart.svelte";
     import MessageBoxPart from "../parts/MessageBoxPart.svelte";
     import NewsPart from "../parts/NewsPart.svelte";
-    import HeadlinePart from "../parts/HeadlinePart.svelte";
     import CopyleftPart from "../parts/CopyleftPart.svelte";
-    import {
-        ChevronDownIcon,
-        ChevronUpIcon,
-        CopyIcon,
-        MessageCircleIcon,
-        RadioIcon,
-    } from "@lucide/svelte";
+    import { CopyIcon, MessageCircleIcon } from "@lucide/svelte";
     import { cubicOut } from "svelte/easing";
     import { scale } from "svelte/transition";
-    import { scrollToEnd, scrollToTop } from "../mylib/scroll.js";
 
     let { board }: { board: Board } = $props();
 
@@ -285,8 +274,29 @@
             return title.includes(q) || latest.includes(q);
         }),
     );
-    // おんJ同様デフォルトOFF（設定でON、ここではボタンタップでON）
+    // 実況コメ欄。最初は閉じておき、ボタンで開く
     let showKome = $state(false);
+
+    // 並び順。新着順はサーバーが返した順（最新レスの新しい順）、勢い順は勢いの高い順
+    let sortMode: "new" | "ikioi" = $state("new");
+    let sortedThreadList = $derived(
+        sortMode === "ikioi"
+            ? [...(filteredThreadList ?? [])].sort((a, b) => b.ikioi - a.ikioi)
+            : (filteredThreadList ?? []),
+    );
+    // headline の ikioi は1時間あたりのレス数。2ch の勢いに合わせて1日あたりで出す
+    const ikioiPerDay = (ikioi: number) => Math.round(ikioi * 24);
+
+    // 自分が書き込んだスレの「書き込んでから付いたレス数」
+    let postedResNum = $derived.by(() => {
+        const map = new Map<string, number>();
+        for (const h of resHistories ?? []) {
+            const prev = map.get(h.threadId);
+            if (prev === undefined || h.resNum > prev)
+                map.set(h.threadId, h.resNum);
+        }
+        return map;
+    });
 </script>
 
 <HeaderPart {board} title={board.name} {online} {pv} />
@@ -301,6 +311,7 @@
 {:else}
     <button
         class="unj-kome-fab"
+        title="実況コメ"
         onclick={() => (showKome = true)}
         transition:scale={{ duration: 200, easing: cubicOut, start: 0.85 }}
     >
@@ -309,106 +320,66 @@
 {/if}
 
 <MainPart {board} transparent={true}>
-    <div class="px-2 pt-2 pb-1">
-        <!-- バナー表示 (設定があれば画像、なければデフォルト表示) -->
+    <section class="unj-board-head">
         {#if board.banner}
-            <div class="mb-2 max-w-full text-center bg-white border border-gray-300 p-1 rounded-md shadow-sm">
-                <img src={board.banner} alt="板バナー" class="max-w-full h-auto inline-block rounded" />
-            </div>
-        {:else}
-            <div class="relative bg-white border border-gray-300 rounded-md p-3 text-center shadow-sm max-w-full">
-                <button class="absolute top-1 right-2 text-gray-400 hover:text-gray-600 font-bold text-sm">✖</button>
-                <div class="flex items-center justify-center space-x-2">
-                    <span class="text-3xl font-bold text-gray-700">o'ω'n</span>
-                    <div>
-                        <h1 class="text-xl font-bold tracking-tight text-orange-600">なんでも実況J</h1>
-                        <p class="text-xs text-gray-500 font-medium">おーぷん2ch</p>
-                    </div>
-                </div>
-            </div>
+            <img src={board.banner} alt="" class="unj-board-banner" />
         {/if}
-
-        <!-- 専ブラ導線 (board_id=1限定。unj-reze側の配信実装に対応するURL) -->
-        {#if board.id === 1}
-            <div
-                class="mb-2 bg-orange-50 border border-orange-300 rounded-md p-2 shadow-sm max-w-full"
-            >
-                <div class="flex items-center gap-1.5 text-orange-700 text-xs font-bold">
-                    <RadioIcon size={14} />
-                    <span>専ブラ対応してます</span>
-                </div>
-                <div class="flex items-center gap-1.5 mt-1">
-                    <div
-                        class="flex-1 min-w-0 overflow-x-auto whitespace-nowrap text-[11px] text-gray-600 bg-white/70 rounded px-1.5 py-1 border border-orange-200"
-                    >
-                        {senburaSubjectUrl}
-                    </div>
-                    <button
-                        class="shrink-0 p-1 rounded text-orange-600 hover:text-orange-800 hover:bg-orange-100"
-                        onclick={copySenburaUrl}
-                        title="URLをコピー"
-                    >
-                        <CopyIcon size={16} />
-                    </button>
-                </div>
-                {#if senburaCopied}
-                    <p class="text-[11px] text-green-600 mt-0.5">
-                        コピーしました
-                    </p>
-                {/if}
-            </div>
+        <h2 class="unj-board-name">{board.name}</h2>
+        <p class="unj-board-desc">{board.description}</p>
+        {#if online > 0}
+            <p class="unj-board-online">いま {online}人 が見てます</p>
         {/if}
+    </section>
 
-        <!-- 4連スクウェアツールバー -->
-        <div class="flex items-center justify-between gap-1.5 my-2">
-            <button
-                onclick={() => scrollToTop()}
-                class="flex-1 bg-white hover:bg-gray-100 text-gray-700 font-bold py-1.5 px-2 border border-gray-300 rounded shadow-xs text-xs flex items-center justify-center"
-                title="トップへ"
-            >
-                ▲
-            </button>
-            <button
-                onclick={() => (showKome = !showKome)}
-                class="flex-1 bg-white hover:bg-gray-100 text-gray-700 font-bold py-1.5 px-2 border border-gray-300 rounded shadow-xs text-xs flex items-center justify-center"
-                title="コメント表示"
-            >
-                💬
-            </button>
-            <button
-                class="flex-1 bg-white hover:bg-gray-100 text-gray-700 font-bold py-1.5 px-2 border border-gray-300 rounded shadow-xs text-xs flex items-center justify-center"
-                title="一時停止"
-            >
-                ❚❚
-            </button>
-            <button
-                onclick={() => navigate(makePathname(`/${board.key}/search`))}
-                class="flex-1 bg-white hover:bg-gray-100 text-gray-700 font-bold py-1.5 px-2 border border-gray-300 rounded shadow-xs text-xs flex items-center justify-center"
-                title="検索"
-            >
-                🔍
-            </button>
-        </div>
+    <!-- 専ブラ導線 (board_id=1限定。unj-reze側の配信実装に対応するURL) -->
+    {#if board.id === 1}
+        <details class="unj-box unj-senbura">
+            <summary>専ブラで読む（subject.txt に対応）</summary>
+            <div class="unj-senbura-row">
+                <code class="unj-senbura-url">{senburaSubjectUrl}</code>
+                <button
+                    class="unj-btn"
+                    onclick={copySenburaUrl}
+                    title="URLをコピー"
+                >
+                    <CopyIcon size={14} />
+                    {senburaCopied ? "コピーした" : "コピー"}
+                </button>
+            </div>
+        </details>
+    {/if}
 
-        <!-- ヘッドライン検索入力欄 -->
-        <div class="mb-2">
-            <input
-                type="text"
-                placeholder="ヘッドライン検索"
-                bind:value={searchQuery}
-                class="w-full bg-white border border-gray-300 rounded px-2.5 py-1.5 text-xs text-gray-800 placeholder-gray-400 focus:outline-none focus:border-blue-500 shadow-inner"
-            />
-        </div>
+    <nav class="unj-menubar">
+        <button
+            onclick={() => navigate(makePathname(`/${board.key}/make-thread`))}
+            >スレを立てる</button
+        >
+        <button
+            class:unj-current={sortMode === "new"}
+            onclick={() => (sortMode = "new")}>新着順</button
+        >
+        <button
+            class:unj-current={sortMode === "ikioi"}
+            onclick={() => (sortMode = "ikioi")}>勢い順</button
+        >
+        <button onclick={() => (showKome = !showKome)}>実況コメ</button>
+        <button
+            onclick={() => navigate(makePathname(`/${board.key}/search`))}
+            >過去ログ検索</button
+        >
+    </nav>
 
-        <!-- ヘッドラインティッカー -->
-        <HeadlinePart {board} initialItems={threadList} />
-
-        <!-- ニュースカード -->
-        <NewsPart {board} />
+    <div class="unj-board-filter">
+        <input
+            type="search"
+            placeholder="スレタイ・最新レスで絞り込み"
+            bind:value={searchQuery}
+            class="unj-input w-full"
+        />
     </div>
 
     {#if !threadList}
-        <p>ヘッドライン取得中…</p>
+        <p class="unj-board-empty">スレ一覧を読み込み中…</p>
         {#if laaaaaaaag}
             <MessageBoxPart
                 title="まだ終わらない？"
@@ -419,230 +390,259 @@
             />
         {/if}
     {:else if threadList.length === 0}
-        <p class="opacity-50 text-center py-10 text-lg">
+        <p class="unj-board-empty">
             この板にまだスレッドが建てられてないみたい。。。
         </p>
-    {:else if filteredThreadList && filteredThreadList.length === 0}
-        <p class="opacity-50 text-center py-10 text-sm">
-            検索条件に一致するスレッドが見つかりませんでした。
+    {:else if sortedThreadList.length === 0}
+        <p class="unj-board-empty">
+            「{searchQuery.trim()}」に合うスレは見つからなかった。
         </p>
     {:else}
-        {@const isHeadlineLong = (filteredThreadList?.length ?? 0) > 8}
-        {#if isHeadlineLong}
-            <!-- 画面右端に上下スクロールボタンを固定配置 -->
-            <div class="sticky top-1/2 -translate-y-1/2 ml-auto mr-2 w-fit z-8">
-                <div class="h-0 w-0 relative" style="pointer-events: none;">
-                    <div
-                        class="absolute right-0 top-0 flex flex-col items-center gap-8"
-                        style="transform: translateY(-50%); pointer-events: auto;"
-                    >
-                        <button
-                            class="bg-gray-500/80 hover:bg-gray-500/40 text-white p-2 rounded-full shadow-lg transition"
-                            onclick={() => scrollToTop()}
+        <ol class="unj-subject">
+            {#each sortedThreadList as thread, i (thread.id)}
+                {#if !ignoreList?.has(thread.ccUserId)}
+                    {@const href = makePathname(
+                        `/${board.key}/thread/${thread.id}/${thread.resCount > queryResultLimit ? thread.resCount - 8 : "2"}?top`,
+                    )}
+                    {@const posted = postedResNum.get(thread.id)}
+                    {@const newCount =
+                        posted === undefined
+                            ? 0
+                            : Math.max(0, thread.resCount - posted)}
+                    <li class="unj-subject-li">
+                        <a
+                            {href}
+                            class="unj-subject-row"
+                            onclick={(e) => {
+                                if (e.button === 0) e.preventDefault();
+                                navigate(href);
+                            }}
                         >
-                            <ChevronUpIcon class="w-5 h-5" />
-                        </button>
-                        <button
-                            class="bg-gray-500/80 hover:bg-gray-500/40 text-white p-2 rounded-full shadow-lg transition"
-                            onclick={() => scrollToEnd()}
-                        >
-                            <ChevronDownIcon class="w-5 h-5" />
-                        </button>
-                    </div>
-                </div>
+                            <span class="unj-subject-num">{i + 1}:</span>
+                            <span class="unj-subject-body">
+                                <span class="unj-subject-title">
+                                    {#key thread.id}
+                                        <span class="unj-subject-emoji">
+                                            <TwemojiPart
+                                                emoji={makeEmojiByThreadId(
+                                                    thread.id,
+                                                )}
+                                            />
+                                        </span>
+                                    {/key}
+                                    {thread.title ||
+                                        firstLineOf(thread.contentText)}
+                                    <span class="unj-subject-count"
+                                        >({thread.resCount})</span
+                                    >
+                                    {#if newCount > 0}
+                                        <span class="unj-subject-new"
+                                            >新着{newCount}</span
+                                        >
+                                    {/if}
+                                </span>
+                                <span class="unj-subject-meta">
+                                    <span
+                                        >{formatTimeAgo(
+                                            thread.latestResAt,
+                                        )}前</span
+                                    >
+                                    <span>勢い{ikioiPerDay(thread.ikioi)}</span>
+                                    {#if thread.online > 0}
+                                        <span
+                                            class="unj-subject-online"
+                                            class:unj-hot={thread.online >= 3}
+                                            >{thread.online}人</span
+                                        >
+                                    {/if}
+                                </span>
+                                {#if thread.latestRes}
+                                    <span class="unj-subject-latest"
+                                        >{thread.latestRes}</span
+                                    >
+                                {/if}
+                            </span>
+                        </a>
+                    </li>
+                {/if}
+            {/each}
+        </ol>
+        {#if (threadList?.length ?? 0) > 8 && !searchQuery.trim()}
+            <div class="unj-board-more">
+                <button
+                    class="unj-btn"
+                    onclick={cursorBasedPagination}
+                    disabled={emitting}>もっと前のスレを読む</button
+                >
             </div>
         {/if}
-        <div class="text-left w-full mx-auto unj-thread-ul-wrap">
-            <ul class="list-none p-0 m-0">
-                {#each filteredThreadList ?? [] as thread}
-                    {#if !ignoreList?.has(thread.ccUserId)}
-                        {@const href = makePathname(
-                            `/${board.key}/thread/${thread.id}/${thread.resCount > queryResultLimit ? thread.resCount - 8 : "2"}?top`,
-                        )}
-                        <li class="unj-thread-li">
-                            <a
-                                {href}
-                                class="unj-thread-row block w-full text-left"
-                                onclick={(e) => {
-                                    if (e.button === 0) e.preventDefault();
-                                    navigate(href);
-                                }}
-                            >
-                                <div class="unj-thread-sub">
-                                    <span class="mr-1 relative top-0.5 unj-thread-emoji">
-                                        {#key thread.id}
-                                            <span class="w-4 h-4 inline-block">
-                                                <TwemojiPart
-                                                    emoji={makeEmojiByThreadId(
-                                                        thread.id,
-                                                    )}
-                                                />
-                                            </span>
-                                        {/key}
-                                    </span>
-                                    <span class="unj-thread-title-text"
-                                        >{thread.title ||
-                                            firstLineOf(
-                                                thread.contentText,
-                                            )}</span
-                                    >
-                                    <span class="unj-res-bubble"
-                                        >{thread.resCount}</span
-                                    >
-                                    <span class="unj-ninzu-wrap">
-                                        <span class="unj-ninzu unj-ninzu-sec"
-                                            >{formatTimeAgo(
-                                                thread.latestResAt,
-                                            )}</span
-                                        >
-                                        <span
-                                            class="unj-ninzu unj-ninzu-nin"
-                                            class:unj-iki-zero={thread.online ===
-                                                0}
-                                            class:unj-iki-normal={thread.online ===
-                                                1}
-                                            class:unj-iki-middle={thread.online ===
-                                                2}
-                                            class:unj-iki-high={thread.online >=
-                                                3}
-                                            >{thread.online}<span
-                                                class="unj-nin-suffix">人</span
-                                            ></span
-                                        >
-                                    </span>
-                                </div>
-                                {#if thread.latestRes}
-                                    <div
-                                        class="unj-thread-preview opacity-60 whitespace-nowrap overflow-hidden text-ellipsis"
-                                    >
-                                        {thread.latestRes}
-                                    </div>
-                                {/if}
-                            </a>
-                        </li>
-                    {/if}
-                {/each}
-            </ul>
-            {#if isHeadlineLong && !searchQuery.trim()}
-                <center class="mt-8">
-                    <Button
-                        onclick={cursorBasedPagination}
-                        variant="raised"
-                        disabled={emitting}
-                        class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-md shadow-sm"
-                        >続きを読む</Button
-                    >
-                </center>
-            {/if}
-        </div>
-
-        {#if isHeadlineLong}
-            <CopyleftPart />
-        {/if}
     {/if}
+
+    <div class="unj-board-news">
+        <NewsPart {board} />
+    </div>
+    <CopyleftPart />
 </MainPart>
 
 <FooterPart {board} />
 
 <style>
-    /* おんJの.threadsパネル相当。レンガ壁紙(body)の上に敷く不透明パネル */
-    .unj-thread-ul-wrap {
-        background: #ffffff;
-        border-top: 1px solid #e2e8f0;
-        border-bottom: 1px solid #e2e8f0;
+    .unj-board-head {
+        text-align: center;
+        padding: 14px 10px 10px;
+        background: var(--unj-panel);
+        border-bottom: 1px solid var(--unj-border);
     }
-    .unj-thread-li {
-        border-bottom: 1px solid #e5e7eb;
-        background: #ffffff;
-        transition: background-color 0.15s ease;
-    }
-    .unj-thread-li:hover, .unj-thread-li:active {
-        background: #f8fafc;
-    }
-    .unj-thread-row {
+    .unj-board-banner {
         display: block;
-        padding: 8px 10px;
-        color: inherit;
+        max-width: 100%;
+        height: auto;
+        margin: 0 auto 8px;
+    }
+    .unj-board-name {
+        margin: 0;
+        font-size: 22px;
+        font-weight: bold;
+        color: var(--unj-title);
+        letter-spacing: 0.04em;
+    }
+    .unj-board-desc {
+        margin: 4px 0 0;
+        font-size: 12.5px;
+        color: var(--unj-text-sub);
+    }
+    .unj-board-online {
+        margin: 6px 0 0;
+        font-size: 12px;
+        color: var(--unj-name);
+        font-weight: bold;
+    }
+    .unj-senbura summary {
+        cursor: pointer;
+        font-size: 13px;
+        color: var(--unj-text-sub);
+    }
+    .unj-senbura-row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 8px;
+    }
+    .unj-senbura-url {
+        flex: 1;
+        min-width: 0;
+        overflow-x: auto;
+        white-space: nowrap;
+        font-size: 12px;
+        padding: 6px;
+        background: var(--unj-panel-alt);
+        border: 1px solid var(--unj-border-soft);
+    }
+    .unj-menubar :global(.unj-current) {
+        color: var(--unj-text);
+        font-weight: bold;
         text-decoration: none;
     }
-    .unj-thread-sub {
-        font-size: 13.5px;
-        line-height: 1.4;
+    .unj-board-filter {
+        padding: 8px;
     }
-    .unj-thread-emoji {
-        display: inline-block;
-        vertical-align: middle;
-    }
-    .unj-thread-title-text {
-        word-break: break-all;
-        color: #0000ee;
-        font-weight: 600;
-    }
-    /* レス数の吹き出し（おんJの.res-bubble） */
-    .unj-res-bubble {
-        display: inline-block;
-        margin-left: 3px;
-        font-size: 10px;
-        font-weight: bold;
-        padding: 1px 5px;
-        border: 1px solid #cbd5e1;
-        background: #f8fafc;
-        color: #0f172a;
-        border-radius: 4px;
-        white-space: nowrap;
-        vertical-align: middle;
-    }
-    .unj-ninzu-wrap {
-        float: right;
-        white-space: nowrap;
-        display: inline-flex;
-        align-items: center;
-        gap: 3px;
-        line-height: 1;
-    }
-    /* 経過時間・閲覧人数の丸角ピル（おんJの.ninzu） */
-    .unj-ninzu {
-        display: inline-block;
-        font-size: 9px;
+    .unj-board-empty {
         text-align: center;
-        border-radius: 3px;
-        padding: 1px 4px;
-        line-height: 1.2;
+        padding: 40px 10px;
+        color: var(--unj-text-faint);
+        font-size: 14px;
     }
-    .unj-ninzu-sec {
-        color: #64748b;
-        background: #f1f5f9;
-        border: 1px solid #e2e8f0;
+    /* subject.txt 風のスレ一覧 */
+    .unj-subject {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        text-align: left;
+        background: var(--unj-panel);
+        border-top: 1px solid var(--unj-border);
+        border-bottom: 1px solid var(--unj-border);
     }
-    .unj-ninzu-nin {
+    .unj-subject-li + .unj-subject-li {
+        border-top: 1px solid var(--unj-border-soft);
+    }
+    .unj-subject-row {
+        display: flex;
+        gap: 6px;
+        padding: 9px 10px;
+        text-decoration: none;
+        color: var(--unj-text);
+    }
+    .unj-subject-row:hover {
+        background: var(--unj-panel-alt);
+    }
+    .unj-subject-num {
+        flex: none;
+        min-width: 2.2em;
+        text-align: right;
+        font-size: 13px;
+        color: var(--unj-text-faint);
+        padding-top: 1px;
+    }
+    .unj-subject-body {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+    .unj-subject-title {
+        font-size: 15px;
+        line-height: 1.45;
+        color: var(--unj-link);
+        word-break: break-all;
+    }
+    .unj-subject-row:visited .unj-subject-title {
+        color: var(--unj-link-visited);
+    }
+    .unj-subject-emoji {
+        display: inline-block;
+        width: 1em;
+        height: 1em;
+        vertical-align: -0.12em;
+        margin-right: 2px;
+    }
+    .unj-subject-count {
+        color: var(--unj-text-sub);
+        font-size: 13px;
+    }
+    .unj-subject-new {
+        display: inline-block;
+        margin-left: 4px;
+        font-size: 11px;
         font-weight: bold;
-        border: 1px solid #e2e8f0;
+        color: var(--unj-new);
     }
-    .unj-ninzu-nin.unj-iki-zero {
-        background: #cbd5e1;
-        color: #475569;
-    }
-    .unj-ninzu-nin.unj-iki-normal {
-        background: #ffffff;
-        color: #334155;
-    }
-    .unj-ninzu-nin.unj-iki-middle {
-        background: #fef08a;
-        color: #854d0e;
-    }
-    .unj-ninzu-nin.unj-iki-high {
-        background: #fca5a5;
-        color: #991b1b;
-    }
-    .unj-nin-suffix {
-        font-size: 7px;
-        margin-left: 1px;
-    }
-    .unj-thread-preview {
+    .unj-subject-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0 10px;
         font-size: 11.5px;
-        color: #4b5563;
-        margin-top: 3px;
-        clear: both;
-        padding-left: 2px;
+        color: var(--unj-text-faint);
+    }
+    .unj-subject-online {
+        color: var(--unj-name);
+        font-weight: bold;
+    }
+    .unj-subject-online.unj-hot {
+        color: var(--unj-new);
+    }
+    .unj-subject-latest {
+        font-size: 12px;
+        color: var(--unj-text-sub);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .unj-board-more {
+        text-align: center;
+        padding: 14px 0 6px;
+    }
+    .unj-board-news {
+        padding: 0 8px;
     }
 </style>

@@ -1,8 +1,4 @@
 <script lang="ts">
-  import IconButton from "@smui/icon-button";
-  import Select, { Option } from "@smui/select";
-  import Textfield from "@smui/textfield";
-  import CharacterCounter from "@smui/textfield/character-counter";
   import {
     Enum,
     contentTypeOptions,
@@ -12,7 +8,7 @@
   import EncryptPart from "./EncryptPart.svelte";
   import ImageUploaderPart from "./ImageUploaderPart.svelte";
   import EmojiPickerPart from "./EmojiPickerPart.svelte";
-  import { XIcon } from "@lucide/svelte";
+  import { ImageIcon, SmileIcon, XIcon } from "@lucide/svelte";
 
   let {
     board,
@@ -33,6 +29,9 @@
     previewUrl = $bindable(""),
     menu = false,
   } = $props();
+
+  // 1ページにフォームが2つ（下部とポップアップ）あるので、label の for を分ける
+  const uid = Math.random().toString(36).slice(2, 8);
 
   let openAvatar = $state(false);
   let fileName = $state("");
@@ -110,117 +109,182 @@
 
 <AvatarPart {board} bind:open={openAvatar} bind:userAvatar />
 
-<Textfield
-  {disabled}
-  label="名前"
-  bind:value={userName}
-  input$maxlength={32}
-  class="unj-username-textfield"
-  style={avatarSrc
-    ? `background-image:linear-gradient(rgba(127,127,127,0.5),rgba(127,127,127,0.5)),url(${avatarSrc});`
-    : ""}
->
-  {#snippet trailingIcon()}
+<!-- 2ch の書き込み欄に寄せた、名前と本文だけの素朴なフォーム -->
+<div class="unj-resform">
+  <div class="unj-resform-name">
+    <label class="unj-resform-label" for="unj-resform-name-{uid}">名前：</label>
+    <input
+      id="unj-resform-name-{uid}"
+      class="unj-input unj-resform-name-input"
+      {disabled}
+      bind:value={userName}
+      maxlength={32}
+      placeholder="名無し"
+      autocomplete="off"
+    />
     {#if userAvatar}
-      <IconButton
+      <button
+        type="button"
+        class="unj-resform-avatar"
         {disabled}
-        class="material-icons"
-        onclick={() => (userAvatar = 0)}>person_off</IconButton
+        title="アイコンを外す"
+        onclick={() => (userAvatar = 0)}
       >
+        {#if avatarSrc}
+          <img src={avatarSrc} alt="" />
+        {/if}
+        <XIcon size={12} />
+      </button>
     {:else}
-      <IconButton
+      <button
+        type="button"
+        class="unj-btn unj-resform-small"
         {disabled}
-        class="material-icons"
-        onclick={() => (openAvatar = true)}>person</IconButton
+        onclick={() => (openAvatar = true)}>アイコン</button
       >
     {/if}
-  {/snippet}
-  {#snippet helper()}
-    <CharacterCounter />
-  {/snippet}
-</Textfield>
+  </div>
 
-<Textfield
-  {disabled}
-  textarea
-  label={contentType === Enum.Dtm || contentType === Enum.Encrypt ? "コメント（任意）" : "本文"}
-  bind:this={textarea}
-  bind:value={contentText}
-  input$rows={Math.max(contentText.split("\n").length, 2)}
-  input$cols={32}
-  input$maxlength={1024}
-  onkeyup={(e: KeyboardEvent) => {
-    if (e.ctrlKey && e.key === "Enter") {
-      tryRes();
-    }
-  }}
-  {onpaste}
->
-  {#snippet trailingIcon()}
-    <div class="flex gap-1 ml-auto">
-      <IconButton
+  <textarea
+    class="unj-input unj-resform-text"
+    {disabled}
+    bind:this={textarea}
+    bind:value={contentText}
+    rows={Math.min(Math.max(contentText.split("\n").length, 3), 12)}
+    maxlength={1024}
+    placeholder={contentType === Enum.Dtm || contentType === Enum.Encrypt
+      ? "コメント（任意）"
+      : "本文（Ctrl+Enter で書き込む）"}
+    onkeyup={(e: KeyboardEvent) => {
+      if (e.ctrlKey && e.key === "Enter") {
+        tryRes();
+      }
+    }}
+    {onpaste}
+  ></textarea>
+
+  <div class="unj-resform-tools">
+    <button
+      type="button"
+      class="unj-btn unj-resform-small"
+      class:unj-on={openEmojiPicker}
+      {disabled}
+      onclick={(e) => {
+        e.preventDefault();
+        openEmojiPicker = !openEmojiPicker;
+      }}
+    >
+      <SmileIcon size={14} />絵文字
+    </button>
+    {#if (Enum.Image & contentTypesBitmask) !== 0}
+      <button
+        type="button"
+        class="unj-btn unj-resform-small"
+        class:unj-on={openImageUploader}
         {disabled}
-        class="material-icons relative"
-        onclick={(e: PointerEvent) => {
+        onclick={(e) => {
           e.preventDefault();
-          openEmojiPicker = !openEmojiPicker;
+          const next = openImageUploader ? Enum.Text : Enum.Image;
+          if ((next & contentTypesBitmask) === 0) return;
+          contentType = next;
         }}
       >
-        mood
-        {#if openEmojiPicker}
-          <XIcon
-            class="pointer-events-none absolute inset-0 m-auto text-red-500/50"
-          />
-        {/if}
-      </IconButton>
-      <IconButton
-        {disabled}
-        class="material-icons"
-        onclick={(e: PointerEvent) => {
-          e.preventDefault();
-          const _contentType = openImageUploader ? Enum.Text : Enum.Image;
-          if ((_contentType & contentTypesBitmask) === 0) return;
-          contentType = _contentType;
-        }}
-      >
-        {openImageUploader ? "hide_image" : "image"}
-      </IconButton>
-    </div>
-  {/snippet}
-  {#snippet helper()}
-    <CharacterCounter />
-  {/snippet}
-</Textfield>
+        <ImageIcon size={14} />画像
+      </button>
+    {/if}
+    <span class="unj-resform-count">{contentText.length}/1024</span>
+  </div>
 
-{#if openEmojiPicker}
-  <EmojiPickerPart bind:contentText />
-{/if}
-
-{#if isExpand}
-  <Select {disabled} key={String} bind:value={contentType} label="本文の形式">
-    {#each contentTypeOptions as v}
-      {#if (v.bit & contentTypesBitmask) !== 0}
-        <Option value={v.bit}>{v.label}</Option>
-      {/if}
-    {/each}
-  </Select>
-{/if}
-
-{#key contentType}
-  {#if openImageUploader}
-    <ImageUploaderPart bind:fileName bind:previewUrl bind:contentUrl {menu} />
+  {#if openEmojiPicker}
+    <EmojiPickerPart bind:contentText />
   {/if}
-  {#if contentType === Enum.Encrypt}
-    <EncryptPart bind:plaintext={encryptPlaintext} bind:password />
-  {/if}
-{/key}
 
-<br />
+  {#if isExpand}
+    <label class="unj-resform-type">
+      本文の形式：
+      <select class="unj-input" {disabled} bind:value={contentType}>
+        {#each contentTypeOptions as v}
+          {#if (v.bit & contentTypesBitmask) !== 0}
+            <option value={v.bit}>{v.label}</option>
+          {/if}
+        {/each}
+      </select>
+    </label>
+  {/if}
+
+  {#key contentType}
+    {#if openImageUploader}
+      <ImageUploaderPart bind:fileName bind:previewUrl bind:contentUrl {menu} />
+    {/if}
+    {#if contentType === Enum.Encrypt}
+      <EncryptPart bind:plaintext={encryptPlaintext} bind:password />
+    {/if}
+  {/key}
+</div>
 
 <style>
-  :global(.unj-username-textfield) {
-    background-repeat: no-repeat;
-    background-position: right center;
-    background-size: auto 200%;
+  .unj-resform {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+    text-align: left;
+  }
+  .unj-resform-name {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .unj-resform-label {
+    flex: none;
+    font-size: 13px;
+    color: var(--unj-text-sub);
+  }
+  .unj-resform-name-input {
+    flex: 1;
+  }
+  .unj-resform-avatar {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    color: var(--unj-text-sub);
+  }
+  .unj-resform-avatar img {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  .unj-resform-text {
+    width: 100%;
+    resize: vertical;
+    line-height: 1.5;
+  }
+  .unj-resform-tools {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .unj-resform-small {
+    font-size: 12px;
+    min-height: 30px;
+    padding: 3px 10px;
+  }
+  .unj-resform-small.unj-on {
+    border-color: var(--unj-link);
+    color: var(--unj-link);
+  }
+  .unj-resform-count {
+    margin-left: auto;
+    font-size: 11px;
+    color: var(--unj-text-faint);
+  }
+  .unj-resform-type {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    color: var(--unj-text-sub);
   }
 </style>

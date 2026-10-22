@@ -263,18 +263,28 @@ const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
           v.type === "customAnimeEmoji",
       ),
   );
+  // このレスへの返信の数（専ブラの「被レス数」）。本文の >>N と unj-reze の parentNum の両方を数える
+  let replyCount = $derived.by(() => {
+    if (num <= 0) return 0;
+    const re = new RegExp(`>>${num}(?![0-9])`);
+    let count = 0;
+    for (const r of resList as (ResData & { parentNum?: number | null })[]) {
+      if (r.num === num) continue;
+      if (r.parentNum === num || re.test(r.contentText ?? "")) count++;
+    }
+    return count;
+  });
   let showValentine = $derived(isAnniversary([Anniversary.VALENTINE]));
   let showHalloween = $derived(isAnniversary([Anniversary.HALLOWEEN]));
   let showChristmas = $derived(isAnniversary([Anniversary.CHRISTMAS]));
 </script>
 
-<div class="unj-res-part bg-transparent px-2 py-1.5 border-b border-gray-200">
-  <!-- 上段: 名前欄 -->
-  <div class="unj-font w-full text-gray-500 text-[11px] sm:text-xs leading-normal">
+<div class="unj-res-part">
+  <!-- 上段: 名前欄（2ch の「1 ：名無し：日付 ID:xxx」） -->
+  <div class="unj-font unj-res-head">
     <button
-      class="bg-transparent border-0 text-inherit cursor-pointer pr-0 hover:opacity-80 {sage
-        ? 'underline sage'
-        : ''}"
+      class="unj-res-numname {sage ? 'sage' : ''}"
+      title="このレスに返信"
       onclick={() => {
         bindContentText = bindContentText
           .replace(ankaMatchAllRegex, "")
@@ -282,12 +292,11 @@ const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
         focus();
       }}
     >
-      <span class="unj-num-badge">{num}</span>：
-      <span
-        class="font-bold"
-        style={ccUserName.includes("★") ? "" : "color:#228811"}
-        class:text-red-500={ccUserName.includes("★")}
+      <span class="unj-res-num" class:unj-res-num-hot={replyCount >= 3}
+        >{num}</span
       >
+      <span class="unj-res-sep">：</span>
+      <span class="unj-res-name" class:unj-res-cap={ccUserName.includes("★")}>
         {ccUserName !== ""
           ? ccUserName
           : seededRandArray(
@@ -301,10 +310,12 @@ const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
             )}
       </span>
     </button>
-    <span>：</span>
-    <span>{format(createdAt, "yy/MM/dd(EEE) HH:mm:ss", { locale: ja })}</span>
+    <span class="unj-res-sep">：</span>
+    <span class="unj-res-date"
+      >{format(createdAt, "yyyy/MM/dd(EEE) HH:mm:ss", { locale: ja })}</span
+    >
 
-    <span class="inline-flex items-baseline whitespace-nowrap gap-1">
+    <span class="unj-res-id">
       {#if ccUserId === ""}
         <span>ID:???</span>
       {:else if ccUserId === "AI"}
@@ -320,12 +331,15 @@ const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
     </span>
 
     {#if isOwner}
-      <span class="text-red-500">主</span>
+      <span class="unj-res-owner">主</span>
+    {/if}
+    {#if replyCount > 0}
+      <span class="unj-res-replies" class:unj-res-num-hot={replyCount >= 3}
+        >返信{replyCount}</span
+      >
     {/if}
 
-    <div
-      class="inline-flex shrink-0 items-baseline w-12 align-baseline relative top-1"
-    >
+    <div class="unj-res-block">
       {#if showBlockButtons}
         <div class="inline-flex space-x-1">
           <button
@@ -381,11 +395,11 @@ const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
   </div>
 
   <!-- 下段: アイコンと内容 -->
-  <div class="flex items-start w-full">
+  <div class="unj-res-body">
     {#if ccUserAvatar && board.avatarMap.get(ccUserAvatar)}
-      <div class="relative w-16 h-16">
+      <div class="relative w-12 h-12 shrink-0 mr-2">
         <div
-          class="w-16 h-16 rounded-full mr-2 bg-cover bg-center"
+          class="w-12 h-12 rounded-full bg-cover bg-center"
           style="background-image:url({board.avatarMap.get(ccUserAvatar)
             ?.src});"
         ></div>
@@ -398,19 +412,15 @@ const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
           />
         {/if}
       </div>
-    {:else}
-      <div class="w-8"></div>
     {/if}
 
     <!-- 右側のコンテンツ領域 -->
-    <div class="flex flex-col flex-1 min-w-0 w-3xl max-w-full pl-1">
+    <div class="flex flex-col flex-1 min-w-0 max-w-full">
       {#if parts.length > 0}
-        <div class="unj-font text-sm leading-[1.35]">
+        <div class="unj-font unj-res-text">
           {#each parts as part}
             {#if part.type === "text"}
-              <span
-                class="inline-block align-middle m-0 wrap-anywhere max-w-full"
-              >
+              <span class="wrap-anywhere">
                 {#each splitByHighlight(part.value, highlightQuery) as chunk}
                   {#if chunk.hit}
                     <span class="unj-hit">{chunk.value}</span>
@@ -426,7 +436,7 @@ const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
                 href={part.value}
                 target="_blank"
                 rel="noopener noreferrer nofollow ugc"
-                class="text-blue-500 hover:underline wrap-anywhere inline-block align-middle max-w-full"
+                class="hover:underline wrap-anywhere"
                 onclick={(e) => e.stopPropagation()}
               >
                 {part.value}
@@ -436,7 +446,7 @@ const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
                 to={makePathname(
                   `/${board.key}/search?q=${encodeURIComponent(part.value)}`,
                 )}
-                class="text-blue-500 visited:text-blue-500 hover:underline wrap-anywhere inline-block align-middle max-w-full font-normal"
+                class="unj-res-anka hover:underline wrap-anywhere"
                 onclick={(e: MouseEvent) => e.stopPropagation()}
               >
                 {#each splitByHighlight(part.value, highlightQuery) as chunk}
@@ -458,7 +468,7 @@ const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
                 tabindex="0"
                 role="button"
                 onkeydown={() => {}}
-                class="cursor-pointer text-blue-500 hover:underline truncate inline-block align-middle max-w-full"
+                class="unj-res-anka cursor-pointer hover:underline truncate inline-block align-bottom max-w-full"
                 onmouseenter={(e) => onRequestFloating?.(ankaNum, e, false)}
                 onclick={(e) => {
                   onRequestFloating?.(ankaNum, e, true);
@@ -625,21 +635,109 @@ const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
 </div>
 
 <style>
-  .sage:before {
-    content: "↓";
-  }
+  /* 2ch の dt/dd に寄せたレス。名前は緑・番号と ID は灰色・本文は少し下げる */
   .unj-res-part {
     background-color: var(--unj-res-bg, transparent);
+    padding: 8px 10px 10px;
+    border-bottom: 1px solid var(--unj-border-soft);
+    text-align: left;
+  }
+  .unj-res-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0 4px;
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: var(--unj-text-sub);
+  }
+  .unj-res-numname {
+    display: inline-flex;
+    align-items: baseline;
+    background: none;
+    border: none;
+    padding: 0;
+    color: inherit;
+    cursor: pointer;
+  }
+  .unj-res-numname:hover .unj-res-num {
+    text-decoration: underline;
+  }
+  .unj-res-num {
+    color: var(--unj-text);
+    font-weight: bold;
+  }
+  .unj-res-num-hot {
+    color: var(--unj-new) !important;
+  }
+  .unj-res-sep {
+    margin: 0 -2px;
+  }
+  .unj-res-name {
+    color: var(--unj-name);
+    font-weight: bold;
+  }
+  .unj-res-cap {
+    color: var(--unj-cap);
+  }
+  .sage .unj-res-name {
+    color: var(--unj-link);
+    text-decoration: underline;
+  }
+  .sage .unj-res-name:after {
+    content: "↓";
+    display: inline-block;
+    text-decoration: none;
+    margin-left: 1px;
+  }
+  .unj-res-date {
+    white-space: nowrap;
+  }
+  .unj-res-id {
+    white-space: nowrap;
+  }
+  .unj-res-id :global(a) {
+    color: inherit !important;
+  }
+  .unj-res-owner {
+    color: var(--unj-cap);
+    font-weight: bold;
+  }
+  .unj-res-replies {
+    font-size: 11.5px;
+    color: var(--unj-link);
+  }
+  .unj-res-block {
+    display: inline-flex;
+    align-items: center;
+    margin-left: auto;
+    color: var(--unj-text-faint);
+  }
+  .unj-res-body {
+    display: flex;
+    align-items: flex-start;
+    margin-top: 4px;
+    padding-left: 1.4em;
+  }
+  .unj-res-text {
+    font-size: 15.5px;
+    line-height: 1.65;
+    color: var(--unj-text);
+    word-break: break-word;
+  }
+  .unj-res-anka {
+    color: var(--unj-anka) !important;
   }
   .unj-hit {
-    background: #ff0;
-    color: #000;
+    background: var(--unj-hit);
+    color: inherit;
   }
-  .unj-num-badge {
-    display: inline-block;
-    padding: 2px;
-    border-radius: 3px;
-    background: rgba(200, 200, 200, 0.2);
-    border-left: 10px solid rgba(200, 200, 200, 0.5);
+  @media (max-width: 480px) {
+    .unj-res-body {
+      padding-left: 0.6em;
+    }
+    .unj-res-text {
+      font-size: 15px;
+    }
   }
 </style>

@@ -113,10 +113,9 @@
   });
 </script>
 
-<div class="my-2 w-full">
-  <div
-    class="w-full max-h-[300px] overflow-y-auto border border-gray-400 bg-white shadow-sm"
-  >
+<div class="unj-hl">
+  <h3 class="unj-hl-title">この板の新着スレ</h3>
+  <div class="unj-hl-list">
     {#if error}
       <MessageBoxPart
         title="エラー発生"
@@ -139,13 +138,13 @@
       </p>
     {:else}
       <ul class="list-none p-0 m-0 text-xs">
-        {#each items as thread, idx}
+        {#each items as thread}
           {@const href = makePathname(
             `/${board.key}/thread/${thread.id}/${thread.resCount > queryResultLimit ? thread.resCount - 8 : "2"}?top`,
           )}
-          <li class={idx % 2 === 0 ? "bg-white" : "bg-[#f5f5f5]"}>
+          <li class="unj-hl-li">
             <div
-              class="px-2 py-1.5 text-left cursor-pointer hover:bg-yellow-50 transition border-b border-gray-200/60"
+              class="unj-hl-row"
               role="link"
               tabindex="0"
               onclick={() => {
@@ -159,19 +158,15 @@
                 }
               }}
             >
-              <!-- 1行目：経過時間 + Δ件数 + スレタイトル(レス数) -->
-              <div class="truncate text-[12.5px] leading-tight">
-                <span class="text-gray-400 font-normal mr-0.5">
-                  {formatTimeAgo(thread.latestResAt)}
-                </span>
-
-                <span class="text-red-600 font-bold mr-1">
-                  +{Math.max(1, (idx % 15) + 1)}
+              <!-- 1行目：経過時間 + スレタイトル(レス数) -->
+              <div class="truncate text-[13px] leading-snug">
+                <span class="unj-hl-ago">
+                  {formatTimeAgo(thread.latestResAt)}前
                 </span>
 
                 <a
                   {href}
-                  class="font-normal text-[#0000ee] hover:underline"
+                  class="hover:underline"
                   onclick={(e) => {
                     if (e.button === 0) e.preventDefault();
                   }}
@@ -179,13 +174,13 @@
                   {thread.title ||
                     firstLineOf(
                       thread.contentText,
-                    )}<span class="text-[#3300cc]">({thread.resCount})</span>
+                    )}<span class="unj-hl-count">({thread.resCount})</span>
                 </a>
               </div>
 
               <!-- 2行目：最新レス -->
               {#if thread.latestRes}
-                <div class="mt-0.5 truncate text-[11.5px] text-gray-700 leading-tight">
+                <div class="unj-hl-latest">
                   {thread.latestRes}
                 </div>
               {/if}
@@ -196,3 +191,48 @@
     {/if}
   </div>
 </div>
+
+<style>
+  .unj-hl {
+    margin: 12px 8px;
+    text-align: left;
+  }
+  .unj-hl-title {
+    margin: 0 0 4px;
+    font-size: 13px;
+    font-weight: bold;
+    color: var(--unj-text-sub);
+  }
+  .unj-hl-list {
+    max-height: 320px;
+    overflow-y: auto;
+    background: var(--unj-panel);
+    border: 1px solid var(--unj-border);
+  }
+  .unj-hl-li + .unj-hl-li {
+    border-top: 1px solid var(--unj-border-soft);
+  }
+  .unj-hl-row {
+    padding: 6px 8px;
+    cursor: pointer;
+  }
+  .unj-hl-row:hover {
+    background: var(--unj-panel-alt);
+  }
+  .unj-hl-ago {
+    color: var(--unj-text-faint);
+    margin-right: 4px;
+    font-size: 11.5px;
+  }
+  .unj-hl-count {
+    color: var(--unj-text-sub);
+  }
+  .unj-hl-latest {
+    margin-top: 2px;
+    font-size: 12px;
+    color: var(--unj-text-sub);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+</style>

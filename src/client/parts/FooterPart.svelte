@@ -1,4 +1,10 @@
 <script lang="ts">
+  import {
+    HistoryIcon,
+    HouseIcon,
+    PencilLineIcon,
+    SearchIcon,
+  } from "@lucide/svelte";
   import { navigate } from "svelte-routing";
   import { undefinedBoard } from "../../common/request/board.js";
   import { makePathname } from "../mylib/env.js";
@@ -32,23 +38,7 @@
 
 <footer class="unj-footer-part">
   {#if menu}
-    <div class="unj-bottom-nav">
-      <button
-        class="nav-item"
-        onclick={() => navigate(makePathname(`/${board.key}/art`))}
-      >
-        <span class="nav-icon">🏆</span>
-        <span class="nav-label">ランキング</span>
-      </button>
-
-      <button
-        class="nav-item"
-        onclick={() => navigate(makePathname(`/${board.key}/make-thread`))}
-      >
-        <span class="nav-icon">✏️</span>
-        <span class="nav-label">スレ作成</span>
-      </button>
-
+    <nav class="unj-bottom-nav">
       <button
         class="nav-item"
         onclick={() => {
@@ -59,30 +49,38 @@
           }
         }}
       >
-        <span class="nav-icon">🏠</span>
-        <span class="nav-label">トップ&更新</span>
+        <HouseIcon size={20} />
+        <span class="nav-label">板トップ</span>
+      </button>
+
+      <button
+        class="nav-item"
+        onclick={() => navigate(makePathname(`/${board.key}/make-thread`))}
+      >
+        <PencilLineIcon size={20} />
+        <span class="nav-label">スレ立て</span>
       </button>
 
       <button
         class="nav-item"
         onclick={() => navigate(makePathname(`/${board.key}/search`))}
       >
-        <span class="nav-icon">🔍</span>
+        <SearchIcon size={20} />
         <span class="nav-label">検索</span>
       </button>
 
-      <button class="nav-item relative" onclick={openHistory}>
-        <div class="icon-wrap">
-          <span class="nav-icon">📖</span>
+      <button class="nav-item" onclick={openHistory}>
+        <span class="icon-wrap">
+          <HistoryIcon size={20} />
           {#if showBadge}
             <span class="badge">{unreadTotal > 99 ? "99+" : unreadTotal}</span>
           {/if}
-        </div>
+        </span>
         <span class="nav-label">履歴</span>
       </button>
-    </div>
+    </nav>
   {:else}
-    <div class="opacity-70 text-center py-2 text-xs text-gray-400">
+    <div class="unj-footer-note">
       <a
         href="https://ja.wikipedia.org/wiki/%E8%87%AA%E7%94%B1%E8%8A%B8%E8%A1%93%E3%83%A9%E3%82%A4%E3%82%BB%E3%83%B3%E3%82%B9"
         target="_blank"
@@ -100,62 +98,72 @@
     left: 0;
     right: 0;
     width: 100%;
-    max-width: 600px;
+    max-width: var(--unj-shell-max);
     margin: 0 auto;
   }
   .unj-bottom-nav {
     display: flex;
-    align-items: center;
-    justify-content: space-around;
-    background-color: #222222;
-    border-top: 1px solid #333333;
-    padding: 4px 0 6px 0;
-    height: 52px;
+    align-items: stretch;
+    background: var(--unj-panel);
+    border-top: 1px solid var(--unj-border);
+    height: 54px;
+    padding-bottom: env(safe-area-inset-bottom);
+    box-sizing: content-box;
   }
   .nav-item {
+    flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 2px;
     background: transparent;
     border: none;
-    color: #ffffff;
+    color: var(--unj-text-sub);
     cursor: pointer;
-    flex: 1;
     padding: 0;
+  }
+  .nav-item:hover {
+    color: var(--unj-bar);
+    background: var(--unj-panel-alt);
+  }
+  :global(html.unj-dark) .nav-item:hover {
+    color: var(--unj-title);
   }
   .nav-item:active {
     opacity: 0.7;
   }
   .icon-wrap {
     position: relative;
-    display: inline-block;
-  }
-  .nav-icon {
-    font-size: 18px;
-    line-height: 1.1;
+    display: inline-flex;
   }
   .nav-label {
-    font-size: 9.5px;
-    color: #cccccc;
-    margin-top: 2px;
-    font-weight: 500;
+    font-size: 10.5px;
+    font-weight: bold;
   }
   .badge {
     position: absolute;
-    top: -4px;
-    right: -10px;
-    background-color: #ef4444;
+    top: -5px;
+    right: -12px;
+    background-color: var(--unj-new);
     color: #ffffff;
     font-size: 9px;
     font-weight: bold;
     border-radius: 999px;
-    min-width: 14px;
-    height: 14px;
+    min-width: 15px;
+    height: 15px;
     padding: 0 3px;
     display: flex;
     align-items: center;
     justify-content: center;
     line-height: 1;
+  }
+  .unj-footer-note {
+    text-align: center;
+    padding: 8px;
+    font-size: 12px;
+    color: var(--unj-text-faint);
+    background: var(--unj-bg);
+    border-top: 1px solid var(--unj-border-soft);
   }
 </style>

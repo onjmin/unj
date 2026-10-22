@@ -1,25 +1,23 @@
 <script lang="ts">
-  import { CircleArrowLeftIcon } from "@lucide/svelte";
   import { navigate } from "svelte-routing";
   import { makePathname } from "../mylib/env.js";
 
   let { board } = $props();
 </script>
 
-<div class="flex flex-col space-y-2 p-4 bg-gray-800 text-gray-200 rounded-lg">
-  <button
-    class="flex items-center space-x-2 px-4 py-2 rounded-lg bg-gray-600 hover:bg-gray-700 transition-colors duration-200"
-    onclick={() => navigate(makePathname(`/${board.key}`))}
+<!-- 2ch のスレ末尾の「掲示板に戻る 全部 1- 最新50」のようなメニュー帯 -->
+<nav class="unj-menubar unj-footer-links">
+  <button onclick={() => navigate(makePathname(`/${board.key}`))}
+    >掲示板に戻る</button
   >
-    <CircleArrowLeftIcon size={16} />
-    <span class="text-sm font-medium">板トップに戻る</span>
-  </button>
+  <button onclick={() => navigate(makePathname(`/${board.key}/history`))}
+    >書き込み履歴</button
+  >
+</nav>
 
-  <button
-    class="flex items-center space-x-2 px-4 py-2 rounded-lg bg-gray-600 hover:bg-gray-700 transition-colors duration-200"
-    onclick={() => navigate(makePathname(`/${board.key}/history`))}
-  >
-    <CircleArrowLeftIcon size={16} />
-    <span class="text-sm font-medium">履歴に戻る</span>
-  </button>
-</div>
+<style>
+  .unj-footer-links {
+    border-top: 1px solid var(--unj-border);
+    margin-top: 8px;
+  }
+</style>

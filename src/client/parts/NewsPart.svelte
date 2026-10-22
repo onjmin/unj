@@ -55,9 +55,9 @@
   let totalPages = $derived(items ? Math.ceil(items.length / itemsPerPage) : 0);
 </script>
 
-<div class="mt-2.5 mb-3 bg-white border-2 border-[#ffcc00] rounded-xl p-2.5 text-xs text-gray-800 shadow-xs relative">
-  <div class="flex items-center justify-between mb-1 border-b border-gray-200 pb-1">
-    <h2 class="text-xs font-bold text-gray-700 flex items-center m-0">
+<div class="unj-news">
+  <div class="unj-news-head">
+    <h2 class="unj-news-title">
       <MegaphoneIcon size={12} class="mr-1 shrink-0" />
       ニュース
     </h2>
@@ -102,12 +102,12 @@
     <ul class="list-none p-0 m-0 space-y-1.5 mt-1.5">
       {#each currentItems as item}
         <li>
-          <span class="font-bold text-gray-700">【{formatDateYMDCompact(item.published)}】</span><br />
-          <span class="ml-1 text-gray-800 flex items-start">
+          <span class="unj-news-date">【{formatDateYMDCompact(item.published)}】</span><br />
+          <span class="ml-1 flex items-start">
             <span class="shrink-0">・</span>
             <Link
               to={makePathname(`/${board.key}/news/${item.id}`)}
-              class="text-purple-700 hover:underline break-words"
+              class="hover:underline break-words"
             >
               {item.title}
             </Link>
@@ -131,4 +131,37 @@
 </div>
 
 <style>
+  .unj-news {
+    margin: 10px 0 12px;
+    background: var(--unj-panel);
+    border: 1px solid var(--unj-border);
+    padding: 8px 10px;
+    font-size: 13px;
+    color: var(--unj-text);
+    text-align: left;
+  }
+  .unj-news-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 4px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--unj-border-soft);
+  }
+  .unj-news-title {
+    display: flex;
+    align-items: center;
+    margin: 0;
+    font-size: 13px;
+    font-weight: bold;
+  }
+  .unj-news-date {
+    font-weight: bold;
+    color: var(--unj-text-sub);
+  }
+  .unj-news button {
+    color: var(--unj-text);
+    background: var(--unj-panel-alt);
+    border-color: var(--unj-border);
+  }
 </style>

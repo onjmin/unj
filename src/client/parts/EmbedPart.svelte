@@ -323,12 +323,12 @@
     if (isHttpUrl(contentUrl)) window.open(contentUrl, "_blank");
   };
 
-  // global.css の #app { max-width: 600px } と同じ値。
+  // global.css の --unj-shell-max (820px) と同じ値。
   // PC版はブラウザ幅(window.innerWidth)がそのままシェル幅にならず、
-  // 実際のコンテンツ幅は最大600pxで頭打ちになる。以前は window.innerWidth を
+  // 実際のコンテンツ幅は最大820pxで頭打ちになる。以前は window.innerWidth を
   // そのまま使っていたため、PCの広いウィンドウでは埋め込み(iframe/img)が
   // シェルの右端から突き抜けて表示されるバグがあった。
-  const APP_SHELL_MAX_WIDTH = 600;
+  const APP_SHELL_MAX_WIDTH = 820;
 
   let width = $state(0);
   let height = $state(0);
