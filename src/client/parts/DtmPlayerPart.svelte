@@ -4,6 +4,7 @@
   import { fetchTextCloudflareR2 } from "../mylib/cloudflare-r2.js";
   import { getStudio } from "../mylib/dtm.js";
   import { releaseAudioFocus, requestAudioFocus } from "../mylib/audio-focus.js";
+  import { inView } from "../mylib/emoji/in-view.js";
 
   // contentData はR2のURL。MML本文はレス一覧には載らないので、ここで取りに行く。
   // 表示は待たない（<img> と同じで、鳴らす直前に解決すればよい）。
@@ -13,10 +14,16 @@
   let error = $state("");
   const focusId = Symbol("mml-player");
 
-  onMount(() => {
-    let player: MmlPlayerInstance | null = null;
-    let disposed = false;
-    let poll: ReturnType<typeof setInterval> | null = null;
+  // MMLレスが多いスレでは、全レス分の取得・解析・音源の読み込みを一度に始めると重い。
+  // 画面に近づいたレスだけプレイヤーを作る。一度作ったら、画面外に出ても壊さない（再生を止めないため）。
+  let started = false;
+  let mounted = $state(false);
+
+  let player: MmlPlayerInstance | null = null;
+  let disposed = false;
+  let poll: ReturnType<typeof setInterval> | null = null;
+
+  const start = () => {
     // 共有スタジオ経由でマウントすると、楽器・ドラム・歌声がすべて鳴る。
     // サイト全体の音量（読者の好み）は getStudio() 内で studio.setMasterVolume() に
     // 一本化済み（studio.masterGain、全プレイヤー共有の出力段）なので、ここでは曲側の
@@ -32,6 +39,7 @@
         player = studio.mountPlayer(container, rawMml, {
           onStop: () => releaseAudioFocus(focusId),
         });
+        mounted = true;
         let wasPlaying = false;
         poll = setInterval(() => {
           const playing = !!player?.isPlaying();
@@ -48,6 +56,9 @@
         console.error("[dtm] Failed to load MML", e);
         error = "MMLの読み込みに失敗しました";
       });
+  };
+
+  onMount(() => {
     return () => {
       disposed = true;
       if (poll) clearInterval(poll);
@@ -58,7 +69,18 @@
   });
 </script>
 
-<div bind:this={container}></div>
+<div
+  bind:this={container}
+  class:min-h-12={!mounted}
+  use:inView={{
+    enabled: true,
+    onChange: (v) => {
+      if (!v || started) return;
+      started = true;
+      start();
+    },
+  }}
+></div>
 {#if error}
   <div class="text-red-500 text-sm">{error}</div>
 {/if}

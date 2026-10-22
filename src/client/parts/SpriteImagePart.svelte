@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { inView } from "../mylib/emoji/in-view.js";
+
   // 投稿画像の表示用。unj-reze由来のアニメ/歩行グラ投稿(スプライトシート)を再生する。
   // animFrames が無い/1以下なら素の<img>と同じ見た目・挙動になる。
   //
@@ -39,11 +41,18 @@
   let fps = $derived(animFps && animFps > 0 ? animFps : 8);
   let cell = $state<{ ratio: number; widthPx: number } | null>(null);
 
+  // 画像の多いスレで、画面外のシートまで一度に読み込み・アニメさせると重い。
+  // near: 一度でも画面に近づいたら true のまま（読み込みはそこから始める）。
+  // onScreen: 画面外ではアニメを止める。
+  let near = $state(false);
+  let onScreen = $state(false);
+
   $effect(() => {
     if (frames <= 1 || !src) {
       cell = null;
       return;
     }
+    if (!near) return;
     let cancelled = false;
     // rows はコマ寸法の計算に使うが、読むのが img.onload の中（非同期）だけだと
     // $effect の依存として追跡されず、walkPreset 変更時に再計測されない。
@@ -96,14 +105,22 @@
 </script>
 
 {#if frames <= 1 || !bgImage}
-  <img {src} {alt} class={className} {onclick} {onerror} />
+  <img {src} {alt} loading="lazy" class={className} {onclick} {onerror} />
 {:else}
   <div
     role="img"
     aria-label={alt}
     class="{className} sprite-sheet sprite-anim"
-    style="background-image:{bgImage}; aspect-ratio:{cell?.ratio ?? 1}; {widthStyle} --frames:{frames}; --rows:{rows}; --duration:{frames / fps}s;"
+    class:sprite-paused={!onScreen}
+    style="background-image:{near ? bgImage : 'none'}; aspect-ratio:{cell?.ratio ?? 1}; {widthStyle} --frames:{frames}; --rows:{rows}; --duration:{frames / fps}s;"
     {onclick}
+    use:inView={{
+      enabled: true,
+      onChange: (v) => {
+        onScreen = v;
+        if (v) near = true;
+      },
+    }}
   ></div>
 {/if}
 
@@ -119,6 +136,9 @@
     animation-duration: var(--duration);
     animation-timing-function: steps(var(--frames));
     animation-iteration-count: infinite;
+  }
+  .sprite-paused {
+    animation-play-state: paused;
   }
   /*
    * background-position の百分率は (コンテナ幅-画像幅)×(P/100) で解決される（CSS仕様）ため、

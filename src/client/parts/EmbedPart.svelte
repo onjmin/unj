@@ -423,7 +423,7 @@
         }}
         aria-label="埋め込みを展開"
       >
-        <img src={thumbnailUrl} alt={siteInfo.name} class="w-full h-full object-cover" />
+        <img src={thumbnailUrl} alt={siteInfo.name} loading="lazy" class="w-full h-full object-cover" />
         <div class="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/10 transition-colors">
           <div class="bg-black/60 rounded-full w-16 h-16 flex items-center justify-center text-white backdrop-blur-sm">
             <span class="material-icons text-4xl" style="margin-left: 4px;">play_arrow</span>
@@ -502,7 +502,7 @@
                   style="--alu-w: {aluEmbed.width}px; aspect-ratio: {aluEmbed.width} / {aluEmbed.height};"
                 ></iframe>
               {:else}
-                <img class="embed-image" src={aluEmbed.src} alt="embed" />
+                <img class="embed-image" src={aluEmbed.src} alt="embed" loading="lazy" />
               {/if}
               {#if aluEmbed.linkHref}
                 <div style="max-width: 432px; text-align: right; margin: 0 auto;">
@@ -536,6 +536,7 @@
             class="embed-image gimp-checkered-background"
             src={embedUrl}
             alt="embed"
+            loading="lazy"
             onerror={() => {
               embedError = true;
             }}
