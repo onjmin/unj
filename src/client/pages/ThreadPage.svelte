@@ -952,11 +952,20 @@
             return;
         }
 
-        floatingStyle = `
-        position: absolute;
-        top: ${floating.y}px;
-        left: ${floating.x}px;
-    `;
+        // #app は中央寄せなので、マウスの画面座標のまま absolute で置くと右にずれる。
+        // 画面に固定して置き、はみ出さないよう幅と位置を画面の中に収める。
+        // 画面の下半分で開いたときは、下に切れないよう上向きに出す。
+        const margin = 8;
+        const width = Math.min(600, window.innerWidth - margin * 2);
+        const left = Math.min(
+            Math.max(floating.x - 24, margin),
+            window.innerWidth - width - margin,
+        );
+        const vertical =
+            floating.y < window.innerHeight * 0.55
+                ? `top: ${floating.y - 6}px;`
+                : `bottom: ${window.innerHeight - floating.y - 6}px;`;
+        floatingStyle = `position: fixed; left: ${left}px; width: ${width}px; ${vertical}`;
     });
 </script>
 
@@ -1277,7 +1286,7 @@
         style={floatingStyle}
         onmouseleave={() => (floating = null)}
     >
-        <div class="shadow-lg border rounded mdc-card w-fit">
+        <div class="unj-floating-res">
             {#if floating.resNum === 1}
                 <ResPart
                     onRequestFloating={requestFloating}
@@ -1913,11 +1922,24 @@
         text-decoration: underline;
         color: var(--unj-link);
     }
-    /* スマホでは書き込みボタンなどに重なるので、上下移動ボタンは出さない */
-    @media (max-width: 640px) {
+    /* 上下移動ボタンは本文の列の外に置く。外に置けない幅では、× や書き込むボタンに重なるので出さない */
+    @media (max-width: 959px) {
         .unj-scroll-arrows {
             display: none;
         }
+    }
+    @media (min-width: 960px) {
+        .unj-scroll-arrows {
+            margin-right: -56px;
+        }
+    }
+    /* 安価にマウスを乗せたときに出るレスのポップアップ */
+    .unj-floating-res {
+        max-height: 60vh;
+        overflow-y: auto;
+        background: var(--unj-panel);
+        border: 1px solid var(--unj-border);
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
     }
     /* 書き込み欄の操作行 */
     .unj-form-actions {
