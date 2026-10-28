@@ -58,6 +58,7 @@
     animFrames = null,
     animFps = null,
     walkPreset = null,
+    dotArt = false,
     resNum = 0,
     auto = false,
     oekakiCollab = $bindable(""),
@@ -71,6 +72,7 @@
     animFrames?: number | null;
     animFps?: number | null;
     walkPreset?: string | null;
+    dotArt?: boolean;
     resNum?: number;
     auto?: boolean;
     oekakiCollab?: string;
@@ -78,19 +80,26 @@
     bindContentType?: number;
   } = $props();
 
-  // unj-reze(lib/walk-cycle.ts)の WalkPreset.label → 方向数(行数)。
-  // 歩行グラのプリセットは向こう側の投稿編集UIで固定の5規格しか無いのでここに複製する
-  // （リポジトリを跨ぐため共有コードにできない）。
-  const WALK_PRESET_ROWS: Record<string, number> = {
-    RPGEN: 4,
-    RPGツクール2000: 4,
-    RPGツクールXP: 4,
-    RPGツクールVX: 4,
-    RPGツクールMV: 4,
+  // unj-reze(lib/assets/walk-cycle.ts)の WalkPreset.label → 行ごとの向き（w後 a左 s前 d右…）。
+  // 固定の5規格と、規格外の "custom:wdsa"（向きの並びをそのまま入れたもの）がある。
+  // リポジトリを跨ぐため共有コードにできないので、ここに複製する。
+  const WALK_PRESET_WAYS: Record<string, string> = {
+    RPGEN: "wdsa",
+    RPGツクール2000: "wdsa",
+    RPGツクールXP: "sadw",
+    RPGツクールVX: "sadw",
+    RPGツクールMV: "sadw",
   };
-  let spriteRows = $derived(
-    walkPreset ? (WALK_PRESET_ROWS[walkPreset] ?? 1) : 1,
-  );
+  const walkWaysOf = (label: string | null): string => {
+    if (!label) return "";
+    if (WALK_PRESET_WAYS[label]) return WALK_PRESET_WAYS[label];
+    const m = label.match(/^custom:([wasdqezc]{1,8})$/);
+    return m && new Set(m[1]).size === m[1].length ? m[1] : "";
+  };
+  let walkWays = $derived(walkWaysOf(walkPreset));
+  let spriteRows = $derived(walkWays.length || 1);
+  // 方向転換の UI は無いので、正面（s）の行を流す。無ければ先頭の行
+  let spriteRow = $derived(Math.max(walkWays.indexOf("s"), 0));
   // reze産のアップロード/描画画像はimgur等のホワイトリストに乗らないため、
   // Image/Oekaki種別はホワイトリスト判定を経由せず常に直接<img>表示する。
   let isDirectImage = $derived(
@@ -375,6 +384,8 @@
       {animFrames}
       {animFps}
       rows={spriteRows}
+      row={spriteRow}
+      {dotArt}
       onerror={() => {
         embedError = true;
       }}
@@ -630,7 +641,11 @@
   {/if}
 {/if}
 
-<ImagePreviewModal bind:open bind:src />
+<ImagePreviewModal
+  bind:open
+  bind:src
+  pixelated={isDirectImage && (dotArt || (animFrames ?? 0) > 1)}
+/>
 
 <style>
   :global(.embed-favicon-item-graphic) {

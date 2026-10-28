@@ -3,6 +3,7 @@
   import type { Board } from "../../common/request/board.js";
   import type { HeadlineThread } from "../../common/response/schema.js";
   import { ObjectStorage } from "../mylib/object-storage.js";
+  import { threadTitleOf } from "../mylib/thread-title.js";
   import { makePathname } from "../mylib/env.js";
   import {
     differenceInDays,
@@ -43,11 +44,6 @@
     if (differenceInMinutes(now, date) > 0)
       return `${differenceInMinutes(now, date)}分`;
     return `${differenceInSeconds(now, date)}秒`;
-  };
-
-  const firstLineOf = (text: string): string => {
-    const line = (text || "").split(/\r\n|\r|\n/)[0]?.trim() ?? "";
-    return line.length > 32 ? `${line.slice(0, 32)}…` : line || "無題";
   };
 
   let items: HeadlineThread[] | null = $state(null);
@@ -171,10 +167,10 @@
                     if (e.button === 0) e.preventDefault();
                   }}
                 >
-                  {thread.title ||
-                    firstLineOf(
-                      thread.contentText,
-                    )}<span class="unj-hl-count">({thread.resCount})</span>
+                  {threadTitleOf(
+                    thread.title,
+                    thread.contentText,
+                  )}<span class="unj-hl-count">({thread.resCount})</span>
                 </a>
               </div>
 

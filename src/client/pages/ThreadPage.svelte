@@ -103,6 +103,7 @@
     import ResPart from "../parts/ResPart.svelte";
     import TermsConfirmPart from "../parts/TermsConfirmPart.svelte";
     import CopyleftPart from "../parts/CopyleftPart.svelte";
+    import { threadTitleOf } from "../mylib/thread-title.js";
     import HeadlinePart from "../parts/HeadlinePart.svelte";
     import PaginationControlsPart from "../parts/PaginationControlsPart.svelte";
 
@@ -344,7 +345,7 @@
         } else {
             thread = _thread;
             if (!thread) return;
-            title = thread.title;
+            title = threadTitleOf(thread.title, thread.contentText);
             lolCount = thread.lolCount;
             goodVotes = thread.goodCount;
             badVotes = thread.badCount;
@@ -1251,6 +1252,7 @@
             animFrames={thread?.ageRes.animFrames ?? null}
             animFps={thread?.ageRes.animFps ?? null}
             walkPreset={thread?.ageRes.walkPreset ?? null}
+            dotArt={thread?.ageRes.dotArt ?? false}
             num={thread?.ageRes.num}
             isOwner={thread?.ageRes.isOwner}
             sage={thread?.ageRes.sage}
@@ -1309,6 +1311,7 @@
                     animFrames={thread.animFrames ?? null}
                     animFps={thread.animFps ?? null}
                     walkPreset={thread.walkPreset ?? null}
+                    dotArt={thread.dotArt ?? false}
                     createdAt={thread.createdAt}
                     threadId={thread.id}
                     resList={thread.resList ?? []}
@@ -1440,7 +1443,7 @@
             <span class="unj-thread-title-emoji">
                 <TwemojiPart emoji={makeEmojiByThreadId(thread.id)} />
             </span>
-            {thread.title || "無題"}
+            {title}
             <span class="unj-thread-title-count">({thread.resCount})</span>
         </h2>
         <nav class="unj-menubar">
@@ -1609,6 +1612,7 @@
                         animFrames={thread.animFrames ?? null}
                         animFps={thread.animFps ?? null}
                         walkPreset={thread.walkPreset ?? null}
+                        dotArt={thread.dotArt ?? false}
                         ps={thread.ps}
                         num={1}
                         isOwner={true}
@@ -1686,6 +1690,7 @@
                             animFrames={res.animFrames ?? null}
                             animFps={res.animFps ?? null}
                             walkPreset={res.walkPreset ?? null}
+                            dotArt={res.dotArt ?? false}
                             commandResult={res.commandResult}
                             num={res.num}
                             isOwner={res.isOwner}

@@ -24,6 +24,8 @@
     animFrames = null,
     animFps = null,
     rows = 1,
+    row = 0,
+    dotArt = false,
     onclick = undefined,
     onerror = undefined,
   }: {
@@ -33,6 +35,10 @@
     animFrames?: number | null;
     animFps?: number | null;
     rows?: number;
+    // 歩行グラで流す行（向き）。0 始まり
+    row?: number;
+    // unj-reze のドット絵投稿。静止画でも小さければ拡大し、にじませない
+    dotArt?: boolean;
     onclick?: (() => void) | undefined;
     onerror?: (() => void) | undefined;
   } = $props();
@@ -86,6 +92,23 @@
       ? `width:${Math.max(cell.widthPx, MIN_DISPLAY_PX)}px; max-width:100%;`
       : "",
   );
+  // background-position の百分率は (箱-画像)×P で決まるので、行 r の上端は r/(rows-1)
+  let rowY = $derived(
+    rows > 1 ? (Math.min(Math.max(row, 0), rows - 1) / (rows - 1)) * 100 : 0,
+  );
+
+  // 静止画のドット絵も同じ幅まで拡大する（unj-reze の SpriteImage と同じ扱い）。
+  // <img> の naturalWidth は読み込み後にしか分からないので onload で測る
+  let staticWidthPx = $state(0);
+  let staticStyle = $derived(
+    dotArt
+      ? `image-rendering:pixelated;${
+          staticWidthPx && staticWidthPx < MIN_DISPLAY_PX
+            ? ` width:${MIN_DISPLAY_PX}px; max-width:100%;`
+            : ""
+        }`
+      : undefined,
+  );
 
   // style属性の url() に生の src を入れると、引用符・括弧で別のCSSを差し込める
   // （reze産の投稿はこちらのスキーマを通らない）。https だけ受け付け、
@@ -105,14 +128,25 @@
 </script>
 
 {#if frames <= 1 || !bgImage}
-  <img {src} {alt} loading="lazy" class={className} {onclick} {onerror} />
+  <img
+    {src}
+    {alt}
+    loading="lazy"
+    class={className}
+    style={staticStyle}
+    onload={(e) => {
+      staticWidthPx = (e.currentTarget as HTMLImageElement).naturalWidth;
+    }}
+    {onclick}
+    {onerror}
+  />
 {:else}
   <div
     role="img"
     aria-label={alt}
     class="{className} sprite-sheet sprite-anim"
     class:sprite-paused={!onScreen}
-    style="background-image:{near ? bgImage : 'none'}; aspect-ratio:{cell?.ratio ?? 1}; {widthStyle} --frames:{frames}; --rows:{rows}; --duration:{frames / fps}s;"
+    style="background-image:{near ? bgImage : 'none'}; aspect-ratio:{cell?.ratio ?? 1}; {widthStyle} --frames:{frames}; --rows:{rows}; --row-y:{rowY}%; --duration:{frames / fps}s;"
     {onclick}
     use:inView={{
       enabled: true,
@@ -127,7 +161,8 @@
 <style>
   .sprite-sheet {
     background-repeat: no-repeat;
-    background-position: 0% 0%;
+    background-position-x: 0%;
+    background-position-y: var(--row-y, 0%);
     background-size: calc(var(--frames) * 100%) calc(var(--rows) * 100%);
     image-rendering: pixelated;
   }
@@ -148,10 +183,10 @@
    */
   @keyframes sprite-anim-steps {
     from {
-      background-position: 0% 0;
+      background-position-x: 0%;
     }
     to {
-      background-position: calc(100% * var(--frames) / (var(--frames) - 1)) 0;
+      background-position-x: calc(100% * var(--frames) / (var(--frames) - 1));
     }
   }
 </style>

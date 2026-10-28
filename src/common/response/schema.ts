@@ -13,6 +13,7 @@ export type HeadlineThread = {
 	boardId: number;
 	// 動的なデータ
 	online: number;
+	// 1時間あたりのレス数。一覧では24倍して1日あたりで出すので、小数3桁まで残す
 	ikioi: number;
 	lolCount: number;
 	goodCount: number;
@@ -48,6 +49,8 @@ export type Res = {
 	animFrames: number | null;
 	animFps: number | null;
 	walkPreset: string | null;
+	// unj-reze のドット絵投稿（dot_w が入っている）。小さくても拡大して、にじませずに表示する
+	dotArt?: boolean;
 	// メタ情報
 	num: number;
 	createdAt: Date;
@@ -72,6 +75,8 @@ export type Thread = {
 	animFrames: number | null;
 	animFps: number | null;
 	walkPreset: string | null;
+	// unj-reze のドット絵投稿（dot_w が入っている）。小さくても拡大して、にじませずに表示する
+	dotArt?: boolean;
 	// メタ情報
 	id: string;
 	createdAt: Date;

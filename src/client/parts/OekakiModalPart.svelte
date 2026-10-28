@@ -40,8 +40,12 @@
   const maxCanvasHeight = Math.max(240, window.innerHeight - 220);
 </script>
 
+<!--
+  書き込み欄(.unj-box、text-align:left)の中に置かれるので、中央寄せをここで決め直す
+  （@onjmin/oekaki のキャンバスは inline-block）。z-index は下のメニュー・右下の丸ボタンより上。
+-->
 <div
-  class="fixed inset-0 z-50 flex flex-col bg-black/95 select-none"
+  class="unj-oekaki-modal fixed inset-0 flex flex-col bg-black/95 text-white/80 text-center select-none"
   role="dialog"
   aria-modal="true"
 >
@@ -78,7 +82,7 @@
     </div>
   </div>
 
-  <div class="flex-1 min-h-0 overflow-y-auto">
+  <div class="unj-oekaki-modal-body flex-1 min-h-0 overflow-y-auto">
     <OekakiPart
       {threadId}
       bind:oekakiCollab
@@ -100,3 +104,15 @@
     </div>
   {/if}
 </div>
+
+<style>
+  .unj-oekaki-modal {
+    z-index: 200;
+  }
+  /* PC の広い画面でスライダーが端から端まで伸びないよう、掲示板と同じ幅に収める */
+  .unj-oekaki-modal-body > :global(*) {
+    max-width: var(--unj-shell-max);
+    margin-left: auto;
+    margin-right: auto;
+  }
+</style>

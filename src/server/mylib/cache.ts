@@ -16,6 +16,7 @@ export const contentDataCache: Map<number, string> = new Map();
 export const animFramesCache: Map<number, number | null> = new Map();
 export const animFpsCache: Map<number, number | null> = new Map();
 export const walkPresetCache: Map<number, string | null> = new Map();
+export const dotArtCache: Map<number, boolean> = new Map();
 // メタ情報
 export const createdAtCache: Map<number, Date> = new Map();
 export const userIdCache: Map<number, number> = new Map();
@@ -84,6 +85,7 @@ const threadCaches: { delete: (threadId: number) => boolean }[] = [
 	animFramesCache,
 	animFpsCache,
 	walkPresetCache,
+	dotArtCache,
 	createdAtCache,
 	userIdCache,
 	titleCache,

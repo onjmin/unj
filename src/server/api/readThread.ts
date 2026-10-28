@@ -25,6 +25,7 @@ import {
 	contentUrlCache,
 	createdAtCache,
 	deletedAtCache,
+	dotArtCache,
 	goodCountCache,
 	isDeleted,
 	lolCountCache,
@@ -170,6 +171,7 @@ export default ({ socket }: { socket: Socket }) => {
 				animFramesCache.set(threadId, threadRecord.anim_frames ?? null);
 				animFpsCache.set(threadId, threadRecord.anim_fps ?? null);
 				walkPresetCache.set(threadId, threadRecord.walk_preset ?? null);
+				dotArtCache.set(threadId, threadRecord.dot_w != null);
 				// メタ情報
 				createdAtCache.set(threadId, new Date(threadRecord.created_at));
 				userIdCache.set(threadId, threadRecord.user_id);
@@ -222,6 +224,7 @@ export default ({ socket }: { socket: Socket }) => {
 						animFrames: animFramesCache.get(threadId) ?? null,
 						animFps: animFpsCache.get(threadId) ?? null,
 						walkPreset: walkPresetCache.get(threadId) ?? null,
+						dotArt: dotArtCache.get(threadId) ?? false,
 						commandResult: "",
 						// メタ情報
 						num: 1,
@@ -251,6 +254,7 @@ export default ({ socket }: { socket: Socket }) => {
 							animFrames: record.anim_frames ?? null,
 							animFps: record.anim_fps ?? null,
 							walkPreset: record.walk_preset ?? null,
+							dotArt: record.dot_w != null,
 							commandResult: record.command_result,
 							// メタ情報
 							num: record.num,
@@ -305,6 +309,7 @@ export default ({ socket }: { socket: Socket }) => {
 					animFrames: record.anim_frames ?? null,
 					animFps: record.anim_fps ?? null,
 					walkPreset: record.walk_preset ?? null,
+					dotArt: record.dot_w != null,
 					commandResult: record.command_result,
 					// メタ情報
 					num: record.num,
@@ -328,6 +333,7 @@ export default ({ socket }: { socket: Socket }) => {
 				animFrames: animFramesCache.get(threadId) ?? null,
 				animFps: animFpsCache.get(threadId) ?? null,
 				walkPreset: walkPresetCache.get(threadId) ?? null,
+				dotArt: dotArtCache.get(threadId) ?? false,
 				// 基本的な情報
 				title: titleCache.get(threadId) ?? "",
 				boardId: boardIdCache.get(threadId) ?? 0,

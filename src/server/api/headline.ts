@@ -73,9 +73,10 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 					// 動的なデータ
 					online: sizeOf(io, getThreadRoom(record.id)),
 					ikioi:
-						Math.floor(
-							(resCount * 3600_000_0) / (Date.now() - +record.created_at),
-						) / 10,
+						Math.round(
+							((resCount * 3600_000) / (Date.now() - +record.created_at)) *
+								1000,
+						) / 1000,
 					lolCount: record.lol_count,
 					goodCount: record.good_count,
 					badCount: record.bad_count,

@@ -55,6 +55,7 @@ const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
     animFrames?: number | null;
     animFps?: number | null;
     walkPreset?: string | null;
+    dotArt?: boolean;
     commandResult?: string;
     isOwner?: boolean;
     sage?: boolean;
@@ -83,6 +84,7 @@ const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
     animFrames = null,
     animFps = null,
     walkPreset = null,
+    dotArt = false,
     commandResult = "",
     ps = "",
     // メタ情報
@@ -556,6 +558,7 @@ const ankaMatchAllRegex = new RegExp(ankaRegex.source, "g");
               {animFrames}
               {animFps}
               {walkPreset}
+              {dotArt}
               resNum={num}
               bind:oekakiCollab
               bind:bindContentText

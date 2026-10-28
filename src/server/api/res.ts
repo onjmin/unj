@@ -35,6 +35,7 @@ import {
 	contentTypesBitmaskCache,
 	contentUrlCache,
 	createdAtCache,
+	dotArtCache,
 	goodCountCache,
 	isDeleted,
 	isMax,
@@ -366,9 +367,9 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 					// 動的なデータ
 					online: sizeOf(io, getThreadRoom(threadId)),
 					ikioi:
-						Math.floor(
-							(latestResNum * 3600_000_0) / (Date.now() - +createdAt),
-						) / 10,
+						Math.round(
+							((latestResNum * 3600_000) / (Date.now() - +createdAt)) * 1000,
+						) / 1000,
 					lolCount: lolCountCache.get(threadId) ?? 0,
 					goodCount: goodCountCache.get(threadId) ?? 0,
 					badCount: badCountCache.get(threadId) ?? 0,
@@ -433,6 +434,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 							animFrames: animFramesCache.get(threadId) ?? null,
 							animFps: animFpsCache.get(threadId) ?? null,
 							walkPreset: walkPresetCache.get(threadId) ?? null,
+							dotArt: dotArtCache.get(threadId) ?? false,
 							commandResult: "",
 							// メタ情報
 							num: 1,
@@ -462,6 +464,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 								animFrames: record.anim_frames ?? null,
 								animFps: record.anim_fps ?? null,
 								walkPreset: record.walk_preset ?? null,
+								dotArt: record.dot_w != null,
 								commandResult: record.command_result,
 								// メタ情報
 								num: record.num,
