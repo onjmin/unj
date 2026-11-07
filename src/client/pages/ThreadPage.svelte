@@ -613,6 +613,9 @@
 
     let emitting = $state(false);
     let toDataURL = $state(() => "");
+    // toDataURL は絵を描いても変わらない関数なので、テンプレートで直に呼ぶと
+    // 開いた時点の絵で止まる。閉じたときに描き出した画像を持っておく
+    let oekakiPreview = $state("");
     let uploadedImgur: ImgurResponse | null = null;
     const tryRes = async () => {
         // 利用規約同意
@@ -1003,11 +1006,11 @@
             onclick={() => (openOekakiModal = true)}
         >
             <BrushIcon size="16" />
-            {toDataURL?.() ? "お絵描きを編集" : "お絵描きを開く"}
+            {oekakiPreview ? "お絵描きを編集" : "お絵描きを開く"}
         </button>
-        {#if toDataURL?.()}
+        {#if oekakiPreview}
             <img
-                src={toDataURL()}
+                src={oekakiPreview}
                 alt="お絵描きプレビュー"
                 class="max-w-full max-h-40 rounded border border-gray-500/40 gimp-checkered-background"
             />
@@ -1019,7 +1022,10 @@
             bind:oekakiCollab
             bind:toDataURL
             bind:activeLayer
-            onClose={() => (openOekakiModal = false)}
+            onClose={() => {
+                oekakiPreview = toDataURL();
+                openOekakiModal = false;
+            }}
         />
     {/if}
     {#if contentType === Enum.Dtm && !menu}
