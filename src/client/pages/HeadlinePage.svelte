@@ -89,7 +89,9 @@
             `headlineCache###${board.id}`,
         );
         cache.get().then((v) => {
-            if (v && !threadList) threadList = v;
+            // 古い版で他の板のスレが混ざって保存されたキャッシュも、ここで取り除く
+            const mine = v?.filter((t) => t.boardId === board.id);
+            if (mine?.length && !threadList) threadList = mine;
         });
     });
 
@@ -122,6 +124,8 @@
      */
     const handleHeadline = (data: { ok: boolean; list: HeadlineThread[] }) => {
         if (!data.ok) return;
+        // 前に開いていた板の応答が遅れて届くことがあるので、別の板の一覧は捨てる
+        if (data.list.some((t) => t.boardId !== board.id)) return;
         ok();
         if (!pagination && !isFromVisibilityChange) {
             threadList = data.list;
@@ -162,6 +166,8 @@
      */
     const handleNewHeadline = (data: { ok: boolean; new: HeadlineThread }) => {
         if (!data.ok || !threadList) return;
+        // 接続数が少ないときは全板に配信されるので、この板のスレだけ受け取る
+        if (data.new.boardId !== board.id) return;
         if (threadList.length > 128) {
             threadList.pop();
         }

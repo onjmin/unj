@@ -60,7 +60,7 @@
       .get()
       .then((v) => {
         if (!items || items.length === 0) {
-          items = v ?? [];
+          items = v?.filter((t) => t.boardId === board.id) ?? [];
         }
       })
       .catch(() => {
@@ -88,6 +88,8 @@
    */
   const handleNewHeadline = (data: { ok: boolean; new: HeadlineThread }) => {
     if (!data.ok || !items) return;
+    // 接続数が少ないときは全板に配信されるので、この板のスレだけ受け取る
+    if (data.new.boardId !== board.id) return;
     if (items.length > 128) {
       items.pop();
     }
