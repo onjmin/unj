@@ -170,7 +170,7 @@ export default (router: Router, io: Server) => {
 					// メタ情報
 					latestRes,
 					genTestIP(),
-					"fal_1_3",
+					"cc_by_sa_4_0",
 				],
 			);
 			if (rowCount === 0) {

@@ -158,7 +158,7 @@ export async function maybeSpawnNextThread({
 				1000,
 				`前スレ: ${prevLink}`,
 				genTestIP(),
-				"fal_1_3",
+				"cc_by_sa_4_0",
 			],
 		);
 		if (rowCount === 0) {

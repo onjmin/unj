@@ -260,7 +260,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 					isOwner,
 					sage,
 					getIP(socket),
-					"fal_1_3",
+					"cc_by_sa_4_0",
 				],
 			);
 			if (rowCount === 0) {

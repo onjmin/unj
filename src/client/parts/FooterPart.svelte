@@ -82,7 +82,7 @@
   {:else}
     <div class="unj-footer-note">
       <a
-        href="https://ja.wikipedia.org/wiki/%E8%87%AA%E7%94%B1%E8%8A%B8%E8%A1%93%E3%83%A9%E3%82%A4%E3%82%BB%E3%83%B3%E3%82%B9"
+        href="https://creativecommons.org/licenses/by-sa/4.0/deed.ja"
         target="_blank"
         rel="noopener noreferrer">著作権コピーレフト</a
       >：うんｊはまとめ自由

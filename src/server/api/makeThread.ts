@@ -153,7 +153,7 @@ export default ({ socket, io }: { socket: Socket; io: Server }) => {
 					// メタ情報
 					latestRes,
 					getIP(socket),
-					"fal_1_3",
+					"cc_by_sa_4_0",
 				],
 			);
 			if (rowCount === 0) {
