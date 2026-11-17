@@ -5,8 +5,18 @@
   } from "@onjmin/dtm";
   import { onMount } from "svelte";
   import { getStudio } from "../mylib/dtm.js";
+  import { guardLeave } from "../mylib/leave-guard.js";
 
   let { contentData = $bindable("") }: { contentData: string } = $props();
+
+  // MML は保存していないので、開いた時から書き換えたら離脱を確認する。
+  // 空で開いてもエディタが初期の MML を返すことがあるので、最初に読めた MML と比べる
+  let baselineRawMml: string | null = null;
+  let edited = $state(false);
+  $effect(() => {
+    if (!edited) return;
+    return guardLeave();
+  });
 
   let container: HTMLDivElement;
   let mmlLength = $state(contentData.length);
@@ -67,6 +77,8 @@
         onMount: (dawInstance) => {
           pollId = setInterval(() => {
             const mml = dawInstance.getMML().minified ?? "";
+            if (baselineRawMml === null) baselineRawMml = mml;
+            edited = mml !== baselineRawMml;
             if (mml !== currentRawMml) {
               currentRawMml = mml;
               updateCompressedMml(mml);

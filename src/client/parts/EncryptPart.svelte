@@ -1,10 +1,17 @@
 <script lang="ts">
     import { Key } from "@lucide/svelte";
+    import { guardLeave } from "../mylib/leave-guard.js";
 
     let {
         plaintext = $bindable(""),
         password = $bindable(""),
     }: { plaintext: string; password: string } = $props();
+
+    // 暗号化する内容は保存していないので、入力があるうちは離脱を確認する
+    $effect(() => {
+        if (plaintext === "") return;
+        return guardLeave();
+    });
 
     const ICON_SIZE = 20;
 </script>

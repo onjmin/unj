@@ -15,6 +15,7 @@
    */
   import { LayersIcon, PaletteIcon, XIcon } from "@lucide/svelte";
   import * as oekaki from "@onjmin/oekaki";
+  import { guardLeave } from "../mylib/leave-guard.js";
   import ColorWheelPart from "./ColorWheelPart.svelte";
   import LayerPanelPart from "./LayerPanelPart.svelte";
   import OekakiPart from "./OekakiPart.svelte";
@@ -34,6 +35,9 @@
   } = $props();
 
   let drawer: "" | "palette" | "layer" = $state("");
+
+  // 描いている途中（オートセーブ前のストロークなど）を落とさないよう、開いている間は離脱を確認する
+  $effect(() => guardLeave());
 
   // ヘッダー・ツールバー分を差し引いた大まかな残り高さ。resizeでは追わず、
   // 開いた時点の値で十分(端末回転はOekakiPart側の再計算に任せる)。
