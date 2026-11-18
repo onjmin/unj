@@ -48,8 +48,8 @@ export function setMasterVolume(v: number) {
 	const next = clamp(v);
 	cached = next;
 	if (typeof localStorage !== "undefined") {
-		localStorage.setItem(KEY, String(next));
 		try {
+			localStorage.setItem(KEY, String(next));
 			soundVolume.value = String(next / 100);
 		} catch {}
 	}
@@ -65,8 +65,11 @@ export function getMuted(): boolean {
 
 export function setMuted(m: boolean) {
 	mutedCache = m;
-	if (typeof localStorage !== "undefined")
-		localStorage.setItem(MUTE_KEY, m ? "1" : "0");
+	if (typeof localStorage !== "undefined") {
+		try {
+			localStorage.setItem(MUTE_KEY, m ? "1" : "0");
+		} catch {}
+	}
 	muteListeners.forEach((cb) => cb(m));
 	// ミュート変更時も音量リスナーへ通知し、既存の購読者が applyMasterVolume 経由で即座にミュート状態を反映できるようにする
 	volumeListeners.forEach((cb) => cb(getMasterVolume()));

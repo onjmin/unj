@@ -10,7 +10,10 @@ const VITE_UNJ_HASHIDS_SECRET_PEPPER = decodeEnv(
 let randomKey = localStorage.getItem("randomKey");
 if (randomKey === null) {
 	randomKey = Math.random().toString(36).slice(2);
-	localStorage.setItem("randomKey", randomKey);
+	// モジュールの読み込み時に走るので、容量超過で投げるとアプリごと起動しなくなる。
+	try {
+		localStorage.setItem("randomKey", randomKey);
+	} catch {}
 }
 
 const uniquePepper = [randomKey, VITE_UNJ_HASHIDS_SECRET_PEPPER].join(
@@ -32,11 +35,15 @@ const load = (key: string): string | null => {
 const save = (key: string, value: string | null): void => {
 	const k = genSecureKey(key);
 	const v = DEV_MODE ? value : encode(value, uniquePepper);
-	if (v === null) {
-		localStorage.removeItem(k);
-	} else {
-		localStorage.setItem(k, v);
-	}
+	// 容量超過（QuotaExceededError）で投げても設定が保存されないだけにする。
+	// 呼び出し側の多くは Svelte のイベントやストア購読の中で、投げると画面ごと止まる。
+	try {
+		if (v === null) {
+			localStorage.removeItem(k);
+		} else {
+			localStorage.setItem(k, v);
+		}
+	} catch {}
 };
 
 export class UnjStorage {
